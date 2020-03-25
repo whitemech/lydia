@@ -21,8 +21,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: Linting
-        run: echo "TODO"
       - name: Check File Headers
         run: python3 ./scripts/check_copyright_notice.py
       - name: Build
