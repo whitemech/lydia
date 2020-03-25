@@ -1,4 +1,4 @@
-name: Lydia CI pipeline.
+name: Lydia CI pipeline
 
 on:
   push:
