@@ -22,8 +22,17 @@ set (SPDLOG_INCLUDE_PATH "${SPDLOG_MODULE_PATH}/include")
 
 # -------------------------------------------------------------------------
 
+# -------------------------------------------------------------------------
+# fmt
+
+#configure directories
+set (FMT_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/fmt")
+set (FMT_INCLUDE_PATH "${FMT_MODULE_PATH}/include")
+
+# -------------------------------------------------------------------------
+
 #set variables
-set (THIRD_PARTY_INCLUDE_PATH  ${SPDLOG_INCLUDE_PATH})
+set (THIRD_PARTY_INCLUDE_PATH  ${FMT_INCLUDE_PATH} ${SPDLOG_INCLUDE_PATH})
 
 #set variables for tests
 set (TEST_THIRD_PARTY_INCLUDE_PATH  ${CATCH_INCLUDE_PATH})
