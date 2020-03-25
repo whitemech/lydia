@@ -9,6 +9,12 @@ to download it for your platform.
 
 ## Build
 
+To build from source, clone the repository:
+```
+git clone https://github.com/whitemech/lydia.git --recursive
+cd lydia
+```
+
 To build:
 
 ```bash
