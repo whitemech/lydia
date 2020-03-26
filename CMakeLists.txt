@@ -26,6 +26,15 @@ set_property (GLOBAL PROPERTY USE_FOLDERS ON)
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# TODO include this eventually
+#set(CMAKE_CXX_CLANG_TIDY
+#        clang-tidy;
+#        -header-filter=.;
+#        -checks=*;
+#        -warnings-as-errors=*;)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+
 set (THREADS_PREFER_PTHREAD_FLAG ON)
 find_package (Threads REQUIRED)
 
