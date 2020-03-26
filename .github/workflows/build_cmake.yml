@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]  # TODO include windows-latest
+        os: [ubuntu-latest]  # TODO include macos-latest, windows-latest
 
     timeout-minutes: 30
 
@@ -22,7 +22,9 @@ jobs:
         with:
           submodules: recursive
       - name: Install tools
-        run: sudo apt-get install -y clang-format clang-tidy clang-tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -f clang-format-9 clang-tidy-9
       - name: Check File Headers
         run: python3 ./scripts/check_copyright_notice.py
       - name: CMake configuration

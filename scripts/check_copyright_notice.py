@@ -61,10 +61,15 @@ HASH_COPYRIGHT_NOTICE = r"""#
 # along with Lydia.  If not, see <https://www\.gnu\.org/licenses/>\.
 #"""
 
-CPP_HEADER_REGEX = re.compile(rf"^{STAR_COPYRIGHT_NOTICE}", re.MULTILINE)
-HPP_HEADER_REGEX = re.compile(rf"^{HPP_PRAGMA_ONCE}\n{STAR_COPYRIGHT_NOTICE}", re.MULTILINE)
-PY_HEADER_REGEX = re.compile(rf"^({PY_SHEBANG}\n)?{PY_ENCODING_HEADER}\n{HASH_COPYRIGHT_NOTICE}", re.MULTILINE)
-CMAKE_HEADER_REGEX = re.compile(rf"^{HASH_COPYRIGHT_NOTICE}", re.MULTILINE)
+CPP_HEADER_REGEX = re.compile(r"^{}".format(STAR_COPYRIGHT_NOTICE), re.MULTILINE)
+HPP_HEADER_REGEX = re.compile(
+    r"^{}\n{}".format(HPP_PRAGMA_ONCE, STAR_COPYRIGHT_NOTICE), re.MULTILINE
+)
+PY_HEADER_REGEX = re.compile(
+    r"^({}\n)?{}\n{}".format(PY_SHEBANG, PY_ENCODING_HEADER, HASH_COPYRIGHT_NOTICE),
+    re.MULTILINE,
+)
+CMAKE_HEADER_REGEX = re.compile(r"^{}".format(HASH_COPYRIGHT_NOTICE), re.MULTILINE)
 
 ROOT = Path(os.path.dirname(inspect.getfile(inspect.currentframe())), "..").absolute()
 INCLUDE = {
@@ -72,11 +77,10 @@ INCLUDE = {
     *filter(methodcaller("is_file"), Path("lib").glob("**/*")),
     *filter(methodcaller("is_file"), Path("scripts").glob("**/*")),
     Path("third_party/CMakeLists.txt"),
-    Path("CMakeLists.txt")
+    Path("CMakeLists.txt"),
 }
-IGNORE = {
-    Path("scripts", "run-clang-tidy.py")
-}
+IGNORE = {Path("scripts", "run-clang-tidy.py")}
+
 
 def file_matches(path: Path) -> bool:
     """Check that a file passes the checks."""
@@ -92,10 +96,11 @@ def file_matches(path: Path) -> bool:
     else:
         return True
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     bad_files = set()  # type: Set[Path]
     for path in INCLUDE.difference(IGNORE):
-        print(f"Processing {path}")
+        print("Processing {}".format(path))
         if not file_matches(path):
             bad_files.add(path)
 
