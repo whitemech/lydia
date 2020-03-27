@@ -31,5 +31,30 @@ make -j4
 ```
 Afterwards, to run the tests:
 ```
-./lib/test/LydiaLibTest
+make test
 ```
+
+## Development
+
+Set up your development environment:
+
+```
+sudo apt-get install clang-9.0 \
+    clang-format-9.0 \
+    clang-tidy-9.0 \
+    gcov \
+    gcovr
+
+```
+
+To configure the build, use the flag `-DENABLE_COVERAGE=ON`
+
+In `scripts/` you can find useful scripts for development. In particular:
+
+- `scripts/apply-clang-format.sh` applies the fixes provided by
+  `clang-format`.
+- `scripts/apply-clang-tidy.sh` applies the fixes provided by
+  `clang-tidy`.
+  
+The same scripts but with the `check` prefix lets you check whether
+fixes are needed or not.
