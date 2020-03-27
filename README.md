@@ -42,7 +42,6 @@ Set up your development environment:
 sudo apt-get install clang-9.0 \
     clang-format-9.0 \
     clang-tidy-9.0 \
-    gcov \
     gcovr
 
 ```

@@ -25,19 +25,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -f clang-format-9 clang-tidy-9
-          sudo apt-get install -f gcov gcovr
+          sudo apt-get install -f gcovr
       - name: Check File Headers
         run: python3 ./scripts/check_copyright_notice.py
       - name: Configure CMake
         run: |
-          ./scripts/_configure-cmake-ci.sh .
-      - name: Check clang-format
-        run: ./scripts/check-clang-format.sh
-      - name: Check clang-tidy
-        run: ./scripts/check-clang-tidy.sh
+          ./scripts/_ci-configure.sh .
       - name: Build
         run: |
           cd build && make -j
       - name: Test
         run: |
-          ./scripts/_test-cmake-ci.sh
+          ./scripts/_ci-test.sh

@@ -2,7 +2,7 @@
 set -e
 # TOFIX exit script if a command fails
 
-if [ $# -ne 2 ]; then
+if [ $# -ne 1 ]; then
 echo -e "\033[0;31m[!] Usage: ./scripts/build-cmake-dev.sh <SRC_ROOT> \033[0m"
 exit 1
 fi
