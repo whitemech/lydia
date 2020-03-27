@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]  # TODO include windows-latest
+        os: [ubuntu-latest]  # TODO include macos-latest, windows-latest
 
     timeout-minutes: 30
 
