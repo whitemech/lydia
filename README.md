@@ -33,3 +33,17 @@ Afterwards, to run the tests:
 ```
 ./lib/test/LydiaLibTest
 ```
+
+## Docker development image
+
+We provide a Docker image for development.
+
+- Build:
+```
+./scripts/docker-build.sh
+```
+
+- Run:
+```
+./scripts/docker-run.sh
+```
