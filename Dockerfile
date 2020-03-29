@@ -21,8 +21,6 @@ RUN apt-get update && \
        curl \
        wget
 
-ENV CC=/usr/bin/gcc
-ENV CXX=/usr/bin/g++
 
 # This adds the 'default' user to sudoers with full privileges:
 RUN HOME=/home/default && \
