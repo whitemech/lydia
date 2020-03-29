@@ -34,8 +34,8 @@ RUN HOME=/home/default && \
     usermod -a -G sudo default && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-ENV CC=/usr/bin/clang
-ENV CXX=/usr/bin/clang++
+ENV CC=/usr/bin/gcc
+ENV CXX=/usr/bin/g++
 ENV CCACHE_DIR=/build/docker_ccache
 
 
