@@ -16,4 +16,5 @@ make test
 
 # generate coverage information using lcov (that uses gcov)
 cd ..
+echo "========== Code coverage =========="
 gcovr -r . -e "third_party/*" --print-summary --html --html-details --xml -o coverage.html
