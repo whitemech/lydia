@@ -14,6 +14,4 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-int main( int argc, char* argv[] ) {
-    return 0;
-}
+auto main(int /*argc*/, char * /*argv*/[]) -> int { return 0; }
