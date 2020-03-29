@@ -34,14 +34,17 @@ Afterwards, to run the tests:
 make test
 ```
 
+<<<<<<< HEAD
 ## Development
 
 Set up your development environment:
 
 ```
-sudo apt-get install clang-9.0 \
-    clang-format-9.0 \
-    clang-tidy-9.0 \
+sudo apt-get install
+    clang-9 \
+    gcc-9 \
+    g++-9 \
+    cmake \
     gcovr
 
 ```
@@ -57,3 +60,17 @@ In `scripts/` you can find useful scripts for development. In particular:
   
 The same scripts but with the `check` prefix lets you check whether
 fixes are needed or not.
+
+## Docker development image
+
+We provide a Docker image for development.
+
+- Build:
+```
+./scripts/docker-build.sh
+```
+
+- Run:
+```
+./scripts/docker-run.sh
+```
