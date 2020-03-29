@@ -31,7 +31,48 @@ make -j4
 ```
 Afterwards, to run the tests:
 ```
-./lib/test/LydiaLibTest
+make test
+```
+
+<<<<<<< HEAD
+## Development
+
+Set up your development environment:
+
+```
+sudo apt-get install
+    clang-9 \
+    gcc-9 \
+    g++-9 \
+    cmake \
+    gcovr
+
+```
+
+To configure the build, use the flag `-DENABLE_COVERAGE=ON`
+
+In `scripts/` you can find useful scripts for development. In particular:
+
+- `scripts/apply-clang-format.sh` applies the fixes provided by
+  `clang-format`.
+- `scripts/apply-clang-tidy.sh` applies the fixes provided by
+  `clang-tidy`.
+  
+The same scripts but with the `check` prefix lets you check whether
+fixes are needed or not.
+
+## Docker development image
+
+We provide a Docker image for development.
+
+- Build:
+```
+./scripts/docker-build.sh
+```
+
+- Run:
+```
+./scripts/docker-run.sh
 ```
 
 ## Scripts

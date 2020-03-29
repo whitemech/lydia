@@ -242,3 +242,7 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/vim,c++,code,linux,macos,cmake,clion,windows
+
+# custom
+coverage.html
+
