@@ -19,7 +19,10 @@
 
 cmake_minimum_required(VERSION 3.13)
 
-project (Lydia)
+project (Lydia
+         VERSION 0.0.1
+         DESCRIPTION "Lydia is a tool for LDLf translation to DFA and for LDLf synthesis."
+         HOMEPAGE_URL https://github.com/whitemech/lydia.git)
 
 set_property (GLOBAL PROPERTY USE_FOLDERS ON)
 
