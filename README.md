@@ -34,7 +34,6 @@ Afterwards, to run the tests:
 make test
 ```
 
-<<<<<<< HEAD
 ## Development
 
 Set up your development environment:
@@ -50,6 +49,8 @@ sudo apt-get install
 ```
 
 To configure the build, use the flag `-DENABLE_COVERAGE=ON`
+
+## Scripts
 
 In `scripts/` you can find useful scripts for development. In particular:
 
@@ -74,15 +75,3 @@ We provide a Docker image for development.
 ```
 ./scripts/docker-run.sh
 ```
-
-## Scripts
-
-In scripts you can find useful scripts for development. In particular:
-
-- `scripts/apply-clang-format.sh` applies the fixes provided by
-  `clang-format`.
-- `scripts/apply-clang-tidy.sh` applies the fixes provided by
-  `clang-tidy`.
-  
-The same scripts but with the `check` prefix lets you check whether
-there are fixes to do or not.
