@@ -3,9 +3,10 @@ FROM ubuntu:19.10
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y \
-       clang-9 \
-       gcc-9 \
-       g++-9 \
+       clang \
+       gcc \
+       g++ \
+       g++-multilib \
        gdb \
        clang-tidy \
        clang-format-9 \
@@ -19,6 +20,9 @@ RUN apt-get update && \
        less \
        curl \
        wget
+
+ENV CC=/usr/bin/gcc
+ENV CXX=/usr/bin/g++
 
 # This adds the 'default' user to sudoers with full privileges:
 RUN HOME=/home/default && \
