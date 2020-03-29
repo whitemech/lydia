@@ -14,9 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
+#define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this
+                          // in one cpp file
 #include "catch.hpp"
 
-TEST_CASE( "Example", "[example]" ) {
-    REQUIRE(true);
-}
+TEST_CASE("Example", "[example]") { REQUIRE(true); }

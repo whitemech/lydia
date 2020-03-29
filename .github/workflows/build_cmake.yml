@@ -28,6 +28,20 @@ jobs:
           sudo apt-get install -f gcovr
       - name: Check File Headers
         run: python3 ./scripts/check_copyright_notice.py
+      - name: CMake configuration
+        run: |
+          mkdir build && cd build
+          cmake ..
+      - name: Check clang-format
+        run: ./scripts/check-clang-format.sh
+      - name: Check clang-tidy
+        run: ./scripts/check-clang-tidy.sh
+      - name: Build
+        run: |
+          cd build
+          make
+      - name: Check File Headers
+        run: python3 ./scripts/check_copyright_notice.py
       - name: Configure CMake
         run: |
           ./scripts/_ci-configure.sh .
