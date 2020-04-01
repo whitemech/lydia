@@ -14,4 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-auto main(int /*argc*/, char * /*argv*/[]) -> int { return 0; }
+
+#include "basic.hpp"
+
+namespace whitemech::lydia {
+std::string Basic::str() const {
+  // TODO: use visitor
+  return std::string();
+}
+
+} // namespace whitemech::lydia

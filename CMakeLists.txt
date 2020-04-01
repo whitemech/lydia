@@ -28,7 +28,7 @@ set_property (GLOBAL PROPERTY USE_FOLDERS ON)
 
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # TODO include this eventually
 #set(CMAKE_CXX_CLANG_TIDY
@@ -38,6 +38,14 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 #        -warnings-as-errors=*;)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+
+set(CMAKE_MODULE_PATH
+        "${CMAKE_MODULE_PATH}"
+        "${CMAKE_ROOT_DIR}/cmake/Modules"
+        "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
+
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 
 if (ENABLE_COVERAGE)
     message("-- Code coverage enabled")
@@ -50,6 +58,9 @@ endif()
 
 set (THREADS_PREFER_PTHREAD_FLAG ON)
 find_package (Threads REQUIRED)
+find_package(cudd REQUIRED)
+find_package(BISON 3.0 REQUIRED)
+find_package(FLEX 2.6 REQUIRED)
 
 add_subdirectory (third_party EXCLUDE_FROM_ALL)
 add_subdirectory (lib)

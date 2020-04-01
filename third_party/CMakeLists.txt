@@ -48,8 +48,17 @@ set (FMT_INCLUDE_PATH "${FMT_MODULE_PATH}/include")
 
 # -------------------------------------------------------------------------
 
+# -------------------------------------------------------------------------
+# Lyra
+
+#configure directories
+set (LYRA_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/Lyra")
+set (LYRA_INCLUDE_PATH "${LYRA_MODULE_PATH}/include")
+
+# -------------------------------------------------------------------------
+
 #set variables
-set (THIRD_PARTY_INCLUDE_PATH  ${FMT_INCLUDE_PATH} ${SPDLOG_INCLUDE_PATH})
+set (THIRD_PARTY_INCLUDE_PATH  ${FMT_INCLUDE_PATH} ${SPDLOG_INCLUDE_PATH} ${LYRA_INCLUDE_PATH})
 
 #set variables for tests
 set (TEST_THIRD_PARTY_INCLUDE_PATH  ${CATCH_INCLUDE_PATH})

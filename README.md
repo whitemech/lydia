@@ -8,11 +8,44 @@
 
 Lydia is a tool for LDLf translation to DFA and for LDLf synthesis.
 
-## Requirements
+## Preliminaries
 
+Clone the repository (with submodules):
+```
+git clone https://github.com/whitemech/lydia.git --recursive
+```
+
+### CMake
 We use CMake as a build tool. Please 
 check the [official website](https://cmake.org/)
 to download it for your platform.
+
+### CUDD
+
+The projects depends on the CUDD library.
+
+Firse check that you have it:
+```whereis libcudd```
+
+If no item occurs, then you have to install it.
+Follow the instructions:
+
+- enter `third_party/cudd`:
+```
+cd third_party/cudd
+``` 
+- Install CUDD:
+```
+./configure --enable-silent-rules --enable-obj --enable-dddmp --prefix=[install location]
+sudo make install
+```
+  If you get an error about aclocal, this might be due to either
+  1. Not having automake: 
+```sudo apt-get install automake```
+  2. Needing to reconfigure, do this before configuring: 
+```autoreconf -i```
+  3. Using a version of aclocal other than 1.14:
+     modify the version 1.14 in configure accordingly.
 
 ## Build
 
@@ -34,21 +67,7 @@ Afterwards, to run the tests:
 make test
 ```
 
-## Development
-
-Set up your development environment:
-
-```
-sudo apt-get install
-    clang-9 \
-    gcc-9 \
-    g++-9 \
-    cmake \
-    gcovr
-
-```
-
-To configure the build, use the flag `-DENABLE_COVERAGE=ON`
+To configure the build for development, use the flag `-DENABLE_COVERAGE=ON`
 
 ## Scripts
 
