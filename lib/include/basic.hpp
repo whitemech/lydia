@@ -23,7 +23,7 @@
 namespace whitemech {
 namespace lydia {
 
-enum TypeID { t_Symbol };
+enum TypeID { t_Symbol, t_LDLfBooleanAtom };
 
 class Visitor;
 class Symbol;
@@ -85,6 +85,7 @@ public:
    if you want general comparison.
    */
   virtual int compare(const Basic &o) const = 0;
+  int __cmp__(const Basic &o) const;
 
   std::string str() const;
 

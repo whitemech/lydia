@@ -17,40 +17,41 @@
  */
 
 #include "basic.hpp"
+#include "symbol.hpp"
 
-namespace whitemech::lydia {
+namespace whitemech {
+namespace lydia {
 
-class Symbol : public Basic {
+class LDLfFormula : public Basic {
+  //    const LDLfFormula logical_not() const;
+};
+
+// Temporal True and False
+class LDLfBooleanAtom : public LDLfFormula {
+
 private:
-  //! name of Symbol
-  std::string name_;
+  bool b_;
 
 public:
-  const static TypeID type_code_id = TypeID::t_Symbol;
-
-  //! Symbol Constructor
-  explicit Symbol(std::string name);
-
-  inline const std::string &name() const { return name_; }
-
-  //! \return Size of the hash
+  const static TypeID type_code_id = TypeID::t_LDLfBooleanAtom;
+  explicit LDLfBooleanAtom(bool b);
+  //! \return the hash
   hash_t __hash__() const override;
-
-  /*! Equality comparator
-   * \param o - Object to be compared with
-   * \return whether the two objects are equal
-   * */
+  bool get_value() const;
+  virtual vec_basic get_args() const;
   bool is_equal(const Basic &o) const override;
   bool operator==(const Basic &o) const;
   bool operator!=(const Basic &o) const;
-
-  /*! Comparison operator
-   * \param o - Object to be compared with
-   * \return `0` if equal, `-1` , `1` according to string compare
-   * */
   int compare(const Basic &o) const override;
+  const LDLfFormula &logical_not() const;
 };
 
-//! inline version to return `Symbol`
-inline Symbol symbol(const std::string &name) { return Symbol(name); }
-} // namespace whitemech::lydia
+extern const LDLfBooleanAtom boolTrue;
+extern const LDLfBooleanAtom boolFalse;
+
+inline const LDLfBooleanAtom &boolean(bool b) {
+  return const_cast<LDLfBooleanAtom &>(b ? boolTrue : boolFalse);
+}
+
+} // namespace lydia
+} // namespace whitemech

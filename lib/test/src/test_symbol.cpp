@@ -26,15 +26,28 @@ TEST_CASE("Symbol", "[symbol]") {
   auto x = symbol("x");
   auto y = symbol("y");
 
+  auto newX = symbol("x");
+  auto newY = symbol("y");
+
   SECTION("x equal to x") { REQUIRE(x.is_equal(x)); }
   SECTION("x equal to x using ==") { REQUIRE(x == x); }
   SECTION("x not equal to y") { REQUIRE(!x.is_equal(y)); }
   SECTION("x not equal to y using !=") { REQUIRE(x != y); }
 
+  SECTION("x equal to newX") { REQUIRE(x.is_equal(newX)); }
+  SECTION("y equal to newY") { REQUIRE(y.is_equal(newY)); }
+
   SECTION("x.name") { REQUIRE(x.name() == "x"); }
   SECTION("y.name") { REQUIRE(y.name() == "y"); }
 
-  SECTION("x.hash") { REQUIRE(x.hash() != y.hash()); }
+  SECTION("x.hash() == x.hash()") { REQUIRE(x.hash() == x.hash()); }
+  SECTION("y.hash() == y.hash()") { REQUIRE(y.hash() == y.hash()); }
+  SECTION("x.hash() != y.hash()") { REQUIRE(x.hash() != y.hash()); }
+  SECTION("x.hash() == newX.hash()") { REQUIRE(x.hash() == newX.hash()); }
+  SECTION("y.hash() == newY.hash()") { REQUIRE(y.hash() == newY.hash()); }
+
+  SECTION("x < y") { REQUIRE(x.compare(y) == -1); }
+  SECTION("y > x") { REQUIRE(y.compare(x) == 1); }
 }
 
 } // namespace whitemech::lydia::Test

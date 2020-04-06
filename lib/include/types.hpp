@@ -17,5 +17,15 @@
  */
 
 #include <cstdint>
+#include <vector>
+
+namespace whitemech {
+namespace lydia {
+
+class Basic;
+class Symbol;
 
 typedef uint64_t hash_t;
+typedef std::vector<Basic> vec_basic;
+} // namespace lydia
+}; // namespace whitemech
