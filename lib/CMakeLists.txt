@@ -18,7 +18,12 @@
 # CMake build : library
 
 #configure variables
-set (LIB_NAME "${PROJECT_NAME}Lib")
+set (LIB_NAME "lydia")
+
+# generate
+#BISON_TARGET(parser ./include/parser/parser.y ${CMAKE_CURRENT_BINARY_DIR}/include/parser/parser.c DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/include/parser/parser.h)
+#FLEX_TARGET(lexer ./include/parser/scanner.l ${CMAKE_CURRENT_BINARY_DIR}/include/parser/lexer.c DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/include/parser/lexer.h)
+#ADD_FLEX_BISON_DEPENDENCY(lexer parser)
 
 #configure directories
 set (LIBRARY_MODULE_PATH "${PROJECT_SOURCE_DIR}/lib")
@@ -29,10 +34,12 @@ set (LIBRARY_INCLUDE_PATH  "${LIBRARY_MODULE_PATH}/include")
 include_directories (${LIBRARY_INCLUDE_PATH} ${THIRD_PARTY_INCLUDE_PATH})
 
 #set sources
-file (GLOB LIB_HEADER_FILES "${LIBRARY_INCLUDE_PATH}/*.h")
+file (GLOB LIB_HEADER_FILES "${LIBRARY_INCLUDE_PATH}/*.hpp")
 file (GLOB LIB_SOURCE_FILES "${LIBRARY_SRC_PATH}/*.cpp")
+#set (LIB_PARSER_FILES ${BISON_parser_OUTPUTS} ${FLEX_lexer_OUTPUTS})
 
 #set library
+# TODO: add ${LIB_PARSER_FILES}
 add_library (${LIB_NAME} STATIC ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES})
 
 #export vars
