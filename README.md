@@ -20,9 +20,18 @@ We use CMake as a build tool. Please
 check the [official website](https://cmake.org/)
 to download it for your platform.
 
+### Flex and Bison
+The project uses Flex and Bison for parsing purposes.
+
+Firse check that you have them: ```whereis flex bison```
+
+If no item occurs, then you have to install them:  
+```sudo apt-get install -f flex bison```
+
+
 ### CUDD
 
-The projects depends on the CUDD library.
+The project depends on the CUDD library.
 
 Firse check that you have it:
 ```whereis libcudd```

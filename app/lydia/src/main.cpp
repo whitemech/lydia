@@ -32,7 +32,7 @@ auto main(int argc, const char *argv[]) -> int {
   // Parse the program arguments:
   auto result = cli.parse({argc, argv});
 
-  // Check that the arguments where valid:
+  // Check that the arguments were valid:
   if (!result) {
     std::cerr << "Error in command line: " << result.errorMessage()
               << std::endl;
