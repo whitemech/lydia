@@ -59,12 +59,12 @@ TEST_CASE("Boolean atoms", "[LDLfBooleanAtom]") {
   // TODO test to string
 }
 
-TEST_CASE("Not", "[Not]") {
+TEST_CASE("LDLfNot", "[LDLfNot]") {
 
   auto ptr_true = std::make_shared<LDLfBooleanAtom>(true);
-  auto not_true = Not(ptr_true);
+  auto not_true = LDLfNot(ptr_true);
   auto ptr_false = std::make_shared<LDLfBooleanAtom>(false);
-  auto not_false = Not(ptr_false);
+  auto not_false = LDLfNot(ptr_false);
 
   SECTION("test equality on same objects") {
     REQUIRE(not_true.is_equal(not_true));
@@ -90,9 +90,9 @@ TEST_CASE("And", "[And]") {
   set_formulas and_3_args = {boolean(true), boolean(true), boolean(false)};
 
   auto and_1 =
-      And(and_1_args); // TODO: this should raise exception: less than two
-  auto and_2 = And(and_2_args); // TODO see above
-  auto and_3 = And(and_3_args);
+      LDLfAnd(and_1_args); // TODO: this should raise exception: less than two
+  auto and_2 = LDLfAnd(and_2_args); // TODO see above
+  auto and_3 = LDLfAnd(and_3_args);
 
   SECTION("test equality on same object") { REQUIRE(and_3.is_equal(and_3)); }
   SECTION("test compare  on same object") {
@@ -105,9 +105,9 @@ TEST_CASE("Or", "[Or]") {
   set_formulas or_2_args = set_formulas();
   set_formulas or_3_args = {boolean(true), boolean(true), boolean(false)};
 
-  auto or_1 = Or(or_1_args); // TODO: this should raise exception: less than two
-  auto or_2 = Or(or_2_args); // TODO see above
-  auto or_3 = Or(or_3_args);
+  auto or_1 = LDLfOr(or_1_args); // TODO: this should raise exception: less than two
+  auto or_2 = LDLfOr(or_2_args); // TODO see above
+  auto or_3 = LDLfOr(or_3_args);
 
   SECTION("test equality on same object") { REQUIRE(or_3.is_equal(or_3)); }
   SECTION("test compare  on same object") { REQUIRE(or_3.compare(or_3) == 0); }

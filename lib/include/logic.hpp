@@ -51,13 +51,13 @@ inline std::shared_ptr<const LDLfBooleanAtom> boolean(bool b) {
            : std::shared_ptr<const LDLfBooleanAtom>(new LDLfBooleanAtom(false));
 }
 
-class And : public LDLfFormula {
+class LDLfAnd : public LDLfFormula {
 private:
   const set_formulas container_;
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfAnd;
-  explicit And(set_formulas s);
+  explicit LDLfAnd(set_formulas s);
   bool is_canonical(const set_formulas &container_);
   //! \return the hash
   hash_t __hash__() const override;
@@ -69,13 +69,13 @@ public:
   //    virtual const LDLfFormula logical_not() const;  TODO: Add it
 };
 
-class Or : public LDLfFormula {
+class LDLfOr : public LDLfFormula {
 private:
   const set_formulas container_;
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfOr;
-  explicit Or(set_formulas s);
+  explicit LDLfOr(set_formulas s);
   bool is_canonical(const set_formulas &container_);
   //! \return the hash
   hash_t __hash__() const override;
@@ -87,13 +87,13 @@ public:
   //    virtual const LDLfFormula logical_not() const;
 };
 
-class Not : public LDLfFormula {
+class LDLfNot : public LDLfFormula {
 private:
   const std::shared_ptr<LDLfFormula> arg_;
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfNot;
-  explicit Not(const std::shared_ptr<LDLfFormula> &in);
+  explicit LDLfNot(const std::shared_ptr<LDLfFormula> &in);
   bool is_canonical(const LDLfFormula &s);
   //! \return the hash
   hash_t __hash__() const override;
