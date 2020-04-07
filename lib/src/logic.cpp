@@ -60,7 +60,7 @@ const LDLfFormula &LDLfBooleanAtom::logical_not() const {
 bool LDLfBooleanAtom::operator==(const Basic &o) const { return is_equal(o); }
 bool LDLfBooleanAtom::operator!=(const Basic &o) const { return !is_equal(o); }
 
-And::And(set_boolean s) : container_{std::move(s)} {
+And::And(set_formulas s) : container_{std::move(s)} {
   this->type_code_ = type_code_id;
   assert(is_canonical(s));
 }
@@ -72,7 +72,7 @@ hash_t And::__hash__() const {
   return seed;
 }
 
-bool And::is_canonical(const set_boolean &container_) {
+bool And::is_canonical(const set_formulas &container_) {
   // TODO do some checks on the arguments
   return true;
 }
@@ -96,7 +96,7 @@ int And::compare(const Basic &o) const {
   //                           dynamic_cast<const And &>(o).get_container());
 }
 
-const set_boolean &And::get_container() const { return container_; }
+const set_formulas &And::get_container() const { return container_; }
 
 // const LDLfFormula And::logical_not() const
 //{
@@ -108,7 +108,7 @@ const set_boolean &And::get_container() const { return container_; }
 //    return make_rcp<const Or>(cont);
 //}
 
-Or::Or(set_boolean s) : container_{std::move(s)} {
+Or::Or(set_formulas s) : container_{std::move(s)} {
   this->type_code_ = type_code_id;
 }
 
@@ -138,12 +138,12 @@ int Or::compare(const Basic &o) const {
   //                           dynamic_cast<const Or &>(o).get_container());
 }
 
-bool Or::is_canonical(const set_boolean &container_) {
+bool Or::is_canonical(const set_formulas &container_) {
   // TODO do some checks on the arguments
   return true;
 }
 
-const set_boolean &Or::get_container() const { return container_; }
+const set_formulas &Or::get_container() const { return container_; }
 
 // const Or::logical_not() const
 //{

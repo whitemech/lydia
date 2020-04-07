@@ -53,37 +53,37 @@ inline std::shared_ptr<const LDLfBooleanAtom> boolean(bool b) {
 
 class And : public LDLfFormula {
 private:
-  set_boolean container_;
+  set_formulas container_;
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfAnd;
-  explicit And(set_boolean s);
-  bool is_canonical(const set_boolean &container_);
+  explicit And(set_formulas s);
+  bool is_canonical(const set_formulas &container_);
   //! \return the hash
   hash_t __hash__() const override;
   virtual vec_basic get_args() const;
   bool is_equal(const Basic &o) const override;
   //! Structural equality comparator
   int compare(const Basic &o) const override;
-  const set_boolean &get_container() const;
+  const set_formulas &get_container() const;
   //    virtual const LDLfFormula logical_not() const;  TODO: Add it
 };
 
 class Or : public LDLfFormula {
 private:
-  set_boolean container_;
+  set_formulas container_;
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfOr;
-  explicit Or(set_boolean s);
-  bool is_canonical(const set_boolean &container_);
+  explicit Or(set_formulas s);
+  bool is_canonical(const set_formulas &container_);
   //! \return the hash
   hash_t __hash__() const override;
   virtual vec_basic get_args() const;
   bool is_equal(const Basic &o) const override;
   //! Structural equality comparator
   int compare(const Basic &o) const override;
-  const set_boolean &get_container() const;
+  const set_formulas &get_container() const;
   //    virtual const LDLfFormula logical_not() const;
 };
 

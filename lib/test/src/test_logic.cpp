@@ -69,7 +69,9 @@ TEST_CASE("Not", "[Not]") {
 }
 
 TEST_CASE("And", "[And]") {
-  //    TODO: do some tests
+  //  set_formulas and_1 = {boolean(true), boolean(false)};
+  //  set_formulas and_2 = {boolean(true), boolean(false)};
+  //  SECTION("")
 }
 
 } // namespace whitemech::lydia::Test
