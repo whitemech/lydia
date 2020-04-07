@@ -20,40 +20,56 @@
 
 namespace whitemech::lydia::Test {
 
-TEST_CASE("Logic", "[LDLfBooleanAtom]") {
+TEST_CASE("Boolean atoms", "[LDLfBooleanAtom]") {
   Logger log("test_logic");
 
+  auto boolTrue = boolean(true);
+  auto boolFalse = boolean(false);
   auto newBoolTrue = LDLfBooleanAtom(true);
   auto newBoolFalse = LDLfBooleanAtom(false);
 
-  SECTION("tt == tt") { REQUIRE(boolTrue == boolTrue); }
-  SECTION("ff == ff") { REQUIRE(boolFalse == boolFalse); }
-  SECTION("tt != ff") { REQUIRE(boolTrue != boolFalse); }
-  SECTION("ff != tt") { REQUIRE(boolFalse != boolTrue); }
-  SECTION("tt == new_tt") { REQUIRE(boolTrue == newBoolTrue); }
-  SECTION("ff == new_ff") { REQUIRE(boolFalse == newBoolFalse); }
+  SECTION("tt == tt") { REQUIRE(*boolTrue == *boolTrue); }
+  SECTION("ff == ff") { REQUIRE(*boolFalse == *boolFalse); }
+  SECTION("tt != ff") { REQUIRE(*boolTrue != *boolFalse); }
+  SECTION("ff != tt") { REQUIRE(*boolFalse != *boolTrue); }
+  SECTION("tt == new_tt") { REQUIRE(*boolTrue == newBoolTrue); }
+  SECTION("ff == new_ff") { REQUIRE(*boolFalse == newBoolFalse); }
 
-  SECTION("tt > tt == 0") { REQUIRE(boolTrue.compare(boolTrue) == 0); }
-  SECTION("tt > ff == 1") { REQUIRE(boolTrue.compare(boolFalse) == 1); }
-  SECTION("ff < tt == -1") { REQUIRE(boolFalse.compare(boolTrue) == -1); }
-  SECTION("ff < ff == 0") { REQUIRE(boolFalse.compare(boolFalse) == 0); }
+  SECTION("tt > tt == 0") { REQUIRE(boolTrue->compare(*boolTrue) == 0); }
+  SECTION("tt > ff == 1") { REQUIRE(boolTrue->compare(*boolFalse) == 1); }
+  SECTION("ff < tt == -1") { REQUIRE(boolFalse->compare(*boolTrue) == -1); }
+  SECTION("ff < ff == 0") { REQUIRE(boolFalse->compare(*boolFalse) == 0); }
 
   SECTION("tt.hash() == tt.hash()") {
-    REQUIRE(boolTrue.hash() == boolTrue.hash());
+    REQUIRE(boolTrue->hash() == boolTrue->hash());
   }
-  SECTION("tt.hash() != tt.hash()") {
-    REQUIRE(boolTrue.hash() != boolFalse.hash());
+  SECTION("tt->hash() != tt->hash()") {
+    REQUIRE(boolTrue->hash() != boolFalse->hash());
   }
-  SECTION("ff.hash() == ff.hash()") {
-    REQUIRE(boolFalse.hash() == boolFalse.hash());
+  SECTION("ff->hash() == ff->hash()") {
+    REQUIRE(boolFalse->hash() == boolFalse->hash());
   }
-  SECTION("tt.hash() == new_tt.hash()") {
-    REQUIRE(boolTrue.hash() == newBoolTrue.hash());
+  SECTION("tt->hash() == new_tt->hash()") {
+    REQUIRE(boolTrue->hash() == newBoolTrue.hash());
   }
-  SECTION("ff.hash() == new_ff.hash()") {
-    REQUIRE(boolFalse.hash() == newBoolFalse.hash());
+  SECTION("ff->hash() == new_ff->hash()") {
+    REQUIRE(boolFalse->hash() == newBoolFalse.hash());
   }
 
   // TODO test to string
 }
+
+TEST_CASE("Not", "[Not]") {
+
+  auto ptr_true = std::make_shared<LDLfBooleanAtom>(true);
+  auto not_true = Not(ptr_true);
+  auto ptr_false = std::make_shared<LDLfBooleanAtom>(false);
+  auto not_false = Not(ptr_false);
+  //    TODO: do some tests
+}
+
+TEST_CASE("And", "[And]") {
+  //    TODO: do some tests
+}
+
 } // namespace whitemech::lydia::Test

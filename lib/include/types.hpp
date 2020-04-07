@@ -17,6 +17,8 @@
  */
 
 #include <cstdint>
+#include <memory>
+#include <set>
 #include <vector>
 
 namespace whitemech {
@@ -24,8 +26,11 @@ namespace lydia {
 
 class Basic;
 class Symbol;
+class LDLfFormula;
 
 typedef uint64_t hash_t;
-typedef std::vector<Basic> vec_basic;
+typedef std::vector<std::shared_ptr<Basic>> vec_basic;
+typedef std::set<std::shared_ptr<LDLfFormula>> set_boolean;
+typedef std::vector<std::shared_ptr<LDLfFormula>> vec_boolean;
 } // namespace lydia
 }; // namespace whitemech
