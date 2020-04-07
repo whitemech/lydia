@@ -86,7 +86,7 @@ public:
    */
   virtual int compare(const Basic &o) const = 0;
   int __cmp__(const Basic &o) const;
-
+  virtual void accept(Visitor &v) const = 0;
   std::string str() const;
 
   //        virtual void accept(Visitor &v) const;

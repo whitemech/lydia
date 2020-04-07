@@ -1,4 +1,3 @@
-#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -16,29 +15,16 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <cstdint>
-#include <exception>
-#include <memory>
-#include <set>
-#include <vector>
+#include "visitor.hpp"
+#include "logic.hpp"
 
 namespace whitemech {
 namespace lydia {
-
-class Basic;
-class Symbol;
-class LDLfFormula;
-
-typedef uint64_t hash_t;
-typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
-typedef std::set<std::shared_ptr<const Basic>> set_basic;
-typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
-typedef std::set<std::shared_ptr<const LDLfFormula>> set_formulas;
-
-class not_implemented_error : public std::logic_error {
-public:
-  not_implemented_error() : std::logic_error("Function not yet implemented"){};
-};
-
+void Symbol::accept(Visitor &v) const { v.visit(*this); }
+void LDLfBooleanAtom::accept(Visitor &v) const { v.visit(*this); }
+void LDLfOr::accept(Visitor &v) const { v.visit(*this); }
+void LDLfAnd::accept(Visitor &v) const { v.visit(*this); }
+void LDLfNot::accept(Visitor &v) const { v.visit(*this); }
+// TODO add other accept methods
 } // namespace lydia
-}; // namespace whitemech
+} // namespace whitemech

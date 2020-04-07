@@ -1,4 +1,3 @@
-#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -16,29 +15,40 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <cstdint>
-#include <exception>
-#include <memory>
-#include <set>
-#include <vector>
+#include "utils/print.hpp"
+#include "types.hpp"
+#include <stdexcept>
 
 namespace whitemech {
 namespace lydia {
 
-class Basic;
-class Symbol;
-class LDLfFormula;
+std::string StrPrinter::apply(const Basic &b) {
+  b.accept(*this);
+  return str_;
+}
 
-typedef uint64_t hash_t;
-typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
-typedef std::set<std::shared_ptr<const Basic>> set_basic;
-typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
-typedef std::set<std::shared_ptr<const LDLfFormula>> set_formulas;
+void StrPrinter::bvisit(const Basic &x) { throw not_implemented_error(); }
 
-class not_implemented_error : public std::logic_error {
-public:
-  not_implemented_error() : std::logic_error("Function not yet implemented"){};
-};
+void StrPrinter::bvisit(const Symbol &x) {}
+
+void StrPrinter::bvisit(const LDLfBooleanAtom &x) {}
+
+void StrPrinter::bvisit(const LDLfAnd &x) {}
+
+void StrPrinter::bvisit(const LDLfOr &x) {}
+
+void StrPrinter::bvisit(const LDLfNot &x) {}
+
+std::string apply(const vec_basic &v) {}
+
+std::string apply(const set_formulas &v) {}
+
+std::string apply(const Basic &b) {}
+
+std::string str(const Basic &x) {
+  StrPrinter strPrinter;
+  return strPrinter.apply(x);
+}
 
 } // namespace lydia
-}; // namespace whitemech
+} // namespace whitemech

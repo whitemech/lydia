@@ -27,6 +27,7 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_Symbol;
+  void accept(Visitor &v) const override;
 
   //! Symbol Constructor
   explicit Symbol(std::string name);

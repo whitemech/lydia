@@ -34,6 +34,7 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfBooleanAtom;
+  void accept(Visitor &v) const override;
   explicit LDLfBooleanAtom(bool b);
   //! \return the hash
   hash_t __hash__() const override;
@@ -46,9 +47,11 @@ public:
   const LDLfFormula &logical_not() const;
 };
 
+extern const std::shared_ptr<const LDLfBooleanAtom> boolTrue;
+extern const std::shared_ptr<const LDLfBooleanAtom> boolFalse;
+
 inline std::shared_ptr<const LDLfBooleanAtom> boolean(bool b) {
-  return b ? std::shared_ptr<const LDLfBooleanAtom>(new LDLfBooleanAtom(true))
-           : std::shared_ptr<const LDLfBooleanAtom>(new LDLfBooleanAtom(false));
+  return b ? boolTrue : boolFalse;
 }
 
 class LDLfAnd : public LDLfFormula {
@@ -57,6 +60,7 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfAnd;
+  void accept(Visitor &v) const override;
   explicit LDLfAnd(set_formulas s);
   bool is_canonical(const set_formulas &container_);
   //! \return the hash
@@ -75,6 +79,7 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfOr;
+  void accept(Visitor &v) const override;
   explicit LDLfOr(set_formulas s);
   bool is_canonical(const set_formulas &container_);
   //! \return the hash
@@ -93,6 +98,7 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfNot;
+  void accept(Visitor &v) const override;
   explicit LDLfNot(const std::shared_ptr<LDLfFormula> &in);
   bool is_canonical(const LDLfFormula &s);
   //! \return the hash

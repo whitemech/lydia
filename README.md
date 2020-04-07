@@ -91,6 +91,10 @@ In `scripts/` you can find useful scripts for development. In particular:
 The same scripts but with the `check` prefix lets you check whether
 fixes are needed or not.
 
+For building:
+- `build.sh`: for normal build
+- `build-dev.sh` for development build
+
 ## Docker development image
 
 We provide a Docker image for development.

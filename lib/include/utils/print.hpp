@@ -16,29 +16,31 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <cstdint>
-#include <exception>
-#include <memory>
-#include <set>
-#include <vector>
+#include "visitor.hpp"
 
 namespace whitemech {
 namespace lydia {
 
-class Basic;
-class Symbol;
-class LDLfFormula;
+class StrPrinter : public BaseVisitor<StrPrinter> {
+private:
+  static const std::vector<std::string> names_;
 
-typedef uint64_t hash_t;
-typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
-typedef std::set<std::shared_ptr<const Basic>> set_basic;
-typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
-typedef std::set<std::shared_ptr<const LDLfFormula>> set_formulas;
+protected:
+  std::string str_;
 
-class not_implemented_error : public std::logic_error {
 public:
-  not_implemented_error() : std::logic_error("Function not yet implemented"){};
+  void bvisit(const Basic &x);
+  void bvisit(const Symbol &x);
+  void bvisit(const LDLfBooleanAtom &x);
+  void bvisit(const LDLfAnd &x);
+  void bvisit(const LDLfOr &x);
+  void bvisit(const LDLfNot &x);
+  std::string apply(const vec_basic &v);
+  std::string apply(const set_formulas &v);
+  std::string apply(const Basic &b);
 };
 
+std::string str(const Basic &x);
+
 } // namespace lydia
-}; // namespace whitemech
+} // namespace whitemech

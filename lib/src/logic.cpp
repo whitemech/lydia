@@ -23,6 +23,11 @@
 namespace whitemech {
 namespace lydia {
 
+const std::shared_ptr<const LDLfBooleanAtom> boolTrue =
+    std::make_shared<const LDLfBooleanAtom>(true);
+const std::shared_ptr<const LDLfBooleanAtom> boolFalse =
+    std::make_shared<const LDLfBooleanAtom>(false);
+
 LDLfBooleanAtom::LDLfBooleanAtom(bool b) : b_{b} {
   this->type_code_ = type_code_id;
 }
@@ -84,7 +89,8 @@ vec_basic LDLfAnd::get_args() const {
 
 bool LDLfAnd::is_equal(const Basic &o) const {
   return is_a<LDLfAnd>(o) and
-         unified_eq(container_, dynamic_cast<const LDLfAnd &>(o).get_container());
+         unified_eq(container_,
+                    dynamic_cast<const LDLfAnd &>(o).get_container());
 }
 
 int LDLfAnd::compare(const Basic &o) const {
@@ -123,7 +129,8 @@ vec_basic LDLfOr::get_args() const {
 
 bool LDLfOr::is_equal(const Basic &o) const {
   return is_a<LDLfOr>(o) and
-         unified_eq(container_, dynamic_cast<const LDLfOr &>(o).get_container());
+         unified_eq(container_,
+                    dynamic_cast<const LDLfOr &>(o).get_container());
 }
 
 int LDLfOr::compare(const Basic &o) const {
@@ -167,7 +174,8 @@ vec_basic LDLfNot::get_args() const {
 }
 
 bool LDLfNot::is_equal(const Basic &o) const {
-  return is_a<LDLfNot>(o) and eq(*arg_, dynamic_cast<const LDLfNot &>(o).get_arg());
+  return is_a<LDLfNot>(o) and
+         eq(*arg_, dynamic_cast<const LDLfNot &>(o).get_arg());
 }
 
 int LDLfNot::compare(const Basic &o) const {

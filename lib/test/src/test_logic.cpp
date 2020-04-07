@@ -23,8 +23,6 @@ namespace whitemech::lydia::Test {
 TEST_CASE("Boolean atoms", "[LDLfBooleanAtom]") {
   Logger log("test_logic");
 
-  auto boolTrue = boolean(true);
-  auto boolFalse = boolean(false);
   auto newBoolTrue = LDLfBooleanAtom(true);
   auto newBoolFalse = LDLfBooleanAtom(false);
 
@@ -105,7 +103,8 @@ TEST_CASE("Or", "[Or]") {
   set_formulas or_2_args = set_formulas();
   set_formulas or_3_args = {boolean(true), boolean(true), boolean(false)};
 
-  auto or_1 = LDLfOr(or_1_args); // TODO: this should raise exception: less than two
+  auto or_1 =
+      LDLfOr(or_1_args); // TODO: this should raise exception: less than two
   auto or_2 = LDLfOr(or_2_args); // TODO see above
   auto or_3 = LDLfOr(or_3_args);
 
