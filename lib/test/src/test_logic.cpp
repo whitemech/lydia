@@ -69,8 +69,24 @@ TEST_CASE("Not", "[Not]") {
 }
 
 TEST_CASE("And", "[And]") {
-  //  set_formulas and_1 = {boolean(true), boolean(false)};
-  //  set_formulas and_2 = {boolean(true), boolean(false)};
+  set_formulas and_1_args = {};
+  set_formulas and_2_args = set_formulas();
+  set_formulas and_3_args = {boolean(true), boolean(true), boolean(false)};
+
+  auto and_1 =
+      And(and_1_args); // TODO: this should raise exception: less than two
+  auto and_2 = And(and_2_args); // TODO see above
+  auto and_3 = And(and_3_args);
+  //  SECTION("")
+}
+TEST_CASE("Or", "[Or]") {
+  set_formulas or_1_args = {};
+  set_formulas or_2_args = set_formulas();
+  set_formulas or_3_args = {boolean(true), boolean(true), boolean(false)};
+
+  auto or_1 = Or(or_1_args); // TODO: this should raise exception: less than two
+  auto or_2 = Or(or_2_args); // TODO see above
+  auto or_3 = Or(or_3_args);
   //  SECTION("")
 }
 

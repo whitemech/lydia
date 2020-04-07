@@ -29,8 +29,8 @@ class Symbol;
 class LDLfFormula;
 
 typedef uint64_t hash_t;
-typedef std::vector<std::shared_ptr<Basic>> vec_basic;
-typedef std::set<std::shared_ptr<LDLfFormula>> set_formulas;
-typedef std::vector<std::shared_ptr<LDLfFormula>> vec_boolean;
+typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
+typedef std::set<std::shared_ptr<const LDLfFormula>> set_formulas;
+typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_boolean;
 } // namespace lydia
 }; // namespace whitemech
