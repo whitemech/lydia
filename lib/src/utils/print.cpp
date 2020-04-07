@@ -16,36 +16,62 @@
  */
 
 #include "utils/print.hpp"
-#include "types.hpp"
+#include <sstream>
 #include <stdexcept>
 
 namespace whitemech {
 namespace lydia {
+
+void StrPrinter::visit(const Symbol &x) { str_ = x.get_name(); }
+
+void StrPrinter::visit(const LDLfBooleanAtom &x) {
+  str_ = x.get_value() ? "tt" : "ff";
+}
+
+void StrPrinter::visit(const LDLfAnd &x) {
+  std::ostringstream s;
+  auto container = x.get_container();
+  s << "And(";
+  s << apply(**container.begin());
+  for (auto it = ++(container.begin()); it != container.end(); ++it) {
+    s << ", " << apply(**it);
+  }
+  s << ")";
+  str_ = s.str();
+}
+
+void StrPrinter::visit(const LDLfOr &x) {
+  std::ostringstream s;
+  auto container = x.get_container();
+  s << "Or(";
+  s << apply(**container.begin());
+  for (auto it = ++(container.begin()); it != container.end(); ++it) {
+    s << ", " << apply(**it);
+  }
+  s << ")";
+  str_ = s.str();
+}
+
+void StrPrinter::visit(const LDLfNot &x) {
+  std::ostringstream s;
+  s << "Not(" << apply(x.get_arg()) << ")";
+  str_ = s.str();
+}
 
 std::string StrPrinter::apply(const Basic &b) {
   b.accept(*this);
   return str_;
 }
 
-void StrPrinter::bvisit(const Basic &x) { throw not_implemented_error(); }
+std::string StrPrinter::apply(const vec_basic &v) {
+  throw not_implemented_error();
+}
 
-void StrPrinter::bvisit(const Symbol &x) {}
+std::string StrPrinter::apply(const set_formulas &v) {
+  throw not_implemented_error();
+}
 
-void StrPrinter::bvisit(const LDLfBooleanAtom &x) {}
-
-void StrPrinter::bvisit(const LDLfAnd &x) {}
-
-void StrPrinter::bvisit(const LDLfOr &x) {}
-
-void StrPrinter::bvisit(const LDLfNot &x) {}
-
-std::string apply(const vec_basic &v) {}
-
-std::string apply(const set_formulas &v) {}
-
-std::string apply(const Basic &b) {}
-
-std::string str(const Basic &x) {
+std::string to_string(const Basic &x) {
   StrPrinter strPrinter;
   return strPrinter.apply(x);
 }

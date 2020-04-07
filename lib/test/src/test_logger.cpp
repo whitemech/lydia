@@ -17,12 +17,14 @@
 #include "catch.hpp"
 #include "logger.hpp"
 
+#include <utility>
+
 namespace whitemech::lydia::Test {
 
 class Person {
 public:
-  Person(const std::string &name, const unsigned int &age) noexcept
-      : name_{name}, age_{age} {}
+  Person(std::string name, const unsigned int &age) noexcept
+      : name_{std::move(name)}, age_{age} {}
 
   friend std::ostream &operator<<(std::ostream &stream, const Person &object) {
     stream << "name: " << object.name_ << " age: " << object.age_;

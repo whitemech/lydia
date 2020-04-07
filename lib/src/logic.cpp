@@ -156,7 +156,7 @@ const set_formulas &LDLfOr::get_container() const { return container_; }
 //    return const And(cont);
 //}
 
-LDLfNot::LDLfNot(const std::shared_ptr<LDLfFormula> &in) : arg_{in} {
+LDLfNot::LDLfNot(const std::shared_ptr<const LDLfFormula> &in) : arg_{in} {
   this->type_code_ = type_code_id;
   assert(is_canonical(*in));
 }

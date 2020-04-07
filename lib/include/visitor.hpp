@@ -24,33 +24,14 @@ namespace lydia {
 
 class Visitor {
 public:
-  virtual ~Visitor(){};
-
   virtual void visit(const Symbol &) = 0;
   virtual void visit(const LDLfBooleanAtom &) = 0;
   virtual void visit(const LDLfAnd &) = 0;
   virtual void visit(const LDLfOr &) = 0;
   virtual void visit(const LDLfNot &) = 0;
-};
-
-template <class Derived, class Base = Visitor> class BaseVisitor : public Base {
-
-public:
-  virtual void visit(const Symbol &x) {
-    dynamic_cast<Derived *>(this)->bvisit(x);
-  };
-  virtual void visit(const LDLfBooleanAtom &x) {
-    dynamic_cast<Derived *>(this)->bvisit(x);
-  };
-  virtual void visit(const LDLfNot &x) {
-    dynamic_cast<Derived *>(this)->bvisit(x);
-  };
-  virtual void visit(const LDLfAnd &x) {
-    dynamic_cast<Derived *>(this)->bvisit(x);
-  };
-  virtual void visit(const LDLfOr &x) {
-    dynamic_cast<Derived *>(this)->bvisit(x);
-  };
+  virtual std::string apply(const vec_basic &v) = 0;
+  virtual std::string apply(const set_formulas &v) = 0;
+  virtual std::string apply(const Basic &b) = 0;
 };
 
 } // namespace lydia

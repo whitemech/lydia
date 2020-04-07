@@ -21,7 +21,7 @@
 namespace whitemech {
 namespace lydia {
 
-class StrPrinter : public BaseVisitor<StrPrinter> {
+class StrPrinter : public Visitor {
 private:
   static const std::vector<std::string> names_;
 
@@ -29,18 +29,17 @@ protected:
   std::string str_;
 
 public:
-  void bvisit(const Basic &x);
-  void bvisit(const Symbol &x);
-  void bvisit(const LDLfBooleanAtom &x);
-  void bvisit(const LDLfAnd &x);
-  void bvisit(const LDLfOr &x);
-  void bvisit(const LDLfNot &x);
-  std::string apply(const vec_basic &v);
-  std::string apply(const set_formulas &v);
-  std::string apply(const Basic &b);
+  void visit(const Symbol &) override;
+  void visit(const LDLfBooleanAtom &) override;
+  void visit(const LDLfAnd &) override;
+  void visit(const LDLfOr &) override;
+  void visit(const LDLfNot &) override;
+  std::string apply(const vec_basic &v) override;
+  std::string apply(const set_formulas &v) override;
+  std::string apply(const Basic &b) override;
 };
 
-std::string str(const Basic &x);
+std::string to_string(const Basic &);
 
 } // namespace lydia
 } // namespace whitemech

@@ -32,7 +32,7 @@ public:
   //! Symbol Constructor
   explicit Symbol(std::string name);
 
-  inline const std::string &name() const { return name_; }
+  inline const std::string &get_name() const { return name_; }
 
   //! \return Size of the hash
   hash_t __hash__() const override;

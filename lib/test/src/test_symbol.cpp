@@ -37,8 +37,8 @@ TEST_CASE("Symbol", "[symbol]") {
   SECTION("x equal to newX") { REQUIRE(x.is_equal(newX)); }
   SECTION("y equal to newY") { REQUIRE(y.is_equal(newY)); }
 
-  SECTION("x.name") { REQUIRE(x.name() == "x"); }
-  SECTION("y.name") { REQUIRE(y.name() == "y"); }
+  SECTION("x.name") { REQUIRE(x.get_name() == "x"); }
+  SECTION("y.name") { REQUIRE(y.get_name() == "y"); }
 
   SECTION("x.hash() == x.hash()") { REQUIRE(x.hash() == x.hash()); }
   SECTION("y.hash() == y.hash()") { REQUIRE(y.hash() == y.hash()); }

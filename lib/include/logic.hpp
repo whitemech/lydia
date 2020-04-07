@@ -94,12 +94,12 @@ public:
 
 class LDLfNot : public LDLfFormula {
 private:
-  const std::shared_ptr<LDLfFormula> arg_;
+  const std::shared_ptr<const LDLfFormula> arg_;
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfNot;
   void accept(Visitor &v) const override;
-  explicit LDLfNot(const std::shared_ptr<LDLfFormula> &in);
+  explicit LDLfNot(const std::shared_ptr<const LDLfFormula> &in);
   bool is_canonical(const LDLfFormula &s);
   //! \return the hash
   hash_t __hash__() const override;
