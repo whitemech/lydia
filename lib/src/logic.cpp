@@ -149,7 +149,7 @@ const set_formulas &Or::get_container() const { return container_; }
 //    return const And(cont);
 //}
 
-Not::Not(const std::shared_ptr<LDLfFormula> &in) : arg_{std::move(in)} {
+Not::Not(const std::shared_ptr<LDLfFormula> &in) : arg_{in} {
   this->type_code_ = type_code_id;
   assert(is_canonical(*in));
 }
@@ -167,9 +167,7 @@ vec_basic Not::get_args() const {
 }
 
 bool Not::is_equal(const Basic &o) const {
-  assert(false);
-  //    return is_a<Not>(o) and eq(arg_, dynamic_cast<const Not
-  //    &>(o).get_arg());
+  return is_a<Not>(o) and eq(*arg_, dynamic_cast<const Not &>(o).get_arg());
 }
 
 int Not::compare(const Basic &o) const {

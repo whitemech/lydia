@@ -65,7 +65,23 @@ TEST_CASE("Not", "[Not]") {
   auto not_true = Not(ptr_true);
   auto ptr_false = std::make_shared<LDLfBooleanAtom>(false);
   auto not_false = Not(ptr_false);
-  //    TODO: do some tests
+
+  SECTION("test equality on same objects") {
+    REQUIRE(not_true.is_equal(not_true));
+    REQUIRE(not_false.is_equal(not_false));
+  }
+
+  SECTION("test inequality") {
+    REQUIRE(!not_true.is_equal(not_false));
+    REQUIRE(!not_false.is_equal(not_true));
+  }
+
+  SECTION("test compare") {
+    REQUIRE(not_true.compare(not_true) == 0);
+    REQUIRE(not_false.compare(not_false) == 0);
+    REQUIRE(not_true.compare(not_false) == 1);
+    REQUIRE(not_false.compare(not_true) == -1);
+  }
 }
 
 TEST_CASE("And", "[And]") {
