@@ -83,17 +83,14 @@ vec_basic And::get_args() const {
 }
 
 bool And::is_equal(const Basic &o) const {
-  assert(false);
-  //    return is_a<And>(o)
-  //           and unified_eq(container_,
-  //                          dynamic_cast<const And &>(o).get_container());
+  return is_a<And>(o) and
+         unified_eq(container_, dynamic_cast<const And &>(o).get_container());
 }
 
 int And::compare(const Basic &o) const {
-  assert(false);
-  //    assert(is_a<And>(o));
-  //    return unified_compare(container_,
-  //                           dynamic_cast<const And &>(o).get_container());
+  assert(is_a<And>(o));
+  return unified_compare(container_,
+                         dynamic_cast<const And &>(o).get_container());
 }
 
 const set_formulas &And::get_container() const { return container_; }
@@ -125,17 +122,14 @@ vec_basic Or::get_args() const {
 }
 
 bool Or::is_equal(const Basic &o) const {
-  assert(false);
-  //    return is_a<Or>(o)
-  //           and unified_eq(container_, dynamic_cast<const Or
-  //           &>(o).get_container());
+  return is_a<Or>(o) and
+         unified_eq(container_, dynamic_cast<const Or &>(o).get_container());
 }
 
 int Or::compare(const Basic &o) const {
-  assert(false);
-  //    assert(is_a<Or>(o));
-  //    return unified_compare(container_,
-  //                           dynamic_cast<const Or &>(o).get_container());
+  assert(is_a<Or>(o));
+  return unified_compare(container_,
+                         dynamic_cast<const Or &>(o).get_container());
 }
 
 bool Or::is_canonical(const set_formulas &container_) {

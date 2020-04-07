@@ -53,7 +53,7 @@ inline std::shared_ptr<const LDLfBooleanAtom> boolean(bool b) {
 
 class And : public LDLfFormula {
 private:
-  set_formulas container_;
+  const set_formulas container_;
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfAnd;
@@ -71,7 +71,7 @@ public:
 
 class Or : public LDLfFormula {
 private:
-  set_formulas container_;
+  const set_formulas container_;
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfOr;
@@ -89,7 +89,7 @@ public:
 
 class Not : public LDLfFormula {
 private:
-  std::shared_ptr<LDLfFormula> arg_;
+  const std::shared_ptr<LDLfFormula> arg_;
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfNot;

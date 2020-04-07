@@ -77,8 +77,13 @@ TEST_CASE("And", "[And]") {
       And(and_1_args); // TODO: this should raise exception: less than two
   auto and_2 = And(and_2_args); // TODO see above
   auto and_3 = And(and_3_args);
-  //  SECTION("")
+
+  SECTION("test equality on same object") { REQUIRE(and_3.is_equal(and_3)); }
+  SECTION("test compare  on same object") {
+    REQUIRE(and_3.compare(and_3) == 0);
+  }
 }
+
 TEST_CASE("Or", "[Or]") {
   set_formulas or_1_args = {};
   set_formulas or_2_args = set_formulas();
@@ -87,7 +92,9 @@ TEST_CASE("Or", "[Or]") {
   auto or_1 = Or(or_1_args); // TODO: this should raise exception: less than two
   auto or_2 = Or(or_2_args); // TODO see above
   auto or_3 = Or(or_3_args);
-  //  SECTION("")
+
+  SECTION("test equality on same object") { REQUIRE(or_3.is_equal(or_3)); }
+  SECTION("test compare  on same object") { REQUIRE(or_3.compare(or_3) == 0); }
 }
 
 } // namespace whitemech::lydia::Test

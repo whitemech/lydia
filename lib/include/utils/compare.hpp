@@ -42,8 +42,8 @@ std::vector<typename M::key_type> sorted_keys(const M &d) {
   return v;
 }
 
-template <bool B, class T = void>
-using enable_if_t = typename std::enable_if<B, T>::type;
+// template <bool B, class T = void>
+// using enable_if_t = typename std::enable_if<B, T>::type;
 
 template <typename T, typename U>
 inline bool unified_eq(const std::pair<T, U> &a, const std::pair<T, U> &b) {
@@ -72,15 +72,16 @@ inline bool unified_eq(const std::unordered_map<K, V, H, E> &a,
   return unordered_eq(a, b);
 }
 
-template <typename T, typename U,
-          typename = enable_if_t<std::is_base_of<Basic, T>::value and
-                                 std::is_base_of<Basic, U>::value>>
+// template <typename T, typename U,
+//          typename = enable_if_t<std::is_base_of<Basic, T>::value and
+//                                 std::is_base_of<Basic, U>::value>>
+template <typename T, typename U>
 inline bool unified_eq(const T &a, const U &b) {
   return eq(*a, *b);
 }
 
-template <typename T, typename = enable_if_t<std::is_arithmetic<T>::value>>
-inline bool unified_eq(const T &a, const T &b) {
+// template <typename T, typename = enable_if_t<std::is_arithmetic<T>::value>>
+template <typename T> inline bool unified_eq(const T &a, const T &b) {
   return a == b;
 }
 
@@ -127,16 +128,17 @@ inline bool unified_eq(const std::vector<T> &a, const std::vector<T> &b) {
 
 //! compare functions base
 //! \return -1, 0, 1 for a < b, a == b, a > b
-template <typename T, typename = enable_if_t<std::is_arithmetic<T>::value>>
-inline int unified_compare(const T &a, const T &b) {
+// template <typename T, typename = enable_if_t<std::is_arithmetic<T>::value>>
+template <typename T> inline int unified_compare(const T &a, const T &b) {
   if (a == b)
     return 0;
   return a < b ? -1 : 1;
 }
 
-template <typename T, typename U,
-          typename = enable_if_t<std::is_base_of<Basic, T>::value and
-                                 std::is_base_of<Basic, U>::value>>
+// template <typename T, typename U,
+//          typename = enable_if_t<std::is_base_of<Basic, T>::value and
+//                                 std::is_base_of<Basic, U>::value>>
+template <typename T, typename U>
 inline int unified_compare(const T &a, const U &b) {
   return a->__cmp__(*b);
 }
