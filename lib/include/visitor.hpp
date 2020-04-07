@@ -1,3 +1,4 @@
+#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -16,26 +17,22 @@
  */
 
 #include "basic.hpp"
+#include "logic.hpp"
 
-namespace whitemech::lydia {
+namespace whitemech {
+namespace lydia {
 
-int Basic::__cmp__(const Basic &o) const {
-  auto a = this->get_type_code();
-  auto b = o.get_type_code();
-  if (a == b) {
-    return this->compare(o);
-  } else {
-    // We return the order given by the numerical value of the TypeID enum
-    // type.
-    // The types don't need to be ordered in any given way, they just need
-    // to be ordered.
-    return a < b ? -1 : 1;
-  }
-}
+class Visitor {
+public:
+  virtual void visit(const Symbol &) = 0;
+  virtual void visit(const LDLfBooleanAtom &) = 0;
+  virtual void visit(const LDLfAnd &) = 0;
+  virtual void visit(const LDLfOr &) = 0;
+  virtual void visit(const LDLfNot &) = 0;
+  virtual std::string apply(const vec_basic &v) = 0;
+  virtual std::string apply(const set_formulas &v) = 0;
+  virtual std::string apply(const Basic &b) = 0;
+};
 
-std::string Basic::str() const {
-  // TODO: use visitor
-  return std::string();
-}
-
-} // namespace whitemech::lydia
+} // namespace lydia
+} // namespace whitemech

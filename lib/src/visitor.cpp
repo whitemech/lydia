@@ -15,27 +15,16 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "basic.hpp"
+#include "visitor.hpp"
+#include "logic.hpp"
 
-namespace whitemech::lydia {
-
-int Basic::__cmp__(const Basic &o) const {
-  auto a = this->get_type_code();
-  auto b = o.get_type_code();
-  if (a == b) {
-    return this->compare(o);
-  } else {
-    // We return the order given by the numerical value of the TypeID enum
-    // type.
-    // The types don't need to be ordered in any given way, they just need
-    // to be ordered.
-    return a < b ? -1 : 1;
-  }
-}
-
-std::string Basic::str() const {
-  // TODO: use visitor
-  return std::string();
-}
-
-} // namespace whitemech::lydia
+namespace whitemech {
+namespace lydia {
+void Symbol::accept(Visitor &v) const { v.visit(*this); }
+void LDLfBooleanAtom::accept(Visitor &v) const { v.visit(*this); }
+void LDLfOr::accept(Visitor &v) const { v.visit(*this); }
+void LDLfAnd::accept(Visitor &v) const { v.visit(*this); }
+void LDLfNot::accept(Visitor &v) const { v.visit(*this); }
+// TODO add other accept methods
+} // namespace lydia
+} // namespace whitemech

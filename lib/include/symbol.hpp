@@ -27,18 +27,19 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_Symbol;
+  void accept(Visitor &v) const override;
 
   //! Symbol Constructor
   explicit Symbol(std::string name);
 
-  inline const std::string &name() const { return name_; }
+  inline const std::string &get_name() const { return name_; }
 
   //! \return Size of the hash
   hash_t __hash__() const override;
 
   /*! Equality comparator
    * \param o - Object to be compared with
-   * \return whether the 2 objects are equal
+   * \return whether the two objects are equal
    * */
   bool is_equal(const Basic &o) const override;
   bool operator==(const Basic &o) const;

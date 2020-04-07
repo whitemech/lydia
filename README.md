@@ -1,6 +1,7 @@
 # Lydia
 
 ![Lydia CI pipeline](https://github.com/whitemech/lydia/workflows/Lydia%20CI%20pipeline/badge.svg)
+![](https://codecov.io/gh/whitemech/lydia/branch/master/graph/badge.svg)
 ![](https://img.shields.io/badge/iso-c%2B%2B17-ff69b4)
 [![](https://img.shields.io/badge/build-cmake-lightgrey)](cmake.org/)
 [![](https://img.shields.io/badge/test-Catch2-yellow)](https://github.com/catchorg/Catch2/)
@@ -89,6 +90,10 @@ In `scripts/` you can find useful scripts for development. In particular:
   
 The same scripts but with the `check` prefix lets you check whether
 fixes are needed or not.
+
+For building:
+- `build.sh`: for normal build
+- `build-dev.sh` for development build
 
 ## Docker development image
 

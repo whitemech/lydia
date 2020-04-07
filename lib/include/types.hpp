@@ -17,5 +17,28 @@
  */
 
 #include <cstdint>
+#include <exception>
+#include <memory>
+#include <set>
+#include <vector>
+
+namespace whitemech {
+namespace lydia {
+
+class Basic;
+class Symbol;
+class LDLfFormula;
 
 typedef uint64_t hash_t;
+typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
+typedef std::set<std::shared_ptr<const Basic>> set_basic;
+typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
+typedef std::set<std::shared_ptr<const LDLfFormula>> set_formulas;
+
+class not_implemented_error : public std::logic_error {
+public:
+  not_implemented_error() : std::logic_error("Function not yet implemented"){};
+};
+
+} // namespace lydia
+}; // namespace whitemech

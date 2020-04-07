@@ -23,7 +23,7 @@
 namespace whitemech {
 namespace lydia {
 
-enum TypeID { t_Symbol };
+enum TypeID { t_Symbol, t_LDLfBooleanAtom, t_LDLfAnd, t_LDLfOr, t_LDLfNot };
 
 class Visitor;
 class Symbol;
@@ -85,7 +85,8 @@ public:
    if you want general comparison.
    */
   virtual int compare(const Basic &o) const = 0;
-
+  int __cmp__(const Basic &o) const;
+  virtual void accept(Visitor &v) const = 0;
   std::string str() const;
 
   //        virtual void accept(Visitor &v) const;
@@ -104,6 +105,16 @@ inline hash_t Basic::hash() const {
     hash_ = __hash__();
   return hash_;
 }
+
+//! \return true if  `a` equal `b`
+inline bool eq(const Basic &a, const Basic &b) {
+  if (&a == &b) {
+    return true;
+  }
+  return a.is_equal(b);
+}
+//! \return true if  `a` not equal `b`
+inline bool neq(const Basic &a, const Basic &b) { return not(a.is_equal(b)); }
 
 //! Templatised version to check is_a type
 template <class T> inline bool is_a(const Basic &b) {
