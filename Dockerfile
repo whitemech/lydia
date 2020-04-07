@@ -16,6 +16,8 @@ RUN apt-get update && \
        vim \
        make \
        cmake \
+       automake \
+       libtool \
        git \
        less \
        curl \
@@ -41,5 +43,16 @@ ENV CCACHE_DIR=/build/docker_ccache
 
 USER default
 
+RUN sudo apt-get install -y flex bison
+
+WORKDIR /home/default
+
+RUN git clone https://github.com/KavrakiLab/cudd --recursive && \
+cd cudd && \
+autoreconf -i && \
+./configure --enable-silent-rules --enable-obj --enable-dddmp && \
+sudo make install
+
 WORKDIR /build
+
 ENTRYPOINT []

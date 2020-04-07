@@ -14,4 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-auto main(int /*argc*/, char * /*argv*/[]) -> int { return 0; }
+
+#include "visitor.hpp"
+#include "logic.hpp"
+
+namespace whitemech {
+namespace lydia {
+void Symbol::accept(Visitor &v) const { v.visit(*this); }
+void LDLfBooleanAtom::accept(Visitor &v) const { v.visit(*this); }
+void LDLfOr::accept(Visitor &v) const { v.visit(*this); }
+void LDLfAnd::accept(Visitor &v) const { v.visit(*this); }
+void LDLfNot::accept(Visitor &v) const { v.visit(*this); }
+// TODO add other accept methods
+} // namespace lydia
+} // namespace whitemech

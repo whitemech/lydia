@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 
 # exit script if a command fails
 set -e
@@ -17,4 +17,5 @@ make test
 # generate coverage information using lcov (that uses gcov)
 cd ..
 echo "========== Code coverage =========="
-gcovr -r . -e "third_party/*" --print-summary --html --html-details --xml -o coverage.html
+gcovr -r . -e "third_party/*" --print-summary --html --html-details -o coverage.html
+gcovr -r . -e "third_party/*" --xml -o coverage.xml
