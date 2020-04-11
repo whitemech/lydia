@@ -17,6 +17,7 @@
 
 #include "utils/strings.hpp"
 #include <algorithm>
+#include <iostream>
 
 namespace whitemech {
 namespace lydia {
@@ -34,5 +35,38 @@ std::string to_upper_case(const std::string &s) {
   std::transform(s.begin(), s.end(), result.begin(), ::toupper);
   return result;
 }
+
+bool strfind(std::string str, std::string target) {
+  size_t found = str.find(target);
+  return found != std::string::npos;
+}
+
+void print(std::vector<std::string> &v) {
+  for (size_t n = 0; n < v.size(); n++)
+    std::cout << v[n] << " ";
+  std::cout << std::endl;
+}
+
+void print_int(std::vector<int> &v) {
+  for (size_t n = 0; n < v.size(); n++)
+    std::cout << v[n] << " ";
+  std::cout << std::endl;
+}
+
+std::string state2bin(int n) {
+  std::string res;
+  while (n) {
+    res.push_back((n & 1) + '0');
+    n >>= 1;
+  }
+
+  if (res.empty())
+    res = "0";
+  else
+    std::reverse(res.begin(), res.end());
+  // std::cout<<res<<std::endl;
+  return res;
+}
+
 } // namespace lydia
 } // namespace whitemech

@@ -16,7 +16,9 @@
  */
 #include "catch.hpp"
 #include "logger.hpp"
+#include <bddx.h>
 #include <cuddObj.hh>
+#include <dfa.hpp>
 #include <iostream>
 
 namespace whitemech::lydia::Test {
@@ -35,7 +37,8 @@ TEST_CASE("Test Cudd", "[cudd]") {
 }
 
 TEST_CASE("Test DFA initialization", "[dfa]") {
-  // TODO
+  auto my_dfa = dfa::read_from_file("lib/test/src/data/mona/eventually_a.dfa");
+  //  my_dfa.bdd2dot();
 }
 
 } // namespace whitemech::lydia::Test

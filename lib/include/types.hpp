@@ -37,6 +37,7 @@ typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
 typedef std::set<std::shared_ptr<const LDLfFormula>> set_formulas;
 typedef std::vector<int> item;
 typedef std::vector<CUDD::BDD> vbdd;
+typedef std::vector<CUDD::BDD *> vbdd_ptr;
 
 class not_implemented_error : public std::logic_error {
 public:

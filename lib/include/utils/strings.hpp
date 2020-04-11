@@ -28,5 +28,13 @@ std::vector<std::string> split(const std::string &input,
 
 std::string to_upper_case(const std::string &);
 
+bool strfind(std::string str, std::string target);
+
+void print(std::vector<std::string> &v);
+
+void print_int(std::vector<int> &v);
+
+std::string state2bin(int n);
+
 } // namespace lydia
 } // namespace whitemech
