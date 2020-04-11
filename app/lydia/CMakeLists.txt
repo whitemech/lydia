@@ -25,7 +25,6 @@ set (APP_MODULE_PATH "${PROJECT_SOURCE_DIR}/app/lydia")
 set (APP_SRC_PATH  "${APP_MODULE_PATH}/src" )
 
 #set includes
-message(${THIRD_PARTY_INCLUDE_PATH})
 include_directories (${LIBRARY_INCLUDE_PATH} ${THIRD_PARTY_INCLUDE_PATH})
 
 #set sources

@@ -57,8 +57,16 @@ set (LYRA_INCLUDE_PATH "${LYRA_MODULE_PATH}/include")
 
 # -------------------------------------------------------------------------
 
+# -------------------------------------------------------------------------
+# CUDD
+
+#configure directories
+set (CUDD_INCLUDE_PATH ${CUDD_INCLUDE_DIRS})
+
+# -------------------------------------------------------------------------
+
 #set variables
-set (THIRD_PARTY_INCLUDE_PATH  ${FMT_INCLUDE_PATH} ${SPDLOG_INCLUDE_PATH} ${LYRA_INCLUDE_PATH})
+set (THIRD_PARTY_INCLUDE_PATH  ${FMT_INCLUDE_PATH} ${SPDLOG_INCLUDE_PATH} ${LYRA_INCLUDE_PATH} ${CUDD_INCLUDE_PATH})
 
 #set variables for tests
 set (TEST_THIRD_PARTY_INCLUDE_PATH  ${CATCH_INCLUDE_PATH})

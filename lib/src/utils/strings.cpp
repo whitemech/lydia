@@ -1,4 +1,3 @@
-#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -16,32 +15,24 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "cuddObj.hh"
-#include <cstdint>
-#include <exception>
-#include <memory>
-#include <set>
-#include <vector>
+#include "utils/strings.hpp"
+#include <algorithm>
 
 namespace whitemech {
 namespace lydia {
 
-class Basic;
-class Symbol;
-class LDLfFormula;
+std::vector<std::string> split(const std::string &input,
+                               const std::string &regex) {
+  // passing -1 as the submatch index parameter performs splitting
+  std::regex re(regex);
+  std::sregex_token_iterator first{input.begin(), input.end(), re, -1}, last;
+  return {first, last};
+}
 
-typedef uint64_t hash_t;
-typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
-typedef std::set<std::shared_ptr<const Basic>> set_basic;
-typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
-typedef std::set<std::shared_ptr<const LDLfFormula>> set_formulas;
-typedef std::vector<int> item;
-typedef std::vector<CUDD::BDD> vbdd;
-
-class not_implemented_error : public std::logic_error {
-public:
-  not_implemented_error() : std::logic_error("Function not yet implemented"){};
-};
-
+std::string to_upper_case(const std::string &s) {
+  std::string result(s);
+  std::transform(s.begin(), s.end(), result.begin(), ::toupper);
+  return result;
+}
 } // namespace lydia
-}; // namespace whitemech
+} // namespace whitemech

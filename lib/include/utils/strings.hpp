@@ -16,32 +16,17 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "cuddObj.hh"
-#include <cstdint>
-#include <exception>
-#include <memory>
-#include <set>
+#include <regex>
+#include <string>
 #include <vector>
 
 namespace whitemech {
 namespace lydia {
 
-class Basic;
-class Symbol;
-class LDLfFormula;
+std::vector<std::string> split(const std::string &input,
+                               const std::string &regex);
 
-typedef uint64_t hash_t;
-typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
-typedef std::set<std::shared_ptr<const Basic>> set_basic;
-typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
-typedef std::set<std::shared_ptr<const LDLfFormula>> set_formulas;
-typedef std::vector<int> item;
-typedef std::vector<CUDD::BDD> vbdd;
-
-class not_implemented_error : public std::logic_error {
-public:
-  not_implemented_error() : std::logic_error("Function not yet implemented"){};
-};
+std::string to_upper_case(const std::string &);
 
 } // namespace lydia
-}; // namespace whitemech
+} // namespace whitemech
