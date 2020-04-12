@@ -37,7 +37,7 @@ TEST_CASE("Test Cudd", "[cudd]") {
 }
 
 TEST_CASE("Test DFA initialization", "[dfa]") {
-  auto my_dfa = // NOLINT
+  auto my_dfa =                                                       // NOLINT
       dfa::read_from_file("lib/test/src/data/mona/eventually_a.dfa"); // NOLINT
   //  my_dfa->bdd2dot();
 }

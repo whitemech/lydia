@@ -83,8 +83,8 @@ public:
   std::vector<int> final_states;
   std::vector<item> smtbdd;
   CUDD::BDD finalstatesBDD;
-  std::vector<CUDD::BDD> res;
-  std::vector<CUDD::BDD> bddvars;
+  vbdd res; // TODO rename to leaves? terminals?
+  vbdd bddvars;
 
   std::vector<std::string> variables;
 

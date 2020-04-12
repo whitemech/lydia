@@ -262,7 +262,7 @@ dfa *dfa::read_from_file(std::string filename) {
   std::vector<std::string> variables;
   int nb_states = -1;
   int initial_state = -1;
-  int nodes = -1;
+  int nb_nodes = -1;
   std::vector<item> smtbdd;
   std::vector<int> final_states;
   std::vector<int> behaviour;
@@ -294,7 +294,7 @@ dfa *dfa::read_from_file(std::string filename) {
           // std::cout<<init<<std::endl;
         } else if (strfind(line, "bdd nodes")) {
           fields = split(line, " ");
-          nodes = stoi(fields[2]);
+          nb_nodes = stoi(fields[2]);
           // std::cout<<nodes<<std::endl;
         } else if (strfind(line, "final")) {
           fields = split(line, " +");
@@ -330,9 +330,14 @@ dfa *dfa::read_from_file(std::string filename) {
   }
   f.close();
 
-  assert(smtbdd.size() == nodes);
+  // consistency checks
   assert(nb_variables > 0);
   assert(nb_states > 0);
+  assert(initial_state >= 0 && initial_state < nb_states);
+  for (auto final_state : final_states)
+    assert(final_state >= 0 && final_state < nb_states);
+  assert(smtbdd.size() == nb_nodes);
+
   auto new_dfa = new dfa(nb_variables, nb_states, initial_state, final_states,
                          behaviour, smtbdd);
   return new_dfa;
