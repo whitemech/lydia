@@ -92,26 +92,65 @@ TEST_CASE("Test DFA initialization", "[dfa]") {
   whitemech::lydia::Logger::level(LogLevel::debug);
   SECTION("Initialize without Cudd manager.") {
     auto my_dfa = // NOLINT
-        dfa::read_from_file(
-            "../../../lib/test/src/data/mona/eventually_a.dfa"); // NOLINT
+        dfa::read_from_file("../../../lib/test/src/data/mona/eventually_a.dfa");
   }
 
   SECTION("Initialize with Cudd manager.") {
     auto mgr = new CUDD::Cudd();
     auto my_dfa = // NOLINT
         dfa::read_from_file("../../../lib/test/src/data/mona/eventually_a.dfa",
-                            mgr = mgr); // NOLINT
+                            mgr = mgr);
   }
-
-  //    my_dfa->bdd2dot();
 }
 
 TEST_CASE("Test bdd2dot", "[dfa]") {
   whitemech::lydia::Logger::level(LogLevel::debug);
-  auto my_dfa = // NOLINT
-      dfa::read_from_file(
-          "../../../lib/test/src/data/mona/mona_example.dfa"); // NOLINT
+  auto my_dfa =
+      dfa::read_from_file("../../../lib/test/src/data/mona/mona_example.dfa");
   my_dfa->bdd2dot();
+}
+
+TEST_CASE("Test accepts", "[dfa]") {
+
+  whitemech::lydia::Logger::level(LogLevel::debug);
+
+  interpretation empty = {0};
+  interpretation a = {1};
+  interpretation na = {0};
+
+  // for MONA DFAs, the first is ignored
+  // we will put a dummy symbol at the beginning of every trace.
+  auto t_ = trace{empty};
+  auto t_a = trace{empty, a};
+  auto t_na = trace{empty, na};
+  auto t_na_na = trace{empty, na, na};
+  auto t_na_a = trace{empty, na, a};
+  auto t_a_na = trace{empty, a, na};
+  auto t_a_a = trace{empty, a, a};
+
+  SECTION("Test F(a)") {
+    auto my_dfa =
+        dfa::read_from_file("../../../lib/test/src/data/mona/eventually_a.dfa");
+
+    REQUIRE(!my_dfa->accepts(t_));
+    REQUIRE(my_dfa->accepts(t_a));
+    REQUIRE(!my_dfa->accepts(t_na_na));
+    REQUIRE(my_dfa->accepts(t_na_a));
+    REQUIRE(my_dfa->accepts(t_a_na));
+    REQUIRE(my_dfa->accepts(t_a_a));
+  }
+
+  SECTION("Test G(a)") {
+    auto my_dfa =
+        dfa::read_from_file("../../../lib/test/src/data/mona/always_a.dfa");
+
+    REQUIRE(!my_dfa->accepts(t_));
+    REQUIRE(my_dfa->accepts(t_a));
+    REQUIRE(!my_dfa->accepts(t_na_na));
+    REQUIRE(!my_dfa->accepts(t_na_a));
+    REQUIRE(!my_dfa->accepts(t_a_na));
+    REQUIRE(my_dfa->accepts(t_a_a));
+  }
 }
 
 } // namespace whitemech::lydia::Test

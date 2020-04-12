@@ -78,18 +78,24 @@ std::string join(const std::vector<std::string> &elements, const char *delim) {
   return s.str();
 }
 
-std::string state2bin(int n) {
+std::string state2bin(int n, int nb_fill_bits) {
   std::string res;
   while (n) {
     res.push_back((n & 1) + '0');
     n >>= 1;
   }
 
+  auto current_length = res.length();
+  if (nb_fill_bits != -1 && current_length < nb_fill_bits) {
+    for (int i = 0; i < nb_fill_bits - current_length; i++) {
+      res.push_back('0');
+    }
+  }
+
   if (res.empty())
     res = "0";
   else
     std::reverse(res.begin(), res.end());
-  // std::cout<<res<<std::endl;
   return res;
 }
 

@@ -86,9 +86,9 @@ void dfa::push_states(int i, item &tmp) {
   }
 }
 
-void dfa::bdd2dot() {
+void dfa::bdd2dot(std::string directory) {
   for (int i = 0; i < root_bdds.size(); i++) {
-    std::string filename = std::to_string(i);
+    std::string filename = directory + std::to_string(i);
     dumpdot(root_bdds[i], filename);
   }
 }
@@ -358,6 +358,37 @@ dfa::dfa(CUDD::Cudd *mgr, int nb_variables, int nb_states, int initial_state,
   this->final_states = std::move(final_states);
   this->behaviour = std::move(behaviour);
   construct_bdd_from_mona(mona_bdd_nodes);
+}
+
+bool dfa::accepts(std::vector<interpretation> &word) {
+  //  we preallocate the vector for performance purposes
+  std::vector<int> extended_symbol = std::vector<int>(nb_bits + nb_variables);
+  std::vector<int> next_state = std::vector<int>(nb_bits);
+  std::vector<int> current_state = std::vector<int>(nb_bits);
+
+  //  set next state to initial state
+  auto initial_state_bits = state2bin(initial_state, nb_bits);
+  for (int i = 0; i < nb_bits; i++)
+    next_state[i] = (int)(initial_state_bits[i] == '1');
+
+  for (auto symbol : word) {
+    // populate extended symbol
+    current_state = next_state;
+    auto offset = nb_bits;
+    // set state bits part
+    for (int i = 0; i < nb_bits; i++)
+      extended_symbol[i] = current_state[i];
+    // set symbol part
+    for (int i = 0; i < nb_variables; i++)
+      extended_symbol[offset + i] = symbol[i];
+
+    // compute next state
+    int *extended_symbol_data = extended_symbol.data();
+    for (int i = 0; i < root_bdds.size(); i++) {
+      next_state[i] = (int)root_bdds[i].Eval(extended_symbol_data).IsOne();
+    }
+  }
+  return finalstatesBDD.Eval(next_state.data()).IsOne();
 }
 
 } // namespace lydia

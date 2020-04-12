@@ -73,7 +73,7 @@ public:
 
   // void initialize(string filename, string partfile, Cudd& manager);
   std::vector<item> bdd;
-  void bdd2dot();
+  void bdd2dot(std::string directory = "./");
   void dumpdot(CUDD::BDD &b, std::string filename);
   CUDD::BDD state2bdd(int s);
   int nb_bits;
@@ -84,6 +84,7 @@ public:
   int nb_variables;
   std::vector<int> final_states;
   CUDD::BDD finalstatesBDD;
+  //  Store the BDD roots - LSB order
   vbdd root_bdds;
   vbdd bddvars;
 
@@ -109,6 +110,14 @@ public:
    * @return a raw pointer to a DFA.
    */
   static dfa *read_from_file(std::string filename, CUDD::Cudd *mgr = nullptr);
+
+  /*!
+   * Check whether a word of propositional interpretations
+   * is accepted by the DFA.
+   *
+   * @return true if the word is accepted, false otherwise.
+   */
+  bool accepts(std::vector<interpretation> &word);
 
 protected:
 private:

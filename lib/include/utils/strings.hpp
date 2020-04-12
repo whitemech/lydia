@@ -44,7 +44,17 @@ std::string print_vec(std::vector<item> &v);
 std::string join(const std::vector<std::string> &elements,
                  const char *delim = ", ");
 
-std::string state2bin(int n);
+/*!
+ * Transform an integer in its binary representation.
+ *
+ * Optionally, you can provide the maximum number of bits
+ * to fill.
+ *
+ * @param n the integer to transform.
+ * @param nb_fill_bits the maximum number of MSBs to put to zero.
+ * @return the binary representation of the integer.
+ */
+std::string state2bin(int n, int nb_fill_bits = -1);
 
 } // namespace lydia
 } // namespace whitemech
