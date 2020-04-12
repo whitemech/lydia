@@ -89,7 +89,7 @@ TEST_CASE("Test Cudd", "[cudd]") {
 }
 
 TEST_CASE("Test DFA initialization", "[dfa]") {
-
+  whitemech::lydia::Logger::level(LogLevel::debug);
   SECTION("Initialize without Cudd manager.") {
     auto my_dfa = // NOLINT
         dfa::read_from_file(
@@ -97,7 +97,6 @@ TEST_CASE("Test DFA initialization", "[dfa]") {
   }
 
   SECTION("Initialize with Cudd manager.") {
-    whitemech::lydia::Logger::level(LogLevel::debug);
     auto mgr = new CUDD::Cudd();
     auto my_dfa = // NOLINT
         dfa::read_from_file("../../../lib/test/src/data/mona/eventually_a.dfa",
@@ -105,6 +104,14 @@ TEST_CASE("Test DFA initialization", "[dfa]") {
   }
 
   //    my_dfa->bdd2dot();
+}
+
+TEST_CASE("Test bdd2dot", "[dfa]") {
+  whitemech::lydia::Logger::level(LogLevel::debug);
+  auto my_dfa = // NOLINT
+      dfa::read_from_file(
+          "../../../lib/test/src/data/mona/mona_example.dfa"); // NOLINT
+  my_dfa->bdd2dot();
 }
 
 } // namespace whitemech::lydia::Test

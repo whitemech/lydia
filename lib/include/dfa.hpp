@@ -53,11 +53,11 @@ public:
    * @param initial_state the initial state
    * @param final_states the final state
    * @param behaviour the MONA behaviours
-   * @param smtbdd the BDD nodes
+   * @param mona_bdd_nodes the shared multi-terminal BDD nodes (MONA DFA)
    */
   dfa(CUDD::Cudd *mgr, int nb_variables, int nb_states, int initial_state,
       std::vector<int> final_states, std::vector<int> behaviour,
-      std::vector<item> smtbdd);
+      std::vector<item> &mona_bdd_nodes);
 
   /*
    * The same constructor as above, but the manager
@@ -65,9 +65,9 @@ public:
    */
   dfa(int nb_variables, int nb_states, int initial_state,
       std::vector<int> final_states, std::vector<int> behaviour,
-      std::vector<item> smtbdd)
+      std::vector<item> &smtbdd)
       : dfa(new CUDD::Cudd(), nb_variables, nb_states, initial_state,
-            std::move(final_states), std::move(behaviour), std::move(smtbdd)) {}
+            std::move(final_states), std::move(behaviour), smtbdd) {}
 
   static Logger logger;
 
@@ -83,9 +83,8 @@ public:
 
   int nb_variables;
   std::vector<int> final_states;
-  std::vector<item> smtbdd;
   CUDD::BDD finalstatesBDD;
-  vbdd res; // TODO rename to leaves? terminals?
+  vbdd root_bdds;
   vbdd bddvars;
 
   std::vector<std::string> variables;
@@ -113,20 +112,15 @@ public:
 
 protected:
 private:
-  int nb_nodes;
   std::vector<int> behaviour;
   //		vector<string> variables;
-  void get_bdd();
-  void recur(int index, item tmp);
-  void recur_left(int index, item tmp, int v);
-  void recur_right(int index, item tmp, int v);
   void push_states(int i, item &tmp);
   CUDD::BDD var2bddvar(int v, int index);
 
   // new bdd constructer
   std::vector<vbdd> tBDD;
-  vbdd try_get(int index);
-  void construct_bdd();
+  vbdd try_get(int index, std::vector<std::vector<int>> &mona_bdd_nodes);
+  void construct_bdd_from_mona(std::vector<std::vector<int>> mona_bdd_nodes);
 };
 
 } // namespace lydia

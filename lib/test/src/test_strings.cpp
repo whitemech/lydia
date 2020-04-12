@@ -38,4 +38,12 @@ TEST_CASE("test string utils", "[utils/strings]") {
   }
 }
 
+TEST_CASE("Test state2bin", "[utils/strings]") {
+  SECTION("0 is 0") { REQUIRE(state2bin(0) == "0"); }
+  SECTION("1 is 1") { REQUIRE(state2bin(1) == "1"); }
+  SECTION("2 is 10") { REQUIRE(state2bin(2) == "10"); }
+  SECTION("3 is 11") { REQUIRE(state2bin(3) == "11"); }
+  SECTION("4 is 100") { REQUIRE(state2bin(4) == "100"); }
+}
+
 } // namespace whitemech::lydia::Test
