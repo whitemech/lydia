@@ -16,6 +16,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "cuddObj.hh"
 #include <cstdint>
 #include <exception>
 #include <memory>
@@ -34,6 +35,11 @@ typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
 typedef std::set<std::shared_ptr<const Basic>> set_basic;
 typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
 typedef std::set<std::shared_ptr<const LDLfFormula>> set_formulas;
+typedef std::vector<int> item;
+typedef std::vector<int> interpretation;
+typedef std::vector<interpretation> trace;
+typedef std::vector<CUDD::BDD> vbdd;
+typedef std::vector<CUDD::BDD *> vbdd_ptr;
 
 class not_implemented_error : public std::logic_error {
 public:
