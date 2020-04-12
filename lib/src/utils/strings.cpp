@@ -18,6 +18,7 @@
 #include "utils/strings.hpp"
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 
 namespace whitemech {
 namespace lydia {
@@ -47,10 +48,34 @@ void print(std::vector<std::string> &v) {
   std::cout << std::endl;
 }
 
-void print_int(std::vector<int> &v) {
+std::string print_vect_int(std::vector<int> &v) {
+  std::string result = "{";
   for (size_t n = 0; n < v.size(); n++)
-    std::cout << v[n] << " ";
-  std::cout << std::endl;
+    result += std::to_string(v[n]) + ", ";
+  result += "}";
+  return result;
+}
+
+std::string print_vec(std::vector<item> &v) {
+  std::string result = "{";
+  for (size_t n = 0; n < v.size(); n++)
+    result += print_vect_int(v[n]) + ", ";
+  result += "}";
+  return result;
+}
+
+/*!
+ * Join a list of strings into a string.
+ *
+ * @param elements the list of elements
+ * @param delim the delimiter
+ * @return the joined string.
+ */
+std::string join(const std::vector<std::string> &elements, const char *delim) {
+  std::ostringstream s;
+  std::copy(elements.begin(), elements.end(),
+            std::ostream_iterator<std::string>(s, delim));
+  return s.str();
 }
 
 std::string state2bin(int n) {

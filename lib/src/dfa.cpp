@@ -22,6 +22,8 @@
 namespace whitemech {
 namespace lydia {
 
+Logger dfa::logger = Logger("dfa");
+
 // void dfa::construct_from_comp_back(vbdd &S2S, vbdd &S2P, vbdd &Svars,
 //                                   vbdd &Ivars, vbdd &Ovars,
 //                                   std::vector<int> IS) {
@@ -124,12 +126,6 @@ void dfa::push_states(int i, item &tmp) {
   }
 }
 
-void dfa::print_vec(std::vector<item> &v) {
-  for (size_t n = 0; n < v.size(); n++)
-    print_int(v[n]);
-  std::cout << std::endl;
-}
-
 void dfa::bdd2dot() {
   for (int i = 0; i < res.size(); i++) {
     std::string filename = std::to_string(i);
@@ -158,7 +154,6 @@ void dfa::construct_bdd() {
   tBDD.resize(smtbdd.size());
   for (int i = 0; i < tBDD.size(); i++) {
     if (tBDD[i].size() == 0) {
-      // dumpdot(tBDD[i][0], "test");
       vbdd b = try_get(i);
     }
   }
@@ -203,11 +198,19 @@ CUDD::BDD dfa::state2bdd(int s) {
   return b;
 }
 
+/*!
+ *
+ * Given
+ *
+ * @param index
+ * @return
+ */
 vbdd dfa::try_get(int index) {
   if (tBDD[index].size() != 0)
     return tBDD[index];
   vbdd b;
   if (smtbdd[index][0] == -1) {
+    // case when BDD node is a leaf
     int s = smtbdd[index][1];
     std::string bins = state2bin(s);
     for (int m = 0; m < nb_bits - bins.size(); m++) {
@@ -257,7 +260,7 @@ void dfa::dumpdot(CUDD::BDD &b, std::string filename) {
   fclose(fp);
 }
 
-dfa *dfa::read_from_file(std::string filename) {
+dfa *dfa::read_from_file(std::string filename, CUDD::Cudd *mgr) {
   int nb_variables = -1;
   std::vector<std::string> variables;
   int nb_states = -1;
@@ -279,23 +282,28 @@ dfa *dfa::read_from_file(std::string filename) {
         if (strfind(line, "number of variables")) {
           fields = split(line, " +");
           nb_variables = stoi(fields[3]);
-          // std::cout<<nb_variables<<std::endl;
+          whitemech::lydia::dfa::logger.debug("number of variables: {}",
+                                              nb_variables);
+          std::cout << nb_variables << std::endl;
         }
         if (strfind(line, "variables") && !strfind(line, "number")) {
           variables = split(line, " +");
-
+          variables.erase(variables.begin());
+          whitemech::lydia::dfa::logger.debug("variables: {}", join(variables));
         } else if (strfind(line, "states")) {
           fields = split(line, " +");
           nb_states = stoi(fields[1]);
-          // std::cout<<nstates<<std::endl;
+          whitemech::lydia::dfa::logger.debug("number of states: {}",
+                                              nb_states);
         } else if (strfind(line, "initial")) {
           fields = split(line, " +");
           initial_state = stoi(fields[1]);
-          // std::cout<<init<<std::endl;
+          whitemech::lydia::dfa::logger.debug("initial state: {}",
+                                              initial_state);
         } else if (strfind(line, "bdd nodes")) {
           fields = split(line, " ");
           nb_nodes = stoi(fields[2]);
-          // std::cout<<nodes<<std::endl;
+          whitemech::lydia::dfa::logger.debug("nb nodes: {}", nb_nodes);
         } else if (strfind(line, "final")) {
           fields = split(line, " +");
           int i = 1; // start at 1 to ignore "final" token
@@ -304,7 +312,8 @@ dfa *dfa::read_from_file(std::string filename) {
               final_states.push_back(i - 1);
             i = i + 1;
           }
-          // print_int(finalstates);
+          whitemech::lydia::dfa::logger.debug("final states: {}",
+                                              print_vect_int(final_states));
         } else if (strfind(line, "behaviour")) {
           fields = split(line, " +");
           int i = 1;
@@ -312,7 +321,8 @@ dfa *dfa::read_from_file(std::string filename) {
             behaviour.push_back(stoi(fields[i]));
             i = i + 1;
           }
-          // print_int(behaviour);
+          whitemech::lydia::dfa::logger.debug("behaviour: {}",
+                                              print_vect_int(behaviour));
         } else if (strfind(line, "bdd:"))
           flag = 1;
         else
@@ -338,9 +348,13 @@ dfa *dfa::read_from_file(std::string filename) {
     assert(final_state >= 0 && final_state < nb_states);
   assert(smtbdd.size() == nb_nodes);
 
-  auto new_dfa = new dfa(nb_variables, nb_states, initial_state, final_states,
-                         behaviour, smtbdd);
-  return new_dfa;
+  if (mgr == nullptr) {
+    return new dfa(nb_variables, nb_states, initial_state, final_states,
+                   behaviour, smtbdd);
+  } else {
+    return new dfa(mgr, nb_variables, nb_states, initial_state, final_states,
+                   behaviour, smtbdd);
+  }
 }
 
 dfa::dfa(CUDD::Cudd *mgr, int nb_variables, int nb_states, int initial_state,

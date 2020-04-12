@@ -17,6 +17,7 @@
  */
 
 #include "cuddObj.hh"
+#include "logger.hpp"
 #include "types.hpp"
 #include <algorithm>
 #include <cassert>
@@ -68,9 +69,10 @@ public:
       : dfa(new CUDD::Cudd(), nb_variables, nb_states, initial_state,
             std::move(final_states), std::move(behaviour), std::move(smtbdd)) {}
 
+  static Logger logger;
+
   // void initialize(string filename, string partfile, Cudd& manager);
   std::vector<item> bdd;
-  void print_vec(std::vector<item> &v);
   void bdd2dot();
   void dumpdot(CUDD::BDD &b, std::string filename);
   CUDD::BDD state2bdd(int s);
@@ -107,7 +109,7 @@ public:
    * @param filename path to the MONA DFA file.
    * @return a raw pointer to a DFA.
    */
-  static dfa *read_from_file(std::string filename);
+  static dfa *read_from_file(std::string filename, CUDD::Cudd *mgr = nullptr);
 
 protected:
 private:

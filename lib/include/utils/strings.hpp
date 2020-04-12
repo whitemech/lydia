@@ -16,8 +16,13 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+// This module contains helper functions.
+// Some functions should be improved and generalized.
+// They are inherited from other implementations.
+
 #include <regex>
 #include <string>
+#include <types.hpp>
 #include <vector>
 
 namespace whitemech {
@@ -32,7 +37,12 @@ bool strfind(std::string str, std::string target);
 
 void print(std::vector<std::string> &v);
 
-void print_int(std::vector<int> &v);
+std::string print_vect_int(std::vector<int> &v);
+
+std::string print_vec(std::vector<item> &v);
+
+std::string join(const std::vector<std::string> &elements,
+                 const char *delim = ", ");
 
 std::string state2bin(int n);
 
