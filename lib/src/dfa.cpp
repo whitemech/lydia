@@ -258,11 +258,11 @@ void dfa::dumpdot(CUDD::BDD &b, std::string filename) {
 }
 
 dfa *dfa::read_from_file(std::string filename) {
-  int nb_variables;
+  int nb_variables = -1;
   std::vector<std::string> variables;
-  int nb_states;
-  int initial_state;
-  int nodes;
+  int nb_states = -1;
+  int initial_state = -1;
+  int nodes = -1;
   std::vector<item> smtbdd;
   std::vector<int> final_states;
   std::vector<int> behaviour;
@@ -330,16 +330,18 @@ dfa *dfa::read_from_file(std::string filename) {
   }
   f.close();
 
+  assert(smtbdd.size() == nodes);
+  assert(nb_variables > 0);
+  assert(nb_states > 0);
   auto new_dfa = new dfa(nb_variables, nb_states, initial_state, final_states,
                          behaviour, smtbdd);
   return new_dfa;
 }
 
-dfa::dfa(int nb_variables, int nb_states, int initial_state,
+dfa::dfa(CUDD::Cudd *mgr, int nb_variables, int nb_states, int initial_state,
          std::vector<int> final_states, std::vector<int> behaviour,
          std::vector<item> smtbdd)
-    : mgr{new CUDD::Cudd()} {
-  ;
+    : mgr{mgr} {
   this->nb_variables = nb_variables;
   this->nb_states = nb_states;
   this->nb_bits = state2bin(nb_states - 1).length();
@@ -347,6 +349,7 @@ dfa::dfa(int nb_variables, int nb_states, int initial_state,
   this->final_states = std::move(final_states);
   this->behaviour = std::move(behaviour);
   this->smtbdd = std::move(smtbdd);
+  this->nb_nodes = this->smtbdd.size();
   construct_bdd();
 }
 
