@@ -29,9 +29,6 @@ public:
   virtual void visit(const LDLfAnd &) = 0;
   virtual void visit(const LDLfOr &) = 0;
   virtual void visit(const LDLfNot &) = 0;
-  virtual std::string apply(const vec_basic &v) = 0;
-  virtual std::string apply(const set_formulas &v) = 0;
-  virtual std::string apply(const Basic &b) = 0;
 };
 
 } // namespace lydia

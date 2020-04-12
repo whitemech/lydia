@@ -38,4 +38,6 @@ std::string Basic::str() const {
   return std::string();
 }
 
+bool Basic::operator<(const Basic &b) const { return this->compare(b); }
+
 } // namespace whitemech::lydia

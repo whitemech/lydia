@@ -16,30 +16,13 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "visitor.hpp"
+#include "dfa.hpp"
+#include "logic.hpp"
 
 namespace whitemech {
 namespace lydia {
 
-class StrPrinter : public Visitor {
-private:
-  static const std::vector<std::string> names_;
+dfa *to_dfa(LDLfFormula &formula);
 
-protected:
-  std::string result;
-
-public:
-  void visit(const Symbol &) override;
-  void visit(const LDLfBooleanAtom &) override;
-  void visit(const LDLfAnd &) override;
-  void visit(const LDLfOr &) override;
-  void visit(const LDLfNot &) override;
-  std::string apply(const vec_basic &v);
-  std::string apply(const set_formulas &v);
-  std::string apply(const Basic &b);
-};
-
-std::string to_string(const Basic &);
-
-} // namespace lydia
+}
 } // namespace whitemech

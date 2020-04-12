@@ -23,7 +23,8 @@ namespace whitemech {
 namespace lydia {
 
 class LDLfFormula : public Basic {
-  //      virtual const LDLfFormula logical_not() const;
+public:
+  virtual std::shared_ptr<const LDLfFormula> logical_not() const = 0;
 };
 
 // Temporal True and False
@@ -39,12 +40,12 @@ public:
   //! \return the hash
   hash_t __hash__() const override;
   bool get_value() const;
-  virtual vec_basic get_args() const;
+  virtual vec_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
   bool operator==(const Basic &o) const;
   bool operator!=(const Basic &o) const;
   int compare(const Basic &o) const override;
-  const LDLfFormula &logical_not() const;
+  std::shared_ptr<const LDLfFormula> logical_not() const override;
 };
 
 extern const std::shared_ptr<const LDLfBooleanAtom> boolTrue;
@@ -56,45 +57,45 @@ inline std::shared_ptr<const LDLfBooleanAtom> boolean(bool b) {
 
 class LDLfAnd : public LDLfFormula {
 private:
-  const set_formulas container_;
+  set_formulas container_;
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfAnd;
   void accept(Visitor &v) const override;
-  explicit LDLfAnd(set_formulas s);
+  explicit LDLfAnd(const set_formulas s);
   bool is_canonical(const set_formulas &container_);
   //! \return the hash
   hash_t __hash__() const override;
-  virtual vec_basic get_args() const;
+  virtual vec_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
   //! Structural equality comparator
   int compare(const Basic &o) const override;
   const set_formulas &get_container() const;
-  //    virtual const LDLfFormula logical_not() const;  TODO: Add it
+  std::shared_ptr<const LDLfFormula> logical_not() const override;
 };
 
 class LDLfOr : public LDLfFormula {
 private:
-  const set_formulas container_;
+  set_formulas container_;
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfOr;
   void accept(Visitor &v) const override;
-  explicit LDLfOr(set_formulas s);
+  explicit LDLfOr(const set_formulas s);
   bool is_canonical(const set_formulas &container_);
   //! \return the hash
   hash_t __hash__() const override;
-  virtual vec_basic get_args() const;
+  virtual vec_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
   //! Structural equality comparator
   int compare(const Basic &o) const override;
   const set_formulas &get_container() const;
-  //    virtual const LDLfFormula logical_not() const;
+  std::shared_ptr<const LDLfFormula> logical_not() const override;
 };
 
 class LDLfNot : public LDLfFormula {
 private:
-  const std::shared_ptr<const LDLfFormula> arg_;
+  std::shared_ptr<const LDLfFormula> arg_;
 
 public:
   const static TypeID type_code_id = TypeID::t_LDLfNot;
@@ -108,7 +109,7 @@ public:
   //! Structural equality comparator
   int compare(const Basic &o) const override;
   const LDLfFormula &get_arg() const;
-  //    virtual const LDLfFormula logical_not() const;
+  std::shared_ptr<const LDLfFormula> logical_not() const override;
 };
 
 } // namespace lydia

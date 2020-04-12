@@ -21,25 +21,21 @@
 namespace whitemech {
 namespace lydia {
 
-class StrPrinter : public Visitor {
+class NNFTransformer : public Visitor {
 private:
-  static const std::vector<std::string> names_;
-
 protected:
-  std::string result;
+  std::shared_ptr<LDLfFormula> result;
 
 public:
-  void visit(const Symbol &) override;
+  void visit(const Symbol &) override{};
   void visit(const LDLfBooleanAtom &) override;
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
-  std::string apply(const vec_basic &v);
-  std::string apply(const set_formulas &v);
-  std::string apply(const Basic &b);
+  std::shared_ptr<LDLfFormula> apply(const LDLfFormula &b);
 };
 
-std::string to_string(const Basic &);
+std::shared_ptr<LDLfFormula> to_nnf(const LDLfFormula &);
 
 } // namespace lydia
 } // namespace whitemech
