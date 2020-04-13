@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
@@ -28,6 +29,7 @@ namespace whitemech {
 namespace lydia {
 
 class Basic;
+class LDLfFormula;
 
 // Takes an unordered map of type M with key type K and returns a vector of K
 // ordered by C.
@@ -143,8 +145,6 @@ inline int unified_compare(const T &a, const U &b) {
   return a->__cmp__(*b);
 }
 
-template <class T> inline int ordered_compare(const T &A, const T &B);
-
 template <typename T>
 inline int unified_compare(const std::vector<T> &a, const std::vector<T> &b) {
   return ordered_compare(a, b);
@@ -198,6 +198,8 @@ template <class T> inline int ordered_compare(const T &A, const T &B) {
   }
   return 0;
 }
+
+template <class T> inline int ordered_compare(const T &A, const T &B);
 
 template <class M, typename C = std::less<typename M::key_type>>
 inline int unordered_compare(const M &a, const M &b) {

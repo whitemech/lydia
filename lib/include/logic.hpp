@@ -62,7 +62,7 @@ private:
 public:
   const static TypeID type_code_id = TypeID::t_LDLfAnd;
   void accept(Visitor &v) const override;
-  explicit LDLfAnd(const set_formulas s);
+  explicit LDLfAnd(set_formulas s);
   bool is_canonical(const set_formulas &container_);
   //! \return the hash
   hash_t __hash__() const override;
@@ -81,7 +81,7 @@ private:
 public:
   const static TypeID type_code_id = TypeID::t_LDLfOr;
   void accept(Visitor &v) const override;
-  explicit LDLfOr(const set_formulas s);
+  explicit LDLfOr(set_formulas s);
   bool is_canonical(const set_formulas &container_);
   //! \return the hash
   hash_t __hash__() const override;
@@ -111,6 +111,21 @@ public:
   const LDLfFormula &get_arg() const;
   std::shared_ptr<const LDLfFormula> logical_not() const override;
 };
+
+inline bool ordered_eq_containers(const set_formulas &A,
+                                  const set_formulas &B) {
+  // Can't be equal if # of entries differ:
+  if (A.size() != B.size())
+    return false;
+  // Loop over elements in "a" and "b":
+  auto a = A.begin();
+  auto b = B.begin();
+  for (; a != A.end(); ++a, ++b) {
+    if (not(*a)->is_equal(**b))
+      return false; // values not equal
+  }
+  return true;
+}
 
 } // namespace lydia
 } // namespace whitemech

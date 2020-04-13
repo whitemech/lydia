@@ -17,6 +17,7 @@
 #include "catch.hpp"
 #include "logger.hpp"
 #include "logic.hpp"
+#include <utils/compare.hpp>
 
 namespace whitemech::lydia::Test {
 
@@ -107,9 +108,39 @@ TEST_CASE("Or", "[Or]") {
       LDLfOr(or_1_args); // TODO: this should raise exception: less than two
   auto or_2 = LDLfOr(or_2_args); // TODO see above
   auto or_3 = LDLfOr(or_3_args);
+  auto or_3_p = LDLfOr(or_3_args);
 
   SECTION("test equality on same object") { REQUIRE(or_3.is_equal(or_3)); }
+  SECTION("test equality on different object") {
+    REQUIRE(or_3.is_equal(or_3_p));
+  }
   SECTION("test compare  on same object") { REQUIRE(or_3.compare(or_3) == 0); }
+}
+
+TEST_CASE("Logical not", "[logical_not]") {
+  auto tt = std::make_shared<LDLfBooleanAtom>(true);
+  auto ff = std::make_shared<LDLfBooleanAtom>(false);
+
+  REQUIRE(tt->logical_not()->is_equal(*ff));
+  REQUIRE(ff->logical_not()->is_equal(*tt));
+
+  SECTION("De Morgan's Law and-or") {
+    set_formulas ffs = {ff, ff};
+    set_formulas tts = {tt, tt};
+    auto and_ = std::make_shared<LDLfAnd>(ffs);
+    auto actual_or = and_->logical_not();
+    auto expected_or = std::make_shared<LDLfOr>(tts);
+    REQUIRE(actual_or->is_equal(*expected_or));
+  }
+
+  SECTION("De Morgan's Law or-and") {
+    set_formulas ffs = {ff, ff};
+    set_formulas tts = {tt, tt};
+    auto or_ = std::make_shared<LDLfOr>(ffs);
+    auto expected_and = or_->logical_not();
+    auto actual_and = std::make_shared<LDLfAnd>(tts);
+    REQUIRE(actual_and->is_equal(*expected_and));
+  }
 }
 
 } // namespace whitemech::lydia::Test

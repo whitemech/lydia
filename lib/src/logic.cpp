@@ -91,8 +91,8 @@ vec_formulas LDLfAnd::get_args() const {
 
 bool LDLfAnd::is_equal(const Basic &o) const {
   return is_a<LDLfAnd>(o) and
-         unified_eq(container_,
-                    dynamic_cast<const LDLfAnd &>(o).get_container());
+         ordered_eq_containers(
+             container_, dynamic_cast<const LDLfAnd &>(o).get_container());
 }
 
 int LDLfAnd::compare(const Basic &o) const {
@@ -130,8 +130,8 @@ vec_formulas LDLfOr::get_args() const {
 
 bool LDLfOr::is_equal(const Basic &o) const {
   return is_a<LDLfOr>(o) and
-         unified_eq(container_,
-                    dynamic_cast<const LDLfOr &>(o).get_container());
+         ordered_eq_containers(container_,
+                               dynamic_cast<const LDLfOr &>(o).get_container());
 }
 
 int LDLfOr::compare(const Basic &o) const {
