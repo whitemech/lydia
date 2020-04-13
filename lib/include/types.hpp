@@ -29,6 +29,9 @@ namespace lydia {
 class Basic;
 class Symbol;
 class LDLfFormula;
+class NFAState;
+class DFAState;
+class DFATransition;
 
 struct SharedComparator {
   template <typename T>
@@ -44,6 +47,13 @@ typedef std::set<std::shared_ptr<const Basic>, SharedComparator> set_basic;
 typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
 typedef std::set<std::shared_ptr<const LDLfFormula>, SharedComparator>
     set_formulas;
+typedef std::set<std::shared_ptr<const NFAState>, SharedComparator>
+    set_nfa_states;
+typedef std::set<std::shared_ptr<const DFAState>, SharedComparator>
+    set_dfa_states;
+typedef std::tuple<const DFAState &, std::set<std::string>, const DFAState &>
+    tuple_dfa_transition;
+typedef std::set<std::shared_ptr<const DFATransition>> set_dfa_transitions;
 typedef std::vector<int> item;
 typedef std::vector<int> interpretation;
 typedef std::vector<interpretation> trace;

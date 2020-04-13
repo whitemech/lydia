@@ -91,13 +91,13 @@ TEST_CASE("Test Cudd", "[cudd]") {
 TEST_CASE("Test DFA initialization", "[dfa]") {
   whitemech::lydia::Logger::level(LogLevel::debug);
   SECTION("Initialize without Cudd manager.") {
-    auto my_dfa = // NOLINT
+    auto my_dfa =
         dfa::read_from_file("../../../lib/test/src/data/mona/eventually_a.dfa");
   }
 
   SECTION("Initialize with Cudd manager.") {
     auto mgr = new CUDD::Cudd();
-    auto my_dfa = // NOLINT
+    auto my_dfa =
         dfa::read_from_file("../../../lib/test/src/data/mona/eventually_a.dfa",
                             mgr = mgr);
   }

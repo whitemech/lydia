@@ -24,8 +24,16 @@ namespace lydia {
 
 dfa *to_dfa(LDLfFormula &formula) {
   auto formula_nnf = to_nnf(formula);
+  set_formulas initial_state_formulas{formula_nnf};
+  set_nfa_states nfa_states{
+      std::make_shared<NFAState>(set_formulas{formula_nnf})};
 
-  //  auto initial_state = set::
+  //  initialize data structure of the final DFA
+  std::shared_ptr<DFAState> initial_state =
+      std::make_shared<DFAState>(nfa_states);
+  set_dfa_states final_states;
+  set_dfa_states states{{initial_state}};
+  set_dfa_transitions transitions;
 
   return nullptr;
 }

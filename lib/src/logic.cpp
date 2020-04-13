@@ -18,9 +18,6 @@
 #include "logic.hpp"
 #include "utils/compare.hpp"
 #include <cassert>
-#include <iostream>
-#include <utility>
-#include <utils/print.hpp>
 
 namespace whitemech {
 namespace lydia {
@@ -63,9 +60,6 @@ int LDLfBooleanAtom::compare(const Basic &o) const {
 std::shared_ptr<const LDLfFormula> LDLfBooleanAtom::logical_not() const {
   return boolean(not this->get_value());
 }
-
-bool LDLfBooleanAtom::operator==(const Basic &o) const { return is_equal(o); }
-bool LDLfBooleanAtom::operator!=(const Basic &o) const { return !is_equal(o); }
 
 LDLfAnd::LDLfAnd(const set_formulas &s) : container_{s} {
   this->type_code_ = type_code_id;

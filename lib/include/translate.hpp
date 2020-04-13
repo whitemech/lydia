@@ -18,6 +18,10 @@
 
 #include "dfa.hpp"
 #include "logic.hpp"
+#include "types.hpp"
+#include <memory>
+#include <utility>
+#include <utils/compare.hpp>
 
 namespace whitemech {
 namespace lydia {
@@ -38,10 +42,30 @@ dfa *to_dfa(LDLfFormula &formula);
  (2018).
 
  */
-class NFAState {
+class NFAState : public Basic {
 public:
-  set_formulas &formulas;
-  explicit NFAState(set_formulas &formulas) : formulas{formulas} {};
+  const static TypeID type_code_id = TypeID::t_NFAState;
+  const set_formulas &formulas;
+  explicit NFAState(const set_formulas &formulas) : formulas{formulas} {};
+
+  void accept(Visitor &v) const override{};
+  hash_t __hash__() const override {
+    hash_t seed = type_code_id;
+    for (const auto &a : formulas)
+      hash_combine<Basic>(seed, *a);
+    return seed;
+  }
+
+  int compare(const Basic &rhs) const {
+    return is_a<NFAState>(rhs) and
+           unified_compare(this->formulas,
+                           dynamic_cast<const NFAState &>(rhs).formulas);
+  };
+  bool is_equal(const Basic &rhs) const {
+    return is_a<NFAState>(rhs) and
+           unified_eq(this->formulas,
+                      dynamic_cast<const NFAState &>(rhs).formulas);
+  };
 };
 
 /*!
@@ -56,9 +80,54 @@ public:
  *     Theory and implementation." Master's thesis. DIAG, Sapienza Univ. Rome
  * (2018).
  */
-class DFAState {
+class DFAState : public Basic {
 public:
-  DFAState();
+  const static TypeID type_code_id = TypeID::t_DFAState;
+  const set_nfa_states &states;
+  explicit DFAState(const set_nfa_states &states) : states{states} {};
+
+  void accept(Visitor &v) const override{};
+  hash_t __hash__() const override {
+    hash_t seed = type_code_id;
+    for (const auto &a : states)
+      hash_combine<Basic>(seed, *a);
+    return seed;
+  }
+
+  int compare(const Basic &rhs) const {
+    return is_a<DFAState>(rhs) and
+           unified_compare(this->states,
+                           dynamic_cast<const DFAState &>(rhs).states);
+  };
+  bool is_equal(const Basic &rhs) const {
+    return is_a<DFAState>(rhs) and
+           unified_eq(this->states, dynamic_cast<const DFAState &>(rhs).states);
+  };
+};
+
+class DFATransition : public Basic {
+public:
+  const static TypeID type_code_id = TypeID::t_DFATransition;
+  tuple_dfa_transition transition;
+  DFATransition(const DFAState &a, std::set<std::string> s, const DFAState &b)
+      : transition{std::tie(a, s, b)} {};
+
+  void accept(Visitor &v) const override{};
+  hash_t __hash__() const override {
+    // TODO
+    return 0;
+  }
+
+  int compare(const Basic &rhs) const {
+    return is_a<DFATransition>(rhs) and
+           unified_compare(this->transition,
+                           dynamic_cast<const DFATransition &>(rhs).transition);
+  };
+  bool is_equal(const Basic &rhs) const {
+    return is_a<DFATransition>(rhs) and
+           unified_eq(this->transition,
+                      dynamic_cast<const DFATransition &>(rhs).transition);
+  };
 };
 
 } // namespace lydia

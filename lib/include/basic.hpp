@@ -16,14 +16,23 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <functional>
-
 #include "types.hpp"
 
 namespace whitemech {
 namespace lydia {
 
-enum TypeID { t_Symbol, t_LDLfBooleanAtom, t_LDLfAnd, t_LDLfOr, t_LDLfNot };
+//  Type ID for all the concrete classes
+//  that inherit from Basic.
+enum TypeID {
+  t_Symbol,
+  t_LDLfBooleanAtom,
+  t_LDLfAnd,
+  t_LDLfOr,
+  t_LDLfNot,
+  t_NFAState,
+  t_DFAState,
+  t_DFATransition,
+};
 
 class Visitor;
 class Symbol;
@@ -58,14 +67,14 @@ public:
 
   // Equality operator
   virtual bool is_equal(const Basic &o) const = 0;
+  bool operator==(const Basic &o) const { return this->is_equal(o); };
+  bool operator!=(const Basic &o) const { return !(*this == o); };
 
   //! Comparator operator
-  inline bool operator<(const Basic &rhs) const {
-    return this->__cmp__(rhs) == -1;
-  };
-  inline bool operator>(const Basic &rhs) const { return rhs < *this; }
-  inline bool operator<=(const Basic &rhs) const { return !(*this > rhs); }
-  inline bool operator>=(const Basic &rhs) const { return !(*this < rhs); }
+  bool operator<(const Basic &rhs) const { return this->__cmp__(rhs) == -1; };
+  bool operator>(const Basic &rhs) const { return rhs < *this; }
+  bool operator<=(const Basic &rhs) const { return !(*this > rhs); }
+  bool operator>=(const Basic &rhs) const { return !(*this < rhs); }
 
   /*!
   Calculates the hash of the given Lydia class.
