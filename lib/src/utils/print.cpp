@@ -54,7 +54,7 @@ void StrPrinter::visit(const LDLfOr &x) {
 
 void StrPrinter::visit(const LDLfNot &x) {
   std::ostringstream s;
-  s << "Not(" << apply(x.get_arg()) << ")";
+  s << "Not(" << apply(*x.get_arg()) << ")";
   result = s.str();
 }
 

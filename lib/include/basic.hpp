@@ -26,12 +26,16 @@ namespace lydia {
 enum TypeID {
   t_Symbol,
   t_LDLfBooleanAtom,
+  t_LDLfBooleanTrue,
+  t_LDLfBooleanFalse,
   t_LDLfAnd,
   t_LDLfOr,
   t_LDLfNot,
   t_NFAState,
   t_DFAState,
   t_DFATransition,
+  t_PropositionalLogicTrue,
+  t_PropositionalLogicFalse,
 };
 
 class Visitor;

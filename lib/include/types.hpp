@@ -58,7 +58,6 @@ typedef std::vector<int> item;
 typedef std::vector<int> interpretation;
 typedef std::vector<interpretation> trace;
 typedef std::vector<CUDD::BDD> vbdd;
-typedef std::vector<CUDD::BDD *> vbdd_ptr;
 
 class not_implemented_error : public std::logic_error {
 public:

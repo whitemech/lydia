@@ -45,7 +45,7 @@ void NNFTransformer::visit(const LDLfOr &x) {
 }
 
 void NNFTransformer::visit(const LDLfNot &x) {
-  auto new_formula = apply(*x.logical_not());
+  auto new_formula = apply(*x.get_arg()->logical_not());
   result = new_formula;
 }
 

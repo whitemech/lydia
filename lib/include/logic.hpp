@@ -100,7 +100,7 @@ public:
   virtual vec_basic get_args() const;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
-  const LDLfFormula &get_arg() const;
+  std::shared_ptr<const LDLfFormula> get_arg() const;
   std::shared_ptr<const LDLfFormula> logical_not() const override;
 };
 

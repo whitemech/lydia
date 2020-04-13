@@ -32,10 +32,7 @@ LDLfBooleanAtom::LDLfBooleanAtom(bool b) : b_{b} {
 }
 
 hash_t LDLfBooleanAtom::__hash__() const {
-  hash_t seed = TypeID::t_LDLfBooleanAtom;
-  if (b_)
-    ++seed;
-  return seed;
+  return b_ ? TypeID::t_LDLfBooleanTrue : TypeID::t_LDLfBooleanFalse;
 }
 
 bool LDLfBooleanAtom::get_value() const { return b_; }
@@ -169,12 +166,12 @@ vec_basic LDLfNot::get_args() const {
 
 bool LDLfNot::is_equal(const Basic &o) const {
   return is_a<LDLfNot>(o) and
-         eq(*arg_, dynamic_cast<const LDLfNot &>(o).get_arg());
+         eq(*arg_, *dynamic_cast<const LDLfNot &>(o).get_arg());
 }
 
 int LDLfNot::compare(const Basic &o) const {
   assert(is_a<LDLfNot>(o));
-  return arg_->__cmp__(dynamic_cast<const LDLfNot &>(o).get_arg());
+  return arg_->__cmp__(*dynamic_cast<const LDLfNot &>(o).get_arg());
 }
 
 bool LDLfNot::is_canonical(const LDLfFormula &in) {
@@ -182,10 +179,10 @@ bool LDLfNot::is_canonical(const LDLfFormula &in) {
   return true;
 }
 
-const LDLfFormula &LDLfNot::get_arg() const { return *arg_; }
+std::shared_ptr<const LDLfFormula> LDLfNot::get_arg() const { return arg_; }
 
 std::shared_ptr<const LDLfFormula> LDLfNot::logical_not() const {
-  return this->get_arg().logical_not();
+  return this->get_arg();
 }
 
 } // namespace lydia

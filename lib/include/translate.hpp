@@ -26,6 +26,15 @@
 namespace whitemech {
 namespace lydia {
 
+/*!
+ *
+ * Translate an LDLf formula into an DFA.
+ *
+ * This is one of the main procedures of the library.
+ *
+ * @param formula the LDLf formula.
+ * @return the equivalent DFA.
+ */
 dfa *to_dfa(LDLfFormula &formula);
 
 /*!
@@ -56,12 +65,12 @@ public:
     return seed;
   }
 
-  int compare(const Basic &rhs) const {
+  int compare(const Basic &rhs) const override {
     return is_a<NFAState>(rhs) and
            unified_compare(this->formulas,
                            dynamic_cast<const NFAState &>(rhs).formulas);
   };
-  bool is_equal(const Basic &rhs) const {
+  bool is_equal(const Basic &rhs) const override {
     return is_a<NFAState>(rhs) and
            unified_eq(this->formulas,
                       dynamic_cast<const NFAState &>(rhs).formulas);
@@ -94,12 +103,12 @@ public:
     return seed;
   }
 
-  int compare(const Basic &rhs) const {
+  int compare(const Basic &rhs) const override {
     return is_a<DFAState>(rhs) and
            unified_compare(this->states,
                            dynamic_cast<const DFAState &>(rhs).states);
   };
-  bool is_equal(const Basic &rhs) const {
+  bool is_equal(const Basic &rhs) const override {
     return is_a<DFAState>(rhs) and
            unified_eq(this->states, dynamic_cast<const DFAState &>(rhs).states);
   };
@@ -118,12 +127,12 @@ public:
     return 0;
   }
 
-  int compare(const Basic &rhs) const {
+  int compare(const Basic &rhs) const override {
     return is_a<DFATransition>(rhs) and
            unified_compare(this->transition,
                            dynamic_cast<const DFATransition &>(rhs).transition);
   };
-  bool is_equal(const Basic &rhs) const {
+  bool is_equal(const Basic &rhs) const override {
     return is_a<DFATransition>(rhs) and
            unified_eq(this->transition,
                       dynamic_cast<const DFATransition &>(rhs).transition);
