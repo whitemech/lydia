@@ -18,10 +18,17 @@
 
 #include "basic.hpp"
 #include "logic.hpp"
-#include "propositional_logic.hpp"
 
 namespace whitemech {
 namespace lydia {
+
+class PropositionalTrue;
+class PropositionalFalse;
+class PropositionalAtom;
+class QuotedFormula;
+class PropositionalAnd;
+class PropositionalOr;
+class PropositionalNot;
 
 class Visitor {
 public:
@@ -31,8 +38,11 @@ public:
   virtual void visit(const LDLfOr &){};
   virtual void visit(const LDLfNot &){};
 
+  // callbacks for propositional logic
   virtual void visit(const PropositionalTrue &){};
   virtual void visit(const PropositionalFalse &){};
+  virtual void visit(const PropositionalAtom &){};
+  virtual void visit(const QuotedFormula &){};
   virtual void visit(const PropositionalAnd &){};
   virtual void visit(const PropositionalOr &){};
   virtual void visit(const PropositionalNot &){};

@@ -39,6 +39,7 @@ enum TypeID {
   t_PropositionalAnd,
   t_PropositionalOr,
   t_PropositionalNot,
+  t_QuotedFormula,
 };
 
 class Visitor;

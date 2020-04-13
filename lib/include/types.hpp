@@ -52,10 +52,10 @@ typedef std::vector<std::shared_ptr<const PropositionalFormula>>
     vec_prop_formulas;
 typedef std::set<std::shared_ptr<const PropositionalFormula>, SharedComparator>
     set_prop_formulas;
-typedef std::set<std::shared_ptr<const NFAState>, SharedComparator>
-    set_nfa_states;
-typedef std::set<std::shared_ptr<const DFAState>, SharedComparator>
-    set_dfa_states;
+typedef std::shared_ptr<const NFAState> nfa_state_ptr;
+typedef std::shared_ptr<const DFAState> dfa_state_ptr;
+typedef std::set<nfa_state_ptr, SharedComparator> set_nfa_states;
+typedef std::set<dfa_state_ptr, SharedComparator> set_dfa_states;
 typedef std::tuple<const DFAState &, std::set<std::string>, const DFAState &>
     tuple_dfa_transition;
 typedef std::set<std::shared_ptr<const DFATransition>> set_dfa_transitions;

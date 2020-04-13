@@ -20,6 +20,16 @@
 namespace whitemech {
 namespace lydia {
 
+hash_t QuotedFormula::__hash__() const { return this->formula->__hash__(); }
+
+int QuotedFormula::compare(const Basic &rhs) const {
+  return this->formula->compare(rhs);
+}
+
+bool QuotedFormula::is_equal(const Basic &rhs) const {
+  return this->formula->is_equal(rhs);
+}
+
 void DeltaVisitor::visit(const LDLfBooleanAtom &x) {
   if (x.get_value())
     result = std::make_shared<PropositionalTrue>();

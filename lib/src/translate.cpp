@@ -19,25 +19,37 @@
 #include <dfa.hpp>
 #include <nnf.hpp>
 #include <translate.hpp>
+#include <utility>
 
 namespace whitemech {
 namespace lydia {
 
 dfa *to_dfa(LDLfFormula &formula) {
+  //  build initial state of the DFA.
   auto formula_nnf = to_nnf(formula);
   set_formulas initial_state_formulas{formula_nnf};
-  set_nfa_states nfa_states{
-      std::make_shared<NFAState>(set_formulas{formula_nnf})};
+  dfa_state_ptr initial_state =
+      std::make_shared<DFAState>(initial_state_formulas);
 
   //  initialize data structure of the final DFA
-  std::shared_ptr<DFAState> initial_state =
-      std::make_shared<DFAState>(nfa_states);
   set_dfa_states final_states;
   set_dfa_states states{{initial_state}};
   set_dfa_transitions transitions;
 
   //  Check if the initial state is final
+  if (initial_state->is_final()) {
+    final_states.insert(initial_state);
+  }
 
+  // find all the atoms of the formula.
+
+  // while the set of states or the transition function do not change
+  size_t nb_states = 0;
+  size_t nb_transitions = 0;
+  while (nb_states != states.size() && nb_transitions != transitions.size()) {
+    nb_states = states.size();
+    nb_transitions = transitions.size();
+  }
   return nullptr;
 }
 
@@ -62,16 +74,22 @@ hash_t NFAState::__hash__() const {
 
 bool NFAState::is_final() const {
   // This will be put in conjunction with other formulas
-  auto delta_epsilon_result = PropositionalTrue();
+  vec_prop_formulas args{std::make_shared<PropositionalTrue>()};
   for (const auto &formula : formulas) {
-    auto delta_epsilon_result = delta(*formula, true);
-    /*TODO instead of equality, we could implement
-     * a function like "logical_equivalence".
-     */
+    args.push_back(delta(*formula, true));
   }
-  //  return delta_epsilon_result->is_equal(PropositionaTrue());
-  return true;
+  auto conjunction =
+      PropositionalAnd(set_prop_formulas(args.begin(), args.end()));
+  /*TODO the following line WON'T WORK.
+   * Instead of equality, we could implement
+   * a function like "logical_equivalence".
+   */
+  return conjunction.is_equal(PropositionalTrue());
 }
+
+DFAState::DFAState(set_nfa_states states) : states{std::move(states)} {}
+DFAState::DFAState(const set_formulas &formulas)
+    : states{set_nfa_states{std::make_shared<NFAState>(formulas)}} {};
 
 hash_t DFAState::__hash__() const {
   hash_t seed = type_code_id;
@@ -91,7 +109,13 @@ bool DFAState::is_equal(const Basic &rhs) const {
          unified_eq(this->states, dynamic_cast<const DFAState &>(rhs).states);
 }
 
-bool DFAState::is_final() const { return false; };
+bool DFAState::is_final() const {
+  for (const auto &nfa_state : states) {
+    if (nfa_state->is_final())
+      return true;
+  }
+  return false;
+}
 
 bool DFATransition::is_equal(const Basic &rhs) const {
   return is_a<DFATransition>(rhs) and

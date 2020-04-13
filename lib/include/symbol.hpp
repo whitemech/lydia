@@ -42,8 +42,6 @@ public:
    * \return whether the two objects are equal
    * */
   bool is_equal(const Basic &o) const override;
-  bool operator==(const Basic &o) const;
-  bool operator!=(const Basic &o) const;
 
   /*! Comparison operator
    * \param o - Object to be compared with

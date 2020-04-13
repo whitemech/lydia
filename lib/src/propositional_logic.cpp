@@ -47,6 +47,21 @@ bool PropositionalFalse::is_equal(const Basic &rhs) const {
   return is_a<PropositionalFalse>(rhs);
 }
 
+PropositionalAtom::PropositionalAtom(const Symbol &s) : symbol{s.get_name()} {}
+
+PropositionalAtom::PropositionalAtom(const std::string &name)
+    : symbol(Symbol(name)) {}
+
+hash_t PropositionalAtom::__hash__() const { return this->symbol.__hash__(); }
+
+int PropositionalAtom::compare(const Basic &rhs) const {
+  return this->symbol.compare(rhs);
+}
+
+bool PropositionalAtom::is_equal(const Basic &rhs) const {
+  return this->symbol.is_equal(rhs);
+}
+
 PropositionalAnd::PropositionalAnd(const set_prop_formulas &s) : container_{s} {
   this->type_code_ = type_code_id;
   assert(is_canonical(s));

@@ -17,6 +17,7 @@
  */
 
 #include "basic.hpp"
+#include "symbol.hpp"
 
 namespace whitemech {
 namespace lydia {
@@ -37,6 +38,20 @@ class PropositionalFalse : public PropositionalFormula {
 public:
   const static TypeID type_code_id = TypeID::t_PropositionalFalse;
 
+  void accept(Visitor &v) const override;
+  hash_t __hash__() const override;
+  int compare(const Basic &rhs) const override;
+  bool is_equal(const Basic &rhs) const override;
+};
+
+/*!
+ *  This class is just a wrapper to a Symbol.
+ */
+class PropositionalAtom : public PropositionalFormula {
+public:
+  const Symbol symbol;
+  explicit PropositionalAtom(const Symbol &);
+  explicit PropositionalAtom(const std::string &);
   void accept(Visitor &v) const override;
   hash_t __hash__() const override;
   int compare(const Basic &rhs) const override;

@@ -19,6 +19,8 @@
 #include "cuddObj.hh"
 #include "propositional_logic.hpp"
 #include "visitor.hpp"
+#include <logic.hpp>
+#include <utility>
 
 namespace whitemech {
 namespace lydia {
@@ -31,16 +33,26 @@ namespace lydia {
  *     Thirty-Second AAAI Conference on Artificial Intelligence. 2018.
  */
 
-class QuotedFormula : public Basic {
+class QuotedFormula : public PropositionalFormula {
 private:
 protected:
 public:
-  const LDLfFormula &formula;
+  const static TypeID type_code_id = TypeID::t_QuotedFormula;
+  const std::shared_ptr<LDLfFormula> formula;
+
   /*!
    * Quote an LDLf formula. We assume it is in NNF.
    * @param f: the LDLf formula.
    */
-  explicit QuotedFormula(const LDLfFormula &formula) : formula{formula} {}
+  explicit QuotedFormula(std::shared_ptr<LDLfFormula> formula)
+      : formula{std::move(formula)} {
+    this->type_code_ = TypeID::t_QuotedFormula;
+  }
+
+  void accept(Visitor &v) const override;
+  hash_t __hash__() const override;
+  int compare(const Basic &rhs) const override;
+  bool is_equal(const Basic &rhs) const override;
 };
 
 class DeltaVisitor : public Visitor {

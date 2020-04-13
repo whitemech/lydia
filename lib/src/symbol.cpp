@@ -47,7 +47,4 @@ hash_t Symbol::__hash__() const {
   return seed;
 }
 
-bool Symbol::operator==(const Basic &o) const { return is_equal(o); }
-
-bool Symbol::operator!=(const Basic &o) const { return !is_equal(o); }
 } // namespace whitemech::lydia

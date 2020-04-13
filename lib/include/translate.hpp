@@ -54,8 +54,8 @@ dfa *to_dfa(LDLfFormula &formula);
 class NFAState : public Basic {
 public:
   const static TypeID type_code_id = TypeID::t_NFAState;
-  const set_formulas &formulas;
-  explicit NFAState(const set_formulas &formulas) : formulas{formulas} {};
+  const set_formulas formulas;
+  explicit NFAState(set_formulas formulas) : formulas{std::move(formulas)} {};
   void accept(Visitor &v) const override{};
   hash_t __hash__() const override;
   int compare(const Basic &rhs) const override;
@@ -89,8 +89,9 @@ public:
 class DFAState : public Basic {
 public:
   const static TypeID type_code_id = TypeID::t_DFAState;
-  const set_nfa_states &states;
-  explicit DFAState(const set_nfa_states &states) : states{states} {};
+  const set_nfa_states states;
+  explicit DFAState(set_nfa_states states);
+  explicit DFAState(const set_formulas &formulas);
 
   void accept(Visitor &v) const override{};
   hash_t __hash__() const override;
