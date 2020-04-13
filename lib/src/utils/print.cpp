@@ -22,10 +22,10 @@
 namespace whitemech {
 namespace lydia {
 
-void StrPrinter::visit(const Symbol &x) { str_ = x.get_name(); }
+void StrPrinter::visit(const Symbol &x) { result = x.get_name(); }
 
 void StrPrinter::visit(const LDLfBooleanAtom &x) {
-  str_ = x.get_value() ? "tt" : "ff";
+  result = x.get_value() ? "tt" : "ff";
 }
 
 void StrPrinter::visit(const LDLfAnd &x) {
@@ -37,7 +37,7 @@ void StrPrinter::visit(const LDLfAnd &x) {
     s << ", " << apply(**it);
   }
   s << ")";
-  str_ = s.str();
+  result = s.str();
 }
 
 void StrPrinter::visit(const LDLfOr &x) {
@@ -49,18 +49,18 @@ void StrPrinter::visit(const LDLfOr &x) {
     s << ", " << apply(**it);
   }
   s << ")";
-  str_ = s.str();
+  result = s.str();
 }
 
 void StrPrinter::visit(const LDLfNot &x) {
   std::ostringstream s;
   s << "Not(" << apply(x.get_arg()) << ")";
-  str_ = s.str();
+  result = s.str();
 }
 
 std::string StrPrinter::apply(const Basic &b) {
   b.accept(*this);
-  return str_;
+  return result;
 }
 
 std::string StrPrinter::apply(const vec_basic &v) {

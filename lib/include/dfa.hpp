@@ -79,7 +79,6 @@ public:
   int nb_bits;
   int initial_state;
   int nb_states;
-  int *initbv;
 
   int nb_variables;
   std::vector<int> final_states;

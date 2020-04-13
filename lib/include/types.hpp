@@ -30,11 +30,20 @@ class Basic;
 class Symbol;
 class LDLfFormula;
 
+struct SharedComparator {
+  template <typename T>
+  bool operator()(const std::shared_ptr<T> &lhs,
+                  const std::shared_ptr<T> &rhs) const {
+    return (*lhs) < (*rhs);
+  }
+};
+
 typedef uint64_t hash_t;
 typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
-typedef std::set<std::shared_ptr<const Basic>> set_basic;
+typedef std::set<std::shared_ptr<const Basic>, SharedComparator> set_basic;
 typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
-typedef std::set<std::shared_ptr<const LDLfFormula>> set_formulas;
+typedef std::set<std::shared_ptr<const LDLfFormula>, SharedComparator>
+    set_formulas;
 typedef std::vector<int> item;
 typedef std::vector<int> interpretation;
 typedef std::vector<interpretation> trace;

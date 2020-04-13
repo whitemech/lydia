@@ -59,6 +59,9 @@ public:
   // Equality operator
   virtual bool is_equal(const Basic &o) const = 0;
 
+  //! Comparator operator
+  bool operator<(const Basic &) const;
+
   /*!
   Calculates the hash of the given Lydia class.
   Use Basic.hash() which gives a cached version of the hash.
