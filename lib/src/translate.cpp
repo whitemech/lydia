@@ -16,11 +16,19 @@
  */
 
 #include <dfa.hpp>
+#include <nnf.hpp>
+#include <translate.hpp>
 
 namespace whitemech {
 namespace lydia {
 
-dfa *to_dfa(LDLfFormula &formula) { return nullptr; }
+dfa *to_dfa(LDLfFormula &formula) {
+  auto formula_nnf = to_nnf(formula);
+
+  //  auto initial_state = set::
+
+  return nullptr;
+}
 
 } // namespace lydia
 } // namespace whitemech

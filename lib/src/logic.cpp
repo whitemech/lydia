@@ -67,7 +67,7 @@ std::shared_ptr<const LDLfFormula> LDLfBooleanAtom::logical_not() const {
 bool LDLfBooleanAtom::operator==(const Basic &o) const { return is_equal(o); }
 bool LDLfBooleanAtom::operator!=(const Basic &o) const { return !is_equal(o); }
 
-LDLfAnd::LDLfAnd(set_formulas s) : container_{std::move(s)} {
+LDLfAnd::LDLfAnd(const set_formulas &s) : container_{s} {
   this->type_code_ = type_code_id;
   assert(is_canonical(s));
 }
@@ -112,7 +112,7 @@ std::shared_ptr<const LDLfFormula> LDLfAnd::logical_not() const {
   return std::make_shared<LDLfOr>(cont);
 }
 
-LDLfOr::LDLfOr(set_formulas s) : container_{std::move(s)} {
+LDLfOr::LDLfOr(const set_formulas &s) : container_{s} {
   this->type_code_ = type_code_id;
 }
 

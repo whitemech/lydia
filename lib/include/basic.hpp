@@ -60,7 +60,12 @@ public:
   virtual bool is_equal(const Basic &o) const = 0;
 
   //! Comparator operator
-  bool operator<(const Basic &) const;
+  inline bool operator<(const Basic &rhs) const {
+    return this->__cmp__(rhs) == -1;
+  };
+  inline bool operator>(const Basic &rhs) const { return rhs < *this; }
+  inline bool operator<=(const Basic &rhs) const { return !(*this > rhs); }
+  inline bool operator>=(const Basic &rhs) const { return !(*this < rhs); }
 
   /*!
   Calculates the hash of the given Lydia class.
@@ -83,7 +88,7 @@ public:
   hash_t hash() const;
 
   /*! Returns -1, 0, 1 for `this < o, this == o, this > o`. This method is
-   used      when you want to sort things like `x+y+z` into canonical order.
+   used  when you want to sort things like `x+y+z` into canonical order.
    This function assumes that `o` is the same type as `this`. Use ` __cmp__`
    if you want general comparison.
    */

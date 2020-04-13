@@ -24,5 +24,42 @@ namespace lydia {
 
 dfa *to_dfa(LDLfFormula &formula);
 
-}
+/*!
+ * This class represents an NFA state in
+ * the LDLf2NFA algorithm presented in [1].
+ * This will be used in tandem with the DFAState
+ * of the algorithm LDLf2DFA [2].
+ *
+ * [1] Brafman, Ronen I., Giuseppe De Giacomo, and Fabio Patrizi.
+ *     "LTLf/LDLf non-markovian rewards."
+ *     Thirty-Second AAAI Conference on Artificial Intelligence. 2018.
+ * [2] Favorito, Marco. "Reinforcement learning for LTLf/LDLf goals:
+ *     Theory and implementation." Master's thesis. DIAG, Sapienza Univ. Rome
+ (2018).
+
+ */
+class NFAState {
+public:
+  set_formulas &formulas;
+  explicit NFAState(set_formulas &formulas) : formulas{formulas} {};
+};
+
+/*!
+ * This class represents a DFA state in
+ * the on-the-fly LDLf2NFA algorithm presented in [1].
+ * And in the algorithm LDLf2DFA [2].
+ *
+ * [1] Brafman, Ronen I., Giuseppe De Giacomo, and Fabio Patrizi.
+ *     "LTLf/LDLf non-markovian rewards."
+ *     Thirty-Second AAAI Conference on Artificial Intelligence. 2018.
+ * [2] Favorito, Marco. "Reinforcement learning for LTLf/LDLf goals:
+ *     Theory and implementation." Master's thesis. DIAG, Sapienza Univ. Rome
+ * (2018).
+ */
+class DFAState {
+public:
+  DFAState();
+};
+
+} // namespace lydia
 } // namespace whitemech

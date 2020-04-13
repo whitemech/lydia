@@ -62,7 +62,7 @@ private:
 public:
   const static TypeID type_code_id = TypeID::t_LDLfAnd;
   void accept(Visitor &v) const override;
-  explicit LDLfAnd(set_formulas s);
+  explicit LDLfAnd(const set_formulas &s);
   bool is_canonical(const set_formulas &container_);
   //! \return the hash
   hash_t __hash__() const override;
@@ -81,7 +81,7 @@ private:
 public:
   const static TypeID type_code_id = TypeID::t_LDLfOr;
   void accept(Visitor &v) const override;
-  explicit LDLfOr(set_formulas s);
+  explicit LDLfOr(const set_formulas &s);
   bool is_canonical(const set_formulas &container_);
   //! \return the hash
   hash_t __hash__() const override;

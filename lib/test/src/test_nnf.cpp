@@ -21,42 +21,23 @@
 
 namespace whitemech::lydia::Test {
 
-TEST_CASE("Test set formulas comparator", "[nnf]") {
-  auto tt = boolean(true);
-  auto ff = boolean(false);
-  REQUIRE(*ff < *tt);
-
-  auto formulas = set_formulas();
-  formulas.insert(tt);
-  formulas.insert(ff);
-
-  vec_formulas result;
-  for (const auto &formula : formulas) {
-    result.push_back(formula);
-  }
-
-  REQUIRE(result[0]->is_equal(*ff));
-  REQUIRE(result[1]->is_equal(*tt));
-}
-
 TEST_CASE("Negative normal form", "[nnf]") {
 
-  //  SECTION("tt") {
-  //    auto tt = LDLfBooleanAtom(true);
-  //    REQUIRE(tt == *to_nnf(tt));
-  //  }
-  //
-  //  SECTION("ff") {
-  //    auto ff = LDLfBooleanAtom(false);
-  //    REQUIRE(ff == *to_nnf(ff));
-  //  }
-  //
-  //  SECTION("!tt") {
-  //    auto not_ff = LDLfNot(std::make_shared<LDLfBooleanAtom>(false));
-  //    REQUIRE(LDLfBooleanAtom(true) == *to_nnf(not_ff));
-  //  }
+  SECTION("tt") {
+    auto tt = LDLfBooleanAtom(true);
+    REQUIRE(tt == *to_nnf(tt));
+  }
 
-  //  TODO Fix comparator
+  SECTION("ff") {
+    auto ff = LDLfBooleanAtom(false);
+    REQUIRE(ff == *to_nnf(ff));
+  }
+
+  SECTION("!tt") {
+    auto not_ff = LDLfNot(std::make_shared<LDLfBooleanAtom>(false));
+    REQUIRE(LDLfBooleanAtom(true) == *to_nnf(not_ff));
+  }
+
   SECTION("!(ff & ff)") {
     auto ffs = set_formulas({boolean(false), boolean(false)});
     auto tts = set_formulas({boolean(true), boolean(true)});
