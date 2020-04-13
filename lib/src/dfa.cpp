@@ -93,7 +93,7 @@ void dfa::bdd2dot(std::string directory) {
   }
 }
 
-// return positive or nagative bdd variable index
+// return positive or negative bdd variable index
 CUDD::BDD dfa::var2bddvar(int v, int index) {
   if (v == 0) {
     return !bddvars[index];
@@ -177,7 +177,6 @@ CUDD::BDD dfa::state2bdd(int s) {
 }
 
 /*!
- * TODO elaborate
  * Given the index, try to get a BDD. If not present yet, create it.
  *
  * If it is a terminal, then instantiate it by using the binary

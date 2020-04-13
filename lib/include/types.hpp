@@ -29,6 +29,7 @@ namespace lydia {
 class Basic;
 class Symbol;
 class LDLfFormula;
+class PropositionalFormula;
 class NFAState;
 class DFAState;
 class DFATransition;
@@ -47,6 +48,10 @@ typedef std::set<std::shared_ptr<const Basic>, SharedComparator> set_basic;
 typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
 typedef std::set<std::shared_ptr<const LDLfFormula>, SharedComparator>
     set_formulas;
+typedef std::vector<std::shared_ptr<const PropositionalFormula>>
+    vec_prop_formulas;
+typedef std::set<std::shared_ptr<const PropositionalFormula>, SharedComparator>
+    set_prop_formulas;
 typedef std::set<std::shared_ptr<const NFAState>, SharedComparator>
     set_nfa_states;
 typedef std::set<std::shared_ptr<const DFAState>, SharedComparator>

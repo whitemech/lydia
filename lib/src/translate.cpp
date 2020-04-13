@@ -15,6 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <delta.hpp>
 #include <dfa.hpp>
 #include <nnf.hpp>
 #include <translate.hpp>
@@ -35,8 +36,73 @@ dfa *to_dfa(LDLfFormula &formula) {
   set_dfa_states states{{initial_state}};
   set_dfa_transitions transitions;
 
+  //  Check if the initial state is final
+
   return nullptr;
 }
 
+bool NFAState::is_equal(const Basic &rhs) const {
+  return is_a<NFAState>(rhs) and
+         unified_eq(this->formulas,
+                    dynamic_cast<const NFAState &>(rhs).formulas);
+}
+
+int NFAState::compare(const Basic &rhs) const {
+  return is_a<NFAState>(rhs) and
+         unified_compare(this->formulas,
+                         dynamic_cast<const NFAState &>(rhs).formulas);
+}
+
+hash_t NFAState::__hash__() const {
+  hash_t seed = type_code_id;
+  for (const auto &a : formulas)
+    hash_combine<Basic>(seed, *a);
+  return seed;
+}
+
+bool NFAState::is_final() const {
+  // This will be put in conjunction with other formulas
+  auto delta_epsilon_result = PropositionalTrue();
+  for (const auto &formula : formulas) {
+    auto delta_epsilon_result = delta(*formula, true);
+    /*TODO instead of equality, we could implement
+     * a function like "logical_equivalence".
+     */
+  }
+  //  return delta_epsilon_result->is_equal(PropositionaTrue());
+  return true;
+}
+
+hash_t DFAState::__hash__() const {
+  hash_t seed = type_code_id;
+  for (const auto &a : states)
+    hash_combine<Basic>(seed, *a);
+  return seed;
+}
+
+int DFAState::compare(const Basic &rhs) const {
+  return is_a<DFAState>(rhs) and
+         unified_compare(this->states,
+                         dynamic_cast<const DFAState &>(rhs).states);
+}
+
+bool DFAState::is_equal(const Basic &rhs) const {
+  return is_a<DFAState>(rhs) and
+         unified_eq(this->states, dynamic_cast<const DFAState &>(rhs).states);
+}
+
+bool DFAState::is_final() const { return false; };
+
+bool DFATransition::is_equal(const Basic &rhs) const {
+  return is_a<DFATransition>(rhs) and
+         unified_eq(this->transition,
+                    dynamic_cast<const DFATransition &>(rhs).transition);
+}
+
+int DFATransition::compare(const Basic &rhs) const {
+  return is_a<DFATransition>(rhs) and
+         unified_compare(this->transition,
+                         dynamic_cast<const DFATransition &>(rhs).transition);
+};
 } // namespace lydia
 } // namespace whitemech

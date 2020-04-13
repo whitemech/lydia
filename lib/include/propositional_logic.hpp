@@ -21,44 +21,75 @@
 namespace whitemech {
 namespace lydia {
 
-class PropositionalLogicFormula : public Basic {};
+class PropositionalFormula : public Basic {};
 
-class PropositionalLogicTrue : public PropositionalLogicFormula {
+class PropositionalTrue : public PropositionalFormula {
 public:
-  const static TypeID type_code_id = TypeID::t_PropositionalLogicTrue;
+  const static TypeID type_code_id = TypeID::t_PropositionalTrue;
 
-  void accept(Visitor &v) const override{};
-  hash_t __hash__() const override {
-    hash_t seed = type_code_id;
-    return seed;
-  }
-
-  int compare(const Basic &rhs) const override {
-    return is_a<PropositionalLogicTrue>(rhs);
-  };
-
-  bool is_equal(const Basic &rhs) const override {
-    return is_a<PropositionalLogicTrue>(rhs);
-  };
+  void accept(Visitor &v) const override;
+  hash_t __hash__() const override;
+  int compare(const Basic &rhs) const override;
+  bool is_equal(const Basic &rhs) const override;
 };
 
-class PropositionalLogicFalse : public PropositionalLogicFormula {
+class PropositionalFalse : public PropositionalFormula {
 public:
-  const static TypeID type_code_id = TypeID::t_PropositionalLogicFalse;
+  const static TypeID type_code_id = TypeID::t_PropositionalFalse;
 
-  void accept(Visitor &v) const override{};
-  hash_t __hash__() const override {
-    hash_t seed = type_code_id;
-    return seed;
-  }
+  void accept(Visitor &v) const override;
+  hash_t __hash__() const override;
+  int compare(const Basic &rhs) const override;
+  bool is_equal(const Basic &rhs) const override;
+};
 
-  int compare(const Basic &rhs) const override {
-    return is_a<PropositionalLogicFalse>(rhs);
-  };
+class PropositionalAnd : public PropositionalFormula {
+private:
+  const set_prop_formulas container_;
 
-  bool is_equal(const Basic &rhs) const override {
-    return is_a<PropositionalLogicFalse>(rhs);
-  };
+public:
+  const static TypeID type_code_id = TypeID::t_PropositionalAnd;
+  void accept(Visitor &v) const override;
+  explicit PropositionalAnd(const set_prop_formulas &s);
+  bool is_canonical(const set_prop_formulas &container_) { return true; };
+  hash_t __hash__() const override;
+  virtual vec_prop_formulas get_args() const;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+  const set_prop_formulas &get_container() const;
+};
+
+class PropositionalOr : public PropositionalFormula {
+private:
+  const set_prop_formulas container_;
+
+public:
+  const static TypeID type_code_id = TypeID::t_PropositionalOr;
+  void accept(Visitor &v) const override;
+  explicit PropositionalOr(const set_prop_formulas &s);
+  bool is_canonical(const set_prop_formulas &container_);
+  hash_t __hash__() const override;
+  virtual vec_prop_formulas get_args() const;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+  const set_prop_formulas &get_container() const;
+};
+
+class PropositionalNot : public PropositionalFormula {
+private:
+  const std::shared_ptr<const PropositionalFormula> arg_;
+
+public:
+  const static TypeID type_code_id = TypeID::t_PropositionalNot;
+  void accept(Visitor &v) const override;
+  explicit PropositionalNot(
+      const std::shared_ptr<const PropositionalFormula> &in);
+  bool is_canonical(const PropositionalFormula &s) { return true; };
+  hash_t __hash__() const override;
+  virtual vec_basic get_args() const;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+  std::shared_ptr<const PropositionalFormula> get_arg() const;
 };
 
 } // namespace lydia

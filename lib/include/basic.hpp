@@ -34,8 +34,11 @@ enum TypeID {
   t_NFAState,
   t_DFAState,
   t_DFATransition,
-  t_PropositionalLogicTrue,
-  t_PropositionalLogicFalse,
+  t_PropositionalTrue,
+  t_PropositionalFalse,
+  t_PropositionalAnd,
+  t_PropositionalOr,
+  t_PropositionalNot,
 };
 
 class Visitor;
@@ -109,8 +112,6 @@ public:
   int __cmp__(const Basic &o) const;
   virtual void accept(Visitor &v) const = 0;
   std::string str() const;
-
-  //        virtual void accept(Visitor &v) const;
 };
 
 // TODO decide what to do with this:

@@ -74,6 +74,12 @@ inline bool unified_eq(const std::unordered_map<K, V, H, E> &a,
   return unordered_eq(a, b);
 }
 
+template <typename T>
+inline bool unified_eq(const std::shared_ptr<T> &a,
+                       const std::shared_ptr<T> &b) {
+  return unified_eq(*a, *b);
+}
+
 // template <typename T, typename U,
 //          typename = enable_if_t<std::is_base_of<Basic, T>::value and
 //                                 std::is_base_of<Basic, U>::value>>
@@ -135,6 +141,12 @@ template <typename T> inline int unified_compare(const T &a, const T &b) {
   if (a == b)
     return 0;
   return a < b ? -1 : 1;
+}
+
+template <typename T>
+inline int unified_compare(const std::shared_ptr<T> &a,
+                           const std::shared_ptr<T> &b) {
+  return unified_compare(*a, *b);
 }
 
 // template <typename T, typename U,

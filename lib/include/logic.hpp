@@ -104,20 +104,5 @@ public:
   std::shared_ptr<const LDLfFormula> logical_not() const override;
 };
 
-inline bool ordered_eq_containers(const set_formulas &A,
-                                  const set_formulas &B) {
-  // Can't be equal if # of entries differ:
-  if (A.size() != B.size())
-    return false;
-  // Loop over elements in "a" and "b":
-  auto a = A.begin();
-  auto b = B.begin();
-  for (; a != A.end(); ++a, ++b) {
-    if (not(*a)->is_equal(**b))
-      return false; // values not equal
-  }
-  return true;
-}
-
 } // namespace lydia
 } // namespace whitemech

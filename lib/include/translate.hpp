@@ -56,25 +56,22 @@ public:
   const static TypeID type_code_id = TypeID::t_NFAState;
   const set_formulas &formulas;
   explicit NFAState(const set_formulas &formulas) : formulas{formulas} {};
-
   void accept(Visitor &v) const override{};
-  hash_t __hash__() const override {
-    hash_t seed = type_code_id;
-    for (const auto &a : formulas)
-      hash_combine<Basic>(seed, *a);
-    return seed;
-  }
+  hash_t __hash__() const override;
+  int compare(const Basic &rhs) const override;
+  bool is_equal(const Basic &rhs) const override;
 
-  int compare(const Basic &rhs) const override {
-    return is_a<NFAState>(rhs) and
-           unified_compare(this->formulas,
-                           dynamic_cast<const NFAState &>(rhs).formulas);
-  };
-  bool is_equal(const Basic &rhs) const override {
-    return is_a<NFAState>(rhs) and
-           unified_eq(this->formulas,
-                      dynamic_cast<const NFAState &>(rhs).formulas);
-  };
+  /*!
+   * Check if the current state is final.
+   *
+   * As explained in (Brafman et al. 2018), it means to check
+   * whether the conjunction of all the formulas in the current state,
+   * after having applied the delta function with epsilon to each of them,
+   * reduces to True.
+   *
+   * @return whether the NFA state is final.
+   */
+  bool is_final() const;
 };
 
 /*!
@@ -96,22 +93,21 @@ public:
   explicit DFAState(const set_nfa_states &states) : states{states} {};
 
   void accept(Visitor &v) const override{};
-  hash_t __hash__() const override {
-    hash_t seed = type_code_id;
-    for (const auto &a : states)
-      hash_combine<Basic>(seed, *a);
-    return seed;
-  }
+  hash_t __hash__() const override;
+  int compare(const Basic &rhs) const override;
+  bool is_equal(const Basic &rhs) const override;
 
-  int compare(const Basic &rhs) const override {
-    return is_a<DFAState>(rhs) and
-           unified_compare(this->states,
-                           dynamic_cast<const DFAState &>(rhs).states);
-  };
-  bool is_equal(const Basic &rhs) const override {
-    return is_a<DFAState>(rhs) and
-           unified_eq(this->states, dynamic_cast<const DFAState &>(rhs).states);
-  };
+  /*!
+   * Check if the state is final
+   *
+   * That means calling the delta function with epsilon.
+   * As stated in (Brafman et al. 2018), in the on-the-fly
+   * construction this is equivalent to check if the NFA state
+   * {true} is in the state (after applying the delta function).
+   *
+   * @return whether the state is final or not.
+   */
+  bool is_final() const;
 };
 
 class DFATransition : public Basic {
@@ -127,16 +123,8 @@ public:
     return 0;
   }
 
-  int compare(const Basic &rhs) const override {
-    return is_a<DFATransition>(rhs) and
-           unified_compare(this->transition,
-                           dynamic_cast<const DFATransition &>(rhs).transition);
-  };
-  bool is_equal(const Basic &rhs) const override {
-    return is_a<DFATransition>(rhs) and
-           unified_eq(this->transition,
-                      dynamic_cast<const DFATransition &>(rhs).transition);
-  };
+  int compare(const Basic &rhs) const override;
+  bool is_equal(const Basic &rhs) const override;
 };
 
 } // namespace lydia

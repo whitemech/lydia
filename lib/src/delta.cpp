@@ -22,9 +22,9 @@ namespace lydia {
 
 void DeltaVisitor::visit(const LDLfBooleanAtom &x) {
   if (x.get_value())
-    result = std::make_shared<PropositionalLogicTrue>();
+    result = std::make_shared<PropositionalTrue>();
   else
-    result = std::make_shared<PropositionalLogicFalse>();
+    result = std::make_shared<PropositionalFalse>();
 }
 
 void DeltaVisitor::visit(const LDLfAnd &x) {
@@ -45,14 +45,15 @@ void DeltaVisitor::visit(const LDLfOr &x) {
   //  result = std::make_shared<LDLfOr>(new_container);
 }
 
-std::shared_ptr<const PropositionalLogicFormula>
+std::shared_ptr<const PropositionalFormula>
 DeltaVisitor::apply(const LDLfFormula &b) {
   b.accept(*this);
   return result;
 }
 
-std::shared_ptr<const PropositionalLogicFormula> delta(const LDLfFormula &x) {
-  DeltaVisitor deltaVisitor;
+std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &x,
+                                                  bool epsilon) {
+  DeltaVisitor deltaVisitor{epsilon};
   return deltaVisitor.apply(x);
 }
 
