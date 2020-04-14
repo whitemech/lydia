@@ -25,12 +25,12 @@ TEST_CASE("powerset", "[powerset]") {
   std::vector<std::set<int>> result = powerset<int>(s);
   REQUIRE(result[0] == std::set<int>({}));
   REQUIRE(result[1] == std::set<int>({0}));
-  REQUIRE(result[2] == std::set<int>({0, 1}));
-  REQUIRE(result[3] == std::set<int>({0, 1, 2}));
-  REQUIRE(result[4] == std::set<int>({0, 2}));
-  REQUIRE(result[5] == std::set<int>({1}));
+  REQUIRE(result[2] == std::set<int>({1}));
+  REQUIRE(result[3] == std::set<int>({0, 1}));
+  REQUIRE(result[4] == std::set<int>({2}));
+  REQUIRE(result[5] == std::set<int>({0, 2}));
   REQUIRE(result[6] == std::set<int>({1, 2}));
-  REQUIRE(result[7] == std::set<int>({2}));
+  REQUIRE(result[7] == std::set<int>({0, 1, 2}));
 }
 
 } // namespace whitemech::lydia::Test
