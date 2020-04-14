@@ -60,9 +60,15 @@ DeltaVisitor::apply(const LDLfFormula &b) {
   return result;
 }
 
+std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &x) {
+  // epsilon = true
+  DeltaVisitor deltaVisitor;
+  return deltaVisitor.apply(x);
+}
+
 std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &x,
-                                                  bool epsilon) {
-  DeltaVisitor deltaVisitor{epsilon};
+                                                  interpretation &i) {
+  DeltaVisitor deltaVisitor{i};
   return deltaVisitor.apply(x);
 }
 

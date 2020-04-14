@@ -19,6 +19,7 @@
 #include <delta.hpp>
 #include <dfa.hpp>
 #include <nnf.hpp>
+#include <queue>
 #include <translate.hpp>
 #include <utility>
 
@@ -45,15 +46,31 @@ dfa *to_dfa(LDLfFormula &formula) {
     final_states.insert(initial_state);
   }
 
-  // find all the atoms of the formula.
+  // BFS exploration of the automaton.
+  set_dfa_states visited;
+  std::queue<dfa_state_ptr> to_be_visited;
+  to_be_visited.push(initial_state);
+  while (!to_be_visited.empty()) {
+    const auto &current_state = to_be_visited.front();
+    to_be_visited.pop();
+    visited.insert(current_state);
 
-  // while the set of states or the transition function do not change
-  size_t nb_states = 0;
-  size_t nb_transitions = 0;
-  while (nb_states != states.size() && nb_transitions != transitions.size()) {
-    nb_states = states.size();
-    nb_transitions = transitions.size();
+    /*
+     * TODO: naive implementation: do a loop for every interpretation
+     *       improvement: delta function returns a list of possible successors
+     *                    (no interpretation to provide)
+     */
+    // TODO temporarily, use empty interpretation
+    interpretation i;
+    const auto next_state = current_state->next_state(i);
+    // update states/transitions
+    states.insert(next_state);
+    transitions.insert(
+        std::make_shared<DFATransition>(*current_state, i, *next_state));
+    if (visited.find(next_state) == visited.end())
+      to_be_visited.push(next_state);
   }
+
   return nullptr;
 }
 
@@ -82,9 +99,10 @@ hash_t NFAState::__hash__() const {
 
 bool NFAState::is_final() const {
   // This will be put in conjunction with other formulas
-  vec_prop_formulas args{std::make_shared<PropositionalTrue>()};
+  vec_prop_formulas args{std::make_shared<PropositionalTrue>(),
+                         std::make_shared<PropositionalTrue>()};
   for (const auto &formula : formulas) {
-    args.push_back(delta(*formula, true));
+    args.push_back(delta(*formula));
   }
   auto conjunction =
       PropositionalAnd(set_prop_formulas(args.begin(), args.end()));
@@ -93,6 +111,21 @@ bool NFAState::is_final() const {
    * a function like "logical_equivalence".
    */
   return conjunction.is_equal(PropositionalTrue());
+}
+
+set_nfa_states NFAState::next_states(const interpretation &i) const {
+  // This will be put in conjunction with other formulas
+  vec_prop_formulas args{std::make_shared<PropositionalTrue>(),
+                         std::make_shared<PropositionalTrue>()};
+  for (const auto &formula : formulas) {
+    args.push_back(delta(*formula));
+  }
+  auto conjunction =
+      PropositionalAnd(set_prop_formulas(args.begin(), args.end()));
+  /* TODO: compute the minimal models of the formula.
+   *       they will contain quoted LDLf formulas.
+   */
+  return set_nfa_states();
 }
 
 DFAState::DFAState(set_nfa_states states) : states{std::move(states)} {}
@@ -127,6 +160,15 @@ bool DFAState::is_final() const {
   return false;
 }
 
+dfa_state_ptr DFAState::next_state(const interpretation &i) const {
+  set_nfa_states successor_nfa_states;
+  for (const auto &nfa_state : states) {
+    auto successors = nfa_state->next_states(i);
+    successor_nfa_states.insert(successors.begin(), successors.end());
+  }
+  return std::make_shared<DFAState>(successor_nfa_states);
+}
+
 bool DFATransition::is_equal(const Basic &rhs) const {
   return is_a<DFATransition>(rhs) and
          unified_eq(this->transition,
@@ -139,7 +181,7 @@ int DFATransition::compare(const Basic &rhs) const {
                          dynamic_cast<const DFATransition &>(rhs).transition);
 }
 
-DFATransition::DFATransition(const DFAState &a, std::set<std::string> s,
+DFATransition::DFATransition(const DFAState &a, interpretation &s,
                              const DFAState &b)
     : transition{std::tie(a, s, b)} {
   this->type_code_ = type_code_id;

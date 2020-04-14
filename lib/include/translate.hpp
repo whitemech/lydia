@@ -72,6 +72,16 @@ public:
    * @return whether the NFA state is final.
    */
   bool is_final() const;
+
+  /*!
+   * Compute the next states, given a propositional interpretation.
+   *
+   * That is, compute the successors of each NFA state in the current DFA state.
+   *
+   * @param i the propositional interpretation.
+   * @return the next NFA states.
+   */
+  set_nfa_states next_states(const interpretation &i) const;
 };
 
 /*!
@@ -109,13 +119,23 @@ public:
    * @return whether the state is final or not.
    */
   bool is_final() const;
+
+  /*!
+   * Compute the next state, given a propositional interpretation.
+   *
+   * That is, compute the successor of each NFA state in the current DFA state.
+   *
+   * @param i the propositional interpretation.
+   * @return the next DFA state.
+   */
+  dfa_state_ptr next_state(const interpretation &i) const;
 };
 
 class DFATransition : public Basic {
 public:
   const static TypeID type_code_id = TypeID::t_DFATransition;
   tuple_dfa_transition transition;
-  DFATransition(const DFAState &a, std::set<std::string> s, const DFAState &b);
+  DFATransition(const DFAState &a, interpretation &s, const DFAState &b);
 
   void accept(Visitor &v) const override{};
   hash_t __hash__() const override {

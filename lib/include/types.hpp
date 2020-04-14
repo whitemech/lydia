@@ -44,6 +44,8 @@ struct SharedComparator {
 };
 
 typedef uint64_t hash_t;
+typedef std::vector<int> interpretation;
+typedef std::vector<interpretation> trace;
 typedef std::shared_ptr<const Basic> basic_ptr;
 typedef std::shared_ptr<const PropositionalAtom> atom_ptr;
 typedef std::set<atom_ptr, SharedComparator> set_atoms;
@@ -58,14 +60,13 @@ typedef std::set<std::shared_ptr<const PropositionalFormula>, SharedComparator>
     set_prop_formulas;
 typedef std::shared_ptr<const NFAState> nfa_state_ptr;
 typedef std::shared_ptr<const DFAState> dfa_state_ptr;
+typedef std::shared_ptr<const DFATransition> dfa_transition_ptr;
 typedef std::set<nfa_state_ptr, SharedComparator> set_nfa_states;
 typedef std::set<dfa_state_ptr, SharedComparator> set_dfa_states;
-typedef std::tuple<const DFAState &, std::set<std::string>, const DFAState &>
+typedef std::tuple<const DFAState &, interpretation &, const DFAState &>
     tuple_dfa_transition;
-typedef std::set<std::shared_ptr<const DFATransition>> set_dfa_transitions;
+typedef std::set<dfa_transition_ptr> set_dfa_transitions;
 typedef std::vector<int> item;
-typedef std::vector<int> interpretation;
-typedef std::vector<interpretation> trace;
 typedef std::vector<CUDD::BDD> vbdd;
 
 class not_implemented_error : public std::logic_error {

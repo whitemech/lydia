@@ -37,11 +37,14 @@ class DeltaVisitor : public Visitor {
 private:
 protected:
   std::shared_ptr<const PropositionalFormula> result;
+  std::optional<interpretation> prop_interpretation;
   bool epsilon;
 
 public:
   static Logger logger;
-  explicit DeltaVisitor(bool epsilon = false) : epsilon{epsilon} {}
+  DeltaVisitor() : epsilon{true} {}
+  explicit DeltaVisitor(interpretation &prop_interpretation)
+      : prop_interpretation{prop_interpretation}, epsilon{false} {}
 
   void visit(const Symbol &) override{};
   void visit(const LDLfBooleanAtom &) override;
@@ -61,8 +64,9 @@ public:
 /*TODO the last bit implies doing some simplification of the Ands/Ors, or
  * doing some post-processing (e.g. evaluate the formula with a "dummy model").
  */
+std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &);
 std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &,
-                                                  bool epsilon = false);
+                                                  interpretation &);
 
 } // namespace lydia
 } // namespace whitemech
