@@ -14,9 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include <atom_visitor.hpp>
 #include <cassert>
 #include <propositional_logic.hpp>
 #include <utils/compare.hpp>
+#include <utils/powerset.hpp>
 
 namespace whitemech {
 namespace lydia {
@@ -228,6 +230,25 @@ bool EvalVisitor::apply(const PropositionalFormula &b) {
 bool eval(const PropositionalFormula &f, set_atoms_ptr &interpretation) {
   EvalVisitor evalVisitor{interpretation};
   return evalVisitor.apply(f);
+}
+
+std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f) {
+  std::vector<set_atoms_ptr> models;
+  auto all_atoms = find_atoms(f);
+  std::vector<set_atoms_ptr> all_interpretations =
+      powerset<atom_ptr, SharedComparator>(all_atoms);
+  for (set_atoms_ptr &interpretation : all_interpretations) {
+    if (eval(f, interpretation)) {
+      models.emplace_back(interpretation);
+    }
+  }
+  return models;
+}
+
+std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f) {
+  auto models = all_models(f);
+  std::vector<set_atoms_ptr> result;
+  return models;
 }
 
 } // namespace lydia

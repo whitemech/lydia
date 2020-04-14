@@ -107,8 +107,11 @@ bool NFAState::is_final() const {
   }
   auto conjunction =
       PropositionalAnd(set_prop_formulas(args.begin(), args.end()));
-  //
-  return conjunction.is_equal(PropositionalTrue());
+
+  // to evaluate this formula, we just use an empty prop. interpretation.
+  // this is because the delta with epsilon = true returns either true or false.
+  auto empty = set_atoms_ptr();
+  return eval(conjunction, empty);
 }
 
 set_nfa_states NFAState::next_states(const set_atoms_ptr &i) const {
@@ -120,10 +123,19 @@ set_nfa_states NFAState::next_states(const set_atoms_ptr &i) const {
   }
   auto conjunction =
       PropositionalAnd(set_prop_formulas(args.begin(), args.end()));
-  /* TODO: compute the minimal models of the formula.
-   *       they will contain quoted LDLf formulas.
-   */
-  return set_nfa_states();
+
+  set_nfa_states result;
+  auto models = minimal_models(conjunction);
+  for (const auto &model : models) {
+    set_formulas tmp;
+    for (const auto &atom : model) {
+      assert(is_a<QuotedFormula>(*atom->symbol));
+      tmp.insert(dynamic_cast<const QuotedFormula &>(*atom->symbol).formula);
+    }
+    result.emplace(std::make_shared<NFAState>(tmp));
+  }
+
+  return result;
 }
 
 DFAState::DFAState(set_nfa_states states) : states{std::move(states)} {

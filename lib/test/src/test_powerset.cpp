@@ -22,17 +22,15 @@ namespace whitemech::lydia::Test {
 
 TEST_CASE("powerset", "[powerset]") {
   auto s = std::set<int>({0, 1, 2});
-  std::set<std::set<int>> result = powerset<int>(s);
-
-  auto vect_result = std::vector<std::set<int>>(result.begin(), result.end());
-  REQUIRE(vect_result[0] == std::set<int>({}));
-  REQUIRE(vect_result[1] == std::set<int>({0}));
-  REQUIRE(vect_result[2] == std::set<int>({0, 1}));
-  REQUIRE(vect_result[3] == std::set<int>({0, 1, 2}));
-  REQUIRE(vect_result[4] == std::set<int>({0, 2}));
-  REQUIRE(vect_result[5] == std::set<int>({1}));
-  REQUIRE(vect_result[6] == std::set<int>({1, 2}));
-  REQUIRE(vect_result[7] == std::set<int>({2}));
+  std::vector<std::set<int>> result = powerset<int>(s);
+  REQUIRE(result[0] == std::set<int>({}));
+  REQUIRE(result[1] == std::set<int>({0}));
+  REQUIRE(result[2] == std::set<int>({0, 1}));
+  REQUIRE(result[3] == std::set<int>({0, 1, 2}));
+  REQUIRE(result[4] == std::set<int>({0, 2}));
+  REQUIRE(result[5] == std::set<int>({1}));
+  REQUIRE(result[6] == std::set<int>({1, 2}));
+  REQUIRE(result[7] == std::set<int>({2}));
 }
 
 } // namespace whitemech::lydia::Test

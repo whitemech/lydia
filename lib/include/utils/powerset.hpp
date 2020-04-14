@@ -22,12 +22,12 @@ namespace whitemech {
 namespace lydia {
 
 template <typename T, typename U = std::less<T>>
-std::set<std::set<T, U>> powerset(std::set<T, U> &s) {
+std::vector<std::set<T, U>> powerset(std::set<T, U> &s) {
   /*TODO this method only works for a set of elements
    * whose size is lower than 64. Handle those cases.
    */
   assert(s.size() < 64);
-  std::set<std::set<T, U>> result;
+  std::vector<std::set<T, U>> result;
   auto vect = std::vector<T>(s.begin(), s.end());
   size_t size = s.size();
 
@@ -46,7 +46,7 @@ std::set<std::set<T, U>> powerset(std::set<T, U> &s) {
       mask >>= 1;
       ++index;
     }
-    result.insert(tmp);
+    result.emplace_back(tmp);
   }
   return result;
 }

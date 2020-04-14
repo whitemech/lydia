@@ -33,8 +33,9 @@ TEST_CASE("Set of DFA states", "[translate]") {
 }
 
 TEST_CASE("Translate", "[translate]") {
-  auto ff_and_tt = set_formulas({boolean(false), boolean(true)});
-  auto not_and = LDLfNot(std::make_shared<LDLfAnd>(ff_and_tt));
+  auto args = set_formulas({boolean(false), boolean(true)});
+  auto ff_and_tt = std::make_shared<LDLfAnd>(args);
+  auto not_and = LDLfNot(ff_and_tt);
   // TODO complete.
   to_dfa(not_and);
 }
