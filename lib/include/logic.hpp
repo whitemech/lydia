@@ -104,5 +104,27 @@ public:
   std::shared_ptr<const LDLfFormula> logical_not() const override;
 };
 
+class QuotedFormula : public Basic {
+private:
+protected:
+public:
+  const static TypeID type_code_id = TypeID::t_QuotedFormula;
+  const std::shared_ptr<LDLfFormula> formula;
+
+  /*!
+   * Quote an LDLf formula. We assume it is in NNF.
+   * @param f: the LDLf formula.
+   */
+  explicit QuotedFormula(std::shared_ptr<LDLfFormula> formula)
+      : formula{std::move(formula)} {
+    this->type_code_ = TypeID::t_QuotedFormula;
+  }
+
+  void accept(Visitor &v) const override;
+  hash_t __hash__() const override;
+  int compare(const Basic &rhs) const override;
+  bool is_equal(const Basic &rhs) const override;
+};
+
 } // namespace lydia
 } // namespace whitemech

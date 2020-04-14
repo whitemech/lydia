@@ -47,19 +47,29 @@ bool PropositionalFalse::is_equal(const Basic &rhs) const {
   return is_a<PropositionalFalse>(rhs);
 }
 
-PropositionalAtom::PropositionalAtom(const Symbol &s) : symbol{s.get_name()} {}
+PropositionalAtom::PropositionalAtom(const Symbol &s)
+    : symbol{std::make_shared<const Symbol>(s.get_name())} {
+  this->type_code_ = type_code_id;
+}
+
+PropositionalAtom::PropositionalAtom(std::shared_ptr<const Basic> &p)
+    : symbol{std::shared_ptr<const Basic>(p)} {
+  this->type_code_ = type_code_id;
+}
 
 PropositionalAtom::PropositionalAtom(const std::string &name)
-    : symbol(Symbol(name)) {}
+    : symbol(std::make_shared<Symbol>(name)) {
+  this->type_code_ = type_code_id;
+}
 
-hash_t PropositionalAtom::__hash__() const { return this->symbol.__hash__(); }
+hash_t PropositionalAtom::__hash__() const { return this->symbol->__hash__(); }
 
 int PropositionalAtom::compare(const Basic &rhs) const {
-  return this->symbol.compare(rhs);
+  return this->symbol->__hash__();
 }
 
 bool PropositionalAtom::is_equal(const Basic &rhs) const {
-  return this->symbol.is_equal(rhs);
+  return this->symbol->__hash__();
 }
 
 PropositionalAnd::PropositionalAnd(const set_prop_formulas &s) : container_{s} {

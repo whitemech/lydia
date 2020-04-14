@@ -15,6 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <atom_visitor.hpp>
 #include <delta.hpp>
 #include <dfa.hpp>
 #include <nnf.hpp>
@@ -36,6 +37,9 @@ dfa *to_dfa(LDLfFormula &formula) {
   set_dfa_states states{{initial_state}};
   set_dfa_transitions transitions;
 
+  // find all atoms
+  set_atoms atoms = find_atoms(*formula_nnf);
+
   //  Check if the initial state is final
   if (initial_state->is_final()) {
     final_states.insert(initial_state);
@@ -52,6 +56,10 @@ dfa *to_dfa(LDLfFormula &formula) {
   }
   return nullptr;
 }
+
+NFAState::NFAState(set_formulas formulas) : formulas{std::move(formulas)} {
+  this->type_code_ = type_code_id;
+};
 
 bool NFAState::is_equal(const Basic &rhs) const {
   return is_a<NFAState>(rhs) and
@@ -89,7 +97,9 @@ bool NFAState::is_final() const {
 
 DFAState::DFAState(set_nfa_states states) : states{std::move(states)} {}
 DFAState::DFAState(const set_formulas &formulas)
-    : states{set_nfa_states{std::make_shared<NFAState>(formulas)}} {};
+    : states{set_nfa_states{std::make_shared<NFAState>(formulas)}} {
+  this->type_code_ = type_code_id;
+}
 
 hash_t DFAState::__hash__() const {
   hash_t seed = type_code_id;
@@ -127,6 +137,13 @@ int DFATransition::compare(const Basic &rhs) const {
   return is_a<DFATransition>(rhs) and
          unified_compare(this->transition,
                          dynamic_cast<const DFATransition &>(rhs).transition);
-};
+}
+
+DFATransition::DFATransition(const DFAState &a, std::set<std::string> s,
+                             const DFAState &b)
+    : transition{std::tie(a, s, b)} {
+  this->type_code_ = type_code_id;
+}
+
 } // namespace lydia
 } // namespace whitemech

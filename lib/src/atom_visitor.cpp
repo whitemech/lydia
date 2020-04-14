@@ -20,44 +20,52 @@
 namespace whitemech {
 namespace lydia {
 
+Logger AtomsVisitor::logger = Logger("atom_visitor");
+
 void AtomsVisitor::visit(const PropositionalTrue &) {}
 void AtomsVisitor::visit(const PropositionalFalse &) {}
 
 void AtomsVisitor::visit(const PropositionalAtom &x) {
-  result.insert(std::make_shared<PropositionalAtom>(x.symbol));
+  if (x.symbol->get_type_code() == TypeID::t_Symbol) {
+    result.insert(std::make_shared<const PropositionalAtom>(
+        dynamic_cast<const Symbol &>(*x.symbol)));
+  } else if (x.symbol->get_type_code() == TypeID::t_QuotedFormula) {
+    basic_ptr ptr = std::make_shared<const QuotedFormula>(
+        dynamic_cast<const QuotedFormula &>(*x.symbol).formula);
+    result.insert(std::make_shared<const PropositionalAtom>(ptr));
+  } else {
+    logger.error("Should not be here...");
+    assert(false);
+  }
 }
-
-void AtomsVisitor::visit(const QuotedFormula &) {}
 
 void AtomsVisitor::visit(const PropositionalAnd &x) {
   for (auto &a : x.get_container()) {
-    auto atoms = apply(*a);
-    result.insert(atoms.begin(), atoms.end());
+    apply(*a);
   }
 }
 
 void AtomsVisitor::visit(const PropositionalOr &x) {
   for (auto &a : x.get_container()) {
-    auto atoms = apply(*a);
-    result.insert(atoms.begin(), atoms.end());
+    apply(*a);
   }
 }
 
-void AtomsVisitor::visit(const PropositionalNot &x) {
-  auto tmp = apply(*x.get_arg());
-  result.insert(tmp.begin(), tmp.end());
-}
+void AtomsVisitor::visit(const PropositionalNot &x) { apply(*x.get_arg()); }
 
-std::set<std::shared_ptr<PropositionalAtom>>
-AtomsVisitor::apply(const PropositionalFormula &b) {
+set_atoms AtomsVisitor::apply(const PropositionalFormula &b) {
   b.accept(*this);
   return result;
 }
 
-std::set<std::shared_ptr<PropositionalAtom>>
-find_atoms(const PropositionalFormula &f) {
+set_atoms find_atoms(const PropositionalFormula &f) {
   AtomsVisitor atomsVisitor;
   return atomsVisitor.apply(f);
+}
+
+set_atoms find_atoms(const LDLfFormula &f) {
+  // TODO implement visitors for LDLf
+  return set_atoms();
 }
 
 } // namespace lydia

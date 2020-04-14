@@ -15,20 +15,14 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
 #include <delta.hpp>
+#include <logger.hpp>
 
 namespace whitemech {
 namespace lydia {
 
-hash_t QuotedFormula::__hash__() const { return this->formula->__hash__(); }
-
-int QuotedFormula::compare(const Basic &rhs) const {
-  return this->formula->compare(rhs);
-}
-
-bool QuotedFormula::is_equal(const Basic &rhs) const {
-  return this->formula->is_equal(rhs);
-}
+Logger DeltaVisitor::logger = Logger("delta");
 
 void DeltaVisitor::visit(const LDLfBooleanAtom &x) {
   if (x.get_value())
@@ -37,22 +31,27 @@ void DeltaVisitor::visit(const LDLfBooleanAtom &x) {
     result = std::make_shared<PropositionalFalse>();
 }
 
+void DeltaVisitor::visit(const LDLfNot &b) {
+  DeltaVisitor::logger.error("Delta function should not be called with a not.");
+  assert(false);
+}
+
 void DeltaVisitor::visit(const LDLfAnd &x) {
-  //  auto container = x.get_container();
-  //  set_formulas new_container;
-  //  for (auto &a : container) {
-  //    new_container.insert(apply(*a));
-  //  }
-  //  result = std::make_shared<LDLfAnd>(new_container);
+  auto container = x.get_container();
+  set_prop_formulas new_container;
+  for (auto &a : container) {
+    new_container.insert(apply(*a));
+  }
+  result = std::make_shared<PropositionalAnd>(new_container);
 }
 
 void DeltaVisitor::visit(const LDLfOr &x) {
-  //  auto container = x.get_container();
-  //  set_formulas new_container;
-  //  for (auto &a : container) {
-  //    new_container.insert(apply(*a));
-  //  }
-  //  result = std::make_shared<LDLfOr>(new_container);
+  auto container = x.get_container();
+  set_prop_formulas new_container;
+  for (auto &a : container) {
+    new_container.insert(apply(*a));
+  }
+  result = std::make_shared<PropositionalOr>(new_container);
 }
 
 std::shared_ptr<const PropositionalFormula>

@@ -26,21 +26,24 @@ namespace lydia {
 class AtomsVisitor : public Visitor {
 private:
 protected:
-  std::set<std::shared_ptr<PropositionalAtom>> result;
+  set_atoms result;
 
 public:
+  static Logger logger;
+
   void visit(const PropositionalTrue &) override;
   void visit(const PropositionalFalse &) override;
   void visit(const PropositionalAtom &) override;
-  void visit(const QuotedFormula &) override;
+  void visit(const QuotedFormula &) override{};
+  void visit(const Symbol &) override{};
   void visit(const PropositionalAnd &) override;
   void visit(const PropositionalOr &) override;
   void visit(const PropositionalNot &) override;
-  std::set<std::shared_ptr<PropositionalAtom>>
-  apply(const PropositionalFormula &b);
+  set_atoms apply(const PropositionalFormula &b);
 };
 
-std::shared_ptr<LDLfFormula> to_nnf(const LDLfFormula &);
+set_atoms find_atoms(const LDLfFormula &);
+set_atoms find_atoms(const PropositionalFormula &);
 
 } // namespace lydia
 } // namespace whitemech

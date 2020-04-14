@@ -55,7 +55,7 @@ class NFAState : public Basic {
 public:
   const static TypeID type_code_id = TypeID::t_NFAState;
   const set_formulas formulas;
-  explicit NFAState(set_formulas formulas) : formulas{std::move(formulas)} {};
+  explicit NFAState(set_formulas formulas);
   void accept(Visitor &v) const override{};
   hash_t __hash__() const override;
   int compare(const Basic &rhs) const override;
@@ -115,8 +115,7 @@ class DFATransition : public Basic {
 public:
   const static TypeID type_code_id = TypeID::t_DFATransition;
   tuple_dfa_transition transition;
-  DFATransition(const DFAState &a, std::set<std::string> s, const DFAState &b)
-      : transition{std::tie(a, s, b)} {};
+  DFATransition(const DFAState &a, std::set<std::string> s, const DFAState &b);
 
   void accept(Visitor &v) const override{};
   hash_t __hash__() const override {

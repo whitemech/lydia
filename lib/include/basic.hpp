@@ -36,6 +36,7 @@ enum TypeID {
   t_DFATransition,
   t_PropositionalTrue,
   t_PropositionalFalse,
+  t_PropositionalAtom,
   t_PropositionalAnd,
   t_PropositionalOr,
   t_PropositionalNot,

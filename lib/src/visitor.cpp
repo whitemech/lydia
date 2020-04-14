@@ -31,7 +31,6 @@ void LDLfNot::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalTrue::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalFalse::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalAtom::accept(Visitor &v) const { v.visit(*this); }
-
 void PropositionalAnd::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalOr::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalNot::accept(Visitor &v) const { v.visit(*this); }

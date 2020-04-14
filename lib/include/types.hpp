@@ -30,6 +30,7 @@ class Basic;
 class Symbol;
 class LDLfFormula;
 class PropositionalFormula;
+class PropositionalAtom;
 class NFAState;
 class DFAState;
 class DFATransition;
@@ -43,6 +44,9 @@ struct SharedComparator {
 };
 
 typedef uint64_t hash_t;
+typedef std::shared_ptr<const Basic> basic_ptr;
+typedef std::shared_ptr<const PropositionalAtom> atom_ptr;
+typedef std::set<atom_ptr, SharedComparator> set_atoms;
 typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
 typedef std::set<std::shared_ptr<const Basic>, SharedComparator> set_basic;
 typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;

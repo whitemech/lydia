@@ -17,6 +17,7 @@
  */
 
 #include "cuddObj.hh"
+#include "logger.hpp"
 #include "propositional_logic.hpp"
 #include "visitor.hpp"
 #include <logic.hpp>
@@ -32,29 +33,6 @@ namespace lydia {
  *     "LTLf/LDLf non-markovian rewards."
  *     Thirty-Second AAAI Conference on Artificial Intelligence. 2018.
  */
-
-class QuotedFormula : public PropositionalFormula {
-private:
-protected:
-public:
-  const static TypeID type_code_id = TypeID::t_QuotedFormula;
-  const std::shared_ptr<LDLfFormula> formula;
-
-  /*!
-   * Quote an LDLf formula. We assume it is in NNF.
-   * @param f: the LDLf formula.
-   */
-  explicit QuotedFormula(std::shared_ptr<LDLfFormula> formula)
-      : formula{std::move(formula)} {
-    this->type_code_ = TypeID::t_QuotedFormula;
-  }
-
-  void accept(Visitor &v) const override;
-  hash_t __hash__() const override;
-  int compare(const Basic &rhs) const override;
-  bool is_equal(const Basic &rhs) const override;
-};
-
 class DeltaVisitor : public Visitor {
 private:
 protected:
@@ -62,13 +40,14 @@ protected:
   bool epsilon;
 
 public:
+  static Logger logger;
   explicit DeltaVisitor(bool epsilon = false) : epsilon{epsilon} {}
 
   void visit(const Symbol &) override{};
   void visit(const LDLfBooleanAtom &) override;
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
-  void visit(const LDLfNot &) override{};
+  void visit(const LDLfNot &) override;
   std::shared_ptr<const PropositionalFormula> apply(const LDLfFormula &b);
 };
 
