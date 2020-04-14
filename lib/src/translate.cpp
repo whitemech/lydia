@@ -39,7 +39,7 @@ dfa *to_dfa(LDLfFormula &formula) {
   set_dfa_transitions transitions;
 
   // find all atoms
-  set_atoms atoms = find_atoms(*formula_nnf);
+  set_atoms_ptr atoms = find_atoms(*formula_nnf);
 
   //  Check if the initial state is final
   if (initial_state->is_final()) {
@@ -104,10 +104,7 @@ bool NFAState::is_final() const {
   }
   auto conjunction =
       PropositionalAnd(set_prop_formulas(args.begin(), args.end()));
-  /*TODO the following line WON'T WORK.
-   * Instead of equality, we could implement
-   * a function like "logical_equivalence".
-   */
+  //
   return conjunction.is_equal(PropositionalTrue());
 }
 

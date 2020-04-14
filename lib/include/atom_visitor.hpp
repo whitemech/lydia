@@ -26,7 +26,7 @@ namespace lydia {
 class AtomsVisitor : public Visitor {
 private:
 protected:
-  set_atoms result;
+  set_atoms_ptr result;
 
 public:
   static Logger logger;
@@ -39,11 +39,11 @@ public:
   void visit(const PropositionalAnd &) override;
   void visit(const PropositionalOr &) override;
   void visit(const PropositionalNot &) override;
-  set_atoms apply(const PropositionalFormula &b);
+  set_atoms_ptr apply(const PropositionalFormula &b);
 };
 
-set_atoms find_atoms(const LDLfFormula &);
-set_atoms find_atoms(const PropositionalFormula &);
+set_atoms_ptr find_atoms(const LDLfFormula &);
+set_atoms_ptr find_atoms(const PropositionalFormula &);
 
 } // namespace lydia
 } // namespace whitemech

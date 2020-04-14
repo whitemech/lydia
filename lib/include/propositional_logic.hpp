@@ -19,6 +19,7 @@
 #include "basic.hpp"
 #include "logic.hpp"
 #include "symbol.hpp"
+#include "visitor.hpp"
 
 namespace whitemech {
 namespace lydia {
@@ -78,7 +79,7 @@ public:
   const static TypeID type_code_id = TypeID::t_PropositionalAnd;
   void accept(Visitor &v) const override;
   explicit PropositionalAnd(const set_prop_formulas &s);
-  bool is_canonical(const set_prop_formulas &container_) { return true; };
+  bool is_canonical(const set_prop_formulas &) { return true; };
   hash_t __hash__() const override;
   virtual vec_prop_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
@@ -118,6 +119,26 @@ public:
   int compare(const Basic &o) const override;
   std::shared_ptr<const PropositionalFormula> get_arg() const;
 };
+
+class EvalVisitor : public Visitor {
+private:
+protected:
+  bool result;
+  const set_atoms_ptr &interpretation;
+
+public:
+  EvalVisitor(const set_atoms_ptr &interpretation)
+      : interpretation{interpretation} {};
+  void visit(const PropositionalTrue &) override;
+  void visit(const PropositionalFalse &) override;
+  void visit(const PropositionalAtom &) override;
+  void visit(const PropositionalAnd &) override;
+  void visit(const PropositionalOr &) override;
+  void visit(const PropositionalNot &) override;
+  bool apply(const PropositionalFormula &b);
+};
+
+bool eval(const PropositionalFormula &, set_atoms_ptr &interpretation);
 
 } // namespace lydia
 } // namespace whitemech

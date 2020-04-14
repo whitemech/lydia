@@ -55,16 +55,21 @@ public:
 };
 
 /*!
- * Wrapper to the visitor.
+ * Apply the DeltaVisitor (with epsilon = true).
  *
- * @param epsilon the epsilon parameter to the delta function.
- * @return the propositional logic formula with atoms as quoted LDLf formulas.
+ * * @return the propositional logic formula with atoms as quoted LDLf formulas.
  *        | In the case epsilon is true, always return either True or False.
  */
 /*TODO the last bit implies doing some simplification of the Ands/Ors, or
  * doing some post-processing (e.g. evaluate the formula with a "dummy model").
  */
 std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &);
+
+/*!
+ * Apply the DeltaVisitor (with epsilon = false).
+ *
+ * @return the propositional logic formula.
+ */
 std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &,
                                                   interpretation &);
 

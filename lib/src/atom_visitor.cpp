@@ -53,19 +53,19 @@ void AtomsVisitor::visit(const PropositionalOr &x) {
 
 void AtomsVisitor::visit(const PropositionalNot &x) { apply(*x.get_arg()); }
 
-set_atoms AtomsVisitor::apply(const PropositionalFormula &b) {
+set_atoms_ptr AtomsVisitor::apply(const PropositionalFormula &b) {
   b.accept(*this);
   return result;
 }
 
-set_atoms find_atoms(const PropositionalFormula &f) {
+set_atoms_ptr find_atoms(const PropositionalFormula &f) {
   AtomsVisitor atomsVisitor;
   return atomsVisitor.apply(f);
 }
 
-set_atoms find_atoms(const LDLfFormula &f) {
+set_atoms_ptr find_atoms(const LDLfFormula &f) {
   // TODO implement visitors for LDLf
-  return set_atoms();
+  return set_atoms_ptr();
 }
 
 } // namespace lydia

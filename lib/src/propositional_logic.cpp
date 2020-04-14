@@ -181,5 +181,52 @@ std::shared_ptr<const PropositionalFormula> PropositionalNot::get_arg() const {
   return arg_;
 }
 
+void EvalVisitor::visit(const PropositionalTrue &) { result = true; }
+void EvalVisitor::visit(const PropositionalFalse &) { result = false; }
+
+void EvalVisitor::visit(const PropositionalAtom &a) {
+  for (const auto &x : interpretation) {
+    if (*x == a) {
+      result = true;
+      return;
+    }
+  }
+  result = false;
+}
+
+void EvalVisitor::visit(const PropositionalNot &a) {
+  result = not apply(*a.get_arg());
+}
+
+void EvalVisitor::visit(const PropositionalAnd &a) {
+  result = true;
+  for (const auto &subformula : a.get_container()) {
+    if (!apply(*subformula)) {
+      result = false;
+      return;
+    }
+  }
+}
+
+void EvalVisitor::visit(const PropositionalOr &a) {
+  result = false;
+  for (const auto &subformula : a.get_container()) {
+    if (apply(*subformula)) {
+      result = true;
+      return;
+    }
+  }
+}
+
+bool EvalVisitor::apply(const PropositionalFormula &b) {
+  b.accept(*this);
+  return result;
+}
+
+bool eval(const PropositionalFormula &f, set_atoms_ptr &interpretation) {
+  EvalVisitor evalVisitor{interpretation};
+  return evalVisitor.apply(f);
+}
+
 } // namespace lydia
 } // namespace whitemech
