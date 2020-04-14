@@ -131,21 +131,5 @@ public:
   dfa_state_ptr next_state(const interpretation &i) const;
 };
 
-class DFATransition : public Basic {
-public:
-  const static TypeID type_code_id = TypeID::t_DFATransition;
-  tuple_dfa_transition transition;
-  DFATransition(const DFAState &a, interpretation &s, const DFAState &b);
-
-  void accept(Visitor &v) const override{};
-  hash_t __hash__() const override {
-    // TODO
-    return 0;
-  }
-
-  int compare(const Basic &rhs) const override;
-  bool is_equal(const Basic &rhs) const override;
-};
-
 } // namespace lydia
 } // namespace whitemech

@@ -60,13 +60,11 @@ dfa *to_dfa(LDLfFormula &formula) {
      *       improvement: delta function returns a list of possible successors
      *                    (no interpretation to provide)
      */
-    // TODO temporarily, use empty interpretation
     interpretation i;
     const auto next_state = current_state->next_state(i);
     // update states/transitions
     states.insert(next_state);
-    transitions.insert(
-        std::make_shared<DFATransition>(*current_state, i, *next_state));
+    transitions.insert(std::tie(*current_state, i, *next_state));
     if (visited.find(next_state) == visited.end())
       to_be_visited.push(next_state);
   }
@@ -85,8 +83,8 @@ bool NFAState::is_equal(const Basic &rhs) const {
 }
 
 int NFAState::compare(const Basic &rhs) const {
-  return is_a<NFAState>(rhs) and
-         unified_compare(this->formulas,
+  assert(is_a<NFAState>(rhs));
+  return unified_compare(this->formulas,
                          dynamic_cast<const NFAState &>(rhs).formulas);
 }
 
@@ -128,7 +126,9 @@ set_nfa_states NFAState::next_states(const interpretation &i) const {
   return set_nfa_states();
 }
 
-DFAState::DFAState(set_nfa_states states) : states{std::move(states)} {}
+DFAState::DFAState(set_nfa_states states) : states{std::move(states)} {
+  this->type_code_ = type_code_id;
+}
 DFAState::DFAState(const set_formulas &formulas)
     : states{set_nfa_states{std::make_shared<NFAState>(formulas)}} {
   this->type_code_ = type_code_id;
@@ -142,8 +142,8 @@ hash_t DFAState::__hash__() const {
 }
 
 int DFAState::compare(const Basic &rhs) const {
-  return is_a<DFAState>(rhs) and
-         unified_compare(this->states,
+  assert(is_a<DFAState>(rhs));
+  return unified_compare(this->states,
                          dynamic_cast<const DFAState &>(rhs).states);
 }
 
@@ -167,24 +167,6 @@ dfa_state_ptr DFAState::next_state(const interpretation &i) const {
     successor_nfa_states.insert(successors.begin(), successors.end());
   }
   return std::make_shared<DFAState>(successor_nfa_states);
-}
-
-bool DFATransition::is_equal(const Basic &rhs) const {
-  return is_a<DFATransition>(rhs) and
-         unified_eq(this->transition,
-                    dynamic_cast<const DFATransition &>(rhs).transition);
-}
-
-int DFATransition::compare(const Basic &rhs) const {
-  return is_a<DFATransition>(rhs) and
-         unified_compare(this->transition,
-                         dynamic_cast<const DFATransition &>(rhs).transition);
-}
-
-DFATransition::DFATransition(const DFAState &a, interpretation &s,
-                             const DFAState &b)
-    : transition{std::tie(a, s, b)} {
-  this->type_code_ = type_code_id;
 }
 
 } // namespace lydia

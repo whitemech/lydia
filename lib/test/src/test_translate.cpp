@@ -21,8 +21,18 @@
 
 namespace whitemech::lydia::Test {
 
-TEST_CASE("Translate", "[translate]") {
+TEST_CASE("Set of DFA states", "[translate]") {
+  auto a = DFAState(set_nfa_states{});
+  auto b = DFAState(set_formulas{std::make_shared<LDLfBooleanAtom>(true)});
+  auto c = DFAState(set_nfa_states{});
 
+  REQUIRE(a == c);
+  REQUIRE(c == a);
+  REQUIRE(!(a == b));
+  REQUIRE(a < b);
+}
+
+TEST_CASE("Translate", "[translate]") {
   auto ff_and_tt = set_formulas({boolean(false), boolean(true)});
   auto not_and = LDLfNot(std::make_shared<LDLfAnd>(ff_and_tt));
   // TODO complete.

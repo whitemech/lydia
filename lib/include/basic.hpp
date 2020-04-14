@@ -33,7 +33,6 @@ enum TypeID {
   t_LDLfNot,
   t_NFAState,
   t_DFAState,
-  t_DFATransition,
   t_PropositionalTrue,
   t_PropositionalFalse,
   t_PropositionalAtom,

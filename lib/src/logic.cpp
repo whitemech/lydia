@@ -188,6 +188,7 @@ std::shared_ptr<const LDLfFormula> LDLfNot::logical_not() const {
 hash_t QuotedFormula::__hash__() const { return this->formula->__hash__(); }
 
 int QuotedFormula::compare(const Basic &rhs) const {
+  assert(is_a<QuotedFormula>(rhs));
   return this->formula->compare(rhs);
 }
 

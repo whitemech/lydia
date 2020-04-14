@@ -49,6 +49,8 @@ typedef std::vector<interpretation> trace;
 typedef std::shared_ptr<const Basic> basic_ptr;
 typedef std::shared_ptr<const PropositionalAtom> atom_ptr;
 typedef std::set<atom_ptr, SharedComparator> set_atoms;
+typedef std::tuple<const DFAState &, interpretation &, const DFAState &>
+    tuple_dfa_transition;
 typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
 typedef std::set<std::shared_ptr<const Basic>, SharedComparator> set_basic;
 typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
@@ -60,12 +62,10 @@ typedef std::set<std::shared_ptr<const PropositionalFormula>, SharedComparator>
     set_prop_formulas;
 typedef std::shared_ptr<const NFAState> nfa_state_ptr;
 typedef std::shared_ptr<const DFAState> dfa_state_ptr;
-typedef std::shared_ptr<const DFATransition> dfa_transition_ptr;
+typedef std::shared_ptr<tuple_dfa_transition> dfa_transition_ptr;
 typedef std::set<nfa_state_ptr, SharedComparator> set_nfa_states;
 typedef std::set<dfa_state_ptr, SharedComparator> set_dfa_states;
-typedef std::tuple<const DFAState &, interpretation &, const DFAState &>
-    tuple_dfa_transition;
-typedef std::set<dfa_transition_ptr> set_dfa_transitions;
+typedef std::set<tuple_dfa_transition> set_dfa_transitions;
 typedef std::vector<int> item;
 typedef std::vector<CUDD::BDD> vbdd;
 

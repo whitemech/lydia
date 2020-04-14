@@ -164,6 +164,7 @@ inline int unified_compare(const std::vector<T> &a, const std::vector<T> &b) {
 
 template <typename T, typename U>
 inline int unified_compare(const std::set<T, U> &a, const std::set<T, U> &b) {
+  // TODO try to replace this with native comparison: a < b
   return ordered_compare(a, b);
 }
 

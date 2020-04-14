@@ -27,7 +27,8 @@ hash_t PropositionalTrue::__hash__() const {
 }
 
 int PropositionalTrue::compare(const Basic &rhs) const {
-  return is_a<PropositionalTrue>(rhs);
+  assert(is_a<PropositionalTrue>(rhs));
+  return 0;
 }
 
 bool PropositionalTrue::is_equal(const Basic &rhs) const {
@@ -40,7 +41,8 @@ hash_t PropositionalFalse::__hash__() const {
 }
 
 int PropositionalFalse::compare(const Basic &rhs) const {
-  return is_a<PropositionalFalse>(rhs);
+  assert(is_a<PropositionalFalse>(rhs));
+  return 0;
 }
 
 bool PropositionalFalse::is_equal(const Basic &rhs) const {
@@ -65,11 +67,15 @@ PropositionalAtom::PropositionalAtom(const std::string &name)
 hash_t PropositionalAtom::__hash__() const { return this->symbol->__hash__(); }
 
 int PropositionalAtom::compare(const Basic &rhs) const {
-  return this->symbol->__hash__();
+  assert(is_a<PropositionalAtom>(rhs));
+  return this->symbol->__cmp__(
+      *dynamic_cast<const PropositionalAtom &>(rhs).symbol);
 }
 
 bool PropositionalAtom::is_equal(const Basic &rhs) const {
-  return this->symbol->__hash__();
+  return is_a<PropositionalAtom>(rhs) and
+         this->symbol->is_equal(
+             *dynamic_cast<const PropositionalAtom &>(rhs).symbol);
 }
 
 PropositionalAnd::PropositionalAnd(const set_prop_formulas &s) : container_{s} {
