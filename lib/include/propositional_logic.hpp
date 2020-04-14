@@ -32,7 +32,7 @@ public:
   PropositionalTrue() { this->type_code_ = type_code_id; }
 
   void accept(Visitor &v) const override;
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
   int compare(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
 };
@@ -43,7 +43,7 @@ public:
   PropositionalFalse() { this->type_code_ = type_code_id; }
 
   void accept(Visitor &v) const override;
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
   int compare(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
 };
@@ -66,7 +66,7 @@ public:
   explicit PropositionalAtom(const std::string &);
   explicit PropositionalAtom(std::shared_ptr<const Basic> &p);
   void accept(Visitor &v) const override;
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
   int compare(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
 };
@@ -80,7 +80,7 @@ public:
   void accept(Visitor &v) const override;
   explicit PropositionalAnd(const set_prop_formulas &s);
   bool is_canonical(const set_prop_formulas &) { return true; };
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
   virtual vec_prop_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
@@ -96,7 +96,7 @@ public:
   void accept(Visitor &v) const override;
   explicit PropositionalOr(const set_prop_formulas &s);
   bool is_canonical(const set_prop_formulas &container_);
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
   virtual vec_prop_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
@@ -113,7 +113,7 @@ public:
   explicit PropositionalNot(
       const std::shared_ptr<const PropositionalFormula> &in);
   bool is_canonical(const PropositionalFormula &s) { return true; };
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
   virtual vec_basic get_args() const;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;

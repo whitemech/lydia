@@ -22,6 +22,7 @@
 #include <queue>
 #include <translate.hpp>
 #include <utility>
+#include <utils/powerset.hpp>
 
 namespace whitemech {
 namespace lydia {
@@ -40,6 +41,7 @@ dfa *to_dfa(LDLfFormula &formula) {
 
   // find all atoms
   set_atoms_ptr atoms = find_atoms(*formula_nnf);
+  auto all_interpretations = powerset<atom_ptr, SharedComparator>(atoms);
 
   //  Check if the initial state is final
   if (initial_state->is_final()) {
@@ -60,13 +62,14 @@ dfa *to_dfa(LDLfFormula &formula) {
      *       improvement: delta function returns a list of possible successors
      *                    (no interpretation to provide)
      */
-    interpretation i;
-    const auto next_state = current_state->next_state(i);
-    // update states/transitions
-    states.insert(next_state);
-    transitions.insert(std::tie(*current_state, i, *next_state));
-    if (visited.find(next_state) == visited.end())
-      to_be_visited.push(next_state);
+    for (const auto &i : all_interpretations) {
+      const auto next_state = current_state->next_state(i);
+      // update states/transitions
+      states.insert(next_state);
+      transitions.insert(std::tie(*current_state, i, *next_state));
+      if (visited.find(next_state) == visited.end())
+        to_be_visited.push(next_state);
+    }
   }
 
   return nullptr;
@@ -88,7 +91,7 @@ int NFAState::compare(const Basic &rhs) const {
                          dynamic_cast<const NFAState &>(rhs).formulas);
 }
 
-hash_t NFAState::__hash__() const {
+hash_t NFAState::compute_hash_() const {
   hash_t seed = type_code_id;
   for (const auto &a : formulas)
     hash_combine<Basic>(seed, *a);
@@ -108,7 +111,7 @@ bool NFAState::is_final() const {
   return conjunction.is_equal(PropositionalTrue());
 }
 
-set_nfa_states NFAState::next_states(const interpretation &i) const {
+set_nfa_states NFAState::next_states(const set_atoms_ptr &i) const {
   // This will be put in conjunction with other formulas
   vec_prop_formulas args{std::make_shared<PropositionalTrue>(),
                          std::make_shared<PropositionalTrue>()};
@@ -131,7 +134,7 @@ DFAState::DFAState(const set_formulas &formulas)
   this->type_code_ = type_code_id;
 }
 
-hash_t DFAState::__hash__() const {
+hash_t DFAState::compute_hash_() const {
   hash_t seed = type_code_id;
   for (const auto &a : states)
     hash_combine<Basic>(seed, *a);
@@ -157,7 +160,7 @@ bool DFAState::is_final() const {
   return false;
 }
 
-dfa_state_ptr DFAState::next_state(const interpretation &i) const {
+dfa_state_ptr DFAState::next_state(const set_atoms_ptr &i) const {
   set_nfa_states successor_nfa_states;
   for (const auto &nfa_state : states) {
     auto successors = nfa_state->next_states(i);

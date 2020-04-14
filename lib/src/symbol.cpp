@@ -41,7 +41,7 @@ int Symbol::compare(const Basic &o) const {
   return name_ < s.name_ ? -1 : 1;
 }
 
-hash_t Symbol::__hash__() const {
+hash_t Symbol::compute_hash_() const {
   hash_t seed = 0;
   hash_combine(seed, name_);
   return seed;

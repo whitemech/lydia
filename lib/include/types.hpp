@@ -49,7 +49,7 @@ typedef std::vector<interpretation> trace;
 typedef std::shared_ptr<const Basic> basic_ptr;
 typedef std::shared_ptr<const PropositionalAtom> atom_ptr;
 typedef std::set<atom_ptr, SharedComparator> set_atoms_ptr;
-typedef std::tuple<const DFAState &, interpretation &, const DFAState &>
+typedef std::tuple<const DFAState &, const set_atoms_ptr &, const DFAState &>
     tuple_dfa_transition;
 typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
 typedef std::set<std::shared_ptr<const Basic>, SharedComparator> set_basic;

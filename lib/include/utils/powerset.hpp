@@ -17,16 +17,17 @@
  */
 
 #include <set>
-namespace whitemech{
-namespace lydia{
+#include <types.hpp>
+namespace whitemech {
+namespace lydia {
 
-template <typename T>
-std::set<std::set<T>> powerset(std::set<T>& s){
+template <typename T, typename U = std::less<T>>
+std::set<std::set<T, U>> powerset(std::set<T, U> &s) {
   /*TODO this method only works for a set of elements
    * whose size is lower than 64. Handle those cases.
-  */
+   */
   assert(s.size() < 64);
-  std::set<std::set<T>> result;
+  std::set<std::set<T, U>> result;
   auto vect = std::vector<T>(s.begin(), s.end());
   size_t size = s.size();
 
@@ -34,15 +35,15 @@ std::set<std::set<T>> powerset(std::set<T>& s){
   // that defines membership to the ith subset, for each element.
   // the digit at jth position means "if 1, the jth element
   // belongs to the ith subset".
-  for (int i = 0; i < std::pow(2, size); i++){
-    std::set<T> tmp;
+  for (int i = 0; i < std::pow(2, size); i++) {
+    std::set<T, U> tmp;
     u_int64_t mask = i;
     int index = 0;
-    while (mask){
-      if(mask % 2 != 0){
+    while (mask) {
+      if (mask % 2 != 0) {
         tmp.insert(vect[index]);
       }
-      mask>>=1;
+      mask >>= 1;
       ++index;
     }
     result.insert(tmp);
@@ -50,5 +51,5 @@ std::set<std::set<T>> powerset(std::set<T>& s){
   return result;
 }
 
-}}
-
+} // namespace lydia
+} // namespace whitemech

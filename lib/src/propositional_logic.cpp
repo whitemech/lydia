@@ -21,7 +21,7 @@
 namespace whitemech {
 namespace lydia {
 
-hash_t PropositionalTrue::__hash__() const {
+hash_t PropositionalTrue::compute_hash_() const {
   hash_t seed = type_code_id;
   return seed;
 }
@@ -35,7 +35,7 @@ bool PropositionalTrue::is_equal(const Basic &rhs) const {
   return is_a<PropositionalTrue>(rhs);
 };
 
-hash_t PropositionalFalse::__hash__() const {
+hash_t PropositionalFalse::compute_hash_() const {
   hash_t seed = type_code_id;
   return seed;
 }
@@ -64,11 +64,13 @@ PropositionalAtom::PropositionalAtom(const std::string &name)
   this->type_code_ = type_code_id;
 }
 
-hash_t PropositionalAtom::__hash__() const { return this->symbol->__hash__(); }
+hash_t PropositionalAtom::compute_hash_() const {
+  return this->symbol->compute_hash_();
+}
 
 int PropositionalAtom::compare(const Basic &rhs) const {
   assert(is_a<PropositionalAtom>(rhs));
-  return this->symbol->__cmp__(
+  return this->symbol->compare_(
       *dynamic_cast<const PropositionalAtom &>(rhs).symbol);
 }
 
@@ -83,7 +85,7 @@ PropositionalAnd::PropositionalAnd(const set_prop_formulas &s) : container_{s} {
   assert(is_canonical(s));
 }
 
-hash_t PropositionalAnd::__hash__() const {
+hash_t PropositionalAnd::compute_hash_() const {
   hash_t seed = TypeID::t_PropositionalAnd;
   for (const auto &a : container_)
     hash_combine<Basic>(seed, *a);
@@ -115,7 +117,7 @@ PropositionalOr::PropositionalOr(const set_prop_formulas &s) : container_{s} {
   this->type_code_ = type_code_id;
 }
 
-hash_t PropositionalOr::__hash__() const {
+hash_t PropositionalOr::compute_hash_() const {
   hash_t seed = TypeID::t_PropositionalOr;
   for (const auto &a : container_)
     hash_combine<Basic>(seed, *a);
@@ -155,7 +157,7 @@ PropositionalNot::PropositionalNot(
   assert(is_canonical(*in));
 }
 
-hash_t PropositionalNot::__hash__() const {
+hash_t PropositionalNot::compute_hash_() const {
   hash_t seed = TypeID::t_PropositionalNot;
   hash_combine<Basic>(seed, *arg_);
   return seed;
@@ -174,7 +176,7 @@ bool PropositionalNot::is_equal(const Basic &o) const {
 
 int PropositionalNot::compare(const Basic &o) const {
   assert(is_a<PropositionalNot>(o));
-  return arg_->__cmp__(*dynamic_cast<const PropositionalNot &>(o).get_arg());
+  return arg_->compare_(*dynamic_cast<const PropositionalNot &>(o).get_arg());
 }
 
 std::shared_ptr<const PropositionalFormula> PropositionalNot::get_arg() const {

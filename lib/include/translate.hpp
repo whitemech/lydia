@@ -57,7 +57,7 @@ public:
   const set_formulas formulas;
   explicit NFAState(set_formulas formulas);
   void accept(Visitor &v) const override{};
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
   int compare(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
 
@@ -78,10 +78,10 @@ public:
    *
    * That is, compute the successors of each NFA state in the current DFA state.
    *
-   * @param i the propositional interpretation.
+   * @param i the propositional interpretation (a set of propositional atoms).
    * @return the next NFA states.
    */
-  set_nfa_states next_states(const interpretation &i) const;
+  set_nfa_states next_states(const set_atoms_ptr &i) const;
 };
 
 /*!
@@ -104,7 +104,7 @@ public:
   explicit DFAState(const set_formulas &formulas);
 
   void accept(Visitor &v) const override{};
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
   int compare(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
 
@@ -125,10 +125,10 @@ public:
    *
    * That is, compute the successor of each NFA state in the current DFA state.
    *
-   * @param i the propositional interpretation.
+   * @param i the propositional interpretation (a set of propositional atoms).
    * @return the next DFA state.
    */
-  dfa_state_ptr next_state(const interpretation &i) const;
+  dfa_state_ptr next_state(const set_atoms_ptr &i) const;
 };
 
 } // namespace lydia

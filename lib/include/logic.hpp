@@ -38,7 +38,7 @@ public:
   const static TypeID type_code_id = TypeID::t_LDLfBooleanAtom;
   void accept(Visitor &v) const override;
   explicit LDLfBooleanAtom(bool b);
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
   bool get_value() const;
   virtual vec_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
@@ -62,7 +62,7 @@ public:
   void accept(Visitor &v) const override;
   explicit LDLfAnd(const set_formulas &s);
   bool is_canonical(const set_formulas &container_);
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
   virtual vec_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
@@ -79,7 +79,7 @@ public:
   void accept(Visitor &v) const override;
   explicit LDLfOr(const set_formulas &s);
   bool is_canonical(const set_formulas &container_); // TODO
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
   virtual vec_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
@@ -96,7 +96,7 @@ public:
   void accept(Visitor &v) const override;
   explicit LDLfNot(const std::shared_ptr<const LDLfFormula> &in);
   bool is_canonical(const LDLfFormula &s);
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
   virtual vec_basic get_args() const;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
@@ -121,7 +121,7 @@ public:
   }
 
   void accept(Visitor &v) const override;
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
   int compare(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
 };

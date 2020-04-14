@@ -79,7 +79,7 @@ public:
   bool operator!=(const Basic &o) const { return !(*this == o); };
 
   //! Comparator operator
-  bool operator<(const Basic &rhs) const { return this->__cmp__(rhs) == -1; };
+  bool operator<(const Basic &rhs) const { return this->compare_(rhs) == -1; };
   bool operator>(const Basic &rhs) const { return rhs < *this; }
   bool operator<=(const Basic &rhs) const { return !(*this > rhs); }
   bool operator>=(const Basic &rhs) const { return !(*this < rhs); }
@@ -89,7 +89,7 @@ public:
   Use Basic.hash() which gives a cached version of the hash.
   \return 64-bit integer value for the hash
   */
-  virtual hash_t __hash__() const = 0;
+  virtual hash_t compute_hash_() const = 0;
 
   /*! Returns the hash of the Basic class:
       This method caches the value.
@@ -110,7 +110,7 @@ public:
    if you want general comparison.
    */
   virtual int compare(const Basic &o) const = 0;
-  int __cmp__(const Basic &o) const;
+  int compare_(const Basic &o) const;
   virtual void accept(Visitor &v) const = 0;
   std::string str() const;
 };
@@ -125,7 +125,7 @@ template <class T> void hash_combine(hash_t &seed, const T &v);
 // Inline members and functions
 inline hash_t Basic::hash() const {
   if (hash_ == 0)
-    hash_ = __hash__();
+    hash_ = compute_hash_();
   return hash_;
 }
 

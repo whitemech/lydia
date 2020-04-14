@@ -31,7 +31,7 @@ LDLfBooleanAtom::LDLfBooleanAtom(bool b) : b_{b} {
   this->type_code_ = type_code_id;
 }
 
-hash_t LDLfBooleanAtom::__hash__() const {
+hash_t LDLfBooleanAtom::compute_hash_() const {
   return b_ ? TypeID::t_LDLfBooleanTrue : TypeID::t_LDLfBooleanFalse;
 }
 
@@ -63,7 +63,7 @@ LDLfAnd::LDLfAnd(const set_formulas &s) : container_{s} {
   assert(is_canonical(s));
 }
 
-hash_t LDLfAnd::__hash__() const {
+hash_t LDLfAnd::compute_hash_() const {
   hash_t seed = TypeID::t_LDLfAnd;
   for (const auto &a : container_)
     hash_combine<Basic>(seed, *a);
@@ -107,7 +107,7 @@ LDLfOr::LDLfOr(const set_formulas &s) : container_{s} {
   this->type_code_ = type_code_id;
 }
 
-hash_t LDLfOr::__hash__() const {
+hash_t LDLfOr::compute_hash_() const {
   hash_t seed = TypeID::t_LDLfOr;
   for (const auto &a : container_)
     hash_combine<Basic>(seed, *a);
@@ -152,7 +152,7 @@ LDLfNot::LDLfNot(const std::shared_ptr<const LDLfFormula> &in) : arg_{in} {
   assert(is_canonical(*in));
 }
 
-hash_t LDLfNot::__hash__() const {
+hash_t LDLfNot::compute_hash_() const {
   hash_t seed = TypeID::t_LDLfNot;
   hash_combine<Basic>(seed, *arg_);
   return seed;
@@ -171,7 +171,7 @@ bool LDLfNot::is_equal(const Basic &o) const {
 
 int LDLfNot::compare(const Basic &o) const {
   assert(is_a<LDLfNot>(o));
-  return arg_->__cmp__(*dynamic_cast<const LDLfNot &>(o).get_arg());
+  return arg_->compare_(*dynamic_cast<const LDLfNot &>(o).get_arg());
 }
 
 bool LDLfNot::is_canonical(const LDLfFormula &in) {
@@ -185,7 +185,9 @@ std::shared_ptr<const LDLfFormula> LDLfNot::logical_not() const {
   return this->get_arg();
 }
 
-hash_t QuotedFormula::__hash__() const { return this->formula->__hash__(); }
+hash_t QuotedFormula::compute_hash_() const {
+  return this->formula->compute_hash_();
+}
 
 int QuotedFormula::compare(const Basic &rhs) const {
   assert(is_a<QuotedFormula>(rhs));

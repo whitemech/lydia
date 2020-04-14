@@ -35,7 +35,7 @@ public:
   inline const std::string &get_name() const { return name_; }
 
   //! \return Size of the hash
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
 
   /*! Equality comparator
    * \param o - Object to be compared with
