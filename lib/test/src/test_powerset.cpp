@@ -14,28 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include "catch.hpp"
+#include <set>
+#include <utils/powerset.hpp>
 
-#include "basic.hpp"
+namespace whitemech::lydia::Test {
 
-namespace whitemech::lydia {
-
-int Basic::compare_(const Basic &o) const {
-  auto a = this->get_type_code();
-  auto b = o.get_type_code();
-  if (a == b) {
-    return this->compare(o);
-  } else {
-    // We return the order given by the numerical value of the TypeID enum
-    // type.
-    // The types don't need to be ordered in any given way, they just need
-    // to be ordered.
-    return a < b ? -1 : 1;
-  }
+TEST_CASE("powerset", "[powerset]") {
+  auto s = std::set<int>({0, 1, 2});
+  std::vector<std::set<int>> result = powerset<int>(s);
+  REQUIRE(result[0] == std::set<int>({}));
+  REQUIRE(result[1] == std::set<int>({0}));
+  REQUIRE(result[2] == std::set<int>({1}));
+  REQUIRE(result[3] == std::set<int>({0, 1}));
+  REQUIRE(result[4] == std::set<int>({2}));
+  REQUIRE(result[5] == std::set<int>({0, 2}));
+  REQUIRE(result[6] == std::set<int>({1, 2}));
+  REQUIRE(result[7] == std::set<int>({0, 1, 2}));
 }
 
-std::string Basic::str() const {
-  // TODO: use visitor
-  return std::string();
-}
-
-} // namespace whitemech::lydia
+} // namespace whitemech::lydia::Test

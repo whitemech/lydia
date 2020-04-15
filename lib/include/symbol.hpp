@@ -35,15 +35,13 @@ public:
   inline const std::string &get_name() const { return name_; }
 
   //! \return Size of the hash
-  hash_t __hash__() const override;
+  hash_t compute_hash_() const override;
 
   /*! Equality comparator
    * \param o - Object to be compared with
    * \return whether the two objects are equal
    * */
   bool is_equal(const Basic &o) const override;
-  bool operator==(const Basic &o) const;
-  bool operator!=(const Basic &o) const;
 
   /*! Comparison operator
    * \param o - Object to be compared with

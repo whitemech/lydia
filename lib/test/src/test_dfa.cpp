@@ -97,9 +97,8 @@ TEST_CASE("Test DFA initialization", "[dfa]") {
 
   SECTION("Initialize with Cudd manager.") {
     auto mgr = new CUDD::Cudd();
-    auto my_dfa = // NOLINT
-        dfa::read_from_file("../../../lib/test/src/data/mona/eventually_a.dfa",
-                            mgr = mgr);
+    auto my_dfa = dfa::read_from_file( // NOLINT
+        "../../../lib/test/src/data/mona/eventually_a.dfa", mgr = mgr);
   }
 }
 

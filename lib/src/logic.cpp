@@ -18,9 +18,6 @@
 #include "logic.hpp"
 #include "utils/compare.hpp"
 #include <cassert>
-#include <iostream>
-#include <utility>
-#include <utils/print.hpp>
 
 namespace whitemech {
 namespace lydia {
@@ -34,11 +31,8 @@ LDLfBooleanAtom::LDLfBooleanAtom(bool b) : b_{b} {
   this->type_code_ = type_code_id;
 }
 
-hash_t LDLfBooleanAtom::__hash__() const {
-  hash_t seed = TypeID::t_LDLfBooleanAtom;
-  if (b_)
-    ++seed;
-  return seed;
+hash_t LDLfBooleanAtom::compute_hash_() const {
+  return b_ ? TypeID::t_LDLfBooleanTrue : TypeID::t_LDLfBooleanFalse;
 }
 
 bool LDLfBooleanAtom::get_value() const { return b_; }
@@ -64,15 +58,12 @@ std::shared_ptr<const LDLfFormula> LDLfBooleanAtom::logical_not() const {
   return boolean(not this->get_value());
 }
 
-bool LDLfBooleanAtom::operator==(const Basic &o) const { return is_equal(o); }
-bool LDLfBooleanAtom::operator!=(const Basic &o) const { return !is_equal(o); }
-
-LDLfAnd::LDLfAnd(set_formulas s) : container_{std::move(s)} {
+LDLfAnd::LDLfAnd(const set_formulas &s) : container_{s} {
   this->type_code_ = type_code_id;
   assert(is_canonical(s));
 }
 
-hash_t LDLfAnd::__hash__() const {
+hash_t LDLfAnd::compute_hash_() const {
   hash_t seed = TypeID::t_LDLfAnd;
   for (const auto &a : container_)
     hash_combine<Basic>(seed, *a);
@@ -91,8 +82,8 @@ vec_formulas LDLfAnd::get_args() const {
 
 bool LDLfAnd::is_equal(const Basic &o) const {
   return is_a<LDLfAnd>(o) and
-         ordered_eq_containers(
-             container_, dynamic_cast<const LDLfAnd &>(o).get_container());
+         unified_eq(container_,
+                    dynamic_cast<const LDLfAnd &>(o).get_container());
 }
 
 int LDLfAnd::compare(const Basic &o) const {
@@ -112,11 +103,11 @@ std::shared_ptr<const LDLfFormula> LDLfAnd::logical_not() const {
   return std::make_shared<LDLfOr>(cont);
 }
 
-LDLfOr::LDLfOr(set_formulas s) : container_{std::move(s)} {
+LDLfOr::LDLfOr(const set_formulas &s) : container_{s} {
   this->type_code_ = type_code_id;
 }
 
-hash_t LDLfOr::__hash__() const {
+hash_t LDLfOr::compute_hash_() const {
   hash_t seed = TypeID::t_LDLfOr;
   for (const auto &a : container_)
     hash_combine<Basic>(seed, *a);
@@ -130,8 +121,8 @@ vec_formulas LDLfOr::get_args() const {
 
 bool LDLfOr::is_equal(const Basic &o) const {
   return is_a<LDLfOr>(o) and
-         ordered_eq_containers(container_,
-                               dynamic_cast<const LDLfOr &>(o).get_container());
+         unified_eq(container_,
+                    dynamic_cast<const LDLfOr &>(o).get_container());
 }
 
 int LDLfOr::compare(const Basic &o) const {
@@ -161,7 +152,7 @@ LDLfNot::LDLfNot(const std::shared_ptr<const LDLfFormula> &in) : arg_{in} {
   assert(is_canonical(*in));
 }
 
-hash_t LDLfNot::__hash__() const {
+hash_t LDLfNot::compute_hash_() const {
   hash_t seed = TypeID::t_LDLfNot;
   hash_combine<Basic>(seed, *arg_);
   return seed;
@@ -175,12 +166,12 @@ vec_basic LDLfNot::get_args() const {
 
 bool LDLfNot::is_equal(const Basic &o) const {
   return is_a<LDLfNot>(o) and
-         eq(*arg_, dynamic_cast<const LDLfNot &>(o).get_arg());
+         eq(*arg_, *dynamic_cast<const LDLfNot &>(o).get_arg());
 }
 
 int LDLfNot::compare(const Basic &o) const {
   assert(is_a<LDLfNot>(o));
-  return arg_->__cmp__(dynamic_cast<const LDLfNot &>(o).get_arg());
+  return arg_->compare_(*dynamic_cast<const LDLfNot &>(o).get_arg());
 }
 
 bool LDLfNot::is_canonical(const LDLfFormula &in) {
@@ -188,10 +179,23 @@ bool LDLfNot::is_canonical(const LDLfFormula &in) {
   return true;
 }
 
-const LDLfFormula &LDLfNot::get_arg() const { return *arg_; }
+std::shared_ptr<const LDLfFormula> LDLfNot::get_arg() const { return arg_; }
 
 std::shared_ptr<const LDLfFormula> LDLfNot::logical_not() const {
-  return this->get_arg().logical_not();
+  return this->get_arg();
+}
+
+hash_t QuotedFormula::compute_hash_() const {
+  return this->formula->compute_hash_();
+}
+
+int QuotedFormula::compare(const Basic &rhs) const {
+  assert(is_a<QuotedFormula>(rhs));
+  return this->formula->compare(rhs);
+}
+
+bool QuotedFormula::is_equal(const Basic &rhs) const {
+  return this->formula->is_equal(rhs);
 }
 
 } // namespace lydia

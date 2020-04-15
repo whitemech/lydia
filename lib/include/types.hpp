@@ -29,6 +29,11 @@ namespace lydia {
 class Basic;
 class Symbol;
 class LDLfFormula;
+class PropositionalFormula;
+class PropositionalAtom;
+class NFAState;
+class DFAState;
+class DFATransition;
 
 struct SharedComparator {
   template <typename T>
@@ -39,16 +44,30 @@ struct SharedComparator {
 };
 
 typedef uint64_t hash_t;
+typedef std::vector<int> interpretation;
+typedef std::vector<interpretation> trace;
+typedef std::shared_ptr<const Basic> basic_ptr;
+typedef std::shared_ptr<const PropositionalAtom> atom_ptr;
+typedef std::set<atom_ptr, SharedComparator> set_atoms_ptr;
+typedef std::tuple<const DFAState &, const set_atoms_ptr &, const DFAState &>
+    tuple_dfa_transition;
 typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
 typedef std::set<std::shared_ptr<const Basic>, SharedComparator> set_basic;
 typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
 typedef std::set<std::shared_ptr<const LDLfFormula>, SharedComparator>
     set_formulas;
+typedef std::vector<std::shared_ptr<const PropositionalFormula>>
+    vec_prop_formulas;
+typedef std::set<std::shared_ptr<const PropositionalFormula>, SharedComparator>
+    set_prop_formulas;
+typedef std::shared_ptr<const NFAState> nfa_state_ptr;
+typedef std::shared_ptr<const DFAState> dfa_state_ptr;
+typedef std::shared_ptr<tuple_dfa_transition> dfa_transition_ptr;
+typedef std::set<nfa_state_ptr, SharedComparator> set_nfa_states;
+typedef std::set<dfa_state_ptr, SharedComparator> set_dfa_states;
+typedef std::set<tuple_dfa_transition> set_dfa_transitions;
 typedef std::vector<int> item;
-typedef std::vector<int> interpretation;
-typedef std::vector<interpretation> trace;
 typedef std::vector<CUDD::BDD> vbdd;
-typedef std::vector<CUDD::BDD *> vbdd_ptr;
 
 class not_implemented_error : public std::logic_error {
 public:

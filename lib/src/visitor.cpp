@@ -16,7 +16,8 @@
  */
 
 #include "visitor.hpp"
-#include "logic.hpp"
+#include <delta.hpp>
+#include <propositional_logic.hpp>
 
 namespace whitemech {
 namespace lydia {
@@ -26,5 +27,15 @@ void LDLfOr::accept(Visitor &v) const { v.visit(*this); }
 void LDLfAnd::accept(Visitor &v) const { v.visit(*this); }
 void LDLfNot::accept(Visitor &v) const { v.visit(*this); }
 // TODO add other accept methods
+
+void PropositionalTrue::accept(Visitor &v) const { v.visit(*this); }
+void PropositionalFalse::accept(Visitor &v) const { v.visit(*this); }
+void PropositionalAtom::accept(Visitor &v) const { v.visit(*this); }
+void PropositionalAnd::accept(Visitor &v) const { v.visit(*this); }
+void PropositionalOr::accept(Visitor &v) const { v.visit(*this); }
+void PropositionalNot::accept(Visitor &v) const { v.visit(*this); }
+
+void QuotedFormula::accept(Visitor &v) const { v.visit(*this); }
+
 } // namespace lydia
 } // namespace whitemech
