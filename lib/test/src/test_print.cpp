@@ -38,7 +38,7 @@ TEST_CASE("string printer", "[string_printer]") {
 
   SECTION("to string tt & ff") {
     auto f = LDLfAnd({boolean(true), boolean(false)});
-    auto expected = "And(tt, ff)";
+    auto expected = "And(ff, tt)";
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
@@ -46,7 +46,7 @@ TEST_CASE("string printer", "[string_printer]") {
   SECTION("to string tt | ff") {
     StrPrinter strPrinter;
     auto f = LDLfOr({boolean(true), boolean(false)});
-    auto expected = "Or(tt, ff)";
+    auto expected = "Or(ff, tt)";
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }

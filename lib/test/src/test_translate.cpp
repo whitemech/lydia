@@ -14,28 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include "catch.hpp"
+#include "nnf.hpp"
+#include <iostream>
+#include <translate.hpp>
 
-#include "basic.hpp"
+namespace whitemech::lydia::Test {
 
-namespace whitemech::lydia {
+TEST_CASE("Set of DFA states", "[translate]") {
+  auto a = DFAState(set_nfa_states{});
+  auto b = DFAState(set_formulas{std::make_shared<LDLfBooleanAtom>(true)});
+  auto c = DFAState(set_nfa_states{});
 
-int Basic::compare_(const Basic &o) const {
-  auto a = this->get_type_code();
-  auto b = o.get_type_code();
-  if (a == b) {
-    return this->compare(o);
-  } else {
-    // We return the order given by the numerical value of the TypeID enum
-    // type.
-    // The types don't need to be ordered in any given way, they just need
-    // to be ordered.
-    return a < b ? -1 : 1;
-  }
+  REQUIRE(a == c);
+  REQUIRE(c == a);
+  REQUIRE(!(a == b));
+  REQUIRE(a < b);
 }
 
-std::string Basic::str() const {
-  // TODO: use visitor
-  return std::string();
+TEST_CASE("Translate", "[translate]") {
+  auto args = set_formulas({boolean(false), boolean(true)});
+  auto ff_and_tt = std::make_shared<LDLfAnd>(args);
+  auto not_and = LDLfNot(ff_and_tt);
+  // TODO complete.
+  to_dfa(not_and);
 }
 
-} // namespace whitemech::lydia
+} // namespace whitemech::lydia::Test

@@ -16,30 +16,34 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "delta.hpp"
 #include "visitor.hpp"
+#include <variant>
 
 namespace whitemech {
 namespace lydia {
 
-class StrPrinter : public Visitor {
+class AtomsVisitor : public Visitor {
 private:
-  static const std::vector<std::string> names_;
-
 protected:
-  std::string result;
+  set_atoms_ptr result;
 
 public:
-  void visit(const Symbol &) override;
-  void visit(const LDLfBooleanAtom &) override;
-  void visit(const LDLfAnd &) override;
-  void visit(const LDLfOr &) override;
-  void visit(const LDLfNot &) override;
-  std::string apply(const vec_basic &v);
-  std::string apply(const set_formulas &v);
-  std::string apply(const Basic &b);
+  static Logger logger;
+
+  void visit(const PropositionalTrue &) override;
+  void visit(const PropositionalFalse &) override;
+  void visit(const PropositionalAtom &) override;
+  void visit(const QuotedFormula &) override{};
+  void visit(const Symbol &) override{};
+  void visit(const PropositionalAnd &) override;
+  void visit(const PropositionalOr &) override;
+  void visit(const PropositionalNot &) override;
+  set_atoms_ptr apply(const PropositionalFormula &b);
 };
 
-std::string to_string(const Basic &);
+set_atoms_ptr find_atoms(const LDLfFormula &);
+set_atoms_ptr find_atoms(const PropositionalFormula &);
 
 } // namespace lydia
 } // namespace whitemech

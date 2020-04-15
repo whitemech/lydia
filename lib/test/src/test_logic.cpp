@@ -17,10 +17,11 @@
 #include "catch.hpp"
 #include "logger.hpp"
 #include "logic.hpp"
+#include <utils/compare.hpp>
 
 namespace whitemech::lydia::Test {
 
-TEST_CASE("Boolean atoms", "[LDLfBooleanAtom]") {
+TEST_CASE("Boolean atoms", "[logic]") {
   Logger log("test_logic");
 
   auto newBoolTrue = LDLfBooleanAtom(true);
@@ -57,7 +58,7 @@ TEST_CASE("Boolean atoms", "[LDLfBooleanAtom]") {
   // TODO test to string
 }
 
-TEST_CASE("LDLfNot", "[LDLfNot]") {
+TEST_CASE("LDLfNot", "[logic]") {
 
   auto ptr_true = std::make_shared<LDLfBooleanAtom>(true);
   auto not_true = LDLfNot(ptr_true);
@@ -82,7 +83,7 @@ TEST_CASE("LDLfNot", "[LDLfNot]") {
   }
 }
 
-TEST_CASE("And", "[And]") {
+TEST_CASE("And", "[logic]") {
   set_formulas and_1_args = {};
   set_formulas and_2_args = set_formulas();
   set_formulas and_3_args = {boolean(true), boolean(true), boolean(false)};
@@ -91,14 +92,21 @@ TEST_CASE("And", "[And]") {
       LDLfAnd(and_1_args); // TODO: this should raise exception: less than two
   auto and_2 = LDLfAnd(and_2_args); // TODO see above
   auto and_3 = LDLfAnd(and_3_args);
+  auto and_3_p = LDLfAnd(and_3_args);
 
   SECTION("test equality on same object") { REQUIRE(and_3.is_equal(and_3)); }
+  SECTION("test equality on different object") {
+    REQUIRE(and_3_p.is_equal(and_3_p));
+  }
   SECTION("test compare  on same object") {
     REQUIRE(and_3.compare(and_3) == 0);
   }
+  SECTION("test compare  on different object") {
+    REQUIRE(and_3.compare(and_3_p) == 0);
+  }
 }
 
-TEST_CASE("Or", "[Or]") {
+TEST_CASE("LDLfOr", "[logic]") {
   set_formulas or_1_args = {};
   set_formulas or_2_args = set_formulas();
   set_formulas or_3_args = {boolean(true), boolean(true), boolean(false)};
@@ -107,9 +115,62 @@ TEST_CASE("Or", "[Or]") {
       LDLfOr(or_1_args); // TODO: this should raise exception: less than two
   auto or_2 = LDLfOr(or_2_args); // TODO see above
   auto or_3 = LDLfOr(or_3_args);
+  auto or_3_p = LDLfOr(or_3_args);
 
   SECTION("test equality on same object") { REQUIRE(or_3.is_equal(or_3)); }
+  SECTION("test equality on different object") {
+    REQUIRE(or_3.is_equal(or_3_p));
+  }
   SECTION("test compare  on same object") { REQUIRE(or_3.compare(or_3) == 0); }
+}
+
+TEST_CASE("Logical not", "[logical_not]") {
+  auto tt = std::make_shared<LDLfBooleanAtom>(true);
+  auto ff = std::make_shared<LDLfBooleanAtom>(false);
+
+  REQUIRE(tt->logical_not()->is_equal(*ff));
+  REQUIRE(ff->logical_not()->is_equal(*tt));
+
+  SECTION("De Morgan's Law and-or") {
+    set_formulas ffs = {ff, ff};
+    set_formulas tts = {tt, tt};
+    auto and_ = std::make_shared<LDLfAnd>(ffs);
+    auto actual_or = and_->logical_not();
+    auto expected_or = std::make_shared<LDLfOr>(tts);
+    REQUIRE(actual_or->is_equal(*expected_or));
+  }
+
+  SECTION("De Morgan's Law or-and") {
+    set_formulas ffs = {ff, ff};
+    set_formulas tts = {tt, tt};
+    auto or_ = std::make_shared<LDLfOr>(ffs);
+    auto expected_and = or_->logical_not();
+    auto actual_and = std::make_shared<LDLfAnd>(tts);
+    REQUIRE(actual_and->is_equal(*expected_and));
+  }
+}
+
+TEST_CASE("Set of formulas", "[logic]") {
+  auto tt = std::make_shared<const LDLfBooleanAtom>(true);
+  auto ff = std::make_shared<const LDLfBooleanAtom>(false);
+  set_formulas args = {boolean(true), boolean(false)};
+  auto and_ = std::make_shared<const LDLfAnd>(args);
+  auto or_ = std::make_shared<const LDLfOr>(args);
+
+  REQUIRE(*ff < *tt);
+  REQUIRE(*tt < *and_);
+  REQUIRE(*and_ < *or_);
+  REQUIRE(!(*or_ < *and_));
+
+  set_formulas formulas = set_formulas({and_, or_, tt, ff});
+  CHECK(true);
+  // check order. Vectorize first
+  vec_formulas result(formulas.begin(), formulas.end());
+
+  REQUIRE(result[0]->is_equal(*ff));
+  REQUIRE(result[1]->is_equal(*tt));
+  REQUIRE(result[2]->is_equal(*and_));
+  REQUIRE(result[3]->is_equal(*or_));
 }
 
 } // namespace whitemech::lydia::Test

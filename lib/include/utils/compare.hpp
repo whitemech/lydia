@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
@@ -28,6 +29,7 @@ namespace whitemech {
 namespace lydia {
 
 class Basic;
+class LDLfFormula;
 
 // Takes an unordered map of type M with key type K and returns a vector of K
 // ordered by C.
@@ -70,6 +72,12 @@ template <typename K, typename V, typename H, typename E>
 inline bool unified_eq(const std::unordered_map<K, V, H, E> &a,
                        const std::unordered_map<K, V, H, E> &b) {
   return unordered_eq(a, b);
+}
+
+template <typename T>
+inline bool unified_eq(const std::shared_ptr<T> &a,
+                       const std::shared_ptr<T> &b) {
+  return unified_eq(*a, *b);
 }
 
 // template <typename T, typename U,
@@ -135,6 +143,12 @@ template <typename T> inline int unified_compare(const T &a, const T &b) {
   return a < b ? -1 : 1;
 }
 
+template <typename T>
+inline int unified_compare(const std::shared_ptr<T> &a,
+                           const std::shared_ptr<T> &b) {
+  return unified_compare(*a, *b);
+}
+
 // template <typename T, typename U,
 //          typename = enable_if_t<std::is_base_of<Basic, T>::value and
 //                                 std::is_base_of<Basic, U>::value>>
@@ -143,8 +157,6 @@ inline int unified_compare(const T &a, const U &b) {
   return a->__cmp__(*b);
 }
 
-template <class T> inline int ordered_compare(const T &A, const T &B);
-
 template <typename T>
 inline int unified_compare(const std::vector<T> &a, const std::vector<T> &b) {
   return ordered_compare(a, b);
@@ -152,6 +164,7 @@ inline int unified_compare(const std::vector<T> &a, const std::vector<T> &b) {
 
 template <typename T, typename U>
 inline int unified_compare(const std::set<T, U> &a, const std::set<T, U> &b) {
+  // TODO try to replace this with native comparison: a < b
   return ordered_compare(a, b);
 }
 
@@ -198,6 +211,8 @@ template <class T> inline int ordered_compare(const T &A, const T &B) {
   }
   return 0;
 }
+
+template <class T> inline int ordered_compare(const T &A, const T &B);
 
 template <class M, typename C = std::less<typename M::key_type>>
 inline int unordered_compare(const M &a, const M &b) {

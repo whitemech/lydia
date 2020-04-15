@@ -36,7 +36,7 @@ file (GLOB TEST_SOURCE_FILES "${TEST_SRC_PATH}/*.cpp")
 add_executable (${TEST_APP_NAME} ${TEST_SOURCE_FILES})
 
 #add the library
-target_link_libraries (${TEST_APP_NAME} ${LIB_NAME} Threads::Threads)
+target_link_libraries (${TEST_APP_NAME} ${LIB_NAME} Threads::Threads ${CUDD_LIBRARIES})
 
 # Turn on CMake testing capabilities
 enable_testing()

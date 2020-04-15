@@ -1,3 +1,4 @@
+#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -15,27 +16,26 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "basic.hpp"
+#include "visitor.hpp"
 
-namespace whitemech::lydia {
+namespace whitemech {
+namespace lydia {
 
-int Basic::compare_(const Basic &o) const {
-  auto a = this->get_type_code();
-  auto b = o.get_type_code();
-  if (a == b) {
-    return this->compare(o);
-  } else {
-    // We return the order given by the numerical value of the TypeID enum
-    // type.
-    // The types don't need to be ordered in any given way, they just need
-    // to be ordered.
-    return a < b ? -1 : 1;
-  }
-}
+class NNFTransformer : public Visitor {
+private:
+protected:
+  std::shared_ptr<LDLfFormula> result;
 
-std::string Basic::str() const {
-  // TODO: use visitor
-  return std::string();
-}
+public:
+  void visit(const Symbol &) override{};
+  void visit(const LDLfBooleanAtom &) override;
+  void visit(const LDLfAnd &) override;
+  void visit(const LDLfOr &) override;
+  void visit(const LDLfNot &) override;
+  std::shared_ptr<LDLfFormula> apply(const LDLfFormula &b);
+};
 
-} // namespace whitemech::lydia
+std::shared_ptr<LDLfFormula> to_nnf(const LDLfFormula &);
+
+} // namespace lydia
+} // namespace whitemech

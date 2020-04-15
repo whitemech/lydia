@@ -18,7 +18,6 @@
 #include "logic.hpp"
 #include "utils/compare.hpp"
 #include <cassert>
-#include <utility>
 
 namespace whitemech {
 namespace lydia {
@@ -32,16 +31,13 @@ LDLfBooleanAtom::LDLfBooleanAtom(bool b) : b_{b} {
   this->type_code_ = type_code_id;
 }
 
-hash_t LDLfBooleanAtom::__hash__() const {
-  hash_t seed = TypeID::t_LDLfBooleanAtom;
-  if (b_)
-    ++seed;
-  return seed;
+hash_t LDLfBooleanAtom::compute_hash_() const {
+  return b_ ? TypeID::t_LDLfBooleanTrue : TypeID::t_LDLfBooleanFalse;
 }
 
 bool LDLfBooleanAtom::get_value() const { return b_; }
 
-vec_basic LDLfBooleanAtom::get_args() const { return {}; }
+vec_formulas LDLfBooleanAtom::get_args() const { return {}; }
 
 bool LDLfBooleanAtom::is_equal(const Basic &o) const {
   return is_a<LDLfBooleanAtom>(o) and
@@ -58,19 +54,16 @@ int LDLfBooleanAtom::compare(const Basic &o) const {
   }
 }
 
-const LDLfFormula &LDLfBooleanAtom::logical_not() const {
-  return *boolean(not this->get_value());
+std::shared_ptr<const LDLfFormula> LDLfBooleanAtom::logical_not() const {
+  return boolean(not this->get_value());
 }
 
-bool LDLfBooleanAtom::operator==(const Basic &o) const { return is_equal(o); }
-bool LDLfBooleanAtom::operator!=(const Basic &o) const { return !is_equal(o); }
-
-LDLfAnd::LDLfAnd(set_formulas s) : container_{std::move(s)} {
+LDLfAnd::LDLfAnd(const set_formulas &s) : container_{s} {
   this->type_code_ = type_code_id;
   assert(is_canonical(s));
 }
 
-hash_t LDLfAnd::__hash__() const {
+hash_t LDLfAnd::compute_hash_() const {
   hash_t seed = TypeID::t_LDLfAnd;
   for (const auto &a : container_)
     hash_combine<Basic>(seed, *a);
@@ -82,8 +75,8 @@ bool LDLfAnd::is_canonical(const set_formulas &container_) {
   return true;
 }
 
-vec_basic LDLfAnd::get_args() const {
-  vec_basic v(container_.begin(), container_.end());
+vec_formulas LDLfAnd::get_args() const {
+  vec_formulas v(container_.begin(), container_.end());
   return v;
 }
 
@@ -101,29 +94,28 @@ int LDLfAnd::compare(const Basic &o) const {
 
 const set_formulas &LDLfAnd::get_container() const { return container_; }
 
-// const LDLfFormula And::logical_not() const
-//{
-//    auto container = this->get_container();
-//    set_boolean cont;
-//    for (auto &a : container) {
-//        cont.insert(logical_not(a));
-//    }
-//    return make_rcp<const Or>(cont);
-//}
+std::shared_ptr<const LDLfFormula> LDLfAnd::logical_not() const {
+  auto container = this->get_container();
+  set_formulas cont;
+  for (auto &a : container) {
+    cont.insert(a->logical_not());
+  }
+  return std::make_shared<LDLfOr>(cont);
+}
 
-LDLfOr::LDLfOr(set_formulas s) : container_{std::move(s)} {
+LDLfOr::LDLfOr(const set_formulas &s) : container_{s} {
   this->type_code_ = type_code_id;
 }
 
-hash_t LDLfOr::__hash__() const {
+hash_t LDLfOr::compute_hash_() const {
   hash_t seed = TypeID::t_LDLfOr;
   for (const auto &a : container_)
     hash_combine<Basic>(seed, *a);
   return seed;
 }
 
-vec_basic LDLfOr::get_args() const {
-  vec_basic v(container_.begin(), container_.end());
+vec_formulas LDLfOr::get_args() const {
+  vec_formulas v(container_.begin(), container_.end());
   return v;
 }
 
@@ -146,22 +138,21 @@ bool LDLfOr::is_canonical(const set_formulas &container_) {
 
 const set_formulas &LDLfOr::get_container() const { return container_; }
 
-// const Or::logical_not() const
-//{
-//    auto container = this->get_container();
-//    set_boolean cont;
-//    for (auto &a : container) {
-//        cont.insert(logical_not(a));
-//    }
-//    return const And(cont);
-//}
+std::shared_ptr<const LDLfFormula> LDLfOr::logical_not() const {
+  auto container = this->get_container();
+  set_formulas cont;
+  for (auto &a : container) {
+    cont.insert(a->logical_not());
+  }
+  return std::make_shared<LDLfAnd>(cont);
+}
 
 LDLfNot::LDLfNot(const std::shared_ptr<const LDLfFormula> &in) : arg_{in} {
   this->type_code_ = type_code_id;
   assert(is_canonical(*in));
 }
 
-hash_t LDLfNot::__hash__() const {
+hash_t LDLfNot::compute_hash_() const {
   hash_t seed = TypeID::t_LDLfNot;
   hash_combine<Basic>(seed, *arg_);
   return seed;
@@ -175,12 +166,12 @@ vec_basic LDLfNot::get_args() const {
 
 bool LDLfNot::is_equal(const Basic &o) const {
   return is_a<LDLfNot>(o) and
-         eq(*arg_, dynamic_cast<const LDLfNot &>(o).get_arg());
+         eq(*arg_, *dynamic_cast<const LDLfNot &>(o).get_arg());
 }
 
 int LDLfNot::compare(const Basic &o) const {
   assert(is_a<LDLfNot>(o));
-  return arg_->__cmp__(dynamic_cast<const LDLfNot &>(o).get_arg());
+  return arg_->compare_(*dynamic_cast<const LDLfNot &>(o).get_arg());
 }
 
 bool LDLfNot::is_canonical(const LDLfFormula &in) {
@@ -188,12 +179,24 @@ bool LDLfNot::is_canonical(const LDLfFormula &in) {
   return true;
 }
 
-const LDLfFormula &LDLfNot::get_arg() const { return *arg_; }
+std::shared_ptr<const LDLfFormula> LDLfNot::get_arg() const { return arg_; }
 
-// const LDLfFormula LDLfNot::logical_not() const
-//{
-//    return this->get_arg();
-//}
+std::shared_ptr<const LDLfFormula> LDLfNot::logical_not() const {
+  return this->get_arg();
+}
+
+hash_t QuotedFormula::compute_hash_() const {
+  return this->formula->compute_hash_();
+}
+
+int QuotedFormula::compare(const Basic &rhs) const {
+  assert(is_a<QuotedFormula>(rhs));
+  return this->formula->compare(rhs);
+}
+
+bool QuotedFormula::is_equal(const Basic &rhs) const {
+  return this->formula->is_equal(rhs);
+}
 
 } // namespace lydia
 } // namespace whitemech

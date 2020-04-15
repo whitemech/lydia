@@ -22,16 +22,30 @@
 namespace whitemech {
 namespace lydia {
 
+class PropositionalTrue;
+class PropositionalFalse;
+class PropositionalAtom;
+class QuotedFormula;
+class PropositionalAnd;
+class PropositionalOr;
+class PropositionalNot;
+
 class Visitor {
 public:
-  virtual void visit(const Symbol &) = 0;
-  virtual void visit(const LDLfBooleanAtom &) = 0;
-  virtual void visit(const LDLfAnd &) = 0;
-  virtual void visit(const LDLfOr &) = 0;
-  virtual void visit(const LDLfNot &) = 0;
-  virtual std::string apply(const vec_basic &v) = 0;
-  virtual std::string apply(const set_formulas &v) = 0;
-  virtual std::string apply(const Basic &b) = 0;
+  virtual void visit(const Symbol &){};
+  virtual void visit(const LDLfBooleanAtom &){};
+  virtual void visit(const LDLfAnd &){};
+  virtual void visit(const LDLfOr &){};
+  virtual void visit(const LDLfNot &){};
+
+  // callbacks for propositional logic
+  virtual void visit(const PropositionalTrue &){};
+  virtual void visit(const PropositionalFalse &){};
+  virtual void visit(const PropositionalAtom &){};
+  virtual void visit(const QuotedFormula &){};
+  virtual void visit(const PropositionalAnd &){};
+  virtual void visit(const PropositionalOr &){};
+  virtual void visit(const PropositionalNot &){};
 };
 
 } // namespace lydia

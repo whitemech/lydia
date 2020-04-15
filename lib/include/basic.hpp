@@ -16,14 +16,31 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <functional>
-
 #include "types.hpp"
 
 namespace whitemech {
 namespace lydia {
 
-enum TypeID { t_Symbol, t_LDLfBooleanAtom, t_LDLfAnd, t_LDLfOr, t_LDLfNot };
+//  Type ID for all the concrete classes
+//  that inherit from Basic.
+enum TypeID {
+  t_Symbol,
+  t_LDLfBooleanAtom,
+  t_LDLfBooleanTrue,
+  t_LDLfBooleanFalse,
+  t_LDLfAnd,
+  t_LDLfOr,
+  t_LDLfNot,
+  t_NFAState,
+  t_DFAState,
+  t_PropositionalTrue,
+  t_PropositionalFalse,
+  t_PropositionalAtom,
+  t_PropositionalAnd,
+  t_PropositionalOr,
+  t_PropositionalNot,
+  t_QuotedFormula,
+};
 
 class Visitor;
 class Symbol;
@@ -58,13 +75,21 @@ public:
 
   // Equality operator
   virtual bool is_equal(const Basic &o) const = 0;
+  bool operator==(const Basic &o) const { return this->is_equal(o); };
+  bool operator!=(const Basic &o) const { return !(*this == o); };
+
+  //! Comparator operator
+  bool operator<(const Basic &rhs) const { return this->compare_(rhs) == -1; };
+  bool operator>(const Basic &rhs) const { return rhs < *this; }
+  bool operator<=(const Basic &rhs) const { return !(*this > rhs); }
+  bool operator>=(const Basic &rhs) const { return !(*this < rhs); }
 
   /*!
   Calculates the hash of the given Lydia class.
   Use Basic.hash() which gives a cached version of the hash.
   \return 64-bit integer value for the hash
   */
-  virtual hash_t __hash__() const = 0;
+  virtual hash_t compute_hash_() const = 0;
 
   /*! Returns the hash of the Basic class:
       This method caches the value.
@@ -80,16 +105,14 @@ public:
   hash_t hash() const;
 
   /*! Returns -1, 0, 1 for `this < o, this == o, this > o`. This method is
-   used      when you want to sort things like `x+y+z` into canonical order.
-   This function assumes that `o` is the same type as `this`. Use ` __cmp__`
+   used  when you want to sort things like `x+y+z` into canonical order.
+   This function assumes that `o` is the same type as `this`. Use ` compare_`
    if you want general comparison.
    */
   virtual int compare(const Basic &o) const = 0;
-  int __cmp__(const Basic &o) const;
+  int compare_(const Basic &o) const;
   virtual void accept(Visitor &v) const = 0;
   std::string str() const;
-
-  //        virtual void accept(Visitor &v) const;
 };
 
 // TODO decide what to do with this:
@@ -102,7 +125,7 @@ template <class T> void hash_combine(hash_t &seed, const T &v);
 // Inline members and functions
 inline hash_t Basic::hash() const {
   if (hash_ == 0)
-    hash_ = __hash__();
+    hash_ = compute_hash_();
   return hash_;
 }
 
