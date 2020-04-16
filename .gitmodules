@@ -10,6 +10,6 @@
 [submodule "third_party/cudd"]
 	path = third_party/cudd
 	url = https://github.com/KavrakiLab/cudd
-[submodule "third_party/Lyra"]
-	path = third_party/Lyra
-	url = https://github.com/bfgroup/Lyra.git
+[submodule "third_party/CLI11"]
+	path = third_party/CLI11
+	url = https://github.com/CLIUtils/CLI11.git
