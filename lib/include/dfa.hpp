@@ -73,6 +73,21 @@ public:
 
   // void initialize(string filename, string partfile, Cudd& manager);
   std::vector<item> bdd;
+
+  /*!
+   * Dump the BDDs (one for each bit of the state space).
+   *
+   * The output will be:
+   * output_directory/
+   * - 0.dot
+   * - 1.dot
+   * ...
+   * - n.dot
+   *
+   * That is, a DOT file for each bit.
+   *
+   * @param directory the directory in which to print the BDDs in DOT format.
+   */
   void bdd2dot(const std::string &directory = "./");
   void dumpdot(CUDD::BDD &b, const std::string &filename);
   CUDD::BDD state2bdd(int s);

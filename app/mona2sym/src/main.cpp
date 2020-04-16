@@ -25,8 +25,9 @@
  */
 
 #include "CLI/CLI.hpp"
+#include <cstdlib>
 #include <dfa.hpp>
-#include <filesystem>
+#include <string>
 
 /*!
  * From MONA DFA file to Symbolic DFA representation.
@@ -36,10 +37,12 @@
  * @param filename the path to the MONA DFA file.
  * @return nothing.
  */
-void transform(const std::filesystem::path &input,
-               const std::filesystem::path &output_dir) {
+void transform(const std::string &input, const std::string &output_dir) {
   auto my_dfa = whitemech::lydia::dfa::read_from_file(input);
-  std::filesystem::create_directory(output_dir);
+  // TODO reintroduce <filesystem> and make it work on CI...
+  //  std::filesystem::create_directory(output_dir);
+  auto cmd = "mkdir " + output_dir;
+  std::system(cmd.c_str());
   my_dfa->bdd2dot(output_dir);
 }
 
@@ -58,9 +61,7 @@ int main(int argc, char **argv) {
 
   CLI11_PARSE(app, argc, argv);
 
-  std::filesystem::path input_path = input_file;
-  std::filesystem::path output_directory_path = output_directory;
-  transform(input_path, output_directory_path);
+  transform(input_file, output_directory);
 
   return 0;
 }

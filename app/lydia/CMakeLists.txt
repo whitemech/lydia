@@ -35,9 +35,9 @@ file (GLOB APP_SOURCE_FILES "${APP_SRC_PATH}/*.cpp")
 add_executable (${APP_NAME} ${APP_SOURCE_FILES})
 
 #add the library
-target_link_libraries (${APP_NAME} ${LIB_NAME} Threads::Threads)
+target_link_libraries (${APP_NAME} ${LIB_NAME} Threads::Threads stdc++fs)
 
-set_target_properties(lydia-bin PROPERTIES OUTPUT_NAME lydia)
+set_target_properties(${APP_NAME} PROPERTIES OUTPUT_NAME lydia)
 
 #test
 enable_testing ()
