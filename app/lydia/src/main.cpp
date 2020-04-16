@@ -18,7 +18,7 @@
 #include "CLI/CLI.hpp"
 #include <iostream>
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
 
   std::string filename = "default";

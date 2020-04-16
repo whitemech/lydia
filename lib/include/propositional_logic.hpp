@@ -123,11 +123,11 @@ public:
 class EvalVisitor : public Visitor {
 private:
 protected:
-  bool result;
+  bool result{};
   const set_atoms_ptr &interpretation;
 
 public:
-  EvalVisitor(const set_atoms_ptr &interpretation)
+  explicit EvalVisitor(const set_atoms_ptr &interpretation)
       : interpretation{interpretation} {};
   void visit(const PropositionalTrue &) override;
   void visit(const PropositionalFalse &) override;
