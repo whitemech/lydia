@@ -17,6 +17,7 @@
 
 #include "dfa.hpp"
 #include <cuddObj.hh>
+#include <exception>
 #include <utils/strings.hpp>
 
 namespace whitemech {
@@ -86,10 +87,11 @@ void dfa::push_states(int i, item &tmp) {
   }
 }
 
-void dfa::bdd2dot(std::string directory) {
+void dfa::bdd2dot(const std::string &directory) {
   for (int i = 0; i < root_bdds.size(); i++) {
-    std::string filename = directory + std::to_string(i);
+    std::string filename = directory + "/" + std::to_string(i);
     dumpdot(root_bdds[i], filename);
+    std::system(("dot -Tsvg " + filename + " > " + filename + ".svg").c_str());
   }
 }
 
@@ -118,7 +120,7 @@ void dfa::construct_bdd_from_mona(
   }
   // populate the tBDD mapping.
   // Each item is associated to one MONA BDD node (both leaves and variables),
-  // and contains a vector of BDDs.
+  // and contains a vector of BDDs. Each vector
   tBDD.resize(mona_bdd_nodes.size());
   for (int i = 0; i < tBDD.size(); i++) {
     if (tBDD[i].size() == 0) {
@@ -126,27 +128,33 @@ void dfa::construct_bdd_from_mona(
     }
   }
   // Assign each state to the next BDD node.
-  // Basically, parse the content of the MONA DFA 'behaviour' vector.
+  // Basically, this for loop processes the content of the MONA DFA 'behaviour'
+  // vector.
   for (int i = 0; i < nb_bits; i++) {
     for (int j = 0; j < nb_states; j++) {
-      //    Build the BDD representation of a state.
-      //    we set the temporary variable to 1
-      //    because we are going to put it in 'AND'.
+      // Build the BDD representation of a state.
+      // we set the temporary variable to 1 because we are going to put it in
+      // 'AND'.
       CUDD::BDD tmp = mgr->bddOne();
+      // the first for-loop handles the most significant bits
+      // that are not covered by the binary representation.
+      // the second for-loop handles all the other bits.
+      // TODO refactor by using the 'nb_fill_bits' parameter of state2bin.
       std::string bins = state2bin(j);
       int offset = nb_bits - bins.size();
       for (int m = 0; m < offset; m++) {
         tmp = tmp * var2bddvar(0, m);
       }
       for (int m = 0; m < bins.size(); m++) {
+        // from char '1' (or '0') to int 1 (or 0)
         auto bit_mth = int(bins[m]) - 48;
         tmp = tmp * var2bddvar(bit_mth, offset + m);
       }
-      //    Now, put in 'AND' with the right
-      //    BDD node (either terminal/leaf or variable)
-      //    At the bit 'i'.
+      // Now, put in 'AND' with the correct
+      // BDD node (either terminal/leaf or variable)
+      // At the bit 'i'.
       tmp = tmp * tBDD[behaviour[j]][i];
-      //    Put each root bdd in OR with the current temporary BDD.
+      // Put each root bdd in OR with the current temporary BDD.
       root_bdds[i] = root_bdds[i] + tmp;
     }
   }
@@ -184,7 +192,7 @@ CUDD::BDD dfa::state2bdd(int s) {
  * multi-terminal BDD the terminal nodes have an integer that correspond
  * to the successor).
  *
- * If it is a variable, then build the ITE node.
+ * If it is a variable, then build the ITE node (for each bit)
  *
  * @param index the index of the BDD
  * @return the list of BDDs.
@@ -194,19 +202,19 @@ vbdd dfa::try_get(int index, std::vector<std::vector<int>> &mona_bdd_nodes) {
     return tBDD[index];
   vbdd b;
   if (mona_bdd_nodes[index][0] == -1) {
-    //     case when BDD node is a leaf
-    //     the format is: "-1 val 0"
+    // case when BDD node is a leaf
+    // the format is: "-1 val 0"
     int value = mona_bdd_nodes[index][1];
-    //     get the binary representation of the state
+    // get the binary representation of the state
     std::string bins = state2bin(value);
-    //    this representation may use less bits
-    //    than all the bits pre-allocated.
-    //    Set to zero the bits in excess.
+    // this representation may use less bits
+    // than all the bits pre-allocated.
+    // Set to zero the bits in excess.
     for (int m = 0; m < nb_bits - bins.size(); m++) {
       CUDD::BDD temp_bdd = mgr->bddZero();
       b.push_back(temp_bdd);
     }
-    //     Populate the LSBs
+    // Populate the LSBs
     for (int i = 0; i < bins.size(); i++) {
       if (bins[i] == '0') {
         CUDD::BDD temp_bdd = mgr->bddZero();
@@ -231,6 +239,7 @@ vbdd dfa::try_get(int index, std::vector<std::vector<int>> &mona_bdd_nodes) {
     vbdd low = try_get(leftindex, mona_bdd_nodes);
     vbdd high = try_get(rightindex, mona_bdd_nodes);
     assert(low.size() == high.size());
+    assert(low.size() == nb_bits);
     for (int i = 0; i < low.size(); i++) {
       // TODO old comment said "Assuming this is correct". Investigate.
       CUDD::BDD tmp = root.Ite(high[i], low[i]);
@@ -241,15 +250,15 @@ vbdd dfa::try_get(int index, std::vector<std::vector<int>> &mona_bdd_nodes) {
   }
 }
 
-void dfa::dumpdot(CUDD::BDD &b, std::string filename) {
+void dfa::dumpdot(CUDD::BDD &b, const std::string &filename) {
   FILE *fp = fopen(filename.c_str(), "w");
   std::vector<CUDD::BDD> single(1);
   single[0] = b;
-  this->mgr->DumpDot(single, NULL, NULL, fp);
+  this->mgr->DumpDot(single, nullptr, nullptr, fp);
   fclose(fp);
 }
 
-dfa *dfa::read_from_file(std::string filename, CUDD::Cudd *mgr) {
+dfa *dfa::read_from_file(const std::string &filename, CUDD::Cudd *mgr) {
   int nb_variables = -1;
   std::vector<std::string> variables;
   int nb_states = -1;
@@ -273,7 +282,6 @@ dfa *dfa::read_from_file(std::string filename, CUDD::Cudd *mgr) {
           nb_variables = stoi(fields[3]);
           whitemech::lydia::dfa::logger.debug("number of variables: {}",
                                               nb_variables);
-          std::cout << nb_variables << std::endl;
         }
         if (strfind(line, "variables") && !strfind(line, "number")) {
           variables = split(line, " +");
@@ -326,6 +334,8 @@ dfa *dfa::read_from_file(std::string filename, CUDD::Cudd *mgr) {
         tmp.clear();
       }
     }
+  } else {
+    throw std::runtime_error("No such file or directory: " + filename);
   }
   f.close();
 

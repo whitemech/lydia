@@ -15,30 +15,11 @@
 # along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-# CMake build : main application
+# CMake build : main application test
 
 #configure variables
-# we append '-bin' because 'lydia' conflicts with the library.
-set (APP_NAME "lydia-bin")
+set (APP_NAME mona2sym)
+set (TEST_NAME "${APP_NAME}Test")
 
-#configure directories
-set (APP_MODULE_PATH "${PROJECT_SOURCE_DIR}/app/lydia")
-set (APP_SRC_PATH  "${APP_MODULE_PATH}/src" )
-
-#set includes
-include_directories (${LIBRARY_INCLUDE_PATH} ${THIRD_PARTY_INCLUDE_PATH})
-
-#set sources
-file (GLOB APP_SOURCE_FILES "${APP_SRC_PATH}/*.cpp")
-
-#set target executable
-add_executable (${APP_NAME} ${APP_SOURCE_FILES})
-
-#add the library
-target_link_libraries (${APP_NAME} ${LIB_NAME} Threads::Threads)
-
-set_target_properties(lydia-bin PROPERTIES OUTPUT_NAME lydia)
-
-#test
 enable_testing ()
-add_subdirectory (test)
+add_test (NAME ${TEST_NAME} COMMAND ${APP_NAME} )

@@ -73,8 +73,8 @@ public:
 
   // void initialize(string filename, string partfile, Cudd& manager);
   std::vector<item> bdd;
-  void bdd2dot(std::string directory = "./");
-  void dumpdot(CUDD::BDD &b, std::string filename);
+  void bdd2dot(const std::string &directory = "./");
+  void dumpdot(CUDD::BDD &b, const std::string &filename);
   CUDD::BDD state2bdd(int s);
   int nb_bits;
   int initial_state;
@@ -108,7 +108,8 @@ public:
    * @param filename path to the MONA DFA file.
    * @return a raw pointer to a DFA.
    */
-  static dfa *read_from_file(std::string filename, CUDD::Cudd *mgr = nullptr);
+  static dfa *read_from_file(const std::string &filename,
+                             CUDD::Cudd *mgr = nullptr);
 
   /*!
    * Check whether a word of propositional interpretations
@@ -128,6 +129,21 @@ private:
   // new bdd constructer
   std::vector<vbdd> tBDD;
   vbdd try_get(int index, std::vector<std::vector<int>> &mona_bdd_nodes);
+
+  /*!
+   * This method builds the Symbolic DFA from MONA BDD nodes.
+   *
+   * The input is a list of BDD specifications.
+   * A BDD specification is a triple of integers to be interpreted as follows:
+   * - if the ith element contains "{-1, val, 0}", the ith BDD node is a leaf
+   * with value val.
+   * - if the ith element contains "{x, l, r}", the ith BDD node is an internal
+   * node with index x, left (low) successor l and right (high) successor r.
+   *
+   * [1] MONA User Manual. https://www.brics.dk/mona/mona14.pdf
+   *
+   * @param mona_bdd_nodes MONA BDDs specifications.
+   */
   void construct_bdd_from_mona(std::vector<std::vector<int>> mona_bdd_nodes);
 };
 

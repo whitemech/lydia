@@ -18,11 +18,10 @@
 # CMake build : main application
 
 #configure variables
-# we append '-bin' because 'lydia' conflicts with the library.
-set (APP_NAME "lydia-bin")
+set (APP_NAME "mona2sym")
 
 #configure directories
-set (APP_MODULE_PATH "${PROJECT_SOURCE_DIR}/app/lydia")
+set (APP_MODULE_PATH "${PROJECT_SOURCE_DIR}/app/mona2sym")
 set (APP_SRC_PATH  "${APP_MODULE_PATH}/src" )
 
 #set includes
@@ -36,8 +35,6 @@ add_executable (${APP_NAME} ${APP_SOURCE_FILES})
 
 #add the library
 target_link_libraries (${APP_NAME} ${LIB_NAME} Threads::Threads)
-
-set_target_properties(lydia-bin PROPERTIES OUTPUT_NAME lydia)
 
 #test
 enable_testing ()
