@@ -15,37 +15,15 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "lyra/lyra.hpp"
+#include "CLI/CLI.hpp"
 #include <iostream>
 
-auto main(int argc, const char *argv[]) -> int {
-  // Where we read in the argument values:
-  std::string filepath;
-  bool show_help = true;
+int main(int argc, char** argv) {
+  CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
 
-  // The parser with the multiple option arguments. They are composed
-  // together by the "|" operator.
-  auto cli = lyra::help(show_help) |
-             lyra::opt(filepath,
-                       "filename")["-f"]["--file"]("Path to the Lydia file.");
+  std::string filename = "default";
+  app.add_option("-f,--file", filename, "A help string");
 
-  // Parse the program arguments:
-  auto result = cli.parse({argc, argv});
-
-  // Check that the arguments were valid:
-  if (!result) {
-    std::cerr << "Error in command line: " << result.errorMessage()
-              << std::endl;
-    std::cerr << cli << "\n";
-    return 1;
-  }
-
-  // Show the help when asked for.
-  if (show_help) {
-    std::cout << cli << "\n";
-    return 0;
-  }
-
-  std::cout << "filepath = " << filepath << "\n";
+  CLI11_PARSE(app, argc, argv);
   return 0;
 }
