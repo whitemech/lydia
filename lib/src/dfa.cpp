@@ -25,68 +25,6 @@ namespace lydia {
 
 Logger dfa::logger = Logger("dfa");
 
-// void dfa::construct_from_comp_back(vbdd &S2S, vbdd &S2P, vbdd &Svars,
-//                                   vbdd &Ivars, vbdd &Ovars,
-//                                   std::vector<int> IS) {
-//
-//  // substitute P from res, first create a substitution/projection vector,
-//  then
-//  // use the batch substitution function
-//  vbdd_ptr subnProj;
-//  // task dfa states
-//  for (int i = 0; i < nb_bits; i++) {
-//    subnProj.push_back(bddvars[i]);
-//  }
-//  // propositions (aka task variables)
-//  assert(S2P.size() == nb_variables);
-//  for (int i = 0; i < nb_variables; i++) {
-//    // TODO: We need to make sure the variables line up!!!!
-//    subnProj.push_back(S2P[i]);
-//  }
-//
-//  for (int i = 0; i < res.size(); i++) {
-//    res[i] = res[i].VectorCompose(subnProj);
-//  }
-//
-//  // append the propositions to res
-//  res.insert(res.end(), S2P.begin(), S2P.end());
-//  // append S2S to res
-//  res.insert(res.end(), S2S.begin(), S2S.end());
-//
-//  // fix the other variables (nb_variables, nbits, init, etc)
-//  // std::cout<<"constructing bdd with
-//  // "<<bddvars.size()<<"variables"<<std::endl;
-//  bddvars.insert(bddvars.end(), Svars.begin(), Svars.end());
-//  bddvars.insert(bddvars.end(), Ivars.begin(), Ivars.end());
-//  bddvars.insert(bddvars.end(), Ovars.begin(), Ovars.end());
-//  // std::cout<<"constructing bdd with
-//  // "<<bddvars.size()<<"variables"<<std::endl;
-//  // make init bitvector (final states is a bdd, does not need change)
-//  initbv = new int[nb_bits + nb_variables + Svars.size()];
-//  int temp = initial_state;
-//  for (int i = nb_bits - 1; i >= 0; i--) {
-//    initbv[i] = temp % 2;
-//    temp = temp / 2;
-//  }
-//  for (int i = 0; i < nb_variables; i++) {
-//    initbv[i + nb_bits] = 0;
-//  }
-//  for (int i = 0; i < IS.size(); i++) {
-//    initbv[i + nb_bits + nb_variables] = IS[i];
-//  }
-//    nb_bits = nb_bits + nb_variables;
-//}
-
-void dfa::push_states(int i, item &tmp) {
-  std::string s = state2bin(i);
-  for (int j = 0; j < nb_bits - s.length(); j++)
-    tmp.push_back(0);
-  for (int j = 0; j < s.length(); j++) {
-    int t = int(s[j]) - 48;
-    tmp.push_back(t);
-  }
-}
-
 void dfa::bdd2dot(const std::string &directory) {
   for (int i = 0; i < root_bdds.size(); i++) {
     std::string filename = directory + "/" + std::to_string(i);
@@ -105,9 +43,11 @@ CUDD::BDD dfa::var2bddvar(int v, int index) {
 }
 
 void dfa::construct_bdd_from_mona(
-    std::vector<std::vector<int>> mona_bdd_nodes) {
+    const std::vector<std::vector<int>> &mona_bdd_nodes,
+    const std::vector<int> &behaviour) {
   // Create all the variables, the ones for the bits of the states and the ones
   // for the variables.
+  auto tBDD = std::vector<vbdd>(mona_bdd_nodes.size());
   for (int i = 0; i < nb_bits + nb_variables; i++) {
     CUDD::BDD b = mgr->bddVar();
     bddvars.push_back(b);
@@ -120,11 +60,10 @@ void dfa::construct_bdd_from_mona(
   }
   // populate the tBDD mapping.
   // Each item is associated to one MONA BDD node (both leaves and variables),
-  // and contains a vector of BDDs. Each vector
-  tBDD.resize(mona_bdd_nodes.size());
+  // and contains a vector of BDDs.
   for (int i = 0; i < tBDD.size(); i++) {
-    if (tBDD[i].size() == 0) {
-      vbdd b = try_get(i, mona_bdd_nodes);
+    if (tBDD[i].empty()) {
+      vbdd b = try_get(i, mona_bdd_nodes, tBDD);
     }
   }
   // Assign each state to the next BDD node.
@@ -184,21 +123,10 @@ CUDD::BDD dfa::state2bdd(int s) {
   return b;
 }
 
-/*!
- * Given the index, try to get a BDD. If not present yet, create it.
- *
- * If it is a terminal, then instantiate it by using the binary
- * representation of the terminal state (remember, in a shared
- * multi-terminal BDD the terminal nodes have an integer that correspond
- * to the successor).
- *
- * If it is a variable, then build the ITE node (for each bit)
- *
- * @param index the index of the BDD
- * @return the list of BDDs.
- */
-vbdd dfa::try_get(int index, std::vector<std::vector<int>> &mona_bdd_nodes) {
-  if (tBDD[index].size() != 0)
+vbdd dfa::try_get(int index,
+                  const std::vector<std::vector<int>> &mona_bdd_nodes,
+                  std::vector<vbdd> &tBDD) {
+  if (!tBDD[index].empty())
     return tBDD[index];
   vbdd b;
   if (mona_bdd_nodes[index][0] == -1) {
@@ -236,8 +164,8 @@ vbdd dfa::try_get(int index, std::vector<std::vector<int>> &mona_bdd_nodes) {
     int leftindex = mona_bdd_nodes[index][1];
     int rightindex = mona_bdd_nodes[index][2];
     CUDD::BDD root = bddvars[nb_bits + rootindex];
-    vbdd low = try_get(leftindex, mona_bdd_nodes);
-    vbdd high = try_get(rightindex, mona_bdd_nodes);
+    vbdd low = try_get(leftindex, mona_bdd_nodes, tBDD);
+    vbdd high = try_get(rightindex, mona_bdd_nodes, tBDD);
     assert(low.size() == high.size());
     assert(low.size() == nb_bits);
     for (int i = 0; i < low.size(); i++) {
@@ -348,25 +276,25 @@ dfa *dfa::read_from_file(const std::string &filename, CUDD::Cudd *mgr) {
   assert(mona_bdd_nodes.size() == nb_nodes);
 
   if (mgr == nullptr) {
-    return new dfa(nb_variables, nb_states, initial_state, final_states,
-                   behaviour, mona_bdd_nodes);
+    return new dfa(variables, nb_states, initial_state, final_states, behaviour,
+                   mona_bdd_nodes);
   } else {
-    return new dfa(mgr, nb_variables, nb_states, initial_state, final_states,
+    return new dfa(mgr, variables, nb_states, initial_state, final_states,
                    behaviour, mona_bdd_nodes);
   }
 }
 
-dfa::dfa(CUDD::Cudd *mgr, int nb_variables, int nb_states, int initial_state,
-         std::vector<int> final_states, std::vector<int> behaviour,
-         std::vector<item> &mona_bdd_nodes)
+dfa::dfa(CUDD::Cudd *mgr, const std::vector<std::string> &variables,
+         int nb_states, int initial_state, std::vector<int> final_states,
+         std::vector<int> behaviour, std::vector<item> &mona_bdd_nodes)
     : mgr{mgr} {
-  this->nb_variables = nb_variables;
+  this->nb_variables = variables.size();
   this->nb_states = nb_states;
   this->nb_bits = state2bin(nb_states - 1).length();
   this->initial_state = initial_state;
   this->final_states = std::move(final_states);
-  this->behaviour = std::move(behaviour);
-  construct_bdd_from_mona(mona_bdd_nodes);
+  this->variables = variables;
+  construct_bdd_from_mona(mona_bdd_nodes, behaviour);
 }
 
 bool dfa::accepts(std::vector<interpretation> &word) {

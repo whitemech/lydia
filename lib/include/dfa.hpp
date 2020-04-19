@@ -55,18 +55,18 @@ public:
    * @param behaviour the MONA behaviours
    * @param mona_bdd_nodes the shared multi-terminal BDD nodes (MONA DFA)
    */
-  dfa(CUDD::Cudd *mgr, int nb_variables, int nb_states, int initial_state,
-      std::vector<int> final_states, std::vector<int> behaviour,
-      std::vector<item> &mona_bdd_nodes);
+  dfa(CUDD::Cudd *mgr, const std::vector<std::string> &variables, int nb_states,
+      int initial_state, std::vector<int> final_states,
+      std::vector<int> behaviour, std::vector<item> &mona_bdd_nodes);
 
   /*
    * The same constructor as above, but the manager
    * will be instantiated in the constructor.
    */
-  dfa(int nb_variables, int nb_states, int initial_state,
-      std::vector<int> final_states, std::vector<int> behaviour,
-      std::vector<item> &smtbdd)
-      : dfa(new CUDD::Cudd(), nb_variables, nb_states, initial_state,
+  dfa(const std::vector<std::string> &variables, int nb_states,
+      int initial_state, std::vector<int> final_states,
+      std::vector<int> behaviour, std::vector<item> &smtbdd)
+      : dfa(new CUDD::Cudd(), variables, nb_states, initial_state,
             std::move(final_states), std::move(behaviour), smtbdd) {}
 
   static Logger logger;
@@ -91,26 +91,18 @@ public:
   void bdd2dot(const std::string &directory = "./");
   void dumpdot(CUDD::BDD &b, const std::string &filename);
   CUDD::BDD state2bdd(int s);
-  int nb_bits;
-  int initial_state;
-  int nb_states;
+  int nb_bits{};
+  int initial_state{};
+  int nb_states{};
 
-  int nb_variables;
+  int nb_variables{};
   std::vector<int> final_states;
   CUDD::BDD finalstatesBDD;
   //  Store the BDD roots - LSB order
   vbdd root_bdds;
   vbdd bddvars;
 
-  std::vector<std::string> variables;
-
   const std::unique_ptr<CUDD::Cudd> mgr;
-
-  // domain-spec separate construction
-  // Front need to be called before variable construction for domain
-  // back is called after the components are constructed
-  void construct_from_comp_back(vbdd &S2S, vbdd &S2P, vbdd &Svars, vbdd &Ivars,
-                                vbdd &Ovars, std::vector<int> IS);
 
   /*!
    *
@@ -134,16 +126,35 @@ public:
    */
   bool accepts(std::vector<interpretation> &word);
 
+  /*!
+   * Add a new state.
+   *
+   * @return the index of the next state.
+   */
+  int add_state();
+
 protected:
 private:
-  std::vector<int> behaviour;
-  //		vector<string> variables;
-  void push_states(int i, item &tmp);
-  CUDD::BDD var2bddvar(int v, int index);
+  std::vector<std::string> variables;
 
-  // new bdd constructer
-  std::vector<vbdd> tBDD;
-  vbdd try_get(int index, std::vector<std::vector<int>> &mona_bdd_nodes);
+  /*!
+   * Given the index, try to get a BDD. If not present yet, create it.
+   *
+   * If it is a terminal, then instantiate it by using the binary
+   * representation of the terminal state (remember, in a shared
+   * multi-terminal BDD the terminal nodes have an integer that correspond
+   * to the successor).
+   *
+   * If it is a variable, then build the ITE node (for each bit)
+   *
+   * @param index the index of the BDD
+   * @param mona_bdd_nodes
+   * @return the list of BDDs.
+   */
+  vbdd try_get(int index, const std::vector<std::vector<int>> &mona_bdd_nodes,
+               std::vector<vbdd> &tBDD);
+
+  CUDD::BDD var2bddvar(int v, int index);
 
   /*!
    * This method builds the Symbolic DFA from MONA BDD nodes.
@@ -159,7 +170,9 @@ private:
    *
    * @param mona_bdd_nodes MONA BDDs specifications.
    */
-  void construct_bdd_from_mona(std::vector<std::vector<int>> mona_bdd_nodes);
+  void
+  construct_bdd_from_mona(const std::vector<std::vector<int>> &mona_bdd_nodes,
+                          const std::vector<int> &behaviour);
 };
 
 } // namespace lydia
