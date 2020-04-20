@@ -33,6 +33,11 @@ namespace lydia {
 
 class dfa {
 public:
+  int nb_bits{};
+  int initial_state{};
+  int nb_states{};
+  int nb_variables{};
+
   dfa(const dfa &) = delete;
   dfa &operator=(const dfa &) = delete;
   dfa(dfa &&) = delete;
@@ -121,10 +126,6 @@ public:
   void bdd2dot(const std::string &directory = "./");
   void dumpdot(CUDD::BDD &b, const std::string &filename);
   CUDD::BDD state2bdd(int s);
-  int nb_bits{};
-  int initial_state{};
-  int nb_states{};
-  int nb_variables{};
 
   CUDD::BDD finalstatesBDD;
   /*!
@@ -164,6 +165,11 @@ public:
    * @return true if the word is accepted, false otherwise.
    */
   bool accepts(std::vector<interpretation> &word);
+
+  int get_successor(int state, const interpretation &symbol) const;
+  int get_successor(int state, const interpretation_set &symbol) const;
+
+  bool is_final(int state) const;
 
   /*!
    * Add a new state.
@@ -226,6 +232,9 @@ public:
 protected:
 private:
   std::vector<std::string> variables;
+  void get_successor(const std::vector<int> &state,
+                     const interpretation &symbol, std::vector<int> &next_state,
+                     std::vector<int> &extended_symbol) const;
 
   /*!
    * Given the index, try to get a BDD. If not present yet, create it.

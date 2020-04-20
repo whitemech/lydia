@@ -57,6 +57,17 @@ sudo make install
   3. Using a version of aclocal other than 1.14:
      modify the version 1.14 in configure accordingly.
 
+## Graphviz
+
+This tool uses Graphviz to display automata.
+Please follow the install instructions on the official website:
+https://graphviz.gitlab.io/download/.
+
+On Ubuntu, this should work:
+```bash
+sudo apt-get install libgraphviz-dev
+```
+
 ## Build
 
 To build from source, clone the repository:

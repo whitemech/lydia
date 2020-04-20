@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <iostream>
 #include <iterator>
+#include <sstream>
 
 namespace whitemech {
 namespace lydia {
@@ -97,6 +98,14 @@ std::string state2bin(int n, int nb_fill_bits) {
   else
     std::reverse(res.begin(), res.end());
   return res;
+}
+
+std::string interpretation2string(const interpretation &v) {
+  std::stringstream ss;
+  for (int i : v)
+    ss << i;
+  std::string s = ss.str();
+  return s;
 }
 
 } // namespace lydia
