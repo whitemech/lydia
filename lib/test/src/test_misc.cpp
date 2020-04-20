@@ -16,6 +16,7 @@
  */
 #include "catch.hpp"
 #include <set>
+#include <utils/dfa_transform.hpp>
 #include <utils/misc.hpp>
 
 namespace whitemech::lydia::Test {
@@ -40,6 +41,34 @@ TEST_CASE("Bit length", "[bit_length]") {
   REQUIRE(bit_length(3) == 2);
   REQUIRE(bit_length(4) == 3);
   REQUIRE(bit_length(8) == 4);
+}
+
+TEST_CASE("binary vector/string to int", "[bin2state]") {
+  REQUIRE(bin2state(std::vector<int>{0}) == 0);
+  REQUIRE(bin2state(std::vector<int>{1}) == 1);
+  REQUIRE(bin2state(std::vector<int>{1, 0}) == 2);
+  REQUIRE(bin2state(std::vector<int>{1, 1}) == 3);
+  REQUIRE(bin2state(std::vector<int>{0, 0, 1}) == 1);
+  REQUIRE(bin2state(std::vector<int>{0, 0, 1, 0, 0}) == 4);
+
+  REQUIRE(bin2state("0") == 0);
+  REQUIRE(bin2state("1") == 1);
+  REQUIRE(bin2state("10") == 2);
+  REQUIRE(bin2state("11") == 3);
+  REQUIRE(bin2state("001") == 1);
+  REQUIRE(bin2state("00100") == 4);
+}
+
+TEST_CASE("DFA to Graphviz", "[dfa_transform]") {
+  auto *mgr = new CUDD::Cudd();
+  dfa *my_dfa = new dfa(mgr, 1, 1);
+
+  my_dfa->add_state();
+  my_dfa->add_transition(0, interpretation_set{}, 1);
+  my_dfa->add_transition(1, interpretation_set{}, 1);
+  my_dfa->set_final_state(1, true);
+
+  dfa_to_graphviz(*my_dfa, "output.svg", "svg");
 }
 
 } // namespace whitemech::lydia::Test

@@ -56,5 +56,10 @@ std::string join(const std::vector<std::string> &elements,
  */
 std::string state2bin(int n, int nb_fill_bits = -1);
 
+/*
+ * From interpretation to symbol
+ */
+std::string interpretation2string(const interpretation &);
+
 } // namespace lydia
 } // namespace whitemech

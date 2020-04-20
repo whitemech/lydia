@@ -25,6 +25,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -f flex bison
+          sudo apt-get install -f libgraphviz-dev
           sudo apt-get install -f clang-format-9 clang-tidy-9
           sudo apt-get install -f gcovr
       - name: Install CUDD

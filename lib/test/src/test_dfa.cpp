@@ -175,6 +175,10 @@ TEST_CASE("Incremental construction", "[dfa]") {
   SECTION("The starting DFA does not accept anything") {
     auto mgr = new CUDD::Cudd();
     auto my_dfa = new dfa(mgr, 10, 1);
+
+    REQUIRE(my_dfa->get_successor(0, t_na[0]) == 0);
+    REQUIRE(my_dfa->get_successor(0, t_a[0]) == 0);
+
     REQUIRE(!my_dfa->accepts(t_));
     REQUIRE(!my_dfa->accepts(t_na));
     REQUIRE(!my_dfa->accepts(t_a));
@@ -223,6 +227,11 @@ TEST_CASE("Incremental construction", "[dfa]") {
       my_dfa->set_final_state(1, true);
       my_dfa->add_transition(1, interpretation_set{}, 1, true);
 
+      REQUIRE(my_dfa->get_successor(0, t_na[0]) == 0);
+      REQUIRE(my_dfa->get_successor(0, t_a[0]) == 0);
+      REQUIRE(my_dfa->get_successor(1, t_na[0]) == 1);
+      REQUIRE(my_dfa->get_successor(1, t_a[0]) == 1);
+
       REQUIRE(my_dfa->accepts(t_));
       REQUIRE(my_dfa->accepts(t_na));
       REQUIRE(my_dfa->accepts(t_a));
@@ -241,6 +250,11 @@ TEST_CASE("Incremental construction", "[dfa]") {
        */
       my_dfa->set_final_state(1, true);
       my_dfa->add_transition(1, interpretation_set{}, 1, false);
+
+      REQUIRE(my_dfa->get_successor(0, t_na[0]) == 0);
+      REQUIRE(my_dfa->get_successor(0, t_a[0]) == 0);
+      REQUIRE(my_dfa->get_successor(1, t_na[0]) == 1);
+      REQUIRE(my_dfa->get_successor(1, t_a[0]) == 0);
 
       REQUIRE(my_dfa->accepts(t_));
       REQUIRE(my_dfa->accepts(t_na));

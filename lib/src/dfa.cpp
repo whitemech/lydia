@@ -315,22 +315,9 @@ bool dfa::accepts(std::vector<interpretation> &word) {
     next_state[i] = (int)(initial_state_bits[i] == '1');
 
   // start the evaluation loop, until the end of the word
-  for (auto symbol : word) {
-    // populate extended symbol
+  for (const auto &symbol : word) {
     current_state = next_state;
-    auto offset = nb_bits;
-    // set state bits part
-    for (int i = 0; i < nb_bits; i++)
-      extended_symbol[i] = current_state[i];
-    // set symbol part
-    for (int i = 0; i < nb_variables; i++)
-      extended_symbol[offset + i] = symbol[i];
-
-    // compute next state
-    int *extended_symbol_data = extended_symbol.data();
-    for (int i = 0; i < root_bdds.size(); i++) {
-      next_state[i] = (int)root_bdds[i].Eval(extended_symbol_data).IsOne();
-    }
+    get_successor(current_state, symbol, next_state, extended_symbol);
   }
   return finalstatesBDD.Eval(next_state.data()).IsOne();
 }
@@ -390,7 +377,8 @@ void dfa::add_transition(int from, const interpretation_map &symbol, int to) {
   assert(nb_bits == to_binary.length());
   for (int i = 0; i < nb_bits; i++) {
     bool result = int(to_binary[i]) - '0';
-    root_bdds[i] += (result ? tmp : !tmp);
+    if (result)
+      root_bdds[i] += tmp;
   }
 }
 
@@ -412,6 +400,53 @@ void dfa::add_transition(int from, const interpretation_set &symbol, int to,
   }
 
   add_transition(from, new_symbol, to);
+}
+
+int dfa::get_successor(int state, const interpretation &symbol) const {
+  std::vector<int> current_state = std::vector<int>(nb_bits);
+  std::vector<int> next_state(nb_bits);
+  std::vector<int> extended_symbol(nb_bits + nb_variables);
+
+  auto initial_state_bits = state2bin(state, nb_bits);
+  for (int i = 0; i < nb_bits; i++)
+    current_state[i] = (int)(initial_state_bits[i] == '1');
+
+  get_successor(current_state, symbol, next_state, extended_symbol);
+
+  int result = bin2state(next_state);
+  return result;
+}
+
+void dfa::get_successor(const std::vector<int> &state,
+                        const interpretation &symbol,
+                        std::vector<int> &next_state,
+                        std::vector<int> &extended_symbol) const {
+  auto offset = nb_bits;
+  // set state bits part
+  for (int i = 0; i < nb_bits; i++)
+    extended_symbol[i] = state[i];
+  // set symbol part
+  for (int i = 0; i < nb_variables; i++)
+    extended_symbol[offset + i] = symbol[i];
+
+  // compute next state
+  int *extended_symbol_data = extended_symbol.data();
+  for (int i = 0; i < root_bdds.size(); i++) {
+    next_state[i] = (int)root_bdds[i].Eval(extended_symbol_data).IsOne();
+  }
+}
+
+int dfa::get_successor(int state, const interpretation_set &symbol) const {
+  interpretation vec_symbol(nb_variables, 0);
+  for (const int &variable : symbol) {
+    vec_symbol[variable] = 1;
+  }
+  return get_successor(state, vec_symbol);
+}
+
+bool dfa::is_final(int state) const {
+  std::vector<int> state_as_binary_vect = state2binvec(state, nb_bits);
+  return finalstatesBDD.Eval(state_as_binary_vect.data()).IsOne();
 }
 
 } // namespace lydia
