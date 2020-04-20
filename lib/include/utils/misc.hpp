@@ -17,7 +17,9 @@
  */
 
 #include <set>
+#include <cmath>
 #include <types.hpp>
+
 namespace whitemech {
 namespace lydia {
 

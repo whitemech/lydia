@@ -33,14 +33,36 @@ namespace lydia {
 
 class dfa {
 public:
-  explicit dfa(std::unique_ptr<CUDD::Cudd> &m) : mgr{std::move(m)} {};
-
   dfa(const dfa &) = delete;
   dfa &operator=(const dfa &) = delete;
   dfa(dfa &&) = delete;
   dfa &operator=(dfa &&) = delete;
 
-  dfa(CUDD::Cudd *mgr, int nb_variables);
+  /*!
+   * Initialize the DFA from scratch.
+   *
+   * It creates one non-accepting state with a self-loop.
+   * This is the default sink. We suggest to don't create
+   * new transitions from it, otherwise it won't be a true sink anymore.
+   *
+   * Instead, do like the following:
+   *
+   * auto my_dfa = new dfa::dfa(...);
+   * my_dfa.add_state();
+   * my_dfa.set_initial_state(1);
+   * // add transitions from 1...
+   *
+   * The DFA can be later extended by using the methods like:
+   * - add_state
+   * - add_transition
+   * - set_initial_state
+   * - set_final_state
+   *
+   * @param mgr the CUDD manager.
+   * @param nb_bits the maximum number of bits available.
+   * @param nb_variables the number of variables to be used.
+   */
+  dfa(CUDD::Cudd *mgr, int nb_bits, int nb_variables);
 
   /*
    *
@@ -105,8 +127,16 @@ public:
   int nb_variables{};
 
   CUDD::BDD finalstatesBDD;
-  //  Store the BDD roots - LSB order
+  /*!
+   * Store the BDD roots - LSB order, i.e.:
+   * b_{n-1}, ..., b_1, b_0
+   */
   vec_bdd root_bdds;
+
+  /*!
+   * Store the BDD variables - LSB order, i.e.:
+   * b_{n-1}, ..., b_1, b_0, var_0, var_1, ... var_{m-1}
+   */
   vec_bdd bddvars;
 
   const std::unique_ptr<CUDD::Cudd> mgr;
@@ -150,19 +180,48 @@ public:
   void set_initial_state(int state);
 
   /*!
+   * Set a state to be final (or not final)
+   *
+   * @param state the initial state.
+   * @param is_final whether the state should be final or not..
+   */
+  void set_final_state(int state, bool is_final = true);
+
+  /*!
    * Add a transition to the DFA.
    *
    * The @from and @to parameters must be already existing states
-   * of the DFA.
-   *
-   * We assume the variables in the interpretation are all present
-   * in the DFA.
+   * of the DFA. The variable indexes (i.e. the keys of @symbols)
+   * that are greater than nb_variables are ignored.
    *
    * @param from the starting DFA state
-   * @param symbol the guard of the transition
+   * @param symbol the guard of the transition. That is, a mapping from indexes
+   *    associated to variables, and value of truth of that variable.
+   *    Variables indexes missing from the set of keys, or indexes
+   *    greater or equal than nb_variables, are interpreted as "don't care".
    * @param to the ending DFA state
    */
-  void add_transition(int from, const interpretation &symbol, int to);
+  void add_transition(int from, const interpretation_map &symbol, int to);
+
+  /*!
+   * The same the above, but with @symbol as a vector of indexes whose
+   * variables are considered true.
+   *
+   * If @dont_care is true (default), the missing variables are considered
+   * "don't care" variables. Otherwise, they are considered explicitly false.
+   */
+  void add_transition(int from, const interpretation &symbol, int to,
+                      bool dont_care = true);
+
+  /*!
+   * The same the above, but with @symbol as a set of indexes whose
+   * variables are considered true.
+   *
+   * If @dont_care is true (default), the missing variables are considered
+   * "don't care" variables. Otherwise, they are considered explicitly false.
+   */
+  void add_transition(int from, const interpretation_set &symbol, int to,
+                      bool dont_care = true);
 
 protected:
 private:
@@ -186,7 +245,15 @@ private:
                   const std::vector<std::vector<int>> &mona_bdd_nodes,
                   std::vector<vec_bdd> &tBDD);
 
-  CUDD::BDD var2bddvar(int v, int index);
+  /*!
+   * Return positive or negative BDD variable from index.
+   *
+   * @param index an integer between 0 and (nb_bits + nb_variables)
+   * @param v a boolean to say whether the variable should be positive or
+   * negative.
+   * @return the BDD variable corresponding to the index and its
+   */
+  CUDD::BDD var2bddvar(int index, bool v = true);
 
   /*!
    * This method builds the Symbolic DFA from MONA BDD nodes.

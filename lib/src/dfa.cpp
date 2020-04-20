@@ -26,23 +26,23 @@ namespace lydia {
 
 Logger dfa::logger = Logger("dfa");
 
-dfa::dfa(CUDD::Cudd *mgr, int nb_variables) : mgr{mgr} {
-  this->nb_variables = nb_variables;
-  nb_bits = 1;
-  nb_states = 1;
-
-  //  add BDD variables for all the variables
+dfa::dfa(CUDD::Cudd *mgr, int nb_bits, int nb_variables)
+    : mgr{mgr}, nb_bits{nb_bits}, nb_variables{nb_variables}, nb_states{1},
+      initial_state{0} {
+  //  add BDD variables for all the bits and variables
   for (int i = 0; i < nb_bits + nb_variables; i++) {
-    CUDD::BDD b = mgr->bddVar();
+    CUDD::BDD b = this->mgr->bddVar();
     bddvars.push_back(b);
   }
 
-  // state 0 is a sink state - put a self-loop.
-  CUDD::BDD zero = mgr->bddZero();
-  root_bdds.push_back(zero);
+  for (int i = 0; i < nb_bits; i++) {
+    // state 0 is a sink state - put a self-loop at bit 0.
+    CUDD::BDD zero = this->mgr->bddZero();
+    root_bdds.push_back(zero);
+  }
 
   //  start with empty set of final states.
-  finalstatesBDD = mgr->bddZero();
+  finalstatesBDD = this->mgr->bddZero();
 }
 
 void dfa::bdd2dot(const std::string &directory) {
@@ -53,13 +53,8 @@ void dfa::bdd2dot(const std::string &directory) {
   }
 }
 
-// return positive or negative bdd variable index
-CUDD::BDD dfa::var2bddvar(int v, int index) {
-  if (v == 0) {
-    return !bddvars[index];
-  } else {
-    return bddvars[index];
-  }
+CUDD::BDD dfa::var2bddvar(int index, bool v) {
+  return v ? bddvars[index] : !bddvars[index];
 }
 
 void dfa::construct_bdd_from_mona(
@@ -73,7 +68,7 @@ void dfa::construct_bdd_from_mona(
     bddvars.push_back(b);
   }
   // For each bit of the state, create a BDD zero constant
-  // Each var will be updated later in 'OR'
+  // Each var will be updated later in 'OR' (that's why we put zero)
   for (int i = 0; i < nb_bits; i++) {
     CUDD::BDD d = mgr->bddZero();
     root_bdds.push_back(d);
@@ -92,8 +87,8 @@ void dfa::construct_bdd_from_mona(
   for (int i = 0; i < nb_bits; i++) {
     for (int j = 0; j < nb_states; j++) {
       // Build the BDD representation of a state.
-      // we set the temporary variable to 1 because we are going to put it in
-      // 'AND'.
+      // we set the temporary variable to 1 because
+      // we are going to put it in 'AND' later.
       CUDD::BDD tmp = mgr->bddOne();
       // the first for-loop handles the most significant bits
       // that are not covered by the binary representation.
@@ -102,16 +97,15 @@ void dfa::construct_bdd_from_mona(
       std::string bins = state2bin(j);
       int offset = nb_bits - bins.size();
       for (int m = 0; m < offset; m++) {
-        tmp = tmp * var2bddvar(0, m);
+        tmp = tmp * var2bddvar(m, false);
       }
       for (int m = 0; m < bins.size(); m++) {
         // from char '1' (or '0') to int 1 (or 0)
-        auto bit_mth = int(bins[m]) - 48;
-        tmp = tmp * var2bddvar(bit_mth, offset + m);
+        bool bit_mth = int(bins[m]) - '0';
+        tmp = tmp * var2bddvar(offset + m, bit_mth);
       }
-      // Now, put in 'AND' with the correct
-      // BDD node (either terminal/leaf or variable)
-      // At the bit 'i'.
+      // Now, put in 'AND' with the correct BDD node
+      // (either terminal/leaf or variable) at the bit i_th.
       tmp = tmp * tBDD[behaviour[j]][i];
       // Put each root bdd in OR with the current temporary BDD.
       root_bdds[i] = root_bdds[i] + tmp;
@@ -127,18 +121,11 @@ void dfa::construct_bdd_from_mona(
 }
 
 CUDD::BDD dfa::state2bdd(int s) {
-  std::string bin = state2bin(s);
+  std::string bin = state2bin(s, nb_bits);
   CUDD::BDD b = mgr->bddOne();
-  int nzero = nb_bits - bin.length();
-  // std::cout<<nzero<<std::endl;
-  for (int i = 0; i < nzero; i++) {
-    b *= !bddvars[i];
-  }
-  for (int i = 0; i < bin.length(); i++) {
-    if (bin[i] == '0')
-      b *= !bddvars[i + nzero];
-    else
-      b *= bddvars[i + nzero];
+  for (int j = 0; j < nb_bits; j++) {
+    bool bit = int(bin[j]) - '0';
+    b *= var2bddvar(j, bit);
   }
   return b;
 }
@@ -327,6 +314,7 @@ bool dfa::accepts(std::vector<interpretation> &word) {
   for (int i = 0; i < nb_bits; i++)
     next_state[i] = (int)(initial_state_bits[i] == '1');
 
+  // start the evaluation loop, until the end of the word
   for (auto symbol : word) {
     // populate extended symbol
     current_state = next_state;
@@ -351,20 +339,79 @@ int dfa::add_state() {
   int new_state = nb_states;
   auto new_nb_bits = bit_length(new_state);
   if (nb_bits < new_nb_bits) {
-    // add new state variable
-    CUDD::BDD b = mgr->bddVar();
-    bddvars.insert(bddvars.begin() + nb_bits, b);
-    ++nb_bits;
+    /* TODO discuss: that requires a variable number of bits!
+     *      How to deal with final_states_BDD?
+     *
+     *    // add new state variable
+     *    CUDD::BDD b = mgr->bddVar();
+     *    bddvars.insert(bddvars.begin() + nb_bits, b);
+     *    ++nb_bits;
+     */
+    throw std::invalid_argument(
+        "Maximum number of states reached: Cannot instantiate a new bit.");
   }
   ++nb_states;
   return new_state;
 }
 
-void dfa::add_transition(int from, const interpretation &symbol, int to) {
-  if (from < nb_states)
+void dfa::set_initial_state(int state) {
+  if (state >= nb_states) {
+    throw std::invalid_argument("The state is not in the set of states.");
+  }
+  this->initial_state = state;
+}
+
+void dfa::set_final_state(int state, bool is_final) {
+  if (state >= nb_states) {
+    throw std::invalid_argument("The state is not in the set of states.");
+  }
+  CUDD::BDD tmp = state2bdd(state);
+  finalstatesBDD += (is_final ? tmp : !tmp);
+}
+
+void dfa::add_transition(int from, const interpretation_map &symbol, int to) {
+  if (from >= nb_states)
     throw std::invalid_argument("'from' state is not in the set of states.");
-  if (to < nb_states)
+  if (to >= nb_states)
     throw std::invalid_argument("'to' state is not in the set of states.");
+  if (symbol.size() > nb_variables)
+    throw std::invalid_argument("Too many variables!");
+  //  TODO add some validation on symbol
+
+  std::string to_binary = state2bin(to, nb_bits);
+
+  // build the extended symbol in form of a BDD
+  CUDD::BDD tmp = state2bdd(from);
+  for (auto pair : symbol) {
+    tmp = tmp * var2bddvar(nb_bits + pair.first, pair.second);
+  }
+
+  //  Update each root BDD.
+  assert(nb_bits == to_binary.length());
+  for (int i = 0; i < nb_bits; i++) {
+    bool result = int(to_binary[i]) - '0';
+    root_bdds[i] += (result ? tmp : !tmp);
+  }
+}
+
+void dfa::add_transition(int from, const interpretation &symbol, int to,
+                         bool dont_care) {
+  interpretation_set s{symbol.begin(), symbol.end()};
+  add_transition(from, s, to, dont_care);
+}
+
+void dfa::add_transition(int from, const interpretation_set &symbol, int to,
+                         bool dont_care) {
+  std::map<int, bool> new_symbol;
+  if (dont_care) {
+    for (int i : symbol)
+      new_symbol[i] = true;
+  } else {
+    for (int i = 0; i < nb_variables; i++)
+      new_symbol[i] = symbol.find(i) != symbol.end();
+  }
+
+  add_transition(from, new_symbol, to);
 }
 
 } // namespace lydia
