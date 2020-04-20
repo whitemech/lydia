@@ -34,6 +34,14 @@ namespace lydia {
 class dfa {
 public:
   explicit dfa(std::unique_ptr<CUDD::Cudd> &m) : mgr{std::move(m)} {};
+
+  dfa(const dfa &) = delete;
+  dfa &operator=(const dfa &) = delete;
+  dfa(dfa &&) = delete;
+  dfa &operator=(dfa &&) = delete;
+
+  dfa(CUDD::Cudd *mgr, int nb_variables);
+
   /*
    *
    * Constructor from MONA data.
@@ -56,18 +64,18 @@ public:
    * @param mona_bdd_nodes the shared multi-terminal BDD nodes (MONA DFA)
    */
   dfa(CUDD::Cudd *mgr, const std::vector<std::string> &variables, int nb_states,
-      int initial_state, std::vector<int> final_states,
-      std::vector<int> behaviour, std::vector<item> &mona_bdd_nodes);
+      int initial_state, const std::vector<int> &final_states,
+      const std::vector<int> &behaviour, std::vector<item> &mona_bdd_nodes);
 
   /*
    * The same constructor as above, but the manager
    * will be instantiated in the constructor.
    */
   dfa(const std::vector<std::string> &variables, int nb_states,
-      int initial_state, std::vector<int> final_states,
-      std::vector<int> behaviour, std::vector<item> &smtbdd)
-      : dfa(new CUDD::Cudd(), variables, nb_states, initial_state,
-            std::move(final_states), std::move(behaviour), smtbdd) {}
+      int initial_state, const std::vector<int> &final_states,
+      const std::vector<int> &behaviour, std::vector<item> &smtbdd)
+      : dfa(new CUDD::Cudd(), variables, nb_states, initial_state, final_states,
+            behaviour, smtbdd) {}
 
   static Logger logger;
 
@@ -94,13 +102,12 @@ public:
   int nb_bits{};
   int initial_state{};
   int nb_states{};
-
   int nb_variables{};
-  std::vector<int> final_states;
+
   CUDD::BDD finalstatesBDD;
   //  Store the BDD roots - LSB order
-  vbdd root_bdds;
-  vbdd bddvars;
+  vec_bdd root_bdds;
+  vec_bdd bddvars;
 
   const std::unique_ptr<CUDD::Cudd> mgr;
 
@@ -122,6 +129,8 @@ public:
    * Check whether a word of propositional interpretations
    * is accepted by the DFA.
    *
+   * //TODO consider using bit vectors for an interpretation.
+   *
    * @return true if the word is accepted, false otherwise.
    */
   bool accepts(std::vector<interpretation> &word);
@@ -132,6 +141,28 @@ public:
    * @return the index of the next state.
    */
   int add_state();
+
+  /*!
+   * Set the initial state.
+   *
+   * @param state the initial state.
+   */
+  void set_initial_state(int state);
+
+  /*!
+   * Add a transition to the DFA.
+   *
+   * The @from and @to parameters must be already existing states
+   * of the DFA.
+   *
+   * We assume the variables in the interpretation are all present
+   * in the DFA.
+   *
+   * @param from the starting DFA state
+   * @param symbol the guard of the transition
+   * @param to the ending DFA state
+   */
+  void add_transition(int from, const interpretation &symbol, int to);
 
 protected:
 private:
@@ -151,8 +182,9 @@ private:
    * @param mona_bdd_nodes
    * @return the list of BDDs.
    */
-  vbdd try_get(int index, const std::vector<std::vector<int>> &mona_bdd_nodes,
-               std::vector<vbdd> &tBDD);
+  vec_bdd try_get(int index,
+                  const std::vector<std::vector<int>> &mona_bdd_nodes,
+                  std::vector<vec_bdd> &tBDD);
 
   CUDD::BDD var2bddvar(int v, int index);
 
@@ -172,8 +204,8 @@ private:
    */
   void
   construct_bdd_from_mona(const std::vector<std::vector<int>> &mona_bdd_nodes,
-                          const std::vector<int> &behaviour);
+                          const std::vector<int> &behaviour,
+                          const std::vector<int> &final_states);
 };
-
 } // namespace lydia
 } // namespace whitemech

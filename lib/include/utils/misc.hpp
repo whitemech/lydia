@@ -51,5 +51,12 @@ std::vector<std::set<T, U>> powerset(std::set<T, U> &s) {
   return result;
 }
 
+unsigned inline bit_length(int x) {
+  unsigned bits, var = (x < 0) ? -x : x;
+  for (bits = 0; var != 0; ++bits)
+    var >>= 1;
+  return bits;
+}
+
 } // namespace lydia
 } // namespace whitemech

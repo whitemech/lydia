@@ -152,4 +152,25 @@ TEST_CASE("Test accepts", "[dfa]") {
   }
 }
 
+TEST_CASE("Incremental construction", "[dfa]") {
+  auto mgr = new CUDD::Cudd();
+  auto my_dfa = dfa(mgr, 1);
+
+  interpretation a = {1};
+  interpretation na = {0};
+  auto t_a = trace{a};
+  auto t_na = trace{na};
+  auto t_na_na = trace{na, na};
+  auto t_na_a = trace{na, a};
+  auto t_a_na = trace{a, na};
+  auto t_a_a = trace{a, a};
+
+  REQUIRE(!my_dfa.accepts(t_a));
+  REQUIRE(!my_dfa.accepts(t_na));
+  REQUIRE(!my_dfa.accepts(t_na_na));
+  REQUIRE(!my_dfa.accepts(t_na_a));
+  REQUIRE(!my_dfa.accepts(t_a_na));
+  REQUIRE(!my_dfa.accepts(t_na_na));
+}
+
 } // namespace whitemech::lydia::Test

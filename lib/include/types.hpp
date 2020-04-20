@@ -67,7 +67,7 @@ typedef std::set<nfa_state_ptr, SharedComparator> set_nfa_states;
 typedef std::set<dfa_state_ptr, SharedComparator> set_dfa_states;
 typedef std::set<tuple_dfa_transition> set_dfa_transitions;
 typedef std::vector<int> item;
-typedef std::vector<CUDD::BDD> vbdd;
+typedef std::vector<CUDD::BDD> vec_bdd;
 
 class not_implemented_error : public std::logic_error {
 public:
