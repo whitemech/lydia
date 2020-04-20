@@ -22,7 +22,7 @@
 #include <queue>
 #include <translate.hpp>
 #include <utility>
-#include <utils/powerset.hpp>
+#include <utils/misc.hpp>
 
 namespace whitemech {
 namespace lydia {

@@ -19,6 +19,7 @@
 #include "cuddObj.hh"
 #include <cstdint>
 #include <exception>
+#include <map>
 #include <memory>
 #include <set>
 #include <vector>
@@ -44,8 +45,12 @@ struct SharedComparator {
 };
 
 typedef uint64_t hash_t;
+// a list of 0-1 that denotes the value of truth of the i_th variable.
 typedef std::vector<int> interpretation;
 typedef std::vector<interpretation> trace;
+// a set of indexes whose corresponding variables must be interpreted as true
+typedef std::set<int> interpretation_set;
+typedef std::map<int, bool> interpretation_map;
 typedef std::shared_ptr<const Basic> basic_ptr;
 typedef std::shared_ptr<const PropositionalAtom> atom_ptr;
 typedef std::set<atom_ptr, SharedComparator> set_atoms_ptr;
@@ -67,7 +72,7 @@ typedef std::set<nfa_state_ptr, SharedComparator> set_nfa_states;
 typedef std::set<dfa_state_ptr, SharedComparator> set_dfa_states;
 typedef std::set<tuple_dfa_transition> set_dfa_transitions;
 typedef std::vector<int> item;
-typedef std::vector<CUDD::BDD> vbdd;
+typedef std::vector<CUDD::BDD> vec_bdd;
 
 class not_implemented_error : public std::logic_error {
 public:

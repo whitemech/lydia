@@ -16,7 +16,7 @@
  */
 #include "catch.hpp"
 #include <set>
-#include <utils/powerset.hpp>
+#include <utils/misc.hpp>
 
 namespace whitemech::lydia::Test {
 
@@ -31,6 +31,15 @@ TEST_CASE("powerset", "[powerset]") {
   REQUIRE(result[5] == std::set<int>({0, 2}));
   REQUIRE(result[6] == std::set<int>({1, 2}));
   REQUIRE(result[7] == std::set<int>({0, 1, 2}));
+}
+
+TEST_CASE("Bit length", "[bit_length]") {
+  REQUIRE(bit_length(0) == 0);
+  REQUIRE(bit_length(1) == 1);
+  REQUIRE(bit_length(2) == 2);
+  REQUIRE(bit_length(3) == 2);
+  REQUIRE(bit_length(4) == 3);
+  REQUIRE(bit_length(8) == 4);
 }
 
 } // namespace whitemech::lydia::Test

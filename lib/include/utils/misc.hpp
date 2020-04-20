@@ -16,8 +16,10 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cmath>
 #include <set>
 #include <types.hpp>
+
 namespace whitemech {
 namespace lydia {
 
@@ -49,6 +51,13 @@ std::vector<std::set<T, U>> powerset(std::set<T, U> &s) {
     result.emplace_back(tmp);
   }
   return result;
+}
+
+unsigned inline bit_length(int x) {
+  unsigned bits, var = (x < 0) ? -x : x;
+  for (bits = 0; var != 0; ++bits)
+    var >>= 1;
+  return bits;
 }
 
 } // namespace lydia

@@ -18,7 +18,7 @@
 #include <cassert>
 #include <propositional_logic.hpp>
 #include <utils/compare.hpp>
-#include <utils/powerset.hpp>
+#include <utils/misc.hpp>
 
 namespace whitemech {
 namespace lydia {
