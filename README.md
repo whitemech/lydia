@@ -61,7 +61,7 @@ sudo make install
 
 This tool uses Graphviz to display automata.
 Please follow the install instructions on the official website:
-https://graphviz.gitlab.io/download/.
+<https://graphviz.gitlab.io/download/>.
 
 On Ubuntu, this should work:
 ```bash
