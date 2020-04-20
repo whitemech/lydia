@@ -251,7 +251,6 @@ TEST_CASE("Incremental construction", "[dfa]") {
       REQUIRE(!my_dfa->accepts(t_a_a));
     }
   }
-
 }
 
 } // namespace whitemech::lydia::Test

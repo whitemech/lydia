@@ -16,8 +16,8 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <set>
 #include <cmath>
+#include <set>
 #include <types.hpp>
 
 namespace whitemech {
