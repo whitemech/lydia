@@ -51,6 +51,7 @@ public:
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
+  void visit(const LDLfDiamond &) override;
   std::shared_ptr<const PropositionalFormula> apply(const LDLfFormula &b);
 };
 

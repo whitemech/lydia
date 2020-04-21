@@ -17,10 +17,14 @@
  */
 
 #include "basic.hpp"
+#include "propositional_logic.hpp"
 #include "symbol.hpp"
+#include <type_traits>
 
 namespace whitemech {
 namespace lydia {
+
+class RegExp;
 
 class LDLfFormula : public Basic {
 public:
@@ -102,6 +106,49 @@ public:
   int compare(const Basic &o) const override;
   std::shared_ptr<const LDLfFormula> get_arg() const;
   std::shared_ptr<const LDLfFormula> logical_not() const override;
+};
+
+// TODO this is temporarly LDLfDiamond; Call LDLfTemporal and implement is as a
+// template template <typename T, typename =
+// std::enable_if_t<std::is_base_of_v<RegExp, T>>>
+class LDLfDiamond : public LDLfFormula {
+private:
+  const ldlf_ptr arg_;
+  // TODO not propositional, generic
+  const regex_ptr regex_;
+
+public:
+  const static TypeID type_code_id = TypeID::t_LDLfDiamond;
+  void accept(Visitor &v) const override;
+  //  explicit LDLfTemporal<T>(const ldlf_ptr&, const std::shared_ptr<const T>);
+  explicit LDLfDiamond(ldlf_ptr f, const std::shared_ptr<const RegExp> &r);
+  bool is_canonical(const set_formulas &container_) { return true; };
+  hash_t compute_hash_() const override;
+  virtual ldlf_ptr get_formula() const; // TODO not propositional, generic
+  virtual regex_ptr get_regex() const;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+  std::shared_ptr<const LDLfFormula> logical_not() const override {
+    return std::shared_ptr<const LDLfFormula>();
+  };
+};
+
+class RegExp : public Basic {};
+
+class PropositionalRegExp : public RegExp {
+private:
+  const std::shared_ptr<const PropositionalFormula> arg_;
+
+public:
+  const static TypeID type_code_id = TypeID::t_PropositionalRegExp;
+  void accept(Visitor &v) const override{};
+  explicit PropositionalRegExp(
+      const std::shared_ptr<const PropositionalFormula> &f);
+  bool is_canonical(const set_formulas &container_) { return true; };
+  hash_t compute_hash_() const override;
+  std::shared_ptr<const PropositionalFormula> get_arg() const;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
 };
 
 class QuotedFormula : public Basic {

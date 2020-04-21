@@ -54,6 +54,17 @@ void DeltaVisitor::visit(const LDLfOr &x) {
   result = std::make_shared<PropositionalOr>(new_container);
 }
 
+void DeltaVisitor::visit(const LDLfDiamond &f) {
+  //  TODO epsilon return false only if regexp is propositional
+  if (epsilon) {
+    result = std::make_shared<PropositionalFalse>();
+  } else {
+    auto prop = f.get_regex()->get_arg();
+    if (eval(prop, this->prop_interpretation)) {
+    }
+  }
+}
+
 std::shared_ptr<const PropositionalFormula>
 DeltaVisitor::apply(const LDLfFormula &b) {
   b.accept(*this);

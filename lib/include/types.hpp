@@ -30,11 +30,25 @@ namespace lydia {
 class Basic;
 class Symbol;
 class LDLfFormula;
+class LDLfBooleanAtom;
+class LDLfAnd;
+class LDLfOr;
+class LDLfNot;
+class LDLfDiamond;
+class PropositionalRegExp;
 class PropositionalFormula;
 class PropositionalAtom;
+class PropositionalTrue;
+class PropositionalFalse;
+class PropositionalAtom;
+class QuotedFormula;
+class PropositionalAnd;
+class PropositionalOr;
+class PropositionalNot;
 class NFAState;
 class DFAState;
 class DFATransition;
+class RegExp;
 
 struct SharedComparator {
   template <typename T>
@@ -59,6 +73,7 @@ typedef std::tuple<const DFAState &, const set_atoms_ptr &, const DFAState &>
     tuple_dfa_transition;
 typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
 typedef std::set<std::shared_ptr<const Basic>, SharedComparator> set_basic;
+typedef std::shared_ptr<const LDLfFormula> ldlf_ptr;
 typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
 typedef std::set<std::shared_ptr<const LDLfFormula>, SharedComparator>
     set_formulas;
@@ -66,6 +81,7 @@ typedef std::vector<std::shared_ptr<const PropositionalFormula>>
     vec_prop_formulas;
 typedef std::set<std::shared_ptr<const PropositionalFormula>, SharedComparator>
     set_prop_formulas;
+typedef std::shared_ptr<const RegExp> regex_ptr;
 typedef std::shared_ptr<const NFAState> nfa_state_ptr;
 typedef std::shared_ptr<const DFAState> dfa_state_ptr;
 typedef std::shared_ptr<tuple_dfa_transition> dfa_transition_ptr;

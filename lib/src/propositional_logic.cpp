@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include "propositional_logic.hpp"
+#include "utils/compare.hpp"
+#include "utils/misc.hpp"
 #include <atom_visitor.hpp>
 #include <cassert>
-#include <propositional_logic.hpp>
-#include <utils/compare.hpp>
-#include <utils/misc.hpp>
 
 namespace whitemech {
 namespace lydia {

@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <nnf.hpp>
+#include "nnf.hpp"
 #include <sstream>
 #include <stdexcept>
 

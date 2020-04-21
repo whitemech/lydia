@@ -16,6 +16,8 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "logic.hpp"
+#include "propositional_logic.hpp"
 #include "visitor.hpp"
 
 namespace whitemech {

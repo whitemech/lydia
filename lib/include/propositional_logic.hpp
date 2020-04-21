@@ -17,7 +17,6 @@
  */
 
 #include "basic.hpp"
-#include "logic.hpp"
 #include "symbol.hpp"
 #include "visitor.hpp"
 

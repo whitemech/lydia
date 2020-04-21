@@ -191,6 +191,36 @@ std::shared_ptr<const LDLfFormula> LDLfNot::logical_not() const {
   return this->get_arg();
 }
 
+LDLfDiamond::LDLfDiamond(ldlf_ptr f, const regex_ptr &r)
+    : arg_{std::move(f)}, regex_{r} {
+  this->type_code_ = type_code_id;
+}
+
+hash_t LDLfDiamond::compute_hash_() const {
+  // TODO
+  return 0;
+}
+
+ldlf_ptr LDLfDiamond::get_formula() const { return arg_; }
+
+regex_ptr LDLfDiamond::get_regex() const { return regex_; }
+
+bool LDLfDiamond::is_equal(const Basic &o) const {
+  return is_a<LDLfDiamond>(o) and
+         eq(*arg_, *dynamic_cast<const LDLfDiamond &>(o).get_formula()) and
+         eq(*regex_, *dynamic_cast<const LDLfDiamond &>(o).get_regex());
+}
+
+int LDLfDiamond::compare(const Basic &o) const {
+  assert(is_a<LDLfDiamond>(o));
+  auto result =
+      regex_->compare_(*dynamic_cast<const LDLfDiamond &>(o).get_regex());
+  if (result != 0)
+    return result;
+  else
+    return arg_->compare_(*dynamic_cast<const LDLfDiamond &>(o).get_formula());
+}
+
 hash_t QuotedFormula::compute_hash_() const {
   return this->formula->compute_hash_();
 }
@@ -202,6 +232,31 @@ int QuotedFormula::compare(const Basic &rhs) const {
 
 bool QuotedFormula::is_equal(const Basic &rhs) const {
   return this->formula->is_equal(rhs);
+}
+
+PropositionalRegExp::PropositionalRegExp(
+    const std::shared_ptr<const PropositionalFormula> &f)
+    : arg_{f} {}
+
+hash_t PropositionalRegExp::compute_hash_() const {
+  // TODO
+  return 0;
+}
+
+std::shared_ptr<const PropositionalFormula>
+PropositionalRegExp::get_arg() const {
+  return arg_;
+}
+
+bool PropositionalRegExp::is_equal(const Basic &o) const {
+  return is_a<PropositionalRegExp>(o) and
+         eq(*arg_, *dynamic_cast<const PropositionalRegExp &>(o).get_arg());
+}
+
+int PropositionalRegExp::compare(const Basic &o) const {
+  assert(is_a<PropositionalRegExp>(o));
+  return arg_->compare_(
+      *dynamic_cast<const PropositionalRegExp &>(o).get_arg());
 }
 
 } // namespace lydia
