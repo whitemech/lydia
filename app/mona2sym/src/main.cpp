@@ -25,8 +25,9 @@
  */
 
 #include "CLI/CLI.hpp"
+#include "dfa.hpp"
+#include "utils/dfa_transform.hpp"
 #include <cstdlib>
-#include <dfa.hpp>
 #include <string>
 
 /*!
@@ -44,6 +45,7 @@ void transform(const std::string &input, const std::string &output_dir) {
   auto cmd = "mkdir " + output_dir;
   std::system(cmd.c_str());
   my_dfa->bdd2dot(output_dir);
+  dfa_to_graphviz(*my_dfa, "output", "svg");
 }
 
 int main(int argc, char **argv) {

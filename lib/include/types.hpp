@@ -54,6 +54,7 @@ typedef std::map<int, bool> interpretation_map;
 typedef std::shared_ptr<const Basic> basic_ptr;
 typedef std::shared_ptr<const PropositionalAtom> atom_ptr;
 typedef std::set<atom_ptr, SharedComparator> set_atoms_ptr;
+typedef std::map<atom_ptr, int, SharedComparator> map_atoms_ptr;
 typedef std::tuple<const DFAState &, const set_atoms_ptr &, const DFAState &>
     tuple_dfa_transition;
 typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
@@ -70,6 +71,7 @@ typedef std::shared_ptr<const DFAState> dfa_state_ptr;
 typedef std::shared_ptr<tuple_dfa_transition> dfa_transition_ptr;
 typedef std::set<nfa_state_ptr, SharedComparator> set_nfa_states;
 typedef std::set<dfa_state_ptr, SharedComparator> set_dfa_states;
+typedef std::map<dfa_state_ptr, int, SharedComparator> map_dfa_states;
 typedef std::set<tuple_dfa_transition> set_dfa_transitions;
 typedef std::vector<int> item;
 typedef std::vector<CUDD::BDD> vec_bdd;

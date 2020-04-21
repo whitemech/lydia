@@ -34,45 +34,62 @@ dfa *to_dfa(LDLfFormula &formula) {
   dfa_state_ptr initial_state =
       std::make_shared<DFAState>(initial_state_formulas);
 
-  //  initialize data structure of the final DFA
-  set_dfa_states final_states;
-  set_dfa_states states{{initial_state}};
-  set_dfa_transitions transitions;
-
   // find all atoms
   set_atoms_ptr atoms = find_atoms(*formula_nnf);
+  map_atoms_ptr atom2index;
+  int index = 0;
+  for (const auto &atom : atoms)
+    atom2index[atom] = index++;
   auto all_interpretations = powerset<atom_ptr, SharedComparator>(atoms);
+
+  // TODO max number of bits
+  dfa *automaton = new dfa(10, atoms.size());
+  automaton->add_state();
+  automaton->set_initial_state(1);
 
   //  Check if the initial state is final
   if (initial_state->is_final()) {
-    final_states.insert(initial_state);
+    automaton->set_final_state(1, true);
   }
 
   // BFS exploration of the automaton.
-  set_dfa_states visited;
-  std::queue<dfa_state_ptr> to_be_visited;
-  to_be_visited.push(initial_state);
+  map_dfa_states visited;
+  std::queue<std::pair<dfa_state_ptr, int>> to_be_visited;
+  to_be_visited.push(std::make_pair(initial_state, 1));
   while (!to_be_visited.empty()) {
-    const auto &current_state = to_be_visited.front();
+    auto pair = to_be_visited.front();
     to_be_visited.pop();
-    visited.insert(current_state);
-
+    const dfa_state_ptr current_state = pair.first;
+    auto current_state_index = pair.second;
+    visited[current_state] = current_state_index;
     /*
      * TODO: naive implementation: do a loop for every interpretation
      *       improvement: delta function returns a list of possible successors
      *                    (no interpretation to provide)
      */
     for (const auto &i : all_interpretations) {
-      const auto next_state = current_state->next_state(i);
+      const dfa_state_ptr next_state = current_state->next_state(i);
       // update states/transitions
-      states.insert(next_state);
-      transitions.insert(std::tie(*current_state, i, *next_state));
-      if (visited.find(next_state) == visited.end())
-        to_be_visited.push(next_state);
+      int next_state_index = 0;
+      if (visited.find(next_state) == visited.end()) {
+        next_state_index = automaton->add_state();
+        to_be_visited.push(std::make_pair(next_state, next_state_index));
+        if (next_state->is_final()) {
+          automaton->set_final_state(next_state_index, true);
+        }
+      } else {
+        next_state_index = visited[next_state];
+      }
+
+      interpretation_set x{};
+      for (const atom_ptr &atom : i)
+        x.insert(atom2index[atom]);
+      automaton->add_transition(current_state_index, x, next_state_index,
+                                false);
     }
   }
 
-  return nullptr;
+  return automaton;
 }
 
 NFAState::NFAState(set_formulas formulas) : formulas{std::move(formulas)} {

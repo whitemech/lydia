@@ -45,6 +45,9 @@ dfa::dfa(CUDD::Cudd *mgr, int nb_bits, int nb_variables)
   finalstatesBDD = this->mgr->bddZero();
 }
 
+dfa::dfa(int nb_bits, int nb_variables)
+    : dfa(new CUDD::Cudd, nb_bits, nb_variables) {}
+
 void dfa::bdd2dot(const std::string &directory) {
   for (int i = 0; i < root_bdds.size(); i++) {
     std::string filename = directory + "/" + std::to_string(i);

@@ -18,6 +18,8 @@
 #include "nnf.hpp"
 #include <iostream>
 #include <translate.hpp>
+#include <utils/dfa_transform.hpp>
+#include <utils/print.hpp>
 
 namespace whitemech::lydia::Test {
 
@@ -32,12 +34,43 @@ TEST_CASE("Set of DFA states", "[translate]") {
   REQUIRE(a < b);
 }
 
-TEST_CASE("Translate", "[translate]") {
+TEST_CASE("Translate !(ff & tt)", "[translate]") {
   auto args = set_formulas({boolean(false), boolean(true)});
   auto ff_and_tt = std::make_shared<LDLfAnd>(args);
   auto not_and = LDLfNot(ff_and_tt);
+  auto formula_name = to_string(*ff_and_tt);
   // TODO complete.
-  to_dfa(not_and);
+  auto *my_dfa = to_dfa(not_and);
+
+  // print the DFA
+  dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
+
+  auto false_ = interpretation{};
+  auto empty_trace = trace{};
+  auto trace_one = trace{false_};
+  auto trace_two = trace{false_, false_};
+  REQUIRE(my_dfa->accepts(empty_trace));
+  REQUIRE(my_dfa->accepts(trace_one));
+  REQUIRE(my_dfa->accepts(trace_two));
+}
+
+TEST_CASE("Translate ff & tt)", "[translate]") {
+  auto args = set_formulas({boolean(false), boolean(true)});
+  auto ff_and_tt = std::make_shared<LDLfAnd>(args);
+  auto formula_name = to_string(*ff_and_tt);
+  // TODO complete.
+  auto *my_dfa = to_dfa(*ff_and_tt);
+
+  // print the DFA
+  dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
+
+  auto false_ = interpretation{};
+  auto empty_trace = trace{};
+  auto trace_one = trace{false_};
+  auto trace_two = trace{false_, false_};
+  REQUIRE(!my_dfa->accepts(empty_trace));
+  REQUIRE(!my_dfa->accepts(trace_one));
+  REQUIRE(!my_dfa->accepts(trace_two));
 }
 
 } // namespace whitemech::lydia::Test
