@@ -68,6 +68,7 @@ public:
    * @param nb_variables the number of variables to be used.
    */
   dfa(CUDD::Cudd *mgr, int nb_bits, int nb_variables);
+  dfa(int nb_bits, int nb_variables);
 
   /*
    *
