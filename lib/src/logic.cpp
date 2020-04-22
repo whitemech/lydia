@@ -60,7 +60,9 @@ std::shared_ptr<const LDLfFormula> LDLfBooleanAtom::logical_not() const {
 
 LDLfAnd::LDLfAnd(const set_formulas &s) : container_{s} {
   this->type_code_ = type_code_id;
-  assert(is_canonical(s));
+  if (!is_canonical(s)){
+    throw std::invalid_argument("LDLfAnd formula: arguments must be > 1");
+  }
 }
 
 hash_t LDLfAnd::compute_hash_() const {
@@ -71,8 +73,7 @@ hash_t LDLfAnd::compute_hash_() const {
 }
 
 bool LDLfAnd::is_canonical(const set_formulas &container_) {
-  // TODO do some checks on the arguments
-  return true;
+  return container_.size() > 1;
 }
 
 vec_formulas LDLfAnd::get_args() const {
@@ -105,6 +106,9 @@ std::shared_ptr<const LDLfFormula> LDLfAnd::logical_not() const {
 
 LDLfOr::LDLfOr(const set_formulas &s) : container_{s} {
   this->type_code_ = type_code_id;
+  if (!is_canonical(s)){
+    throw std::invalid_argument("LDLfAnd formula: arguments must be > 1");
+  }
 }
 
 hash_t LDLfOr::compute_hash_() const {
@@ -132,8 +136,7 @@ int LDLfOr::compare(const Basic &o) const {
 }
 
 bool LDLfOr::is_canonical(const set_formulas &container_) {
-  // TODO do some checks on the arguments
-  return true;
+  return container_.size() > 1;
 }
 
 const set_formulas &LDLfOr::get_container() const { return container_; }

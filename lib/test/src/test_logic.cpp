@@ -54,8 +54,6 @@ TEST_CASE("Boolean atoms", "[logic]") {
   SECTION("ff->hash() == new_ff->hash()") {
     REQUIRE(boolFalse->hash() == newBoolFalse.hash());
   }
-
-  // TODO test to string
 }
 
 TEST_CASE("LDLfNot", "[logic]") {
@@ -88,9 +86,11 @@ TEST_CASE("And", "[logic]") {
   set_formulas and_2_args = set_formulas();
   set_formulas and_3_args = {boolean(true), boolean(true), boolean(false)};
 
-  auto and_1 =
-      LDLfAnd(and_1_args); // TODO: this should raise exception: less than two
-  auto and_2 = LDLfAnd(and_2_args); // TODO see above
+  SECTION("test exception for number of args") {
+    REQUIRE_THROWS(LDLfAnd(and_1_args));
+    REQUIRE_THROWS(LDLfAnd(and_2_args));
+  }
+
   auto and_3 = LDLfAnd(and_3_args);
   auto and_3_p = LDLfAnd(and_3_args);
 
@@ -111,9 +111,11 @@ TEST_CASE("LDLfOr", "[logic]") {
   set_formulas or_2_args = set_formulas();
   set_formulas or_3_args = {boolean(true), boolean(true), boolean(false)};
 
-  auto or_1 =
-      LDLfOr(or_1_args); // TODO: this should raise exception: less than two
-  auto or_2 = LDLfOr(or_2_args); // TODO see above
+  SECTION("test exception for number of args") {
+    REQUIRE_THROWS(LDLfOr(or_1_args));
+    REQUIRE_THROWS(LDLfOr(or_2_args));
+  }
+
   auto or_3 = LDLfOr(or_3_args);
   auto or_3_p = LDLfOr(or_3_args);
 
