@@ -54,8 +54,6 @@ TEST_CASE("Boolean atoms", "[logic]") {
   SECTION("ff->hash() == new_ff->hash()") {
     REQUIRE(boolFalse->hash() == newBoolFalse.hash());
   }
-
-  // TODO test to string
 }
 
 TEST_CASE("LDLfNot", "[logic]") {
@@ -65,16 +63,17 @@ TEST_CASE("LDLfNot", "[logic]") {
   auto ptr_false = std::make_shared<LDLfBooleanAtom>(false);
   auto not_false = LDLfNot(ptr_false);
 
+  SECTION("test canonical exception") {
+    REQUIRE_THROWS(LDLfNot(std::make_shared<LDLfNot>(ptr_true)));
+  }
   SECTION("test equality on same objects") {
     REQUIRE(not_true.is_equal(not_true));
     REQUIRE(not_false.is_equal(not_false));
   }
-
   SECTION("test inequality") {
     REQUIRE(!not_true.is_equal(not_false));
     REQUIRE(!not_false.is_equal(not_true));
   }
-
   SECTION("test compare") {
     REQUIRE(not_true.compare(not_true) == 0);
     REQUIRE(not_false.compare(not_false) == 0);
@@ -88,9 +87,11 @@ TEST_CASE("And", "[logic]") {
   set_formulas and_2_args = set_formulas();
   set_formulas and_3_args = {boolean(true), boolean(true), boolean(false)};
 
-  auto and_1 =
-      LDLfAnd(and_1_args); // TODO: this should raise exception: less than two
-  auto and_2 = LDLfAnd(and_2_args); // TODO see above
+  SECTION("test exception for number of args") {
+    REQUIRE_THROWS(LDLfAnd(and_1_args));
+    REQUIRE_THROWS(LDLfAnd(and_2_args));
+  }
+
   auto and_3 = LDLfAnd(and_3_args);
   auto and_3_p = LDLfAnd(and_3_args);
 
@@ -111,9 +112,11 @@ TEST_CASE("LDLfOr", "[logic]") {
   set_formulas or_2_args = set_formulas();
   set_formulas or_3_args = {boolean(true), boolean(true), boolean(false)};
 
-  auto or_1 =
-      LDLfOr(or_1_args); // TODO: this should raise exception: less than two
-  auto or_2 = LDLfOr(or_2_args); // TODO see above
+  SECTION("test exception for number of args") {
+    REQUIRE_THROWS(LDLfOr(or_1_args));
+    REQUIRE_THROWS(LDLfOr(or_2_args));
+  }
+
   auto or_3 = LDLfOr(or_3_args);
   auto or_3_p = LDLfOr(or_3_args);
 
@@ -132,20 +135,20 @@ TEST_CASE("Logical not", "[logical_not]") {
   REQUIRE(ff->logical_not()->is_equal(*tt));
 
   SECTION("De Morgan's Law and-or") {
-    set_formulas ffs = {ff, ff};
-    set_formulas tts = {tt, tt};
-    auto and_ = std::make_shared<LDLfAnd>(ffs);
+    set_formulas args_1_and = {tt, ff};
+    set_formulas args_2_and = {ff, tt};
+    auto and_ = std::make_shared<LDLfAnd>(args_1_and);
     auto actual_or = and_->logical_not();
-    auto expected_or = std::make_shared<LDLfOr>(tts);
+    auto expected_or = std::make_shared<LDLfOr>(args_2_and);
     REQUIRE(actual_or->is_equal(*expected_or));
   }
 
   SECTION("De Morgan's Law or-and") {
-    set_formulas ffs = {ff, ff};
-    set_formulas tts = {tt, tt};
-    auto or_ = std::make_shared<LDLfOr>(ffs);
+    set_formulas args_1_and = {tt, ff};
+    set_formulas args_2_and = {ff, tt};
+    auto or_ = std::make_shared<LDLfOr>(args_1_and);
     auto expected_and = or_->logical_not();
-    auto actual_and = std::make_shared<LDLfAnd>(tts);
+    auto actual_and = std::make_shared<LDLfAnd>(args_2_and);
     REQUIRE(actual_and->is_equal(*expected_and));
   }
 }

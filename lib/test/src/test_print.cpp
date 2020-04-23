@@ -44,7 +44,6 @@ TEST_CASE("string printer", "[string_printer]") {
   }
 
   SECTION("to string tt | ff") {
-    StrPrinter strPrinter;
     auto f = LDLfOr({boolean(true), boolean(false)});
     auto expected = "Or(ff, tt)";
     auto actual = to_string(f);
@@ -52,7 +51,6 @@ TEST_CASE("string printer", "[string_printer]") {
   }
 
   SECTION("to string !tt") {
-    StrPrinter strPrinter;
     auto f = LDLfNot(boolTrue);
     auto expected = "Not(tt)";
     auto actual = to_string(f);
