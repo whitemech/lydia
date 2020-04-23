@@ -144,7 +144,7 @@ public:
  *                     | Atoms that are not members are considered false.
  * @return true if the formula is true in the interpretation, false otherwise.
  */
-bool eval(const PropositionalFormula &, set_atoms_ptr &interpretation);
+bool eval(const PropositionalFormula &, const set_atoms_ptr &interpretation);
 
 /*!
  * Compute all the models of a propositional formula.

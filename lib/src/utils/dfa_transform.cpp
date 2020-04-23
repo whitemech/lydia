@@ -65,14 +65,12 @@ void dfa_to_graphviz(const dfa &automaton, const std::string &output_filename,
   agedge(g, n, m, ("fake->" + initial_state_str).data(), 1);
 
   // do BFS over the automaton
-  std::set<int> visited;
+  std::set<int> discovered;
   std::queue<int> to_be_visited;
   to_be_visited.push(automaton.initial_state);
   while (!to_be_visited.empty()) {
     auto state = to_be_visited.front();
     to_be_visited.pop();
-    visited.insert(state);
-
     auto state_str = std::to_string(state);
     n = agnode(g, state_str.data(), 1);
     if (automaton.is_final(state)) {
@@ -81,17 +79,18 @@ void dfa_to_graphviz(const dfa &automaton, const std::string &output_filename,
     for (const interpretation_set &set_symbol : all_symbols) {
       interpretation_set_to_vect(set_symbol, symbol);
       int successor = automaton.get_successor(state, symbol);
-      if (visited.find(successor) == visited.end())
+      if (discovered.find(successor) == discovered.end()) {
         to_be_visited.push(successor);
+        discovered.insert(successor);
+      }
       auto successor_str = std::to_string(successor);
       m = agnode(g, successor_str.data(), 1);
       if (automaton.is_final(successor)) {
         agsafeset(m, strdup("shape"), strdup("doublecircle"), strdup(""));
       }
-      e = agedge(g, n, m, (state_str.append("->").append(successor_str)).data(),
-                 1);
-      agsafeset(e, strdup("label"), interpretation2string(symbol).data(),
-                strdup(""));
+      auto symbol_str = interpretation2string(symbol);
+      e = agedge(g, n, m, nullptr, 1);
+      agsafeset(e, strdup("label"), symbol_str.data(), strdup(""));
     }
   }
 

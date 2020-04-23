@@ -59,7 +59,7 @@ void DeltaVisitor::visit(const LDLfDiamond<PropositionalRegExp> &f) {
   if (epsilon) {
     result = std::make_shared<PropositionalFalse>();
   } else {
-    assert(this - prop_interpretation.has_value());
+    assert(this->prop_interpretation.has_value());
     auto prop = f.get_regex()->get_arg();
 
     if (eval(*prop, this->prop_interpretation.value())) {
@@ -84,7 +84,7 @@ std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &x) {
 }
 
 std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &x,
-                                                  set_atoms_ptr &i) {
+                                                  const set_atoms_ptr &i) {
   DeltaVisitor deltaVisitor{i};
   return deltaVisitor.apply(x);
 }

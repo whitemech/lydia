@@ -202,7 +202,9 @@ int QuotedFormula::compare(const Basic &rhs) const {
 }
 
 bool QuotedFormula::is_equal(const Basic &rhs) const {
-  return this->formula->is_equal(rhs);
+  return is_a<QuotedFormula>(rhs) and
+         this->formula->is_equal(
+             *dynamic_cast<const QuotedFormula &>(rhs).formula);
 }
 
 PropositionalRegExp::PropositionalRegExp(

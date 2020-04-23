@@ -227,7 +227,7 @@ bool EvalVisitor::apply(const PropositionalFormula &b) {
   return result;
 }
 
-bool eval(const PropositionalFormula &f, set_atoms_ptr &interpretation) {
+bool eval(const PropositionalFormula &f, const set_atoms_ptr &interpretation) {
   EvalVisitor evalVisitor{interpretation};
   return evalVisitor.apply(f);
 }

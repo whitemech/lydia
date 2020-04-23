@@ -306,7 +306,7 @@ dfa::dfa(CUDD::Cudd *mgr, const std::vector<std::string> &variables,
   construct_bdd_from_mona(mona_bdd_nodes, behaviour, final_states);
 }
 
-bool dfa::accepts(std::vector<interpretation> &word) {
+bool dfa::accepts(const trace &word) {
   //  we preallocate the vector for performance purposes
   std::vector<int> extended_symbol = std::vector<int>(nb_bits + nb_variables);
   std::vector<int> next_state = std::vector<int>(nb_bits);

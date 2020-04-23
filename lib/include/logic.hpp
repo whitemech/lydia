@@ -19,8 +19,8 @@
 #include "basic.hpp"
 #include "propositional_logic.hpp"
 #include "symbol.hpp"
+#include "utils/compare.hpp"
 #include <cassert>
-#include <type_traits>
 
 namespace whitemech {
 namespace lydia {
