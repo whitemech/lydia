@@ -107,7 +107,7 @@ std::shared_ptr<const LDLfFormula> LDLfAnd::logical_not() const {
 LDLfOr::LDLfOr(const set_formulas &s) : container_{s} {
   this->type_code_ = type_code_id;
   if (!is_canonical(s)){
-    throw std::invalid_argument("LDLfAnd formula: arguments must be > 1");
+    throw std::invalid_argument("LDLfOr formula: arguments must be > 1");
   }
 }
 
@@ -152,7 +152,10 @@ std::shared_ptr<const LDLfFormula> LDLfOr::logical_not() const {
 
 LDLfNot::LDLfNot(const std::shared_ptr<const LDLfFormula> &in) : arg_{in} {
   this->type_code_ = type_code_id;
-  assert(is_canonical(*in));
+  if (!is_canonical(*in)){
+    throw std::invalid_argument("LDLfNot formula: argument cannot be an "
+                                "LDLfBooleanAtom or an LDLfNot");
+  }
 }
 
 hash_t LDLfNot::compute_hash_() const {
@@ -178,8 +181,8 @@ int LDLfNot::compare(const Basic &o) const {
 }
 
 bool LDLfNot::is_canonical(const LDLfFormula &in) {
-  // TODO do some checks on the argument
-  return true;
+  //TODO add is_a<LDLfBooleanAtom>(in) when we will have other LDLf formulas
+  return !(is_a<LDLfNot>(in));
 }
 
 std::shared_ptr<const LDLfFormula> LDLfNot::get_arg() const { return arg_; }

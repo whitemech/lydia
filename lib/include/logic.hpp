@@ -78,7 +78,7 @@ public:
   const static TypeID type_code_id = TypeID::t_LDLfOr;
   void accept(Visitor &v) const override;
   explicit LDLfOr(const set_formulas &s);
-  bool is_canonical(const set_formulas &container_); // TODO
+  bool is_canonical(const set_formulas &container_);
   hash_t compute_hash_() const override;
   virtual vec_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
