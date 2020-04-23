@@ -29,12 +29,14 @@ namespace lydia {
 
 class Basic;
 class Symbol;
+class RegExp;
 class LDLfFormula;
 class LDLfBooleanAtom;
 class LDLfAnd;
 class LDLfOr;
 class LDLfNot;
-class LDLfDiamond;
+template <class T> class LDLfDiamond;
+template <class T> class LDLfBox;
 class PropositionalRegExp;
 class PropositionalFormula;
 class PropositionalAtom;
@@ -48,7 +50,6 @@ class PropositionalNot;
 class NFAState;
 class DFAState;
 class DFATransition;
-class RegExp;
 
 struct SharedComparator {
   template <typename T>

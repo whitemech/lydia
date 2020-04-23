@@ -63,7 +63,7 @@ public:
   const basic_ptr symbol;
   explicit PropositionalAtom(const Symbol &);
   explicit PropositionalAtom(const std::string &);
-  explicit PropositionalAtom(std::shared_ptr<const Basic> &p);
+  explicit PropositionalAtom(const basic_ptr &p);
   void accept(Visitor &v) const override;
   hash_t compute_hash_() const override;
   int compare(const Basic &rhs) const override;

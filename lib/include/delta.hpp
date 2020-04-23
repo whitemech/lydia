@@ -37,13 +37,13 @@ class DeltaVisitor : public Visitor {
 private:
 protected:
   std::shared_ptr<const PropositionalFormula> result;
-  std::optional<interpretation> prop_interpretation;
+  std::optional<set_atoms_ptr> prop_interpretation;
   bool epsilon;
 
 public:
   static Logger logger;
   DeltaVisitor() : epsilon{true} {}
-  explicit DeltaVisitor(interpretation &prop_interpretation)
+  explicit DeltaVisitor(set_atoms_ptr &prop_interpretation)
       : prop_interpretation{prop_interpretation}, epsilon{false} {}
 
   void visit(const Symbol &) override{};
@@ -51,7 +51,8 @@ public:
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
-  void visit(const LDLfDiamond &) override;
+  void visit(const LDLfDiamond<PropositionalRegExp> &) override;
+
   std::shared_ptr<const PropositionalFormula> apply(const LDLfFormula &b);
 };
 

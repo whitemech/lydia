@@ -56,7 +56,7 @@ PropositionalAtom::PropositionalAtom(const Symbol &s)
   this->type_code_ = type_code_id;
 }
 
-PropositionalAtom::PropositionalAtom(std::shared_ptr<const Basic> &p)
+PropositionalAtom::PropositionalAtom(const std::shared_ptr<const Basic> &p)
     : symbol{std::shared_ptr<const Basic>(p)} {
   this->type_code_ = type_code_id;
 }

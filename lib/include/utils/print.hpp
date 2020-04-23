@@ -37,6 +37,7 @@ public:
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
+  template <class T> void visit(const LDLfDiamond<T> &);
   std::string apply(const vec_basic &v);
   std::string apply(const set_formulas &v);
   std::string apply(const Basic &b);

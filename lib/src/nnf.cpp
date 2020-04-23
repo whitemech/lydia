@@ -49,6 +49,11 @@ void NNFTransformer::visit(const LDLfNot &x) {
   result = new_formula;
 }
 
+template <class T> void NNFTransformer::visit(const LDLfDiamond<T> &x) {
+  result =
+      std::make_shared<LDLfDiamond>(x.get_regex(), apply(*x.get_formula()));
+}
+
 std::shared_ptr<LDLfFormula> NNFTransformer::apply(const LDLfFormula &b) {
   b.accept(*this);
   return result;
