@@ -63,7 +63,7 @@ TEST_CASE("LDLfNot", "[logic]") {
   auto ptr_false = std::make_shared<LDLfBooleanAtom>(false);
   auto not_false = LDLfNot(ptr_false);
 
-  SECTION("test canonical exception"){
+  SECTION("test canonical exception") {
     REQUIRE_THROWS(LDLfNot(std::make_shared<LDLfNot>(ptr_true)));
   }
   SECTION("test equality on same objects") {

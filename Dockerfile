@@ -9,7 +9,7 @@ RUN apt-get update && \
        g++-multilib \
        gdb \
        clang-tidy \
-       clang-format-9 \
+       clang-format \
        gcovr \
        llvm \
        sudo \
