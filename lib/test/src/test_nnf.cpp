@@ -38,13 +38,15 @@ TEST_CASE("Negative normal form", "[nnf]") {
     REQUIRE(LDLfBooleanAtom(true) == *to_nnf(not_ff));
   }
 
-  SECTION("!(ff & ff)") {
-    auto ffs = set_formulas({boolean(false), boolean(false)});
-    auto tts = set_formulas({boolean(true), boolean(true)});
-    auto not_and = LDLfNot(std::make_shared<LDLfAnd>(ffs));
-    auto expected_nnf = std::make_shared<LDLfOr>(tts);
+  SECTION("!(ff & tt)") {
+    auto ff = boolean(false);
+    auto tt = boolean(true);
+    auto not_and = LDLfNot(std::make_shared<LDLfAnd>(set_formulas({ff, tt})));
+    auto tt_or = boolean(true);
+    auto ff_or = boolean(false);
+    auto expected_nnf = LDLfOr(set_formulas({tt_or, ff_or}));
     auto actual_nnf = to_nnf(not_and);
-    bool res = expected_nnf->is_equal(*actual_nnf);
+    bool res = expected_nnf.is_equal(*actual_nnf);
     REQUIRE(res);
   }
 }

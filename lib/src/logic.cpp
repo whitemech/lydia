@@ -72,7 +72,7 @@ hash_t LDLfAnd::compute_hash_() const {
   return seed;
 }
 
-bool LDLfAnd::is_canonical(const set_formulas &container_) {
+bool LDLfAnd::is_canonical(const set_formulas &container_) const {
   return container_.size() > 1;
 }
 
@@ -135,7 +135,7 @@ int LDLfOr::compare(const Basic &o) const {
                          dynamic_cast<const LDLfOr &>(o).get_container());
 }
 
-bool LDLfOr::is_canonical(const set_formulas &container_) {
+bool LDLfOr::is_canonical(const set_formulas &container_) const {
   return container_.size() > 1;
 }
 
@@ -180,7 +180,7 @@ int LDLfNot::compare(const Basic &o) const {
   return arg_->compare_(*dynamic_cast<const LDLfNot &>(o).get_arg());
 }
 
-bool LDLfNot::is_canonical(const LDLfFormula &in) {
+bool LDLfNot::is_canonical(const LDLfFormula &in) const {
   // TODO add is_a<LDLfBooleanAtom>(in) when we will have other LDLf formulas
   return !(is_a<LDLfNot>(in));
 }
