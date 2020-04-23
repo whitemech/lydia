@@ -135,20 +135,20 @@ TEST_CASE("Logical not", "[logical_not]") {
   REQUIRE(ff->logical_not()->is_equal(*tt));
 
   SECTION("De Morgan's Law and-or") {
-    set_formulas ffs = {ff, ff};
-    set_formulas tts = {tt, tt};
-    auto and_ = std::make_shared<LDLfAnd>(ffs);
+    set_formulas args_1_and = {tt, ff};
+    set_formulas args_2_and = {ff, tt};
+    auto and_ = std::make_shared<LDLfAnd>(args_1_and);
     auto actual_or = and_->logical_not();
-    auto expected_or = std::make_shared<LDLfOr>(tts);
+    auto expected_or = std::make_shared<LDLfOr>(args_2_and);
     REQUIRE(actual_or->is_equal(*expected_or));
   }
 
   SECTION("De Morgan's Law or-and") {
-    set_formulas ffs = {ff, ff};
-    set_formulas tts = {tt, tt};
-    auto or_ = std::make_shared<LDLfOr>(ffs);
+    set_formulas args_1_and = {tt, ff};
+    set_formulas args_2_and = {ff, tt};
+    auto or_ = std::make_shared<LDLfOr>(args_1_and);
     auto expected_and = or_->logical_not();
-    auto actual_and = std::make_shared<LDLfAnd>(tts);
+    auto actual_and = std::make_shared<LDLfAnd>(args_2_and);
     REQUIRE(actual_and->is_equal(*expected_and));
   }
 }
