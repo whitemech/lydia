@@ -151,7 +151,7 @@ TEST_CASE("Translate <a & b>tt", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{ab_}));
 }
 
-TEST_CASE("Translate [true]tt", "[translate]") {
+TEST_CASE("Translate {true}tt", "[translate]") {
   std::string formula_name = "[true]tt";
   auto true_ = std::make_shared<const PropositionalTrue>();
   auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
@@ -171,7 +171,7 @@ TEST_CASE("Translate [true]tt", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{false_, false_, false_}));
 }
 
-TEST_CASE("Translate [a]tt", "[translate]") {
+TEST_CASE("Translate {a}tt", "[translate]") {
   std::string formula_name = "[a]tt";
   auto a = std::make_shared<const PropositionalAtom>("a");
   auto regex_a = std::make_shared<const PropositionalRegExp>(a);
@@ -196,7 +196,7 @@ TEST_CASE("Translate [a]tt", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{e, e, e}));
 }
 
-TEST_CASE("Translate [a & b]tt", "[translate]") {
+TEST_CASE("Translate {a & b}tt", "[translate]") {
   std::string formula_name = "[a & b]tt";
   auto a = std::make_shared<const PropositionalAtom>("a");
   auto b = std::make_shared<const PropositionalAtom>("b");
@@ -229,7 +229,7 @@ TEST_CASE("Translate [a & b]tt", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{ab_}));
 }
 
-TEST_CASE("Translate [a]ff", "[translate]") {
+TEST_CASE("Translate {a}ff", "[translate]") {
   std::string formula_name = "[a]ff";
   auto a = std::make_shared<const PropositionalAtom>("a");
   auto regex_a = std::make_shared<const PropositionalRegExp>(a);
