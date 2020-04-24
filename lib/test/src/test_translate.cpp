@@ -229,4 +229,29 @@ TEST_CASE("Translate [a & b]tt", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{ab_}));
 }
 
+TEST_CASE("Translate [a]ff", "[translate]") {
+  std::string formula_name = "[a]ff";
+  auto a = std::make_shared<const PropositionalAtom>("a");
+  auto regex_a = std::make_shared<const PropositionalRegExp>(a);
+  auto tt = boolean(false);
+  auto box_formula_a_tt =
+      std::make_shared<LDLfBox<PropositionalRegExp>>(regex_a, tt);
+
+  auto *my_dfa = to_dfa(*box_formula_a_tt);
+
+  // print the DFA
+  dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
+
+  auto e = interpretation{0};
+  auto a_ = interpretation{1};
+  REQUIRE(my_dfa->accepts(trace{}));
+  REQUIRE(my_dfa->accepts(trace{e}));
+  REQUIRE(!my_dfa->accepts(trace{a_}));
+  REQUIRE(my_dfa->accepts(trace{e, e}));
+  REQUIRE(my_dfa->accepts(trace{e, a_}));
+  REQUIRE(!my_dfa->accepts(trace{a_, e}));
+  REQUIRE(!my_dfa->accepts(trace{a_, a_}));
+  REQUIRE(my_dfa->accepts(trace{e, e, e}));
+}
+
 } // namespace whitemech::lydia::Test
