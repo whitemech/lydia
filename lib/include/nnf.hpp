@@ -16,6 +16,8 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "logic.hpp"
+#include "propositional_logic.hpp"
 #include "visitor.hpp"
 
 namespace whitemech {
@@ -32,6 +34,7 @@ public:
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
+  void visit(const LDLfDiamond<PropositionalRegExp> &x) override;
   std::shared_ptr<LDLfFormula> apply(const LDLfFormula &b);
 };
 

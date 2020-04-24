@@ -54,11 +54,11 @@ TEST_CASE("Translate !(ff & tt)", "[translate]") {
   REQUIRE(my_dfa->accepts(trace_two));
 }
 
-TEST_CASE("Translate ff & tt)", "[translate]") {
+TEST_CASE("Translate (ff & tt)", "[translate]") {
   auto args = set_formulas({boolean(false), boolean(true)});
   auto ff_and_tt = std::make_shared<LDLfAnd>(args);
   auto formula_name = to_string(*ff_and_tt);
-  // TODO complete.
+
   auto *my_dfa = to_dfa(*ff_and_tt);
 
   // print the DFA
@@ -71,6 +71,84 @@ TEST_CASE("Translate ff & tt)", "[translate]") {
   REQUIRE(!my_dfa->accepts(empty_trace));
   REQUIRE(!my_dfa->accepts(trace_one));
   REQUIRE(!my_dfa->accepts(trace_two));
+}
+
+TEST_CASE("Translate <true>tt>", "[translate]") {
+  std::string formula_name = "<true>tt";
+  auto true_ = std::make_shared<const PropositionalTrue>();
+  auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
+  auto tt = boolean(true);
+  auto diamond_formula_true_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_true, tt);
+
+  auto *my_dfa = to_dfa(*diamond_formula_true_tt);
+
+  // print the DFA
+  dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
+
+  auto false_ = interpretation{};
+  REQUIRE(!my_dfa->accepts(trace{}));
+  REQUIRE(my_dfa->accepts(trace{false_}));
+  REQUIRE(my_dfa->accepts(trace{false_, false_}));
+  REQUIRE(my_dfa->accepts(trace{false_, false_, false_}));
+}
+
+TEST_CASE("Translate <a>tt>", "[translate]") {
+  std::string formula_name = "<a>tt";
+  auto a = std::make_shared<const PropositionalAtom>("a");
+  auto regex_a = std::make_shared<const PropositionalRegExp>(a);
+  auto tt = boolean(true);
+  auto diamond_formula_a_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_a, tt);
+
+  auto *my_dfa = to_dfa(*diamond_formula_a_tt);
+
+  // print the DFA
+  dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
+
+  auto e = interpretation{0};
+  auto a_ = interpretation{1};
+  REQUIRE(!my_dfa->accepts(trace{}));
+  REQUIRE(!my_dfa->accepts(trace{e}));
+  REQUIRE(my_dfa->accepts(trace{a_}));
+  REQUIRE(!my_dfa->accepts(trace{e, e}));
+  REQUIRE(!my_dfa->accepts(trace{e, a_}));
+  REQUIRE(my_dfa->accepts(trace{a_, e}));
+  REQUIRE(my_dfa->accepts(trace{a_, a_}));
+  REQUIRE(!my_dfa->accepts(trace{e, e, e}));
+}
+
+TEST_CASE("Translate <a & b>tt>", "[translate]") {
+  std::string formula_name = "<a & b>tt";
+  auto a = std::make_shared<const PropositionalAtom>("a");
+  auto b = std::make_shared<const PropositionalAtom>("b");
+  auto a_and_b =
+      std::make_shared<const PropositionalAnd>(set_prop_formulas{a, b});
+  auto regex_a_and_b = std::make_shared<const PropositionalRegExp>(a_and_b);
+  auto tt = boolean(true);
+  auto diamond_formula_a_and_b_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_a_and_b, tt);
+
+  auto *my_dfa = to_dfa(*diamond_formula_a_and_b_tt);
+
+  // print the DFA
+  dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
+
+  auto e = interpretation{0, 0};
+  auto a_ = interpretation{1, 0};
+  auto b_ = interpretation{0, 1};
+  auto ab_ = interpretation{1, 1};
+  REQUIRE(!my_dfa->accepts(trace{}));
+  REQUIRE(!my_dfa->accepts(trace{e}));
+  REQUIRE(!my_dfa->accepts(trace{a_}));
+  REQUIRE(!my_dfa->accepts(trace{b_}));
+  REQUIRE(!my_dfa->accepts(trace{e, e}));
+  REQUIRE(!my_dfa->accepts(trace{e, a_}));
+  REQUIRE(!my_dfa->accepts(trace{a_, e}));
+  REQUIRE(!my_dfa->accepts(trace{a_, a_}));
+  REQUIRE(!my_dfa->accepts(trace{a_, a_}));
+  REQUIRE(!my_dfa->accepts(trace{b_}));
+  REQUIRE(my_dfa->accepts(trace{ab_}));
 }
 
 } // namespace whitemech::lydia::Test

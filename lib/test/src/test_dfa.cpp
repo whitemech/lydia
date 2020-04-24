@@ -15,8 +15,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "catch.hpp"
+#include "dfa.hpp"
 #include <cuddObj.hh>
-#include <dfa.hpp>
+#include <graphviz/gvc.h>
 
 namespace whitemech::lydia::Test {
 
@@ -97,6 +98,7 @@ TEST_CASE("Test Cudd", "[cudd]") {
 
 TEST_CASE("Test DFA initialization", "[dfa]") {
   whitemech::lydia::Logger::level(LogLevel::debug);
+
   SECTION("Initialize without Cudd manager.") {
     auto my_dfa = // NOLINT
         dfa::read_from_file("../../../lib/test/src/data/mona/eventually_a.dfa");
@@ -265,6 +267,17 @@ TEST_CASE("Incremental construction", "[dfa]") {
       REQUIRE(!my_dfa->accepts(t_a_a));
     }
   }
+
+  //  SECTION(""){
+  //    auto mgr = new CUDD::Cudd();
+  //    auto my_dfa = new dfa(mgr, 10, 1);
+  //
+  //    int new_state = my_dfa->add_state();
+  //    REQUIRE(new_state == 1);
+  //    my_dfa->set_initial_state(new_state);
+  //
+  //
+  //  }
 }
 
 } // namespace whitemech::lydia::Test

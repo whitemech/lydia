@@ -18,6 +18,7 @@
 #include "logic.hpp"
 #include "utils/compare.hpp"
 #include <cassert>
+#include <utility>
 
 namespace whitemech {
 namespace lydia {
@@ -201,7 +202,51 @@ int QuotedFormula::compare(const Basic &rhs) const {
 }
 
 bool QuotedFormula::is_equal(const Basic &rhs) const {
-  return this->formula->is_equal(rhs);
+  return is_a<QuotedFormula>(rhs) and
+         this->formula->is_equal(
+             *dynamic_cast<const QuotedFormula &>(rhs).formula);
+}
+
+template <class T>
+bool LDLfDiamond<T>::is_canonical(const set_formulas &container_) const {
+  // TODO
+  return true;
+}
+
+PropositionalRegExp::PropositionalRegExp(
+    std::shared_ptr<const PropositionalFormula> f)
+    : arg_{std::move(f)} {
+  this->type_code_ = type_code_id;
+}
+
+hash_t PropositionalRegExp::compute_hash_() const {
+  // TODO
+  return 0;
+}
+
+std::shared_ptr<const PropositionalFormula>
+PropositionalRegExp::get_arg() const {
+  return arg_;
+}
+
+bool PropositionalRegExp::is_equal(const Basic &o) const {
+  return is_a<PropositionalRegExp>(o) and
+         eq(*arg_, *dynamic_cast<const PropositionalRegExp &>(o).get_arg());
+}
+
+int PropositionalRegExp::compare(const Basic &o) const {
+  assert(is_a<PropositionalRegExp>(o));
+  return arg_->compare_(
+      *dynamic_cast<const PropositionalRegExp &>(o).get_arg());
+}
+
+bool PropositionalRegExp::is_canonical(const set_formulas &container_) const {
+  // TODO
+  return true;
+}
+
+std::shared_ptr<const QuotedFormula> quote(const ldlf_ptr &p) {
+  return std::make_shared<QuotedFormula>(p);
 }
 
 } // namespace lydia

@@ -31,6 +31,8 @@ enum TypeID {
   t_LDLfAnd,
   t_LDLfOr,
   t_LDLfNot,
+  t_LDLfDiamond,
+  t_PropositionalRegExp,
   t_NFAState,
   t_DFAState,
   t_PropositionalTrue,

@@ -165,7 +165,7 @@ public:
    *
    * @return true if the word is accepted, false otherwise.
    */
-  bool accepts(std::vector<interpretation> &word);
+  bool accepts(const trace &word);
 
   int get_successor(int state, const interpretation &symbol) const;
   int get_successor(int state, const interpretation_set &symbol) const;

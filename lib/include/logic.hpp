@@ -17,10 +17,15 @@
  */
 
 #include "basic.hpp"
+#include "propositional_logic.hpp"
 #include "symbol.hpp"
+#include "utils/compare.hpp"
+#include <cassert>
 
 namespace whitemech {
 namespace lydia {
+
+class RegExp;
 
 class LDLfFormula : public Basic {
 public:
@@ -104,19 +109,91 @@ public:
   std::shared_ptr<const LDLfFormula> logical_not() const override;
 };
 
+// TODO consider template check "enable_if_t" vs static_assert in constructor
+// template <class T, class=std::enable_if_t<std::is_base_of_v<RegExp, T>>>
+template <class T> class LDLfTemporal : public LDLfFormula {
+private:
+  const ldlf_ptr arg_;
+  const std::shared_ptr<const T> regex_;
+
+public:
+  explicit LDLfTemporal<T>(const std::shared_ptr<const T> &regex,
+                           const ldlf_ptr &formula)
+      : regex_{regex}, arg_{formula} {
+    static_assert(std::is_base_of<RegExp, T>::value,
+                  "concrete RegExp class not derived from RegExp");
+  }
+  ldlf_ptr get_formula() const { return arg_; };
+  std::shared_ptr<const T> get_regex() const { return regex_; };
+  hash_t compute_hash_() const override {
+    hash_t seed = this->get_type_code();
+    hash_combine<Basic>(seed, *this->get_regex());
+    hash_combine<Basic>(seed, *this->get_formula());
+    return seed;
+  };
+};
+
+template <class T> class LDLfDiamond : public LDLfTemporal<T> {
+public:
+  const static TypeID type_code_id = TypeID::t_LDLfDiamond;
+  bool is_canonical(const set_formulas &container_) const;
+  void accept(Visitor &v) const override { v.visit(*this); };
+  explicit LDLfDiamond<T>(const std::shared_ptr<const T> &regex,
+                          const ldlf_ptr &formula)
+      : LDLfTemporal<T>(regex, formula) {
+    this->type_code_ = type_code_id;
+  }
+
+  bool is_equal(const Basic &o) const override {
+    return is_a<LDLfDiamond<T>>(o) and
+           unified_eq(this->get_regex(),
+                      dynamic_cast<const LDLfDiamond<T> &>(o).get_regex()) and
+           unified_eq(this->get_formula(),
+                      dynamic_cast<const LDLfDiamond<T> &>(o).get_formula());
+  };
+  int compare(const Basic &o) const override {
+    auto regex_compare = unified_compare(
+        this->get_regex(), dynamic_cast<const LDLfDiamond &>(o).get_regex());
+    if (regex_compare != 0)
+      return regex_compare;
+    return unified_compare(this->get_formula(),
+                           dynamic_cast<const LDLfDiamond &>(o).get_formula());
+  };
+  std::shared_ptr<const LDLfFormula> logical_not() const override {
+    // TODO return the associated LDLfBoxFormula
+    return nullptr;
+  };
+};
+
+class RegExp : public Basic {};
+
+class PropositionalRegExp : public RegExp {
+private:
+  const std::shared_ptr<const PropositionalFormula> arg_;
+
+public:
+  const static TypeID type_code_id = TypeID::t_PropositionalRegExp;
+  void accept(Visitor &v) const override{};
+  explicit PropositionalRegExp(std::shared_ptr<const PropositionalFormula> f);
+  bool is_canonical(const set_formulas &container_) const;
+  hash_t compute_hash_() const override;
+  std::shared_ptr<const PropositionalFormula> get_arg() const;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+};
+
 class QuotedFormula : public Basic {
 private:
 protected:
 public:
   const static TypeID type_code_id = TypeID::t_QuotedFormula;
-  const std::shared_ptr<LDLfFormula> formula;
+  const std::shared_ptr<const LDLfFormula> formula;
 
   /*!
    * Quote an LDLf formula. We assume it is in NNF.
    * @param f: the LDLf formula.
    */
-  explicit QuotedFormula(std::shared_ptr<LDLfFormula> formula)
-      : formula{std::move(formula)} {
+  explicit QuotedFormula(ldlf_ptr formula) : formula{std::move(formula)} {
     this->type_code_ = TypeID::t_QuotedFormula;
   }
 
@@ -125,6 +202,8 @@ public:
   int compare(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
 };
+
+std::shared_ptr<const QuotedFormula> quote(const ldlf_ptr &p);
 
 } // namespace lydia
 } // namespace whitemech

@@ -34,12 +34,16 @@ public:
   void visit(const PropositionalTrue &) override;
   void visit(const PropositionalFalse &) override;
   void visit(const PropositionalAtom &) override;
-  void visit(const QuotedFormula &) override{};
-  void visit(const Symbol &) override{};
   void visit(const PropositionalAnd &) override;
   void visit(const PropositionalOr &) override;
   void visit(const PropositionalNot &) override;
+
+  void visit(const QuotedFormula &) override{};
+  void visit(const Symbol &) override{};
+  void visit(const LDLfDiamond<PropositionalRegExp> &) override;
+
   set_atoms_ptr apply(const PropositionalFormula &b);
+  set_atoms_ptr apply(const LDLfFormula &b);
 };
 
 set_atoms_ptr find_atoms(const LDLfFormula &);

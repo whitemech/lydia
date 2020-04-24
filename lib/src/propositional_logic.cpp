@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include "propositional_logic.hpp"
+#include "utils/compare.hpp"
+#include "utils/misc.hpp"
 #include <atom_visitor.hpp>
 #include <cassert>
-#include <propositional_logic.hpp>
-#include <utils/compare.hpp>
-#include <utils/misc.hpp>
 
 namespace whitemech {
 namespace lydia {
@@ -56,7 +56,7 @@ PropositionalAtom::PropositionalAtom(const Symbol &s)
   this->type_code_ = type_code_id;
 }
 
-PropositionalAtom::PropositionalAtom(std::shared_ptr<const Basic> &p)
+PropositionalAtom::PropositionalAtom(const std::shared_ptr<const Basic> &p)
     : symbol{std::shared_ptr<const Basic>(p)} {
   this->type_code_ = type_code_id;
 }
@@ -227,7 +227,7 @@ bool EvalVisitor::apply(const PropositionalFormula &b) {
   return result;
 }
 
-bool eval(const PropositionalFormula &f, set_atoms_ptr &interpretation) {
+bool eval(const PropositionalFormula &f, const set_atoms_ptr &interpretation) {
   EvalVisitor evalVisitor{interpretation};
   return evalVisitor.apply(f);
 }

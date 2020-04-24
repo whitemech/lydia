@@ -53,7 +53,7 @@ dfa *to_dfa(LDLfFormula &formula) {
   }
 
   // BFS exploration of the automaton.
-  map_dfa_states visited;
+  map_dfa_states discovered;
   std::queue<std::pair<dfa_state_ptr, int>> to_be_visited;
   to_be_visited.push(std::make_pair(initial_state, 1));
   while (!to_be_visited.empty()) {
@@ -61,7 +61,6 @@ dfa *to_dfa(LDLfFormula &formula) {
     to_be_visited.pop();
     const dfa_state_ptr current_state = pair.first;
     auto current_state_index = pair.second;
-    visited[current_state] = current_state_index;
     /*
      * TODO: naive implementation: do a loop for every interpretation
      *       improvement: delta function returns a list of possible successors
@@ -71,14 +70,15 @@ dfa *to_dfa(LDLfFormula &formula) {
       const dfa_state_ptr next_state = current_state->next_state(i);
       // update states/transitions
       int next_state_index = 0;
-      if (visited.find(next_state) == visited.end()) {
+      if (discovered.find(next_state) == discovered.end()) {
         next_state_index = automaton->add_state();
+        discovered[next_state] = next_state_index;
         to_be_visited.push(std::make_pair(next_state, next_state_index));
         if (next_state->is_final()) {
           automaton->set_final_state(next_state_index, true);
         }
       } else {
-        next_state_index = visited[next_state];
+        next_state_index = discovered[next_state];
       }
 
       interpretation_set x{};
@@ -136,7 +136,7 @@ set_nfa_states NFAState::next_states(const set_atoms_ptr &i) const {
   vec_prop_formulas args{std::make_shared<PropositionalTrue>(),
                          std::make_shared<PropositionalTrue>()};
   for (const auto &formula : formulas) {
-    args.push_back(delta(*formula));
+    args.push_back(delta(*formula, i));
   }
   auto conjunction =
       PropositionalAnd(set_prop_formulas(args.begin(), args.end()));

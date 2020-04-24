@@ -17,6 +17,7 @@
  */
 
 #include "strings.hpp"
+#include <cassert>
 #include <set>
 #include <types.hpp>
 

@@ -17,6 +17,7 @@
 #include "catch.hpp"
 #include "logger.hpp"
 #include "logic.hpp"
+#include <iostream>
 #include <utils/compare.hpp>
 
 namespace whitemech::lydia::Test {
@@ -127,7 +128,7 @@ TEST_CASE("LDLfOr", "[logic]") {
   SECTION("test compare  on same object") { REQUIRE(or_3.compare(or_3) == 0); }
 }
 
-TEST_CASE("Logical not", "[logical_not]") {
+TEST_CASE("Logical not", "[logic]") {
   auto tt = std::make_shared<LDLfBooleanAtom>(true);
   auto ff = std::make_shared<LDLfBooleanAtom>(false);
 
@@ -151,6 +152,43 @@ TEST_CASE("Logical not", "[logical_not]") {
     auto actual_and = std::make_shared<LDLfAnd>(args_2_and);
     REQUIRE(actual_and->is_equal(*expected_and));
   }
+}
+
+TEST_CASE("LDLfDiamond", "[logic]") {
+  auto true_ = std::make_shared<const PropositionalTrue>();
+  auto tt = boolean(true);
+  auto false_ = std::make_shared<const PropositionalFalse>();
+  auto ff = boolean(false);
+  auto a = std::make_shared<const PropositionalAtom>("a");
+  auto b = std::make_shared<const PropositionalAtom>("b");
+  auto a_and_b =
+      std::make_shared<const PropositionalAnd>(set_prop_formulas{a, b});
+
+  auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
+  auto diamond_formula_true_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_true, tt);
+
+  auto regex_false = std::make_shared<const PropositionalRegExp>(false_);
+  auto diamond_formula_false_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_false, tt);
+
+  auto regex_a = std::make_shared<const PropositionalRegExp>(a);
+  auto diamond_formula_a_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_a, tt);
+  auto regex_b = std::make_shared<const PropositionalRegExp>(b);
+  auto diamond_formula_b_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_b, tt);
+  auto regex_a_and_b = std::make_shared<const PropositionalRegExp>(a_and_b);
+  auto diamond_formula_a_and_b_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_a_and_b, tt);
+
+  REQUIRE(*diamond_formula_true_tt == *diamond_formula_true_tt);
+  REQUIRE(*diamond_formula_true_tt != *diamond_formula_false_tt);
+  REQUIRE(*diamond_formula_true_tt < *diamond_formula_false_tt);
+  REQUIRE(*diamond_formula_false_tt < *diamond_formula_a_tt);
+  REQUIRE(*diamond_formula_a_tt < *diamond_formula_b_tt);
+  REQUIRE(*diamond_formula_b_tt < *diamond_formula_a_and_b_tt);
+  REQUIRE(*diamond_formula_a_and_b_tt == *diamond_formula_a_and_b_tt);
 }
 
 TEST_CASE("Set of formulas", "[logic]") {

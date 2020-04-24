@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <nnf.hpp>
+#include "nnf.hpp"
 #include <sstream>
 #include <stdexcept>
 
@@ -47,6 +47,11 @@ void NNFTransformer::visit(const LDLfOr &x) {
 void NNFTransformer::visit(const LDLfNot &x) {
   auto new_formula = apply(*x.get_arg()->logical_not());
   result = new_formula;
+}
+
+void NNFTransformer::visit(const LDLfDiamond<PropositionalRegExp> &x) {
+  result = std::make_shared<LDLfDiamond<PropositionalRegExp>>(
+      x.get_regex(), apply(*x.get_formula()));
 }
 
 std::shared_ptr<LDLfFormula> NNFTransformer::apply(const LDLfFormula &b) {
