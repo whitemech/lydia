@@ -41,6 +41,7 @@ public:
   void visit(const QuotedFormula &) override{};
   void visit(const Symbol &) override{};
   void visit(const LDLfDiamond<PropositionalRegExp> &) override;
+  void visit(const LDLfBox<PropositionalRegExp> &) override;
 
   set_atoms_ptr apply(const PropositionalFormula &b);
   set_atoms_ptr apply(const LDLfFormula &b);

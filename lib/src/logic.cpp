@@ -213,6 +213,12 @@ bool LDLfDiamond<T>::is_canonical(const set_formulas &container_) const {
   return true;
 }
 
+template <class T>
+bool LDLfBox<T>::is_canonical(const set_formulas &container_) const {
+  // TODO
+  return true;
+}
+
 PropositionalRegExp::PropositionalRegExp(
     std::shared_ptr<const PropositionalFormula> f)
     : arg_{std::move(f)} {

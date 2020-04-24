@@ -54,6 +54,11 @@ void NNFTransformer::visit(const LDLfDiamond<PropositionalRegExp> &x) {
       x.get_regex(), apply(*x.get_formula()));
 }
 
+void NNFTransformer::visit(const LDLfBox<PropositionalRegExp> &x) {
+  result = std::make_shared<LDLfBox<PropositionalRegExp>>(
+      x.get_regex(), apply(*x.get_formula()));
+}
+
 std::shared_ptr<LDLfFormula> NNFTransformer::apply(const LDLfFormula &b) {
   b.accept(*this);
   return result;
