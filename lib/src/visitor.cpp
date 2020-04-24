@@ -17,6 +17,7 @@
 
 #include "visitor.hpp"
 #include <delta.hpp>
+#include <logic.hpp>
 #include <propositional_logic.hpp>
 
 namespace whitemech {
@@ -26,6 +27,11 @@ void LDLfBooleanAtom::accept(Visitor &v) const { v.visit(*this); }
 void LDLfOr::accept(Visitor &v) const { v.visit(*this); }
 void LDLfAnd::accept(Visitor &v) const { v.visit(*this); }
 void LDLfNot::accept(Visitor &v) const { v.visit(*this); }
+// template<class T> void LDLfDiamond<T>::accept(Visitor &v) const {
+// v.visit(*this); }; template<> void
+// LDLfDiamond<PropositionalRegExp>::accept(Visitor &v) const { v.visit(*this);
+// };
+
 // TODO add other accept methods
 
 void PropositionalTrue::accept(Visitor &v) const { v.visit(*this); }

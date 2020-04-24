@@ -49,11 +49,11 @@ set (FMT_INCLUDE_PATH "${FMT_MODULE_PATH}/include")
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
-# Lyra
+# CLI11
 
 #configure directories
-set (LYRA_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/Lyra")
-set (LYRA_INCLUDE_PATH "${LYRA_MODULE_PATH}/include")
+set (CLI11_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/CLI11")
+set (CLI11_INCLUDE_PATH "${CLI11_MODULE_PATH}/include")
 
 # -------------------------------------------------------------------------
 
@@ -66,7 +66,7 @@ set (CUDD_INCLUDE_PATH ${CUDD_INCLUDE_DIRS})
 # -------------------------------------------------------------------------
 
 #set variables
-set (THIRD_PARTY_INCLUDE_PATH  ${FMT_INCLUDE_PATH} ${SPDLOG_INCLUDE_PATH} ${LYRA_INCLUDE_PATH} ${CUDD_INCLUDE_PATH})
+set (THIRD_PARTY_INCLUDE_PATH  ${FMT_INCLUDE_PATH} ${SPDLOG_INCLUDE_PATH} ${CLI11_INCLUDE_PATH} ${CUDD_INCLUDE_PATH})
 
 #set variables for tests
 set (TEST_THIRD_PARTY_INCLUDE_PATH  ${CATCH_INCLUDE_PATH})

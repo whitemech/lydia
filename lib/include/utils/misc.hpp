@@ -16,8 +16,11 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "strings.hpp"
+#include <cassert>
 #include <set>
 #include <types.hpp>
+
 namespace whitemech {
 namespace lydia {
 
@@ -35,7 +38,7 @@ std::vector<std::set<T, U>> powerset(std::set<T, U> &s) {
   // that defines membership to the ith subset, for each element.
   // the digit at jth position means "if 1, the jth element
   // belongs to the ith subset".
-  for (int i = 0; i < std::pow(2, size); i++) {
+  for (int i = 0; i < (1 << size); i++) {
     std::set<T, U> tmp;
     u_int64_t mask = i;
     int index = 0;
@@ -47,6 +50,43 @@ std::vector<std::set<T, U>> powerset(std::set<T, U> &s) {
       ++index;
     }
     result.emplace_back(tmp);
+  }
+  return result;
+}
+
+unsigned inline bit_length(int x) {
+  unsigned bits, var = (x < 0) ? -x : x;
+  for (bits = 0; var != 0; ++bits)
+    var >>= 1;
+  return bits;
+}
+
+int inline bin2state(const std::vector<int> &v) {
+  int size = v.size();
+  int result = v[0];
+  for (int i = 1; i < size; ++i) {
+    result *= 2;
+    result += v[i] % 2;
+  }
+  return result;
+}
+int inline bin2state(const std::string &s) {
+  int size = s.size();
+  int result = s[0] - '0';
+  for (int i = 1; i < size; ++i) {
+    result *= 2;
+    result += s[i] - '0';
+  }
+  return result;
+}
+
+std::vector<int> inline state2binvec(int n, int nb_fill_bits) {
+  auto bin_string = state2bin(n, nb_fill_bits);
+  std::vector<int> result(bin_string.size(), 0);
+  int i = 0;
+  for (const char &c : bin_string) {
+    result[i] = c - '0';
+    ++i;
   }
   return result;
 }

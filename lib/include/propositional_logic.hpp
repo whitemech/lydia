@@ -17,7 +17,6 @@
  */
 
 #include "basic.hpp"
-#include "logic.hpp"
 #include "symbol.hpp"
 #include "visitor.hpp"
 
@@ -64,7 +63,7 @@ public:
   const basic_ptr symbol;
   explicit PropositionalAtom(const Symbol &);
   explicit PropositionalAtom(const std::string &);
-  explicit PropositionalAtom(std::shared_ptr<const Basic> &p);
+  explicit PropositionalAtom(const basic_ptr &p);
   void accept(Visitor &v) const override;
   hash_t compute_hash_() const override;
   int compare(const Basic &rhs) const override;
@@ -123,11 +122,11 @@ public:
 class EvalVisitor : public Visitor {
 private:
 protected:
-  bool result;
+  bool result{};
   const set_atoms_ptr &interpretation;
 
 public:
-  EvalVisitor(const set_atoms_ptr &interpretation)
+  explicit EvalVisitor(const set_atoms_ptr &interpretation)
       : interpretation{interpretation} {};
   void visit(const PropositionalTrue &) override;
   void visit(const PropositionalFalse &) override;
@@ -145,7 +144,7 @@ public:
  *                     | Atoms that are not members are considered false.
  * @return true if the formula is true in the interpretation, false otherwise.
  */
-bool eval(const PropositionalFormula &, set_atoms_ptr &interpretation);
+bool eval(const PropositionalFormula &, const set_atoms_ptr &interpretation);
 
 /*!
  * Compute all the models of a propositional formula.

@@ -15,8 +15,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "catch.hpp"
+#include "dfa.hpp"
 #include <cuddObj.hh>
-#include <dfa.hpp>
+#include <graphviz/gvc.h>
 
 namespace whitemech::lydia::Test {
 
@@ -37,6 +38,8 @@ TEST_CASE("Test Cudd", "[cudd]") {
     REQUIRE(not((bool)f > g));
   }
 
+  int input0[] = {0};
+  int input1[] = {1};
   int input00[] = {0, 0};
   int input01[] = {0, 1};
   int input10[] = {1, 0};
@@ -84,12 +87,18 @@ TEST_CASE("Test Cudd", "[cudd]") {
     REQUIRE(x_plus_y.Eval(input11).IsOne());
   }
 
-  CUDD::BDD zero = mgr.bddZero();
-  CUDD::BDD one = mgr.bddZero();
+  SECTION("Test evaluation x + y with only one truth") {
+    //    "Don't care" does not work...
+    // REQUIRE(x_plus_y.Eval(input0).IsOne()); //this is non-deterministic
+    REQUIRE(x_plus_y.Eval(input1).IsOne());
+    REQUIRE(!x_and_y.Eval(input0).IsOne());
+    REQUIRE(!x_and_y.Eval(input1).IsOne());
+  }
 }
 
 TEST_CASE("Test DFA initialization", "[dfa]") {
   whitemech::lydia::Logger::level(LogLevel::debug);
+
   SECTION("Initialize without Cudd manager.") {
     auto my_dfa = // NOLINT
         dfa::read_from_file("../../../lib/test/src/data/mona/eventually_a.dfa");
@@ -132,6 +141,7 @@ TEST_CASE("Test accepts", "[dfa]") {
         dfa::read_from_file("../../../lib/test/src/data/mona/eventually_a.dfa");
 
     REQUIRE(!my_dfa->accepts(t_));
+    REQUIRE(!my_dfa->accepts(t_na));
     REQUIRE(my_dfa->accepts(t_a));
     REQUIRE(!my_dfa->accepts(t_na_na));
     REQUIRE(my_dfa->accepts(t_na_a));
@@ -144,12 +154,130 @@ TEST_CASE("Test accepts", "[dfa]") {
         dfa::read_from_file("../../../lib/test/src/data/mona/always_a.dfa");
 
     REQUIRE(!my_dfa->accepts(t_));
+    REQUIRE(!my_dfa->accepts(t_na));
     REQUIRE(my_dfa->accepts(t_a));
     REQUIRE(!my_dfa->accepts(t_na_na));
     REQUIRE(!my_dfa->accepts(t_na_a));
     REQUIRE(!my_dfa->accepts(t_a_na));
     REQUIRE(my_dfa->accepts(t_a_a));
   }
+}
+
+TEST_CASE("Incremental construction", "[dfa]") {
+  interpretation a = {1};
+  interpretation na = {0};
+  auto t_ = trace{};
+  auto t_a = trace{a};
+  auto t_na = trace{na};
+  auto t_na_na = trace{na, na};
+  auto t_na_a = trace{na, a};
+  auto t_a_na = trace{a, na};
+  auto t_a_a = trace{a, a};
+
+  SECTION("The starting DFA does not accept anything") {
+    auto mgr = new CUDD::Cudd();
+    auto my_dfa = new dfa(mgr, 10, 1);
+
+    REQUIRE(my_dfa->get_successor(0, t_na[0]) == 0);
+    REQUIRE(my_dfa->get_successor(0, t_a[0]) == 0);
+
+    REQUIRE(!my_dfa->accepts(t_));
+    REQUIRE(!my_dfa->accepts(t_na));
+    REQUIRE(!my_dfa->accepts(t_a));
+    REQUIRE(!my_dfa->accepts(t_na_na));
+    REQUIRE(!my_dfa->accepts(t_na_a));
+    REQUIRE(!my_dfa->accepts(t_a_na));
+    REQUIRE(!my_dfa->accepts(t_a_a));
+  }
+
+  SECTION("With the state 0 as final will make the DFA accept everything.") {
+    auto mgr = new CUDD::Cudd();
+    auto my_dfa = new dfa(mgr, 10, 1);
+    my_dfa->set_final_state(0, true);
+    REQUIRE(my_dfa->accepts(t_));
+    REQUIRE(my_dfa->accepts(t_na));
+    REQUIRE(my_dfa->accepts(t_a));
+    REQUIRE(my_dfa->accepts(t_na_na));
+    REQUIRE(my_dfa->accepts(t_na_a));
+    REQUIRE(my_dfa->accepts(t_a_na));
+    REQUIRE(my_dfa->accepts(t_a_a));
+  }
+
+  SECTION("Create a simple DFA: add new state, make it final, and add a "
+          "transition to it.") {
+    auto mgr = new CUDD::Cudd();
+    auto my_dfa = new dfa(mgr, 10, 1);
+
+    int new_state = my_dfa->add_state();
+    REQUIRE(new_state == 1);
+    my_dfa->set_initial_state(new_state);
+
+    REQUIRE(!my_dfa->accepts(t_));
+    REQUIRE(!my_dfa->accepts(t_na));
+    REQUIRE(!my_dfa->accepts(t_a));
+    REQUIRE(!my_dfa->accepts(t_na_na));
+    REQUIRE(!my_dfa->accepts(t_na_a));
+    REQUIRE(!my_dfa->accepts(t_a_na));
+    REQUIRE(!my_dfa->accepts(t_a_a));
+
+    SECTION("... and add a self-loop with dont_care=true") {
+      /*
+       * In this case, the self-loop has TRUE as guard.
+       * That is, with dont_care=true and an empty
+       * set of constraints.
+       */
+      my_dfa->set_final_state(1, true);
+      my_dfa->add_transition(1, interpretation_set{}, 1, true);
+
+      REQUIRE(my_dfa->get_successor(0, t_na[0]) == 0);
+      REQUIRE(my_dfa->get_successor(0, t_a[0]) == 0);
+      REQUIRE(my_dfa->get_successor(1, t_na[0]) == 1);
+      REQUIRE(my_dfa->get_successor(1, t_a[0]) == 1);
+
+      REQUIRE(my_dfa->accepts(t_));
+      REQUIRE(my_dfa->accepts(t_na));
+      REQUIRE(my_dfa->accepts(t_a));
+      REQUIRE(my_dfa->accepts(t_na_na));
+      REQUIRE(my_dfa->accepts(t_na_a));
+      REQUIRE(my_dfa->accepts(t_a_na));
+      REQUIRE(my_dfa->accepts(t_a_a));
+    }
+
+    SECTION("... and add a self-loop with dont_care=false") {
+      /*
+       * In this case, the self-loop has OR of NOTs for all the variables
+       * This is because the interpretation set is empty and dont_care=false.
+       * That means all the propositions not present in the interpretation set
+       * have to be necessarily false in order to satisfy the guard.
+       */
+      my_dfa->set_final_state(1, true);
+      my_dfa->add_transition(1, interpretation_set{}, 1, false);
+
+      REQUIRE(my_dfa->get_successor(0, t_na[0]) == 0);
+      REQUIRE(my_dfa->get_successor(0, t_a[0]) == 0);
+      REQUIRE(my_dfa->get_successor(1, t_na[0]) == 1);
+      REQUIRE(my_dfa->get_successor(1, t_a[0]) == 0);
+
+      REQUIRE(my_dfa->accepts(t_));
+      REQUIRE(my_dfa->accepts(t_na));
+      REQUIRE(!my_dfa->accepts(t_a));
+      REQUIRE(my_dfa->accepts(t_na_na));
+      REQUIRE(!my_dfa->accepts(t_na_a));
+      REQUIRE(!my_dfa->accepts(t_a_na));
+      REQUIRE(!my_dfa->accepts(t_a_a));
+    }
+  }
+
+  //  SECTION(""){
+  //    auto mgr = new CUDD::Cudd();
+  //    auto my_dfa = new dfa(mgr, 10, 1);
+  //
+  //    int new_state = my_dfa->add_state();
+  //    REQUIRE(new_state == 1);
+  //    my_dfa->set_initial_state(new_state);
+  //
+  //
+  //  }
 }
 
 } // namespace whitemech::lydia::Test

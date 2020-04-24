@@ -18,6 +18,7 @@
 # CMake build : main application
 
 #configure variables
+# we append '-bin' because 'lydia' conflicts with the library.
 set (APP_NAME "lydia-bin")
 
 #configure directories
@@ -36,7 +37,7 @@ add_executable (${APP_NAME} ${APP_SOURCE_FILES})
 #add the library
 target_link_libraries (${APP_NAME} ${LIB_NAME} Threads::Threads)
 
-set_target_properties(lydia-bin PROPERTIES OUTPUT_NAME lydia)
+set_target_properties(${APP_NAME} PROPERTIES OUTPUT_NAME lydia)
 
 #test
 enable_testing ()

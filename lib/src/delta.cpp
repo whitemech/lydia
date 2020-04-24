@@ -54,6 +54,23 @@ void DeltaVisitor::visit(const LDLfOr &x) {
   result = std::make_shared<PropositionalOr>(new_container);
 }
 
+void DeltaVisitor::visit(const LDLfDiamond<PropositionalRegExp> &f) {
+  //  TODO epsilon return false only if regexp is propositional
+  if (epsilon) {
+    result = std::make_shared<PropositionalFalse>();
+  } else {
+    assert(this->prop_interpretation.has_value());
+    auto prop = f.get_regex()->get_arg();
+
+    if (eval(*prop, this->prop_interpretation.value())) {
+      // TODO Implement the "E(phi)" in the delta function (Brafman et. al 2018)
+      result = std::make_shared<PropositionalAtom>(quote(f.get_formula()));
+    } else {
+      result = std::make_shared<PropositionalFalse>();
+    }
+  }
+}
+
 std::shared_ptr<const PropositionalFormula>
 DeltaVisitor::apply(const LDLfFormula &b) {
   b.accept(*this);
@@ -67,7 +84,7 @@ std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &x) {
 }
 
 std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &x,
-                                                  interpretation &i) {
+                                                  const set_atoms_ptr &i) {
   DeltaVisitor deltaVisitor{i};
   return deltaVisitor.apply(x);
 }

@@ -17,6 +17,7 @@
 #include "catch.hpp"
 #include "logger.hpp"
 #include "logic.hpp"
+#include <iostream>
 #include <utils/compare.hpp>
 
 namespace whitemech::lydia::Test {
@@ -54,8 +55,6 @@ TEST_CASE("Boolean atoms", "[logic]") {
   SECTION("ff->hash() == new_ff->hash()") {
     REQUIRE(boolFalse->hash() == newBoolFalse.hash());
   }
-
-  // TODO test to string
 }
 
 TEST_CASE("LDLfNot", "[logic]") {
@@ -65,16 +64,17 @@ TEST_CASE("LDLfNot", "[logic]") {
   auto ptr_false = std::make_shared<LDLfBooleanAtom>(false);
   auto not_false = LDLfNot(ptr_false);
 
+  SECTION("test canonical exception") {
+    REQUIRE_THROWS(LDLfNot(std::make_shared<LDLfNot>(ptr_true)));
+  }
   SECTION("test equality on same objects") {
     REQUIRE(not_true.is_equal(not_true));
     REQUIRE(not_false.is_equal(not_false));
   }
-
   SECTION("test inequality") {
     REQUIRE(!not_true.is_equal(not_false));
     REQUIRE(!not_false.is_equal(not_true));
   }
-
   SECTION("test compare") {
     REQUIRE(not_true.compare(not_true) == 0);
     REQUIRE(not_false.compare(not_false) == 0);
@@ -88,9 +88,11 @@ TEST_CASE("And", "[logic]") {
   set_formulas and_2_args = set_formulas();
   set_formulas and_3_args = {boolean(true), boolean(true), boolean(false)};
 
-  auto and_1 =
-      LDLfAnd(and_1_args); // TODO: this should raise exception: less than two
-  auto and_2 = LDLfAnd(and_2_args); // TODO see above
+  SECTION("test exception for number of args") {
+    REQUIRE_THROWS(LDLfAnd(and_1_args));
+    REQUIRE_THROWS(LDLfAnd(and_2_args));
+  }
+
   auto and_3 = LDLfAnd(and_3_args);
   auto and_3_p = LDLfAnd(and_3_args);
 
@@ -111,9 +113,11 @@ TEST_CASE("LDLfOr", "[logic]") {
   set_formulas or_2_args = set_formulas();
   set_formulas or_3_args = {boolean(true), boolean(true), boolean(false)};
 
-  auto or_1 =
-      LDLfOr(or_1_args); // TODO: this should raise exception: less than two
-  auto or_2 = LDLfOr(or_2_args); // TODO see above
+  SECTION("test exception for number of args") {
+    REQUIRE_THROWS(LDLfOr(or_1_args));
+    REQUIRE_THROWS(LDLfOr(or_2_args));
+  }
+
   auto or_3 = LDLfOr(or_3_args);
   auto or_3_p = LDLfOr(or_3_args);
 
@@ -124,7 +128,7 @@ TEST_CASE("LDLfOr", "[logic]") {
   SECTION("test compare  on same object") { REQUIRE(or_3.compare(or_3) == 0); }
 }
 
-TEST_CASE("Logical not", "[logical_not]") {
+TEST_CASE("Logical not", "[logic]") {
   auto tt = std::make_shared<LDLfBooleanAtom>(true);
   auto ff = std::make_shared<LDLfBooleanAtom>(false);
 
@@ -132,22 +136,59 @@ TEST_CASE("Logical not", "[logical_not]") {
   REQUIRE(ff->logical_not()->is_equal(*tt));
 
   SECTION("De Morgan's Law and-or") {
-    set_formulas ffs = {ff, ff};
-    set_formulas tts = {tt, tt};
-    auto and_ = std::make_shared<LDLfAnd>(ffs);
+    set_formulas args_1_and = {tt, ff};
+    set_formulas args_2_and = {ff, tt};
+    auto and_ = std::make_shared<LDLfAnd>(args_1_and);
     auto actual_or = and_->logical_not();
-    auto expected_or = std::make_shared<LDLfOr>(tts);
+    auto expected_or = std::make_shared<LDLfOr>(args_2_and);
     REQUIRE(actual_or->is_equal(*expected_or));
   }
 
   SECTION("De Morgan's Law or-and") {
-    set_formulas ffs = {ff, ff};
-    set_formulas tts = {tt, tt};
-    auto or_ = std::make_shared<LDLfOr>(ffs);
+    set_formulas args_1_and = {tt, ff};
+    set_formulas args_2_and = {ff, tt};
+    auto or_ = std::make_shared<LDLfOr>(args_1_and);
     auto expected_and = or_->logical_not();
-    auto actual_and = std::make_shared<LDLfAnd>(tts);
+    auto actual_and = std::make_shared<LDLfAnd>(args_2_and);
     REQUIRE(actual_and->is_equal(*expected_and));
   }
+}
+
+TEST_CASE("LDLfDiamond", "[logic]") {
+  auto true_ = std::make_shared<const PropositionalTrue>();
+  auto tt = boolean(true);
+  auto false_ = std::make_shared<const PropositionalFalse>();
+  auto ff = boolean(false);
+  auto a = std::make_shared<const PropositionalAtom>("a");
+  auto b = std::make_shared<const PropositionalAtom>("b");
+  auto a_and_b =
+      std::make_shared<const PropositionalAnd>(set_prop_formulas{a, b});
+
+  auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
+  auto diamond_formula_true_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_true, tt);
+
+  auto regex_false = std::make_shared<const PropositionalRegExp>(false_);
+  auto diamond_formula_false_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_false, tt);
+
+  auto regex_a = std::make_shared<const PropositionalRegExp>(a);
+  auto diamond_formula_a_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_a, tt);
+  auto regex_b = std::make_shared<const PropositionalRegExp>(b);
+  auto diamond_formula_b_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_b, tt);
+  auto regex_a_and_b = std::make_shared<const PropositionalRegExp>(a_and_b);
+  auto diamond_formula_a_and_b_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_a_and_b, tt);
+
+  REQUIRE(*diamond_formula_true_tt == *diamond_formula_true_tt);
+  REQUIRE(*diamond_formula_true_tt != *diamond_formula_false_tt);
+  REQUIRE(*diamond_formula_true_tt < *diamond_formula_false_tt);
+  REQUIRE(*diamond_formula_false_tt < *diamond_formula_a_tt);
+  REQUIRE(*diamond_formula_a_tt < *diamond_formula_b_tt);
+  REQUIRE(*diamond_formula_b_tt < *diamond_formula_a_and_b_tt);
+  REQUIRE(*diamond_formula_a_and_b_tt == *diamond_formula_a_and_b_tt);
 }
 
 TEST_CASE("Set of formulas", "[logic]") {

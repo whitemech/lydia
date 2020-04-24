@@ -9,7 +9,7 @@ RUN apt-get update && \
        g++-multilib \
        gdb \
        clang-tidy \
-       clang-format-9 \
+       clang-format \
        gcovr \
        llvm \
        sudo \
@@ -43,7 +43,7 @@ ENV CCACHE_DIR=/build/docker_ccache
 
 USER default
 
-RUN sudo apt-get install -y flex bison
+RUN sudo apt-get install -y flex bison libgraphviz-dev
 
 WORKDIR /home/default
 

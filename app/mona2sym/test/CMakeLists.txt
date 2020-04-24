@@ -15,5 +15,11 @@
 # along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-add_subdirectory(lydia)
-add_subdirectory(mona2sym)
+# CMake build : main application test
+
+#configure variables
+set (APP_NAME mona2sym)
+set (TEST_NAME "${APP_NAME}Test")
+
+enable_testing ()
+add_test (NAME ${TEST_NAME} COMMAND ${APP_NAME} )

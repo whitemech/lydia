@@ -33,7 +33,43 @@ namespace lydia {
 
 class dfa {
 public:
-  explicit dfa(std::unique_ptr<CUDD::Cudd> &m) : mgr{std::move(m)} {};
+  int nb_bits{};
+  int initial_state{};
+  int nb_states{};
+  int nb_variables{};
+
+  dfa(const dfa &) = delete;
+  dfa &operator=(const dfa &) = delete;
+  dfa(dfa &&) = delete;
+  dfa &operator=(dfa &&) = delete;
+
+  /*!
+   * Initialize the DFA from scratch.
+   *
+   * It creates one non-accepting state with a self-loop.
+   * This is the default sink. We suggest to don't create
+   * new transitions from it, otherwise it won't be a true sink anymore.
+   *
+   * Instead, do like the following:
+   *
+   * auto my_dfa = new dfa::dfa(...);
+   * my_dfa.add_state();
+   * my_dfa.set_initial_state(1);
+   * // add transitions from 1...
+   *
+   * The DFA can be later extended by using the methods like:
+   * - add_state
+   * - add_transition
+   * - set_initial_state
+   * - set_final_state
+   *
+   * @param mgr the CUDD manager.
+   * @param nb_bits the maximum number of bits available.
+   * @param nb_variables the number of variables to be used.
+   */
+  dfa(CUDD::Cudd *mgr, int nb_bits, int nb_variables);
+  dfa(int nb_bits, int nb_variables);
+
   /*
    *
    * Constructor from MONA data.
@@ -55,47 +91,57 @@ public:
    * @param behaviour the MONA behaviours
    * @param mona_bdd_nodes the shared multi-terminal BDD nodes (MONA DFA)
    */
-  dfa(CUDD::Cudd *mgr, int nb_variables, int nb_states, int initial_state,
-      std::vector<int> final_states, std::vector<int> behaviour,
-      std::vector<item> &mona_bdd_nodes);
+  dfa(CUDD::Cudd *mgr, const std::vector<std::string> &variables, int nb_states,
+      int initial_state, const std::vector<int> &final_states,
+      const std::vector<int> &behaviour, std::vector<item> &mona_bdd_nodes);
 
   /*
    * The same constructor as above, but the manager
    * will be instantiated in the constructor.
    */
-  dfa(int nb_variables, int nb_states, int initial_state,
-      std::vector<int> final_states, std::vector<int> behaviour,
-      std::vector<item> &smtbdd)
-      : dfa(new CUDD::Cudd(), nb_variables, nb_states, initial_state,
-            std::move(final_states), std::move(behaviour), smtbdd) {}
+  dfa(const std::vector<std::string> &variables, int nb_states,
+      int initial_state, const std::vector<int> &final_states,
+      const std::vector<int> &behaviour, std::vector<item> &smtbdd)
+      : dfa(new CUDD::Cudd(), variables, nb_states, initial_state, final_states,
+            behaviour, smtbdd) {}
 
   static Logger logger;
 
   // void initialize(string filename, string partfile, Cudd& manager);
   std::vector<item> bdd;
-  void bdd2dot(std::string directory = "./");
-  void dumpdot(CUDD::BDD &b, std::string filename);
+
+  /*!
+   * Dump the BDDs (one for each bit of the state space).
+   *
+   * The output will be:
+   * output_directory/
+   * - 0.dot
+   * - 1.dot
+   * ...
+   * - n.dot
+   *
+   * That is, a DOT file for each bit.
+   *
+   * @param directory the directory in which to print the BDDs in DOT format.
+   */
+  void bdd2dot(const std::string &directory = "./");
+  void dumpdot(CUDD::BDD &b, const std::string &filename);
   CUDD::BDD state2bdd(int s);
-  int nb_bits;
-  int initial_state;
-  int nb_states;
 
-  int nb_variables;
-  std::vector<int> final_states;
   CUDD::BDD finalstatesBDD;
-  //  Store the BDD roots - LSB order
-  vbdd root_bdds;
-  vbdd bddvars;
+  /*!
+   * Store the BDD roots - LSB order, i.e.:
+   * b_{n-1}, ..., b_1, b_0
+   */
+  vec_bdd root_bdds;
 
-  std::vector<std::string> variables;
+  /*!
+   * Store the BDD variables - LSB order, i.e.:
+   * b_{n-1}, ..., b_1, b_0, var_0, var_1, ... var_{m-1}
+   */
+  vec_bdd bddvars;
 
   const std::unique_ptr<CUDD::Cudd> mgr;
-
-  // domain-spec separate construction
-  // Front need to be called before variable construction for domain
-  // back is called after the components are constructed
-  void construct_from_comp_back(vbdd &S2S, vbdd &S2P, vbdd &Svars, vbdd &Ivars,
-                                vbdd &Ovars, std::vector<int> IS);
 
   /*!
    *
@@ -108,28 +154,135 @@ public:
    * @param filename path to the MONA DFA file.
    * @return a raw pointer to a DFA.
    */
-  static dfa *read_from_file(std::string filename, CUDD::Cudd *mgr = nullptr);
+  static dfa *read_from_file(const std::string &filename,
+                             CUDD::Cudd *mgr = nullptr);
 
   /*!
    * Check whether a word of propositional interpretations
    * is accepted by the DFA.
    *
+   * //TODO consider using bit vectors for an interpretation.
+   *
    * @return true if the word is accepted, false otherwise.
    */
-  bool accepts(std::vector<interpretation> &word);
+  bool accepts(const trace &word);
+
+  int get_successor(int state, const interpretation &symbol) const;
+  int get_successor(int state, const interpretation_set &symbol) const;
+
+  bool is_final(int state) const;
+
+  /*!
+   * Add a new state.
+   *
+   * @return the index of the next state.
+   */
+  int add_state();
+
+  /*!
+   * Set the initial state.
+   *
+   * @param state the initial state.
+   */
+  void set_initial_state(int state);
+
+  /*!
+   * Set a state to be final (or not final)
+   *
+   * @param state the initial state.
+   * @param is_final whether the state should be final or not..
+   */
+  void set_final_state(int state, bool is_final = true);
+
+  /*!
+   * Add a transition to the DFA.
+   *
+   * The @from and @to parameters must be already existing states
+   * of the DFA. The variable indexes (i.e. the keys of @symbols)
+   * that are greater than nb_variables are ignored.
+   *
+   * @param from the starting DFA state
+   * @param symbol the guard of the transition. That is, a mapping from indexes
+   *    associated to variables, and value of truth of that variable.
+   *    Variables indexes missing from the set of keys, or indexes
+   *    greater or equal than nb_variables, are interpreted as "don't care".
+   * @param to the ending DFA state
+   */
+  void add_transition(int from, const interpretation_map &symbol, int to);
+
+  /*!
+   * The same the above, but with @symbol as a vector of indexes whose
+   * variables are considered true.
+   *
+   * If @dont_care is true (default), the missing variables are considered
+   * "don't care" variables. Otherwise, they are considered explicitly false.
+   */
+  void add_transition(int from, const interpretation &symbol, int to,
+                      bool dont_care = true);
+
+  /*!
+   * The same the above, but with @symbol as a set of indexes whose
+   * variables are considered true.
+   *
+   * If @dont_care is true (default), the missing variables are considered
+   * "don't care" variables. Otherwise, they are considered explicitly false.
+   */
+  void add_transition(int from, const interpretation_set &symbol, int to,
+                      bool dont_care = true);
 
 protected:
 private:
-  std::vector<int> behaviour;
-  //		vector<string> variables;
-  void push_states(int i, item &tmp);
-  CUDD::BDD var2bddvar(int v, int index);
+  std::vector<std::string> variables;
+  void get_successor(const std::vector<int> &state,
+                     const interpretation &symbol, std::vector<int> &next_state,
+                     std::vector<int> &extended_symbol) const;
 
-  // new bdd constructer
-  std::vector<vbdd> tBDD;
-  vbdd try_get(int index, std::vector<std::vector<int>> &mona_bdd_nodes);
-  void construct_bdd_from_mona(std::vector<std::vector<int>> mona_bdd_nodes);
+  /*!
+   * Given the index, try to get a BDD. If not present yet, create it.
+   *
+   * If it is a terminal, then instantiate it by using the binary
+   * representation of the terminal state (remember, in a shared
+   * multi-terminal BDD the terminal nodes have an integer that correspond
+   * to the successor).
+   *
+   * If it is a variable, then build the ITE node (for each bit)
+   *
+   * @param index the index of the BDD
+   * @param mona_bdd_nodes
+   * @return the list of BDDs.
+   */
+  vec_bdd try_get(int index,
+                  const std::vector<std::vector<int>> &mona_bdd_nodes,
+                  std::vector<vec_bdd> &tBDD);
+
+  /*!
+   * Return positive or negative BDD variable from index.
+   *
+   * @param index an integer between 0 and (nb_bits + nb_variables)
+   * @param v a boolean to say whether the variable should be positive or
+   * negative.
+   * @return the BDD variable corresponding to the index and its
+   */
+  CUDD::BDD var2bddvar(int index, bool v = true);
+
+  /*!
+   * This method builds the Symbolic DFA from MONA BDD nodes.
+   *
+   * The input is a list of BDD specifications.
+   * A BDD specification is a triple of integers to be interpreted as follows:
+   * - if the ith element contains "{-1, val, 0}", the ith BDD node is a leaf
+   * with value val.
+   * - if the ith element contains "{x, l, r}", the ith BDD node is an internal
+   * node with index x, left (low) successor l and right (high) successor r.
+   *
+   * [1] MONA User Manual. https://www.brics.dk/mona/mona14.pdf
+   *
+   * @param mona_bdd_nodes MONA BDDs specifications.
+   */
+  void
+  construct_bdd_from_mona(const std::vector<std::vector<int>> &mona_bdd_nodes,
+                          const std::vector<int> &behaviour,
+                          const std::vector<int> &final_states);
 };
-
 } // namespace lydia
 } // namespace whitemech

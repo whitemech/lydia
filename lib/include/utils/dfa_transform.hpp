@@ -1,3 +1,4 @@
+#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -14,23 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "catch.hpp"
-#include <set>
-#include <utils/powerset.hpp>
 
-namespace whitemech::lydia::Test {
+#include "dfa.hpp"
 
-TEST_CASE("powerset", "[powerset]") {
-  auto s = std::set<int>({0, 1, 2});
-  std::vector<std::set<int>> result = powerset<int>(s);
-  REQUIRE(result[0] == std::set<int>({}));
-  REQUIRE(result[1] == std::set<int>({0}));
-  REQUIRE(result[2] == std::set<int>({1}));
-  REQUIRE(result[3] == std::set<int>({0, 1}));
-  REQUIRE(result[4] == std::set<int>({2}));
-  REQUIRE(result[5] == std::set<int>({0, 2}));
-  REQUIRE(result[6] == std::set<int>({1, 2}));
-  REQUIRE(result[7] == std::set<int>({0, 1, 2}));
+namespace whitemech {
+namespace lydia {
+
+void dfa_to_graphviz(const dfa &automaton, const std::string &output_filename,
+                     const std::string &format = "svg");
+
 }
-
-} // namespace whitemech::lydia::Test
+} // namespace whitemech

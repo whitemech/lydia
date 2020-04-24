@@ -154,7 +154,7 @@ inline int unified_compare(const std::shared_ptr<T> &a,
 //                                 std::is_base_of<Basic, U>::value>>
 template <typename T, typename U>
 inline int unified_compare(const T &a, const U &b) {
-  return a->__cmp__(*b);
+  return a->compare_(*b);
 }
 
 template <typename T>
