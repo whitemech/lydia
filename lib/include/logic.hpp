@@ -123,7 +123,6 @@ public:
     static_assert(std::is_base_of<RegExp, T>::value,
                   "concrete RegExp class not derived from RegExp");
   }
-  bool is_canonical(const set_formulas &container_) { return true; }; // TODO
   ldlf_ptr get_formula() const { return arg_; };
   std::shared_ptr<const T> get_regex() const { return regex_; };
   hash_t compute_hash_() const override {
@@ -137,6 +136,7 @@ public:
 template <class T> class LDLfDiamond : public LDLfTemporal<T> {
 public:
   const static TypeID type_code_id = TypeID::t_LDLfDiamond;
+  bool is_canonical(const set_formulas &container_) const;
   void accept(Visitor &v) const override { v.visit(*this); };
   explicit LDLfDiamond<T>(const std::shared_ptr<const T> &regex,
                           const ldlf_ptr &formula)
@@ -175,7 +175,7 @@ public:
   const static TypeID type_code_id = TypeID::t_PropositionalRegExp;
   void accept(Visitor &v) const override{};
   explicit PropositionalRegExp(std::shared_ptr<const PropositionalFormula> f);
-  bool is_canonical(const set_formulas &container_) { return true; };
+  bool is_canonical(const set_formulas &container_) const;
   hash_t compute_hash_() const override;
   std::shared_ptr<const PropositionalFormula> get_arg() const;
   bool is_equal(const Basic &o) const override;

@@ -207,6 +207,12 @@ bool QuotedFormula::is_equal(const Basic &rhs) const {
              *dynamic_cast<const QuotedFormula &>(rhs).formula);
 }
 
+template <class T>
+bool LDLfDiamond<T>::is_canonical(const set_formulas &container_) const {
+  // TODO
+  return true;
+}
+
 PropositionalRegExp::PropositionalRegExp(
     std::shared_ptr<const PropositionalFormula> f)
     : arg_{std::move(f)} {
@@ -232,6 +238,11 @@ int PropositionalRegExp::compare(const Basic &o) const {
   assert(is_a<PropositionalRegExp>(o));
   return arg_->compare_(
       *dynamic_cast<const PropositionalRegExp &>(o).get_arg());
+}
+
+bool PropositionalRegExp::is_canonical(const set_formulas &container_) const {
+  // TODO
+  return true;
 }
 
 std::shared_ptr<const QuotedFormula> quote(const ldlf_ptr &p) {
