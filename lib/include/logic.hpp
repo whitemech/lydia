@@ -160,8 +160,40 @@ public:
                            dynamic_cast<const LDLfDiamond &>(o).get_formula());
   };
   std::shared_ptr<const LDLfFormula> logical_not() const override {
-    // TODO return the associated LDLfBoxFormula
-    return nullptr;
+    return std::make_shared<LDLfBox<T>>(this->get_regex(),
+                                        this->get_formula()->logical_not());
+  };
+};
+
+template <class T> class LDLfBox : public LDLfTemporal<T> {
+public:
+  const static TypeID type_code_id = TypeID::t_LDLfBox;
+  bool is_canonical(const set_formulas &container_) const;
+  void accept(Visitor &v) const override { v.visit(*this); };
+  explicit LDLfBox<T>(const std::shared_ptr<const T> &regex,
+                      const ldlf_ptr &formula)
+      : LDLfTemporal<T>(regex, formula) {
+    this->type_code_ = type_code_id;
+  }
+
+  bool is_equal(const Basic &o) const override {
+    return is_a<LDLfBox<T>>(o) and
+           unified_eq(this->get_regex(),
+                      dynamic_cast<const LDLfBox<T> &>(o).get_regex()) and
+           unified_eq(this->get_formula(),
+                      dynamic_cast<const LDLfBox<T> &>(o).get_formula());
+  };
+  int compare(const Basic &o) const override {
+    auto regex_compare = unified_compare(
+        this->get_regex(), dynamic_cast<const LDLfBox &>(o).get_regex());
+    if (regex_compare != 0)
+      return regex_compare;
+    return unified_compare(this->get_formula(),
+                           dynamic_cast<const LDLfBox &>(o).get_formula());
+  };
+  std::shared_ptr<const LDLfFormula> logical_not() const override {
+    return std::make_shared<LDLfDiamond<T>>(this->get_regex(),
+                                            this->get_formula()->logical_not());
   };
 };
 

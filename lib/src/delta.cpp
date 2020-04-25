@@ -71,6 +71,23 @@ void DeltaVisitor::visit(const LDLfDiamond<PropositionalRegExp> &f) {
   }
 }
 
+void DeltaVisitor::visit(const LDLfBox<PropositionalRegExp> &f) {
+  //  TODO epsilon return false only if regexp is propositional
+  if (epsilon) {
+    result = std::make_shared<PropositionalTrue>();
+  } else {
+    assert(this->prop_interpretation.has_value());
+    auto prop = f.get_regex()->get_arg();
+
+    if (eval(*prop, this->prop_interpretation.value())) {
+      // TODO Implement the "E(phi)" in the delta function (Brafman et. al 2018)
+      result = std::make_shared<PropositionalAtom>(quote(f.get_formula()));
+    } else {
+      result = std::make_shared<PropositionalTrue>();
+    }
+  }
+}
+
 std::shared_ptr<const PropositionalFormula>
 DeltaVisitor::apply(const LDLfFormula &b) {
   b.accept(*this);

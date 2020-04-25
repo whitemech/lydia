@@ -30,6 +30,7 @@ public:
   virtual void visit(const LDLfOr &){};
   virtual void visit(const LDLfNot &){};
   virtual void visit(const LDLfDiamond<PropositionalRegExp> &x){};
+  virtual void visit(const LDLfBox<PropositionalRegExp> &x){};
   // TODO add all the combinations of temporal formulas + regular expression
 
   // callbacks for propositional logic

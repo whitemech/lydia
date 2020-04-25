@@ -35,6 +35,7 @@ public:
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
   void visit(const LDLfDiamond<PropositionalRegExp> &x) override;
+  void visit(const LDLfBox<PropositionalRegExp> &x) override;
   std::shared_ptr<LDLfFormula> apply(const LDLfFormula &b);
 };
 
