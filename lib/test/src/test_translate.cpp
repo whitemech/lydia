@@ -78,8 +78,7 @@ TEST_CASE("Translate <true>tt", "[translate]") {
   auto true_ = std::make_shared<const PropositionalTrue>();
   auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
   auto tt = boolean(true);
-  auto diamond_formula_true_tt =
-      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_true, tt);
+  auto diamond_formula_true_tt = std::make_shared<LDLfDiamond>(regex_true, tt);
 
   auto *my_dfa = to_dfa(*diamond_formula_true_tt);
 
@@ -98,8 +97,7 @@ TEST_CASE("Translate <a>tt", "[translate]") {
   auto a = std::make_shared<const PropositionalAtom>("a");
   auto regex_a = std::make_shared<const PropositionalRegExp>(a);
   auto tt = boolean(true);
-  auto diamond_formula_a_tt =
-      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_a, tt);
+  auto diamond_formula_a_tt = std::make_shared<LDLfDiamond>(regex_a, tt);
 
   auto *my_dfa = to_dfa(*diamond_formula_a_tt);
 
@@ -127,7 +125,7 @@ TEST_CASE("Translate <a & b>tt", "[translate]") {
   auto regex_a_and_b = std::make_shared<const PropositionalRegExp>(a_and_b);
   auto tt = boolean(true);
   auto diamond_formula_a_and_b_tt =
-      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_a_and_b, tt);
+      std::make_shared<LDLfDiamond>(regex_a_and_b, tt);
 
   auto *my_dfa = to_dfa(*diamond_formula_a_and_b_tt);
 
@@ -156,8 +154,7 @@ TEST_CASE("Translate {true}tt", "[translate]") {
   auto true_ = std::make_shared<const PropositionalTrue>();
   auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
   auto tt = boolean(true);
-  auto box_formula_true_tt =
-      std::make_shared<LDLfBox<PropositionalRegExp>>(regex_true, tt);
+  auto box_formula_true_tt = std::make_shared<LDLfBox>(regex_true, tt);
 
   auto *my_dfa = to_dfa(*box_formula_true_tt);
 
@@ -176,8 +173,7 @@ TEST_CASE("Translate {a}tt", "[translate]") {
   auto a = std::make_shared<const PropositionalAtom>("a");
   auto regex_a = std::make_shared<const PropositionalRegExp>(a);
   auto tt = boolean(true);
-  auto box_formula_a_tt =
-      std::make_shared<LDLfBox<PropositionalRegExp>>(regex_a, tt);
+  auto box_formula_a_tt = std::make_shared<LDLfBox>(regex_a, tt);
 
   auto *my_dfa = to_dfa(*box_formula_a_tt);
 
@@ -204,8 +200,7 @@ TEST_CASE("Translate {a & b}tt", "[translate]") {
       std::make_shared<const PropositionalAnd>(set_prop_formulas{a, b});
   auto regex_a_and_b = std::make_shared<const PropositionalRegExp>(a_and_b);
   auto tt = boolean(true);
-  auto box_formula_a_and_b_tt =
-      std::make_shared<LDLfBox<PropositionalRegExp>>(regex_a_and_b, tt);
+  auto box_formula_a_and_b_tt = std::make_shared<LDLfBox>(regex_a_and_b, tt);
 
   auto *my_dfa = to_dfa(*box_formula_a_and_b_tt);
 
@@ -234,8 +229,7 @@ TEST_CASE("Translate {a}ff", "[translate]") {
   auto a = std::make_shared<const PropositionalAtom>("a");
   auto regex_a = std::make_shared<const PropositionalRegExp>(a);
   auto tt = boolean(false);
-  auto box_formula_a_tt =
-      std::make_shared<LDLfBox<PropositionalRegExp>>(regex_a, tt);
+  auto box_formula_a_tt = std::make_shared<LDLfBox>(regex_a, tt);
 
   auto *my_dfa = to_dfa(*box_formula_a_tt);
 
@@ -259,10 +253,9 @@ TEST_CASE("Translate <<true>tt?>tt", "[translate]") {
   auto true_ = std::make_shared<const PropositionalTrue>();
   auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
   auto tt = boolean(true);
-  auto diamond_formula_true_tt =
-      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_true, tt);
+  auto diamond_formula_true_tt = std::make_shared<LDLfDiamond>(regex_true, tt);
   auto regex_test = std::make_shared<const TestRegExp>(diamond_formula_true_tt);
-  auto diamond_test = std::make_shared<LDLfDiamond<TestRegExp>>(regex_test, tt);
+  auto diamond_test = std::make_shared<LDLfDiamond>(regex_test, tt);
 
   auto *my_dfa = to_dfa(*diamond_test);
 
@@ -282,10 +275,9 @@ TEST_CASE("Translate <{true}ff?>tt", "[translate]") {
   auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
   auto tt = boolean(true);
   auto ff = boolean(false);
-  auto box_formula_true_ff =
-      std::make_shared<LDLfBox<PropositionalRegExp>>(regex_true, ff);
+  auto box_formula_true_ff = std::make_shared<LDLfBox>(regex_true, ff);
   auto regex_test = std::make_shared<const TestRegExp>(box_formula_true_ff);
-  auto diamond_test = std::make_shared<LDLfDiamond<TestRegExp>>(regex_test, tt);
+  auto diamond_test = std::make_shared<LDLfDiamond>(regex_test, tt);
 
   auto *my_dfa = to_dfa(*diamond_test);
 
@@ -297,6 +289,40 @@ TEST_CASE("Translate <{true}ff?>tt", "[translate]") {
   REQUIRE(!my_dfa->accepts(trace{false_}));
   REQUIRE(!my_dfa->accepts(trace{false_, false_}));
   REQUIRE(!my_dfa->accepts(trace{false_, false_, false_}));
+}
+
+TEST_CASE("Translate <a + b>tt", "[translate]") {
+  std::string formula_name = "<a + b>tt";
+  auto a = std::make_shared<const PropositionalAtom>("a");
+  auto b = std::make_shared<const PropositionalAtom>("b");
+  auto regex_a = std::make_shared<const PropositionalRegExp>(a);
+  auto regex_b = std::make_shared<const PropositionalRegExp>(b);
+  auto regex_a_union_b =
+      std::make_shared<const UnionRegExp>(set_regexes{regex_a, regex_b});
+  auto tt = boolean(true);
+  auto diamond_formula_a_plus_b_tt =
+      std::make_shared<LDLfDiamond>(regex_a_union_b, tt);
+
+  auto *my_dfa = to_dfa(*diamond_formula_a_plus_b_tt);
+
+  // print the DFA
+  dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
+
+  auto e = interpretation{0, 0};
+  auto a_ = interpretation{1, 0};
+  auto b_ = interpretation{0, 1};
+  auto ab_ = interpretation{1, 1};
+  REQUIRE(!my_dfa->accepts(trace{}));
+  REQUIRE(!my_dfa->accepts(trace{e}));
+  REQUIRE(my_dfa->accepts(trace{a_}));
+  REQUIRE(my_dfa->accepts(trace{b_}));
+  REQUIRE(!my_dfa->accepts(trace{e, e}));
+  REQUIRE(!my_dfa->accepts(trace{e, a_}));
+  REQUIRE(my_dfa->accepts(trace{a_, e}));
+  REQUIRE(my_dfa->accepts(trace{a_, a_}));
+  REQUIRE(my_dfa->accepts(trace{a_, a_}));
+  REQUIRE(my_dfa->accepts(trace{b_}));
+  REQUIRE(my_dfa->accepts(trace{ab_}));
 }
 
 } // namespace whitemech::lydia::Test

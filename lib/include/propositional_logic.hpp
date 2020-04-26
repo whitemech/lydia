@@ -129,22 +129,6 @@ public:
   explicit EvalVisitor(const set_atoms_ptr &interpretation)
       : interpretation{interpretation} {};
 
-  // callbacks for LDLf
-  void visit(const Symbol &) override{};
-  void visit(const LDLfBooleanAtom &) override{};
-  void visit(const LDLfAnd &) override{};
-  void visit(const LDLfOr &) override{};
-  void visit(const LDLfNot &) override{};
-  void visit(const LDLfDiamond<PropositionalRegExp> &) override{};
-  void visit(const LDLfDiamond<TestRegExp> &) override{};
-  void visit(const LDLfBox<PropositionalRegExp> &) override{};
-  void visit(const LDLfBox<TestRegExp> &) override{};
-  // TODO add all the combinations of temporal formulas + regular expression
-
-  // callbacks for regular expressions
-  void visit(const PropositionalRegExp &) override{};
-  void visit(const TestRegExp &) override{};
-
   // callbacks for propositional logic
   void visit(const PropositionalTrue &) override;
   void visit(const PropositionalFalse &) override;

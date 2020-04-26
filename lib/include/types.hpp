@@ -37,9 +37,12 @@ class LDLfNot;
 class RegExp;
 class PropositionalRegExp;
 class TestRegExp;
-template <typename T> class LDLfTemporal;
-template <typename T> class LDLfDiamond;
-template <typename T> class LDLfBox;
+class UnionRegExp;
+class SequenceRegExp;
+class StarRegExp;
+class LDLfTemporal;
+class LDLfDiamond;
+class LDLfBox;
 class PropositionalFormula;
 class PropositionalAtom;
 class PropositionalTrue;
@@ -85,6 +88,9 @@ typedef std::vector<std::shared_ptr<const PropositionalFormula>>
 typedef std::set<std::shared_ptr<const PropositionalFormula>, SharedComparator>
     set_prop_formulas;
 typedef std::shared_ptr<const RegExp> regex_ptr;
+typedef std::set<regex_ptr, SharedComparator> set_regexes;
+typedef std::vector<std::shared_ptr<const RegExp>, SharedComparator>
+    vec_regexes;
 typedef std::shared_ptr<const NFAState> nfa_state_ptr;
 typedef std::shared_ptr<const DFAState> dfa_state_ptr;
 typedef std::shared_ptr<tuple_dfa_transition> dfa_transition_ptr;

@@ -27,9 +27,12 @@ void LDLfBooleanAtom::accept(Visitor &v) const { v.visit(*this); }
 void LDLfOr::accept(Visitor &v) const { v.visit(*this); }
 void LDLfAnd::accept(Visitor &v) const { v.visit(*this); }
 void LDLfNot::accept(Visitor &v) const { v.visit(*this); }
+void LDLfDiamond::accept(Visitor &v) const { v.visit(*this); }
+void LDLfBox::accept(Visitor &v) const { v.visit(*this); }
 
 void PropositionalRegExp::accept(Visitor &v) const { v.visit(*this); }
 void TestRegExp::accept(Visitor &v) const { v.visit(*this); }
+void UnionRegExp::accept(Visitor &v) const { v.visit(*this); }
 
 // TODO add other accept methods
 

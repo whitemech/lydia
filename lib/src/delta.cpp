@@ -55,60 +55,20 @@ void DeltaVisitor::visit(const LDLfOr &x) {
   result = std::make_shared<PropositionalOr>(new_container);
 }
 
-void DeltaVisitor::visit(const LDLfDiamond<PropositionalRegExp> &f) {
-  //  TODO epsilon return false only if regexp is propositional
-  if (epsilon) {
-    result = std::make_shared<PropositionalFalse>();
-  } else {
-    assert(this->prop_interpretation.has_value());
-    auto prop = f.get_regex()->get_arg();
-
-    if (eval(*prop, this->prop_interpretation.value())) {
-      // TODO Implement the "E(phi)" in the delta function (Brafman et. al 2018)
-      result = std::make_shared<PropositionalAtom>(quote(f.get_formula()));
-    } else {
-      result = std::make_shared<PropositionalFalse>();
-    }
-  }
+void DeltaVisitor::visit(const LDLfDiamond &f) {
+  auto d = DeltaDiamondRegExpVisitor(prop_interpretation, f, epsilon);
+  result = d.apply(*f.get_regex());
 }
 
-void DeltaVisitor::visit(const LDLfBox<PropositionalRegExp> &f) {
-  //  TODO epsilon return false only if regexp is propositional
-  if (epsilon) {
-    result = std::make_shared<PropositionalTrue>();
-  } else {
-    assert(this->prop_interpretation.has_value());
-    auto prop = f.get_regex()->get_arg();
-
-    if (eval(*prop, this->prop_interpretation.value())) {
-      // TODO Implement the "E(phi)" in the delta function (Brafman et. al 2018)
-      result = std::make_shared<PropositionalAtom>(quote(f.get_formula()));
-    } else {
-      result = std::make_shared<PropositionalTrue>();
-    }
-  }
+void DeltaVisitor::visit(const LDLfBox &f) {
+  auto d = DeltaBoxRegExpVisitor(prop_interpretation, f, epsilon);
+  result = d.apply(*f.get_regex());
 }
 
 std::shared_ptr<const PropositionalFormula>
 DeltaVisitor::apply(const LDLfFormula &b) {
   b.accept(*this);
   return result;
-}
-
-void DeltaVisitor::visit(const LDLfDiamond<TestRegExp> &x) {
-  auto regex_delta = apply(*x.get_regex()->get_arg());
-  auto ldlf_delta = apply(*x.get_formula());
-  result = std::make_shared<PropositionalAnd>(
-      set_prop_formulas{regex_delta, ldlf_delta});
-}
-
-void DeltaVisitor::visit(const LDLfBox<TestRegExp> &x) {
-  NNFTransformer nnfTransformer;
-  auto regex_delta =
-      apply(*nnfTransformer.apply(LDLfNot(x.get_regex()->get_arg())));
-  auto ldlf_delta = apply(*x.get_formula());
-  result = std::make_shared<PropositionalOr>(
-      set_prop_formulas{regex_delta, ldlf_delta});
 }
 
 std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &x) {
@@ -121,6 +81,94 @@ std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &x,
                                                   const set_atoms_ptr &i) {
   DeltaVisitor deltaVisitor{i};
   return deltaVisitor.apply(x);
+}
+
+void DeltaDiamondRegExpVisitor::visit(const PropositionalRegExp &r) {
+  if (epsilon) {
+    result = std::make_shared<PropositionalFalse>();
+    return;
+  }
+  auto prop = r.get_arg();
+
+  if (eval(*prop, this->prop_interpretation)) {
+    // TODO Implement the "E(phi)" in the delta function (Brafman et. al 2018)
+    // TODO quote(formula) with formula as reference is potentially dangerous
+    result = std::make_shared<PropositionalAtom>(quote(formula.get_formula()));
+  } else {
+    result = std::make_shared<PropositionalFalse>();
+  }
+}
+
+void DeltaDiamondRegExpVisitor::visit(const TestRegExp &r) {
+  auto d = DeltaVisitor(prop_interpretation, epsilon);
+  auto regex_delta = d.apply(*r.get_arg());
+  auto ldlf_delta = d.apply(*formula.get_formula());
+  result = std::make_shared<PropositionalAnd>(
+      set_prop_formulas{regex_delta, ldlf_delta});
+}
+
+void DeltaDiamondRegExpVisitor::visit(const UnionRegExp &r) {
+  set_prop_formulas args;
+  for (const auto &regex : r.get_container()) {
+    auto new_f = LDLfDiamond(regex, formula.get_formula());
+    auto tmp = DeltaVisitor(prop_interpretation, epsilon).apply(new_f);
+    args.insert(tmp);
+  }
+  result = std::make_shared<PropositionalOr>(args);
+}
+
+void DeltaDiamondRegExpVisitor::visit(const SequenceRegExp &) {}
+
+void DeltaDiamondRegExpVisitor::visit(const StarRegExp &) {}
+
+std::shared_ptr<const PropositionalFormula>
+DeltaDiamondRegExpVisitor::apply(const RegExp &b) {
+  b.accept(*this);
+  return result;
+}
+
+void DeltaBoxRegExpVisitor::visit(const PropositionalRegExp &r) {
+  if (epsilon) {
+    result = std::make_shared<PropositionalTrue>();
+    return;
+  }
+  auto prop = r.get_arg();
+
+  if (eval(*prop, this->prop_interpretation)) {
+    // TODO Implement the "E(phi)" in the delta function (Brafman et. al 2018)
+    result = std::make_shared<PropositionalAtom>(quote(formula.get_formula()));
+  } else {
+    result = std::make_shared<PropositionalTrue>();
+  }
+}
+
+void DeltaBoxRegExpVisitor::visit(const TestRegExp &r) {
+  NNFTransformer nnfTransformer;
+  DeltaVisitor d(prop_interpretation, epsilon);
+  auto regex_delta = d.apply(*nnfTransformer.apply(LDLfNot(r.get_arg())));
+  auto ldlf_delta = d.apply(*formula.get_formula());
+  result = std::make_shared<PropositionalOr>(
+      set_prop_formulas{regex_delta, ldlf_delta});
+}
+
+void DeltaBoxRegExpVisitor::visit(const UnionRegExp &r) {
+  set_prop_formulas args;
+  for (const auto &regex : r.get_container()) {
+    auto new_f = LDLfBox(regex, formula.get_formula());
+    auto tmp = DeltaVisitor(prop_interpretation, epsilon).apply(new_f);
+    args.insert(tmp);
+  }
+  result = std::make_shared<PropositionalAnd>(args);
+}
+
+void DeltaBoxRegExpVisitor::visit(const SequenceRegExp &) {}
+
+void DeltaBoxRegExpVisitor::visit(const StarRegExp &) {}
+
+std::shared_ptr<const PropositionalFormula>
+DeltaBoxRegExpVisitor::apply(const RegExp &b) {
+  b.accept(*this);
+  return result;
 }
 
 } // namespace lydia

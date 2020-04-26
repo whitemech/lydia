@@ -35,6 +35,7 @@ enum TypeID {
   t_LDLfBox,
   t_PropositionalRegExp,
   t_TestRegExp,
+  t_UnionRegExp,
   t_NFAState,
   t_DFAState,
   t_PropositionalTrue,
@@ -49,7 +50,7 @@ enum TypeID {
 class Visitor;
 class Symbol;
 
-class Basic {
+class Basic : public std::enable_shared_from_this<Basic> {
 private:
   // The hash_ is defined as mutable, because its value is initialized to 0
   // in the constructor and then it can be changed in Basic::hash() to the

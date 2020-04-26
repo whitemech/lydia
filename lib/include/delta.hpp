@@ -37,14 +37,16 @@ class DeltaVisitor : public Visitor {
 private:
 protected:
   std::shared_ptr<const PropositionalFormula> result;
-  std::optional<const set_atoms_ptr> prop_interpretation;
+  const set_atoms_ptr prop_interpretation;
   bool epsilon;
 
 public:
   static Logger logger;
   DeltaVisitor() : epsilon{true} {}
   explicit DeltaVisitor(const set_atoms_ptr &prop_interpretation)
-      : prop_interpretation{prop_interpretation}, epsilon{false} {}
+      : DeltaVisitor(prop_interpretation, false) {}
+  explicit DeltaVisitor(set_atoms_ptr prop_interpretation, bool epsilon)
+      : prop_interpretation{std::move(prop_interpretation)}, epsilon{epsilon} {}
 
   // callbacks for LDLf
   void visit(const Symbol &) override{};
@@ -52,15 +54,15 @@ public:
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
-  void visit(const LDLfDiamond<PropositionalRegExp> &x) override;
-  void visit(const LDLfDiamond<TestRegExp> &) override;
-  void visit(const LDLfBox<PropositionalRegExp> &x) override;
-  void visit(const LDLfBox<TestRegExp> &) override;
-  // TODO add all the combinations of temporal formulas + regular expression
+  void visit(const LDLfDiamond &) override;
+  void visit(const LDLfBox &) override;
 
   // callbacks for regular expressions
   void visit(const PropositionalRegExp &) override{};
   void visit(const TestRegExp &) override{};
+  void visit(const UnionRegExp &) override{};
+  void visit(const SequenceRegExp &) override{};
+  void visit(const StarRegExp &) override{};
 
   // callbacks for propositional logic
   void visit(const PropositionalTrue &) override{};
@@ -73,6 +75,54 @@ public:
   void visit(const QuotedFormula &) override{};
 
   std::shared_ptr<const PropositionalFormula> apply(const LDLfFormula &b);
+};
+
+class DeltaDiamondRegExpVisitor : Visitor {
+protected:
+  std::shared_ptr<const PropositionalFormula> result;
+  const LDLfTemporal &formula;
+  const set_atoms_ptr prop_interpretation;
+  bool epsilon;
+
+public:
+  explicit DeltaDiamondRegExpVisitor(set_atoms_ptr prop_interpretation,
+                                     const LDLfTemporal &formula, bool epsilon)
+      : prop_interpretation{std::move(prop_interpretation)},
+        formula{std::move(formula)}, epsilon{epsilon} {}
+  explicit DeltaDiamondRegExpVisitor(const LDLfTemporal &formula, bool epsilon)
+      : formula{std::move(formula)}, epsilon{epsilon} {};
+
+  // callbacks for regular expressions
+  void visit(const PropositionalRegExp &) override;
+  void visit(const TestRegExp &) override;
+  void visit(const UnionRegExp &) override;
+  void visit(const SequenceRegExp &) override;
+  void visit(const StarRegExp &) override;
+
+  std::shared_ptr<const PropositionalFormula> apply(const RegExp &b);
+};
+
+class DeltaBoxRegExpVisitor : Visitor {
+protected:
+  std::shared_ptr<const PropositionalFormula> result;
+  const LDLfTemporal &formula;
+  const set_atoms_ptr prop_interpretation;
+  bool epsilon;
+
+public:
+  explicit DeltaBoxRegExpVisitor(set_atoms_ptr prop_interpretation,
+                                 const LDLfTemporal &formula, bool epsilon)
+      : prop_interpretation{std::move(prop_interpretation)},
+        formula{std::move(formula)}, epsilon{epsilon} {}
+  explicit DeltaBoxRegExpVisitor(const LDLfTemporal &formula, bool epsilon)
+      : formula{std::move(formula)}, epsilon{epsilon} {};
+  // callbacks for regular expressions
+  void visit(const PropositionalRegExp &) override;
+  void visit(const TestRegExp &) override;
+  void visit(const UnionRegExp &) override;
+  void visit(const SequenceRegExp &) override;
+  void visit(const StarRegExp &) override;
+  std::shared_ptr<const PropositionalFormula> apply(const RegExp &b);
 };
 
 /*!

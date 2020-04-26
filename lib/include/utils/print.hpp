@@ -38,15 +38,15 @@ public:
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
-  void visit(const LDLfDiamond<PropositionalRegExp> &) override{};
-  void visit(const LDLfDiamond<TestRegExp> &) override{};
-  void visit(const LDLfBox<PropositionalRegExp> &) override{};
-  void visit(const LDLfBox<TestRegExp> &) override{};
-  // TODO add all the combinations of temporal formulas + regular expression
+  void visit(const LDLfDiamond &) override;
+  void visit(const LDLfBox &) override;
 
   // callbacks for regular expressions
   void visit(const PropositionalRegExp &) override{};
   void visit(const TestRegExp &) override{};
+  void visit(const UnionRegExp &) override{};
+  void visit(const SequenceRegExp &) override{};
+  void visit(const StarRegExp &) override{};
 
   // callbacks for propositional logic
   void visit(const PropositionalTrue &) override{};
@@ -57,8 +57,6 @@ public:
   void visit(const PropositionalNot &) override{};
 
   void visit(const QuotedFormula &) override{};
-
-  template <class T> void visit(const LDLfDiamond<T> &);
 
   std::string apply(const vec_basic &v);
   std::string apply(const set_formulas &v);
