@@ -29,15 +29,17 @@ namespace lydia {
 
 class Basic;
 class Symbol;
-class RegExp;
 class LDLfFormula;
 class LDLfBooleanAtom;
 class LDLfAnd;
 class LDLfOr;
 class LDLfNot;
-template <class T> class LDLfDiamond;
-template <class T> class LDLfBox;
+class RegExp;
 class PropositionalRegExp;
+class TestRegExp;
+template <typename T> class LDLfTemporal;
+template <typename T> class LDLfDiamond;
+template <typename T> class LDLfBox;
 class PropositionalFormula;
 class PropositionalAtom;
 class PropositionalTrue;

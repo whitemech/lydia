@@ -16,8 +16,6 @@
  */
 
 #include "nnf.hpp"
-#include <sstream>
-#include <stdexcept>
 
 namespace whitemech {
 namespace lydia {
@@ -49,22 +47,25 @@ void NNFTransformer::visit(const LDLfNot &x) {
   result = new_formula;
 }
 
-void NNFTransformer::visit(const LDLfDiamond<PropositionalRegExp> &x) {
-  result = std::make_shared<LDLfDiamond<PropositionalRegExp>>(
-      x.get_regex(), apply(*x.get_formula()));
-}
-
-void NNFTransformer::visit(const LDLfBox<PropositionalRegExp> &x) {
-  result = std::make_shared<LDLfBox<PropositionalRegExp>>(
-      x.get_regex(), apply(*x.get_formula()));
-}
-
-std::shared_ptr<LDLfFormula> NNFTransformer::apply(const LDLfFormula &b) {
+std::shared_ptr<const LDLfFormula> NNFTransformer::apply(const LDLfFormula &b) {
   b.accept(*this);
   return result;
 }
 
-std::shared_ptr<LDLfFormula> to_nnf(const LDLfFormula &x) {
+std::shared_ptr<const RegExp> NNFTransformer::apply(const RegExp &b) {
+  b.accept(*this);
+  return regex_result;
+}
+
+void NNFTransformer::visit(const PropositionalRegExp &x) {
+  regex_result = std::make_shared<PropositionalRegExp>(x.get_arg());
+}
+
+void NNFTransformer::visit(const TestRegExp &x) {
+  regex_result = std::make_shared<TestRegExp>(apply(*x.get_arg()));
+}
+
+std::shared_ptr<const LDLfFormula> to_nnf(const LDLfFormula &x) {
   NNFTransformer nnfTransformer;
   return nnfTransformer.apply(x);
 }

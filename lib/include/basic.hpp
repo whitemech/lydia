@@ -34,6 +34,7 @@ enum TypeID {
   t_LDLfDiamond,
   t_LDLfBox,
   t_PropositionalRegExp,
+  t_TestRegExp,
   t_NFAState,
   t_DFAState,
   t_PropositionalTrue,

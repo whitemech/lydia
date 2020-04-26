@@ -18,6 +18,7 @@
 #include <cassert>
 #include <delta.hpp>
 #include <logger.hpp>
+#include <nnf.hpp>
 
 namespace whitemech {
 namespace lydia {
@@ -92,6 +93,22 @@ std::shared_ptr<const PropositionalFormula>
 DeltaVisitor::apply(const LDLfFormula &b) {
   b.accept(*this);
   return result;
+}
+
+void DeltaVisitor::visit(const LDLfDiamond<TestRegExp> &x) {
+  auto regex_delta = apply(*x.get_regex()->get_arg());
+  auto ldlf_delta = apply(*x.get_formula());
+  result = std::make_shared<PropositionalAnd>(
+      set_prop_formulas{regex_delta, ldlf_delta});
+}
+
+void DeltaVisitor::visit(const LDLfBox<TestRegExp> &x) {
+  NNFTransformer nnfTransformer;
+  auto regex_delta =
+      apply(*nnfTransformer.apply(LDLfNot(x.get_regex()->get_arg())));
+  auto ldlf_delta = apply(*x.get_formula());
+  result = std::make_shared<PropositionalOr>(
+      set_prop_formulas{regex_delta, ldlf_delta});
 }
 
 std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &x) {

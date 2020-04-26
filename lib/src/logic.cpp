@@ -193,6 +193,7 @@ std::shared_ptr<const LDLfFormula> LDLfNot::logical_not() const {
 }
 
 hash_t QuotedFormula::compute_hash_() const {
+  // TODO is this correct? shouldn't be combined with TypeID?
   return this->formula->compute_hash_();
 }
 
@@ -226,8 +227,9 @@ PropositionalRegExp::PropositionalRegExp(
 }
 
 hash_t PropositionalRegExp::compute_hash_() const {
-  // TODO
-  return 0;
+  hash_t seed = TypeID::t_PropositionalRegExp;
+  hash_combine<Basic>(seed, *arg_);
+  return seed;
 }
 
 std::shared_ptr<const PropositionalFormula>
@@ -246,7 +248,35 @@ int PropositionalRegExp::compare(const Basic &o) const {
       *dynamic_cast<const PropositionalRegExp &>(o).get_arg());
 }
 
-bool PropositionalRegExp::is_canonical(const set_formulas &container_) const {
+bool PropositionalRegExp::is_canonical(const PropositionalFormula &f) const {
+  // TODO
+  return true;
+}
+
+TestRegExp::TestRegExp(std::shared_ptr<const LDLfFormula> f)
+    : arg_{std::move(f)} {
+  this->type_code_ = type_code_id;
+}
+
+hash_t TestRegExp::compute_hash_() const {
+  hash_t seed = TypeID::t_TestRegExp;
+  hash_combine<Basic>(seed, *arg_);
+  return seed;
+}
+
+std::shared_ptr<const LDLfFormula> TestRegExp::get_arg() const { return arg_; }
+
+bool TestRegExp::is_equal(const Basic &o) const {
+  return is_a<TestRegExp>(o) and
+         eq(*arg_, *dynamic_cast<const TestRegExp &>(o).get_arg());
+}
+
+int TestRegExp::compare(const Basic &o) const {
+  assert(is_a<TestRegExp>(o));
+  return arg_->compare_(*dynamic_cast<const TestRegExp &>(o).get_arg());
+}
+
+bool TestRegExp::is_canonical(const LDLfFormula &f) const {
   // TODO
   return true;
 }
