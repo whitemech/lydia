@@ -117,7 +117,7 @@ void AtomsVisitor::visit(const SequenceRegExp &x) {
   result = atoms_result;
 }
 
-void AtomsVisitor::visit(const StarRegExp &) {}
+void AtomsVisitor::visit(const StarRegExp &x) { result = apply(*x.get_arg()); }
 
 void AtomsVisitor::visit(const PropositionalRegExp &r) {
   result = apply(*r.get_arg());

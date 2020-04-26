@@ -192,23 +192,6 @@ std::shared_ptr<const LDLfFormula> LDLfNot::logical_not() const {
   return this->get_arg();
 }
 
-hash_t QuotedFormula::compute_hash_() const {
-  // TODO is this correct? shouldn't be combined with TypeID?
-  return this->formula->compute_hash_();
-}
-
-int QuotedFormula::compare(const Basic &rhs) const {
-  assert(is_a<QuotedFormula>(rhs));
-  return this->formula->compare(
-      *dynamic_cast<const QuotedFormula &>(rhs).formula);
-}
-
-bool QuotedFormula::is_equal(const Basic &rhs) const {
-  return is_a<QuotedFormula>(rhs) and
-         this->formula->is_equal(
-             *dynamic_cast<const QuotedFormula &>(rhs).formula);
-}
-
 hash_t LDLfTemporal::compute_hash_() const {
   hash_t seed = this->get_type_code();
   hash_combine<Basic>(seed, *this->get_regex());
@@ -393,6 +376,108 @@ int SequenceRegExp::compare(const Basic &o) const {
   assert(is_a<SequenceRegExp>(o));
   return unified_compare(
       container_, dynamic_cast<const SequenceRegExp &>(o).get_container());
+}
+
+StarRegExp::StarRegExp(regex_ptr arg) : arg_{std::move(arg)} {
+  this->type_code_ = type_code_id;
+}
+
+bool StarRegExp::is_canonical(const set_regex &args) const { return true; }
+
+hash_t StarRegExp::compute_hash_() const {
+  hash_t seed = TypeID::t_StarRegExp;
+  hash_combine<Basic>(seed, *arg_);
+  return seed;
+}
+
+const regex_ptr &StarRegExp::get_arg() const { return arg_; }
+
+bool StarRegExp::is_equal(const Basic &o) const {
+  return is_a<StarRegExp>(o) and
+         eq(*arg_, *dynamic_cast<const StarRegExp &>(o).get_arg());
+}
+
+int StarRegExp::compare(const Basic &o) const {
+  assert(is_a<StarRegExp>(o));
+  return arg_->compare_(*dynamic_cast<const StarRegExp &>(o).get_arg());
+}
+
+LDLfF::LDLfF(const LDLfFormula &formula) : arg_{formula} {
+  this->type_code_ = type_code_id;
+}
+
+hash_t LDLfF::compute_hash_() const {
+  hash_t seed = TypeID::t_LDLfF;
+  hash_combine<Basic>(seed, *this);
+  return seed;
+}
+
+bool LDLfF::is_canonical(const set_regex &args) const { return true; }
+
+ldlf_ptr LDLfF::logical_not() const {
+  return std::make_shared<LDLfT>(*this->get_arg().logical_not());
+}
+
+const LDLfFormula &LDLfF::get_arg() const { return this->arg_; }
+
+bool LDLfF::is_equal(const Basic &rhs) const {
+  return is_a<LDLfF>(rhs) and
+         eq(arg_, dynamic_cast<const LDLfF &>(rhs).get_arg());
+}
+
+int LDLfF::compare(const Basic &rhs) const {
+  assert(is_a<LDLfF>(rhs));
+  return arg_.compare_(dynamic_cast<const LDLfF &>(rhs).get_arg());
+}
+
+LDLfT::LDLfT(const LDLfFormula &formula) : arg_{formula} {
+  this->type_code_ = type_code_id;
+}
+
+hash_t LDLfT::compute_hash_() const {
+  hash_t seed = TypeID::t_LDLfT;
+  hash_combine<Basic>(seed, *this);
+  return seed;
+}
+
+bool LDLfT::is_canonical(const set_regex &args) const { return true; }
+
+const LDLfFormula &LDLfT::get_arg() const { return this->arg_; }
+
+ldlf_ptr LDLfT::logical_not() const {
+  return std::make_shared<LDLfF>(*this->get_arg().logical_not());
+}
+
+bool LDLfT::is_equal(const Basic &rhs) const {
+  return is_a<LDLfT>(rhs) and
+         eq(arg_, dynamic_cast<const LDLfT &>(rhs).get_arg());
+}
+
+int LDLfT::compare(const Basic &rhs) const {
+  assert(is_a<LDLfT>(rhs));
+  return arg_.compare_(dynamic_cast<const LDLfT &>(rhs).get_arg());
+}
+
+QuotedFormula::QuotedFormula(ldlf_ptr formula) : formula{std::move(formula)} {
+  this->type_code_ = type_code_id;
+}
+
+hash_t QuotedFormula::compute_hash_() const {
+  hash_t seed = TypeID::t_QuotedFormula;
+  hash_combine<Basic>(seed, *this->formula);
+  return seed;
+}
+
+int QuotedFormula::compare(const Basic &rhs) const {
+  assert(is_a<QuotedFormula>(rhs));
+  return this->formula->compare(
+      *dynamic_cast<const QuotedFormula &>(rhs).formula);
+}
+
+bool QuotedFormula::is_equal(const Basic &rhs) const {
+  return is_a<QuotedFormula>(rhs) and
+         this->formula->is_equal(
+             *dynamic_cast<const QuotedFormula &>(rhs).formula);
 }
 
 std::shared_ptr<const QuotedFormula> quote(const ldlf_ptr &p) {

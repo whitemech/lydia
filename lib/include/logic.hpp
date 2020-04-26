@@ -206,7 +206,61 @@ public:
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
 };
-class StarRegExp : public RegExp {};
+
+class StarRegExp : public RegExp {
+private:
+  const regex_ptr arg_;
+
+public:
+  const static TypeID type_code_id = TypeID::t_StarRegExp;
+  explicit StarRegExp(regex_ptr arg);
+  void accept(Visitor &v) const override;
+  bool is_canonical(const set_regex &args) const;
+  hash_t compute_hash_() const override;
+  const regex_ptr &get_arg() const;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+};
+
+/*
+ * Auxiliary construct for the delta function.
+ */
+class LDLfF : public LDLfFormula {
+private:
+  const LDLfFormula &arg_;
+
+protected:
+public:
+  const static TypeID type_code_id = TypeID::t_LDLfF;
+  explicit LDLfF(const LDLfFormula &formula);
+  void accept(Visitor &v) const override;
+  bool is_canonical(const set_regex &args) const;
+  hash_t compute_hash_() const override;
+  const LDLfFormula &get_arg() const;
+  int compare(const Basic &rhs) const override;
+  bool is_equal(const Basic &rhs) const override;
+  ldlf_ptr logical_not() const override;
+};
+
+/*
+ * Auxiliary construct for the delta function.
+ */
+class LDLfT : public LDLfFormula {
+private:
+  const LDLfFormula &arg_;
+
+protected:
+public:
+  const static TypeID type_code_id = TypeID::t_LDLfT;
+  explicit LDLfT(const LDLfFormula &formula);
+  void accept(Visitor &v) const override;
+  bool is_canonical(const set_regex &args) const;
+  hash_t compute_hash_() const override;
+  const LDLfFormula &get_arg() const;
+  int compare(const Basic &rhs) const override;
+  bool is_equal(const Basic &rhs) const override;
+  ldlf_ptr logical_not() const override;
+};
 
 class QuotedFormula : public Basic {
 private:
@@ -219,9 +273,7 @@ public:
    * Quote an LDLf formula. We assume it is in NNF.
    * @param f: the LDLf formula.
    */
-  explicit QuotedFormula(const ldlf_ptr &formula) : formula{formula} {
-    this->type_code_ = TypeID::t_QuotedFormula;
-  }
+  explicit QuotedFormula(ldlf_ptr formula);
 
   void accept(Visitor &v) const override;
   hash_t compute_hash_() const override;

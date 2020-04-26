@@ -34,6 +34,7 @@ void PropositionalRegExp::accept(Visitor &v) const { v.visit(*this); }
 void TestRegExp::accept(Visitor &v) const { v.visit(*this); }
 void UnionRegExp::accept(Visitor &v) const { v.visit(*this); }
 void SequenceRegExp::accept(Visitor &v) const { v.visit(*this); }
+void StarRegExp::accept(Visitor &v) const { v.visit(*this); }
 
 // TODO add other accept methods
 
@@ -44,6 +45,8 @@ void PropositionalAnd::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalOr::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalNot::accept(Visitor &v) const { v.visit(*this); }
 
+void LDLfF::accept(Visitor &v) const { v.visit(*this); }
+void LDLfT::accept(Visitor &v) const { v.visit(*this); }
 void QuotedFormula::accept(Visitor &v) const { v.visit(*this); }
 
 } // namespace lydia

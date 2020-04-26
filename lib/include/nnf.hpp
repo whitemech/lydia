@@ -56,6 +56,8 @@ public:
   void visit(const PropositionalNot &) override{};
 
   void visit(const QuotedFormula &) override{};
+  void visit(const LDLfF &) override;
+  void visit(const LDLfT &) override;
 
   std::shared_ptr<const LDLfFormula> apply(const LDLfFormula &b);
   std::shared_ptr<const RegExp> apply(const RegExp &b);

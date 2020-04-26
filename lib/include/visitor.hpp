@@ -49,6 +49,8 @@ public:
 
   virtual void visit(const Symbol &){};
   virtual void visit(const QuotedFormula &){};
+  virtual void visit(const LDLfF &){};
+  virtual void visit(const LDLfT &){};
 };
 
 } // namespace lydia

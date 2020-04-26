@@ -49,6 +49,8 @@ class PropositionalTrue;
 class PropositionalFalse;
 class PropositionalAtom;
 class QuotedFormula;
+class LDLfF;
+class LDLfT;
 class PropositionalAnd;
 class PropositionalOr;
 class PropositionalNot;

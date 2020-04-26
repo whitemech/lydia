@@ -291,7 +291,7 @@ TEST_CASE("Translate <{true}ff?>tt", "[translate]") {
   REQUIRE(!my_dfa->accepts(trace{false_, false_, false_}));
 }
 
-TEST_CASE("Translate <a + b>tt", "[translate]") {
+TEST_CASE("Translate <a plus b>tt", "[translate]") {
   std::string formula_name = "<a + b>tt";
   auto a = std::make_shared<const PropositionalAtom>("a");
   auto b = std::make_shared<const PropositionalAtom>("b");
@@ -325,7 +325,7 @@ TEST_CASE("Translate <a + b>tt", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{ab_}));
 }
 
-TEST_CASE("Translate {a + b}ff", "[translate]") {
+TEST_CASE("Translate {a plus b}ff", "[translate]") {
   std::string formula_name = "[a + b]ff";
   auto a = std::make_shared<const PropositionalAtom>("a");
   auto b = std::make_shared<const PropositionalAtom>("b");
@@ -427,6 +427,56 @@ TEST_CASE("Translate {a ; b}ff", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{ab_}));
   REQUIRE(!my_dfa->accepts(trace{a_, b_}));
   REQUIRE(!my_dfa->accepts(trace{a_, b_, e}));
+}
+
+TEST_CASE("Translate <a*>tt", "[translate]") {
+  std::string formula_name = "<a*>tt";
+  auto a = std::make_shared<const PropositionalAtom>("a");
+  auto regex_a = std::make_shared<const PropositionalRegExp>(a);
+  auto regex_star_a = std::make_shared<const StarRegExp>(regex_a);
+  auto tt = boolean(true);
+  auto diamond_formula_a_tt = std::make_shared<LDLfDiamond>(regex_star_a, tt);
+
+  auto *my_dfa = to_dfa(*diamond_formula_a_tt);
+
+  // print the DFA
+  dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
+
+  auto e = interpretation{0};
+  auto a_ = interpretation{1};
+  REQUIRE(my_dfa->accepts(trace{}));
+  REQUIRE(my_dfa->accepts(trace{e}));
+  REQUIRE(my_dfa->accepts(trace{a_}));
+  REQUIRE(my_dfa->accepts(trace{e, e}));
+  REQUIRE(my_dfa->accepts(trace{e, a_}));
+  REQUIRE(my_dfa->accepts(trace{a_, e}));
+  REQUIRE(my_dfa->accepts(trace{a_, a_}));
+  REQUIRE(my_dfa->accepts(trace{e, e, e}));
+}
+
+TEST_CASE("Translate {a*}tt", "[translate]") {
+  std::string formula_name = "[a*]tt";
+  auto a = std::make_shared<const PropositionalAtom>("a");
+  auto regex_a = std::make_shared<const PropositionalRegExp>(a);
+  auto regex_star_a = std::make_shared<const StarRegExp>(regex_a);
+  auto tt = boolean(true);
+  auto box_formula_a_star_tt = std::make_shared<LDLfBox>(regex_star_a, tt);
+
+  auto *my_dfa = to_dfa(*box_formula_a_star_tt);
+
+  // print the DFA
+  dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
+
+  auto e = interpretation{0};
+  auto a_ = interpretation{1};
+  REQUIRE(my_dfa->accepts(trace{}));
+  REQUIRE(my_dfa->accepts(trace{e}));
+  REQUIRE(my_dfa->accepts(trace{a_}));
+  REQUIRE(my_dfa->accepts(trace{e, e}));
+  REQUIRE(my_dfa->accepts(trace{e, a_}));
+  REQUIRE(my_dfa->accepts(trace{a_, e}));
+  REQUIRE(my_dfa->accepts(trace{a_, a_}));
+  REQUIRE(my_dfa->accepts(trace{e, e, e}));
 }
 
 } // namespace whitemech::lydia::Test

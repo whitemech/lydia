@@ -73,6 +73,8 @@ public:
   void visit(const PropositionalNot &) override{};
 
   void visit(const QuotedFormula &) override{};
+  void visit(const LDLfF &) override;
+  void visit(const LDLfT &) override;
 
   std::shared_ptr<const PropositionalFormula> apply(const LDLfFormula &b);
 };
@@ -123,6 +125,37 @@ public:
   void visit(const SequenceRegExp &) override;
   void visit(const StarRegExp &) override;
   std::shared_ptr<const PropositionalFormula> apply(const RegExp &b);
+};
+
+/*
+ * Expand the LDLfF and LDLfT placeholders.
+ *
+ * This is an auxiliary visitor for the translation algorithm.
+ * (placeholders should only occur in the body)
+ */
+class ExpandVisitor : public Visitor {
+protected:
+  std::shared_ptr<const LDLfFormula> result;
+  std::shared_ptr<const RegExp> regex_result;
+
+public:
+  void visit(const LDLfBooleanAtom &) override;
+  void visit(const LDLfAnd &) override;
+  void visit(const LDLfOr &) override;
+  void visit(const LDLfNot &) override;
+  void visit(const LDLfDiamond &) override;
+  void visit(const LDLfBox &) override;
+
+  void visit(const PropositionalRegExp &) override;
+  void visit(const TestRegExp &) override;
+  void visit(const UnionRegExp &) override;
+  void visit(const SequenceRegExp &) override;
+  void visit(const StarRegExp &) override;
+
+  void visit(const LDLfF &) override;
+  void visit(const LDLfT &) override;
+  std::shared_ptr<const LDLfFormula> apply(const LDLfFormula &f);
+  std::shared_ptr<const RegExp> apply(const RegExp &f);
 };
 
 /*!

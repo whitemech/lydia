@@ -83,7 +83,13 @@ void NNFTransformer::visit(const SequenceRegExp &x) {
   regex_result = std::make_shared<SequenceRegExp>(new_container);
 }
 
-void NNFTransformer::visit(const StarRegExp &) {}
+void NNFTransformer::visit(const StarRegExp &x) {
+  regex_result = std::make_shared<StarRegExp>(apply(*x.get_arg()));
+}
+
+void NNFTransformer::visit(const LDLfF &x) { result = apply(x.get_arg()); }
+
+void NNFTransformer::visit(const LDLfT &x) { result = apply(x.get_arg()); }
 
 std::shared_ptr<const LDLfFormula> NNFTransformer::apply(const LDLfFormula &b) {
   b.accept(*this);
