@@ -108,7 +108,14 @@ void AtomsVisitor::visit(const UnionRegExp &x) {
   result = atoms_result;
 }
 
-void AtomsVisitor::visit(const SequenceRegExp &) {}
+void AtomsVisitor::visit(const SequenceRegExp &x) {
+  set_atoms_ptr atoms_result, tmp;
+  for (auto &a : x.get_container()) {
+    tmp = apply(*a);
+    atoms_result.insert(tmp.begin(), tmp.end());
+  }
+  result = atoms_result;
+}
 
 void AtomsVisitor::visit(const StarRegExp &) {}
 

@@ -340,11 +340,11 @@ bool TestRegExp::is_canonical(const LDLfFormula &f) const {
   return true;
 }
 
-UnionRegExp::UnionRegExp(const set_regexes &args) : container_{args} {
+UnionRegExp::UnionRegExp(const set_regex &args) : container_{args} {
   this->type_code_ = type_code_id;
 }
 
-bool UnionRegExp::is_canonical(const set_regexes &args) const { return true; }
+bool UnionRegExp::is_canonical(const set_regex &args) const { return true; }
 
 hash_t UnionRegExp::compute_hash_() const {
   hash_t seed = TypeID::t_UnionRegExp;
@@ -353,7 +353,7 @@ hash_t UnionRegExp::compute_hash_() const {
   return seed;
 }
 
-const set_regexes &UnionRegExp::get_container() const { return container_; }
+const set_regex &UnionRegExp::get_container() const { return container_; }
 
 bool UnionRegExp::is_equal(const Basic &o) const {
   return is_a<UnionRegExp>(o) and
@@ -365,6 +365,34 @@ int UnionRegExp::compare(const Basic &o) const {
   assert(is_a<UnionRegExp>(o));
   return unified_compare(container_,
                          dynamic_cast<const UnionRegExp &>(o).get_container());
+}
+
+SequenceRegExp::SequenceRegExp(const vec_regex &args)
+    : container_{std::move(args)} {
+  this->type_code_ = type_code_id;
+}
+
+bool SequenceRegExp::is_canonical(const set_regex &args) const { return true; }
+
+hash_t SequenceRegExp::compute_hash_() const {
+  hash_t seed = TypeID::t_SequenceRegExp;
+  for (const auto &a : container_)
+    hash_combine<Basic>(seed, *a);
+  return seed;
+}
+
+const vec_regex &SequenceRegExp::get_container() const { return container_; }
+
+bool SequenceRegExp::is_equal(const Basic &o) const {
+  return is_a<SequenceRegExp>(o) and
+         unified_eq(container_,
+                    dynamic_cast<const SequenceRegExp &>(o).get_container());
+}
+
+int SequenceRegExp::compare(const Basic &o) const {
+  assert(is_a<SequenceRegExp>(o));
+  return unified_compare(
+      container_, dynamic_cast<const SequenceRegExp &>(o).get_container());
 }
 
 std::shared_ptr<const QuotedFormula> quote(const ldlf_ptr &p) {

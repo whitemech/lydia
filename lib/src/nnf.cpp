@@ -67,14 +67,21 @@ void NNFTransformer::visit(const TestRegExp &x) {
 
 void NNFTransformer::visit(const UnionRegExp &x) {
   auto container = x.get_container();
-  set_regexes new_container;
+  set_regex new_container;
   for (auto &a : container) {
     new_container.insert(apply(*a));
   }
   regex_result = std::make_shared<UnionRegExp>(new_container);
 }
 
-void NNFTransformer::visit(const SequenceRegExp &) {}
+void NNFTransformer::visit(const SequenceRegExp &x) {
+  auto container = x.get_container();
+  vec_regex new_container;
+  for (auto &a : container) {
+    new_container.push_back(apply(*a));
+  }
+  regex_result = std::make_shared<SequenceRegExp>(new_container);
+}
 
 void NNFTransformer::visit(const StarRegExp &) {}
 

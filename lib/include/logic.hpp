@@ -179,20 +179,33 @@ public:
 
 class UnionRegExp : public RegExp {
 private:
-  const set_regexes container_;
+  const set_regex container_;
 
 public:
   const static TypeID type_code_id = TypeID::t_UnionRegExp;
-  explicit UnionRegExp(const set_regexes &args);
+  explicit UnionRegExp(const set_regex &args);
   void accept(Visitor &v) const override;
-  bool is_canonical(const set_regexes &args) const;
+  bool is_canonical(const set_regex &args) const;
   hash_t compute_hash_() const override;
-  const set_regexes &get_container() const;
+  const set_regex &get_container() const;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
 };
 
-class SequenceRegExp : public RegExp {};
+class SequenceRegExp : public RegExp {
+private:
+  const vec_regex container_;
+
+public:
+  const static TypeID type_code_id = TypeID::t_SequenceRegExp;
+  explicit SequenceRegExp(const vec_regex &args);
+  void accept(Visitor &v) const override;
+  bool is_canonical(const set_regex &args) const;
+  hash_t compute_hash_() const override;
+  const vec_regex &get_container() const;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+};
 class StarRegExp : public RegExp {};
 
 class QuotedFormula : public Basic {

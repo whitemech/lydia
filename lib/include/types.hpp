@@ -88,9 +88,8 @@ typedef std::vector<std::shared_ptr<const PropositionalFormula>>
 typedef std::set<std::shared_ptr<const PropositionalFormula>, SharedComparator>
     set_prop_formulas;
 typedef std::shared_ptr<const RegExp> regex_ptr;
-typedef std::set<regex_ptr, SharedComparator> set_regexes;
-typedef std::vector<std::shared_ptr<const RegExp>, SharedComparator>
-    vec_regexes;
+typedef std::set<regex_ptr, SharedComparator> set_regex;
+typedef std::vector<regex_ptr> vec_regex;
 typedef std::shared_ptr<const NFAState> nfa_state_ptr;
 typedef std::shared_ptr<const DFAState> dfa_state_ptr;
 typedef std::shared_ptr<tuple_dfa_transition> dfa_transition_ptr;

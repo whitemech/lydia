@@ -33,6 +33,7 @@ void LDLfBox::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalRegExp::accept(Visitor &v) const { v.visit(*this); }
 void TestRegExp::accept(Visitor &v) const { v.visit(*this); }
 void UnionRegExp::accept(Visitor &v) const { v.visit(*this); }
+void SequenceRegExp::accept(Visitor &v) const { v.visit(*this); }
 
 // TODO add other accept methods
 

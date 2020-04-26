@@ -117,7 +117,20 @@ void DeltaDiamondRegExpVisitor::visit(const UnionRegExp &r) {
   result = std::make_shared<PropositionalOr>(args);
 }
 
-void DeltaDiamondRegExpVisitor::visit(const SequenceRegExp &) {}
+void DeltaDiamondRegExpVisitor::visit(const SequenceRegExp &r) {
+  const regex_ptr head = r.get_container().front();
+  regex_ptr tail;
+  if (r.get_container().size() == 2) {
+    tail = r.get_container().back();
+  } else {
+    tail = std::make_shared<SequenceRegExp>(
+        vec_regex(r.get_container().begin() + 1, r.get_container().end()));
+  }
+  ldlf_ptr ldlf_tail =
+      std::make_shared<LDLfDiamond>(tail, formula.get_formula());
+  result = DeltaVisitor(prop_interpretation, epsilon)
+               .apply(LDLfDiamond(head, ldlf_tail));
+}
 
 void DeltaDiamondRegExpVisitor::visit(const StarRegExp &) {}
 
@@ -161,7 +174,19 @@ void DeltaBoxRegExpVisitor::visit(const UnionRegExp &r) {
   result = std::make_shared<PropositionalAnd>(args);
 }
 
-void DeltaBoxRegExpVisitor::visit(const SequenceRegExp &) {}
+void DeltaBoxRegExpVisitor::visit(const SequenceRegExp &r) {
+  const regex_ptr head = r.get_container().front();
+  regex_ptr tail;
+  if (r.get_container().size() == 2) {
+    tail = r.get_container().back();
+  } else {
+    tail = std::make_shared<SequenceRegExp>(
+        vec_regex(r.get_container().begin() + 1, r.get_container().end()));
+  }
+  ldlf_ptr ldlf_tail = std::make_shared<LDLfBox>(tail, formula.get_formula());
+  result = DeltaVisitor(prop_interpretation, epsilon)
+               .apply(LDLfBox(head, ldlf_tail));
+}
 
 void DeltaBoxRegExpVisitor::visit(const StarRegExp &) {}
 
