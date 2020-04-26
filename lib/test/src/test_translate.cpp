@@ -276,7 +276,7 @@ TEST_CASE("Translate <<true>tt?>tt", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{false_, false_, false_}));
 }
 
-TEST_CASE("Translate <[true]ff?>tt", "[translate]") {
+TEST_CASE("Translate <{true}ff?>tt", "[translate]") {
   std::string formula_name = "<[true]ff?>tt";
   auto true_ = std::make_shared<const PropositionalTrue>();
   auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
