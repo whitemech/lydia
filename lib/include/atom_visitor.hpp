@@ -31,6 +31,30 @@ protected:
 public:
   static Logger logger;
 
+  // callbacks for LDLf
+  void visit(const Symbol &) override{};
+  void visit(const LDLfBooleanAtom &) override{};
+  void visit(const LDLfAnd &) override{};
+  void visit(const LDLfOr &) override{};
+  void visit(const LDLfNot &) override{};
+  void visit(const LDLfDiamond<PropositionalRegExp> &x) override {
+    this->visit_temporal(x);
+  };
+  void visit(const LDLfDiamond<TestRegExp> &x) override {
+    this->visit_temporal(x);
+  };
+  void visit(const LDLfBox<PropositionalRegExp> &x) override {
+    this->visit_temporal(x);
+  };
+  void visit(const LDLfBox<TestRegExp> &x) override {
+    this->visit_temporal(x);
+  };
+
+  // callbacks for regular expressions
+  void visit(const PropositionalRegExp &) override;
+  void visit(const TestRegExp &) override;
+
+  // callbacks for propositional logic
   void visit(const PropositionalTrue &) override;
   void visit(const PropositionalFalse &) override;
   void visit(const PropositionalAtom &) override;
@@ -39,12 +63,16 @@ public:
   void visit(const PropositionalNot &) override;
 
   void visit(const QuotedFormula &) override{};
-  void visit(const Symbol &) override{};
-  void visit(const LDLfDiamond<PropositionalRegExp> &) override;
-  void visit(const LDLfBox<PropositionalRegExp> &) override;
+
+  template <class R> void inline visit_temporal(const LDLfTemporal<R> &x) {
+    result = apply(*x.get_regex());
+    auto y = apply(*x.get_formula());
+    result.insert(y.begin(), y.end());
+  }
 
   set_atoms_ptr apply(const PropositionalFormula &b);
   set_atoms_ptr apply(const LDLfFormula &b);
+  set_atoms_ptr apply(const RegExp &b);
 };
 
 set_atoms_ptr find_atoms(const LDLfFormula &);

@@ -53,15 +53,11 @@ void AtomsVisitor::visit(const PropositionalOr &x) {
 
 void AtomsVisitor::visit(const PropositionalNot &x) { apply(*x.get_arg()); }
 
-// TODO merge the two temporal formulas in one single template,
-//  and implement visit for each regex
-void AtomsVisitor::visit(const LDLfDiamond<PropositionalRegExp> &f) {
-  result = apply(*f.get_regex()->get_arg());
+void AtomsVisitor::visit(const PropositionalRegExp &r) {
+  result = apply(*r.get_arg());
 }
 
-void AtomsVisitor::visit(const LDLfBox<PropositionalRegExp> &f) {
-  result = apply(*f.get_regex()->get_arg());
-}
+void AtomsVisitor::visit(const TestRegExp &r) { result = apply(*r.get_arg()); }
 
 set_atoms_ptr AtomsVisitor::apply(const PropositionalFormula &b) {
   b.accept(*this);
@@ -69,6 +65,11 @@ set_atoms_ptr AtomsVisitor::apply(const PropositionalFormula &b) {
 }
 
 set_atoms_ptr AtomsVisitor::apply(const LDLfFormula &b) {
+  b.accept(*this);
+  return result;
+}
+
+set_atoms_ptr AtomsVisitor::apply(const RegExp &b) {
   b.accept(*this);
   return result;
 }

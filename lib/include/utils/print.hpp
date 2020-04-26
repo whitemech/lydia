@@ -32,12 +32,34 @@ protected:
   std::string result;
 
 public:
+  // callbacks for LDLf
   void visit(const Symbol &) override;
   void visit(const LDLfBooleanAtom &) override;
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
+  void visit(const LDLfDiamond<PropositionalRegExp> &) override{};
+  void visit(const LDLfDiamond<TestRegExp> &) override{};
+  void visit(const LDLfBox<PropositionalRegExp> &) override{};
+  void visit(const LDLfBox<TestRegExp> &) override{};
+  // TODO add all the combinations of temporal formulas + regular expression
+
+  // callbacks for regular expressions
+  void visit(const PropositionalRegExp &) override{};
+  void visit(const TestRegExp &) override{};
+
+  // callbacks for propositional logic
+  void visit(const PropositionalTrue &) override{};
+  void visit(const PropositionalFalse &) override{};
+  void visit(const PropositionalAtom &) override{};
+  void visit(const PropositionalAnd &) override{};
+  void visit(const PropositionalOr &) override{};
+  void visit(const PropositionalNot &) override{};
+
+  void visit(const QuotedFormula &) override{};
+
   template <class T> void visit(const LDLfDiamond<T> &);
+
   std::string apply(const vec_basic &v);
   std::string apply(const set_formulas &v);
   std::string apply(const Basic &b);

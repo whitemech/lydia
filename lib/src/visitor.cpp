@@ -27,10 +27,9 @@ void LDLfBooleanAtom::accept(Visitor &v) const { v.visit(*this); }
 void LDLfOr::accept(Visitor &v) const { v.visit(*this); }
 void LDLfAnd::accept(Visitor &v) const { v.visit(*this); }
 void LDLfNot::accept(Visitor &v) const { v.visit(*this); }
-// template<class T> void LDLfDiamond<T>::accept(Visitor &v) const {
-// v.visit(*this); }; template<> void
-// LDLfDiamond<PropositionalRegExp>::accept(Visitor &v) const { v.visit(*this);
-// };
+
+void PropositionalRegExp::accept(Visitor &v) const { v.visit(*this); }
+void TestRegExp::accept(Visitor &v) const { v.visit(*this); }
 
 // TODO add other accept methods
 

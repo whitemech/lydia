@@ -111,7 +111,11 @@ public:
 
 // TODO consider template check "enable_if_t" vs static_assert in constructor
 // template <class T, class=std::enable_if_t<std::is_base_of_v<RegExp, T>>>
-template <class T> class LDLfTemporal : public LDLfFormula {
+// template <class T>
+// template <typename T, typename = typename
+// std::enable_if<std::is_base_of<RegExp, T>::value, T>::type>
+// template <typename T, typename>
+template <typename T> class LDLfTemporal : public LDLfFormula {
 private:
   const ldlf_ptr arg_;
   const std::shared_ptr<const T> regex_;
@@ -123,6 +127,9 @@ public:
     static_assert(std::is_base_of<RegExp, T>::value,
                   "concrete RegExp class not derived from RegExp");
   }
+  explicit LDLfTemporal<T>(const std::shared_ptr<const RegExp> &regex,
+                           const ldlf_ptr &formula)
+      : regex_{std::dynamic_pointer_cast<const T>(regex)}, arg_{formula} {}
   ldlf_ptr get_formula() const { return arg_; };
   std::shared_ptr<const T> get_regex() const { return regex_; };
   hash_t compute_hash_() const override {
@@ -133,12 +140,21 @@ public:
   };
 };
 
-template <class T> class LDLfDiamond : public LDLfTemporal<T> {
+// template <class T>
+// template <typename T, typename = typename
+// std::enable_if<std::is_base_of<RegExp, T>::value, T>::type>
+// template <typename T, typename>
+template <typename T> class LDLfDiamond : public LDLfTemporal<T> {
 public:
   const static TypeID type_code_id = TypeID::t_LDLfDiamond;
   bool is_canonical(const set_formulas &container_) const;
   void accept(Visitor &v) const override { v.visit(*this); };
   explicit LDLfDiamond<T>(const std::shared_ptr<const T> &regex,
+                          const ldlf_ptr &formula)
+      : LDLfTemporal<T>(regex, formula) {
+    this->type_code_ = type_code_id;
+  }
+  explicit LDLfDiamond<T>(const std::shared_ptr<const RegExp> &regex,
                           const ldlf_ptr &formula)
       : LDLfTemporal<T>(regex, formula) {
     this->type_code_ = type_code_id;
@@ -160,17 +176,27 @@ public:
                            dynamic_cast<const LDLfDiamond &>(o).get_formula());
   };
   std::shared_ptr<const LDLfFormula> logical_not() const override {
-    return std::make_shared<LDLfBox<T>>(this->get_regex(),
-                                        this->get_formula()->logical_not());
+    //    return std::make_shared<LDLfBox<T>>(this->get_regex(),
+    //                                        this->get_formula()->logical_not());
+    return std::make_shared<LDLfDiamond<T>>(this->get_regex(),
+                                            this->get_formula()->logical_not());
   };
 };
 
-template <class T> class LDLfBox : public LDLfTemporal<T> {
+// template <typename T, typename = typename
+// std::enable_if<std::is_base_of<RegExp, T>::value, T>::type>
+// template <typename T, typename>
+template <typename T> class LDLfBox : public LDLfTemporal<T> {
 public:
   const static TypeID type_code_id = TypeID::t_LDLfBox;
   bool is_canonical(const set_formulas &container_) const;
   void accept(Visitor &v) const override { v.visit(*this); };
   explicit LDLfBox<T>(const std::shared_ptr<const T> &regex,
+                      const ldlf_ptr &formula)
+      : LDLfTemporal<T>(regex, formula) {
+    this->type_code_ = type_code_id;
+  }
+  explicit LDLfBox<T>(const std::shared_ptr<const RegExp> &regex,
                       const ldlf_ptr &formula)
       : LDLfTemporal<T>(regex, formula) {
     this->type_code_ = type_code_id;
@@ -205,11 +231,26 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_PropositionalRegExp;
-  void accept(Visitor &v) const override{};
+  void accept(Visitor &v) const override;
   explicit PropositionalRegExp(std::shared_ptr<const PropositionalFormula> f);
-  bool is_canonical(const set_formulas &container_) const;
+  bool is_canonical(const PropositionalFormula &f) const;
   hash_t compute_hash_() const override;
   std::shared_ptr<const PropositionalFormula> get_arg() const;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+};
+
+class TestRegExp : public RegExp {
+private:
+  const std::shared_ptr<const LDLfFormula> arg_;
+
+public:
+  const static TypeID type_code_id = TypeID::t_TestRegExp;
+  void accept(Visitor &v) const override;
+  explicit TestRegExp(std::shared_ptr<const LDLfFormula> f);
+  bool is_canonical(const LDLfFormula &f) const;
+  hash_t compute_hash_() const override;
+  std::shared_ptr<const LDLfFormula> get_arg() const;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
 };
