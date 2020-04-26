@@ -254,4 +254,49 @@ TEST_CASE("Translate {a}ff", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{e, e, e}));
 }
 
+TEST_CASE("Translate <<true>tt?>tt", "[translate]") {
+  std::string formula_name = "<<true>tt?>tt";
+  auto true_ = std::make_shared<const PropositionalTrue>();
+  auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
+  auto tt = boolean(true);
+  auto diamond_formula_true_tt =
+      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_true, tt);
+  auto regex_test = std::make_shared<const TestRegExp>(diamond_formula_true_tt);
+  auto diamond_test = std::make_shared<LDLfDiamond<TestRegExp>>(regex_test, tt);
+
+  auto *my_dfa = to_dfa(*diamond_test);
+
+  // print the DFA
+  dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
+
+  auto false_ = interpretation{};
+  REQUIRE(!my_dfa->accepts(trace{}));
+  REQUIRE(my_dfa->accepts(trace{false_}));
+  REQUIRE(my_dfa->accepts(trace{false_, false_}));
+  REQUIRE(my_dfa->accepts(trace{false_, false_, false_}));
+}
+
+TEST_CASE("Translate <[true]ff?>tt", "[translate]") {
+  std::string formula_name = "<[true]ff?>tt";
+  auto true_ = std::make_shared<const PropositionalTrue>();
+  auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
+  auto tt = boolean(true);
+  auto ff = boolean(false);
+  auto box_formula_true_ff =
+      std::make_shared<LDLfBox<PropositionalRegExp>>(regex_true, ff);
+  auto regex_test = std::make_shared<const TestRegExp>(box_formula_true_ff);
+  auto diamond_test = std::make_shared<LDLfDiamond<TestRegExp>>(regex_test, tt);
+
+  auto *my_dfa = to_dfa(*diamond_test);
+
+  // print the DFA
+  dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
+
+  auto false_ = interpretation{};
+  REQUIRE(my_dfa->accepts(trace{}));
+  REQUIRE(!my_dfa->accepts(trace{false_}));
+  REQUIRE(!my_dfa->accepts(trace{false_, false_}));
+  REQUIRE(!my_dfa->accepts(trace{false_, false_, false_}));
+}
+
 } // namespace whitemech::lydia::Test
