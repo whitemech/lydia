@@ -88,7 +88,8 @@ Afterwards, to run the tests:
 make test
 ```
 
-To configure the build for development, use the flag `-DENABLE_COVERAGE=ON`
+To configure the build for development, 
+use the flag `-DCMAKE_BUILD_TYPE=Debug`
 
 ## Scripts
 
@@ -105,6 +106,9 @@ fixes are needed or not.
 For building:
 - `build.sh`: for normal build
 - `build-dev.sh` for development build
+
+For benchmarking, use `./scripts/benchmark.sh` 
+(after `./scripts/build.sh`). 
 
 ## Docker development image
 

@@ -2,4 +2,4 @@
 
 set -e
 
-cd build && ./bin/lydiaBench
+cd build && make lydia-benchmark

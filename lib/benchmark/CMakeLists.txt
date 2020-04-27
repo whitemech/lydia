@@ -37,3 +37,8 @@ add_executable (${BENCHMARK_APP_NAME} ${BENCHMARK_SOURCE_FILES})
 
 #add the library
 target_link_libraries (${BENCHMARK_APP_NAME} ${LIB_NAME} Threads::Threads benchmark::benchmark ${CUDD_LIBRARIES})
+
+add_custom_target(lydia-benchmark
+        COMMAND ${CMAKE_BINARY_DIR}/bin/${BENCHMARK_APP_NAME}
+        DEPENDS lydia
+        COMMENT "Run benchmarks." VERBATIM)
