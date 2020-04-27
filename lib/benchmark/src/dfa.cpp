@@ -15,6 +15,32 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "logic.hpp"
+#include "translate.hpp"
+#include "utils/benchmark.hpp"
 #include <benchmark/benchmark.h>
+#include <random>
 
-BENCHMARK_MAIN();
+namespace whitemech::lydia::Benchmark {
+
+static void BM_cudd_manager_instantiation(benchmark::State &state) {
+  for (auto _ : state) {
+    auto mgr = new CUDD::Cudd();
+    escape(&mgr);
+    (void)mgr;
+  }
+}
+BENCHMARK(BM_cudd_manager_instantiation);
+
+static void BM_dfa_instantiation(benchmark::State &state) {
+  // we keep this outside since it's the operation that takes more time
+  auto mgr = new CUDD::Cudd();
+  for (auto _ : state) {
+    auto my_dfa = new dfa(mgr, 1, 1);
+    escape(&my_dfa);
+    (void)my_dfa;
+  }
+}
+BENCHMARK(BM_dfa_instantiation);
+
+} // namespace whitemech::lydia::Benchmark

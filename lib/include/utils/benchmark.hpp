@@ -1,3 +1,4 @@
+#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -15,6 +16,6 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <benchmark/benchmark.h>
+static void escape(void *p) { asm volatile("" : : "g"(p) : "memory"); }
 
-BENCHMARK_MAIN();
+static void clobber() { asm volatile("" : : : "memory"); }

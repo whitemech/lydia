@@ -35,7 +35,8 @@ namespace lydia {
  * @param formula the LDLf formula.
  * @return the equivalent DFA.
  */
-dfa *to_dfa(LDLfFormula &formula);
+dfa *to_dfa(const LDLfFormula &formula, CUDD::Cudd *mgr);
+dfa *to_dfa(const LDLfFormula &formula);
 
 /*!
  * This class represents an NFA state in

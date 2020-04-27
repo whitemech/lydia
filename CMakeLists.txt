@@ -33,8 +33,12 @@ set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# TODO introduce '-Werror' at some point
+# TODO introduce '-Werror', eventually
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
+
+# these cannot be added due to Flex/Bison
+#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -fno-exceptions")
+#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -fno-rtti")
 
 if (CMAKE_BUILD_TYPE EQUAL "Debug" AND ENABLE_COVERAGE)
     message("-- Code coverage enabled")
@@ -42,6 +46,10 @@ if (CMAKE_BUILD_TYPE EQUAL "Debug" AND ENABLE_COVERAGE)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -fprofile-arcs")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -ftest-coverage")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+endif()
+
+if (PROFILE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer")
 endif()
 
 # TODO include this eventually
