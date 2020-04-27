@@ -21,32 +21,43 @@
 set (LIB_NAME "lydia")
 
 # generate
-#BISON_TARGET(parser ./include/parser/parser.y ${CMAKE_CURRENT_BINARY_DIR}/include/parser/parser.c DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/include/parser/parser.h)
-#FLEX_TARGET(lexer ./include/parser/scanner.l ${CMAKE_CURRENT_BINARY_DIR}/include/parser/lexer.c DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/include/parser/lexer.h)
-#ADD_FLEX_BISON_DEPENDENCY(lexer parser)
+BISON_TARGET(mc_parser parser/mc_parser.yy ${CMAKE_CURRENT_SOURCE_DIR}/parser/mc_parser.tab.cc )
+FLEX_TARGET(mc_lexer parser/mc_lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/parser/mc_lexer.yy.cc)
+ADD_FLEX_BISON_DEPENDENCY(mc_lexer mc_parser)
 
 #configure directories
 set (LIBRARY_MODULE_PATH "${PROJECT_SOURCE_DIR}/lib")
 set (LIBRARY_SRC_PATH  "${LIBRARY_MODULE_PATH}/src" )
 set (LIBRARY_INCLUDE_PATH  "${LIBRARY_MODULE_PATH}/include")
+set (LIBRARY_PARSER_PATH  "${LIBRARY_MODULE_PATH}/parser")
 
 #set includes
 include_directories (${LIBRARY_INCLUDE_PATH} ${THIRD_PARTY_INCLUDE_PATH})
+include_directories (${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
 #set sources
 file (GLOB_RECURSE LIB_HEADER_FILES "${LIBRARY_INCLUDE_PATH}/*.hpp")
 file (GLOB_RECURSE LIB_SOURCE_FILES "${LIBRARY_SRC_PATH}/*.cpp")
-#set (LIB_PARSER_FILES ${BISON_parser_OUTPUTS} ${FLEX_lexer_OUTPUTS})
+#set (GLOB_RECURSE LIB_PARSER_FILES ${BISON_mc_parser_OUTPUTS} ${FLEX_mc_lexer_OUTPUTS})
 
 #set library
-# TODO: add ${LIB_PARSER_FILES}
-add_library (${LIB_NAME} STATIC ${LIB_SOURCE_FILES} ${LIB_HEADER_FILES})
+add_library (${LIB_NAME}
+        STATIC
+        ${LIB_SOURCE_FILES}
+        ${LIB_HEADER_FILES}
+        #${LIB_PARSER_FILES}
+        ${BISON_mc_parser_OUTPUTS}
+        ${FLEX_mc_lexer_OUTPUTS}
+        )
 
 target_link_libraries(${LIB_NAME} ${CUDD_LIBRARIES} ${GRAPHVIZ_LIBRARIES})
 
 #export vars
 set (LIBRARY_INCLUDE_PATH  ${LIBRARY_INCLUDE_PATH} PARENT_SCOPE)
 set (LIB_NAME ${LIB_NAME} PARENT_SCOPE)
+
+# add parser
+#add_subdirectory(parser)
 
 #test
 enable_testing ()
