@@ -358,7 +358,7 @@ TEST_CASE("Translate {a plus b}ff", "[translate]") {
   REQUIRE(!my_dfa->accepts(trace{ab_}));
 }
 
-TEST_CASE("Translate <a ; b>tt", "[translate]") {
+TEST_CASE("Translate <a , b>tt", "[translate]") {
   std::string formula_name = "<a ; b>tt";
   auto a = std::make_shared<const PropositionalAtom>("a");
   auto b = std::make_shared<const PropositionalAtom>("b");
@@ -394,7 +394,7 @@ TEST_CASE("Translate <a ; b>tt", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{a_, b_, e}));
 }
 
-TEST_CASE("Translate {a ; b}ff", "[translate]") {
+TEST_CASE("Translate {a , b}ff", "[translate]") {
   std::string formula_name = "[a ; b]ff";
   auto a = std::make_shared<const PropositionalAtom>("a");
   auto b = std::make_shared<const PropositionalAtom>("b");
