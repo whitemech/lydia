@@ -31,7 +31,7 @@ namespace lydia {
 
 class Scanner : public yyFlexLexer {
 public:
-  Scanner(std::istream *in) : yyFlexLexer(in){};
+  explicit Scanner(std::istream *in) : yyFlexLexer(in){};
   virtual ~Scanner(){};
 
   // get rid of override virtual function warning
