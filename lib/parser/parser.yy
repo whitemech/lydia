@@ -2,19 +2,22 @@
 %require  "3.0"
 %debug 
 %defines 
-%define api.namespace {MC}
+%define api.namespace {whitemech::lydia}
+
 /**
  * bison 3.3.2 change
  * %define parser_class_name to this, updated
  * should work for previous bison versions as 
  * well. -jcb 24 Jan 2020
  */
-%define api.parser.class {MC_Parser}
+%define api.parser.class {Parser}
 
 %code requires{
-   namespace MC {
-      class MC_Driver;
-      class MC_Scanner;
+   namespace whitemech {
+   namespace lydia {
+      class Driver;
+      class Scanner;
+   }
    }
 
 // The following definitions is missing when %locations isn't used
@@ -28,8 +31,8 @@
 
 }
 
-%parse-param { MC_Scanner  &scanner  }
-%parse-param { MC_Driver  &driver  }
+%parse-param { Scanner  &scanner  }
+%parse-param { Driver  &driver  }
 
 %code{
    #include <iostream>
@@ -75,8 +78,6 @@ item
 %%
 
 
-void 
-MC::MC_Parser::error( const location_type &l, const std::string &err_message )
-{
+void whitemech::lydia::Parser::error( const location_type &l, const std::string &err_message ) {
    std::cerr << "Error: " << err_message << " at " << l << "\n";
 }

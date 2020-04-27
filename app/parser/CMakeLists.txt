@@ -15,7 +15,7 @@
 # along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-# CMake build : main application
+# CMake build : parser application
 
 #configure variables
 set (APP_NAME "parser")
