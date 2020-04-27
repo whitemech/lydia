@@ -470,14 +470,13 @@ hash_t QuotedFormula::compute_hash_() const {
 
 int QuotedFormula::compare(const Basic &rhs) const {
   assert(is_a<QuotedFormula>(rhs));
-  return this->formula->compare(
+  return this->formula->compare_(
       *dynamic_cast<const QuotedFormula &>(rhs).formula);
 }
 
 bool QuotedFormula::is_equal(const Basic &rhs) const {
   return is_a<QuotedFormula>(rhs) and
-         this->formula->is_equal(
-             *dynamic_cast<const QuotedFormula &>(rhs).formula);
+         eq(*formula, *dynamic_cast<const QuotedFormula &>(rhs).formula);
 }
 
 std::shared_ptr<const QuotedFormula> quote(const ldlf_ptr &p) {

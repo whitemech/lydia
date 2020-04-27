@@ -479,4 +479,38 @@ TEST_CASE("Translate {a*}tt", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{e, e, e}));
 }
 
+TEST_CASE("Translate <a*, b>tt", "[translate]") {
+  std::string formula_name = "<a*; b>tt";
+  auto a = std::make_shared<const PropositionalAtom>("a");
+  auto b = std::make_shared<const PropositionalAtom>("b");
+  auto regex_a = std::make_shared<const PropositionalRegExp>(a);
+  auto regex_b = std::make_shared<const PropositionalRegExp>(b);
+  auto regex_star_a = std::make_shared<const StarRegExp>(regex_a);
+  auto regex_seq =
+      std::make_shared<const SequenceRegExp>(vec_regex{regex_star_a, regex_b});
+  auto tt = boolean(true);
+  auto diamond_formula = std::make_shared<LDLfDiamond>(regex_seq, tt);
+
+  auto *my_dfa = to_dfa(*diamond_formula);
+
+  // print the DFA
+  dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
+
+  auto e = interpretation{0, 0};
+  auto a_ = interpretation{1, 0};
+  auto b_ = interpretation{0, 1};
+  auto ab_ = interpretation{1, 1};
+  REQUIRE(!my_dfa->accepts(trace{}));
+  REQUIRE(!my_dfa->accepts(trace{e}));
+  REQUIRE(!my_dfa->accepts(trace{a_}));
+  REQUIRE(!my_dfa->accepts(trace{e, e}));
+  REQUIRE(!my_dfa->accepts(trace{e, a_}));
+  REQUIRE(!my_dfa->accepts(trace{a_, e}));
+  REQUIRE(!my_dfa->accepts(trace{a_, a_}));
+  REQUIRE(!my_dfa->accepts(trace{e, e, e}));
+  REQUIRE(my_dfa->accepts(trace{ab_}));
+  REQUIRE(my_dfa->accepts(trace{a_, b_}));
+  REQUIRE(my_dfa->accepts(trace{a_, b_, e}));
+}
+
 } // namespace whitemech::lydia::Test
