@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "mc_driver.hpp"
+#include "driver.hpp"
 
 int main( const int argc, const char **argv ) {
    /** check for the right # of arguments **/

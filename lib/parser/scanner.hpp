@@ -5,7 +5,7 @@
 #include <FlexLexer.h>
 #endif
 
-#include "mc_parser.tab.hh"
+#include "parser.tab.hh"
 #include "location.hh"
 
 namespace MC{

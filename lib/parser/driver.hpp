@@ -5,8 +5,8 @@
 #include <cstddef>
 #include <istream>
 
-#include "mc_scanner.hpp"
-#include "mc_parser.tab.hh"
+#include "parser.tab.hh"
+#include "scanner.hpp"
 
 namespace MC{
 

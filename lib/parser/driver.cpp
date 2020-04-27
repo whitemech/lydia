@@ -2,7 +2,7 @@
 #include <fstream>
 #include <cassert>
 
-#include "mc_driver.hpp"
+#include "driver.hpp"
 
 MC::MC_Driver::~MC_Driver()
 {
