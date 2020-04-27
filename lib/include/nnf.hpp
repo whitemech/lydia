@@ -37,22 +37,15 @@ public:
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
-  void visit(const LDLfDiamond<PropositionalRegExp> &x) override {
-    this->visit_temporal(x);
-  };
-  void visit(const LDLfDiamond<TestRegExp> &x) override {
-    this->visit_temporal(x);
-  };
-  void visit(const LDLfBox<PropositionalRegExp> &x) override {
-    this->visit_temporal(x);
-  };
-  void visit(const LDLfBox<TestRegExp> &x) override {
-    this->visit_temporal(x);
-  };
+  void visit(const LDLfDiamond &x) override;
+  void visit(const LDLfBox &x) override;
 
   // callbacks for regular expressions
   void visit(const PropositionalRegExp &) override;
   void visit(const TestRegExp &) override;
+  void visit(const UnionRegExp &) override;
+  void visit(const SequenceRegExp &) override;
+  void visit(const StarRegExp &) override;
 
   // callbacks for propositional logic
   void visit(const PropositionalTrue &) override{};
@@ -63,21 +56,11 @@ public:
   void visit(const PropositionalNot &) override{};
 
   void visit(const QuotedFormula &) override{};
+  void visit(const LDLfF &) override;
+  void visit(const LDLfT &) override;
 
   std::shared_ptr<const LDLfFormula> apply(const LDLfFormula &b);
   std::shared_ptr<const RegExp> apply(const RegExp &b);
-
-  template <typename T, typename = typename std::enable_if<
-                            std::is_base_of<RegExp, T>::value, T>::type>
-  void inline visit_temporal(const LDLfTemporal<T> &x) {
-    if (x.type_code_ == TypeID::t_LDLfDiamond) {
-      result = std::make_shared<LDLfDiamond<T>>(apply(*x.get_regex()),
-                                                apply(*x.get_formula()));
-    } else if (x.type_code_ == TypeID::t_LDLfBox) {
-      result = std::make_shared<LDLfBox<T>>(apply(*x.get_regex()),
-                                            apply(*x.get_formula()));
-    }
-  }
 };
 
 std::shared_ptr<const LDLfFormula> to_nnf(const LDLfFormula &);

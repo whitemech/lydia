@@ -192,32 +192,74 @@ std::shared_ptr<const LDLfFormula> LDLfNot::logical_not() const {
   return this->get_arg();
 }
 
-hash_t QuotedFormula::compute_hash_() const {
-  // TODO is this correct? shouldn't be combined with TypeID?
-  return this->formula->compute_hash_();
+hash_t LDLfTemporal::compute_hash_() const {
+  hash_t seed = this->get_type_code();
+  hash_combine<Basic>(seed, *this->get_regex());
+  hash_combine<Basic>(seed, *this->get_formula());
+  return seed;
+};
+
+LDLfDiamond::LDLfDiamond(const regex_ptr &regex, const ldlf_ptr &formula)
+    : LDLfTemporal(regex, formula) {
+  this->type_code_ = type_code_id;
 }
 
-int QuotedFormula::compare(const Basic &rhs) const {
-  assert(is_a<QuotedFormula>(rhs));
-  return this->formula->compare(rhs);
-}
-
-bool QuotedFormula::is_equal(const Basic &rhs) const {
-  return is_a<QuotedFormula>(rhs) and
-         this->formula->is_equal(
-             *dynamic_cast<const QuotedFormula &>(rhs).formula);
-}
-
-template <class T>
-bool LDLfDiamond<T>::is_canonical(const set_formulas &container_) const {
+bool LDLfDiamond::is_canonical(const set_formulas &container_) const {
   // TODO
   return true;
 }
 
-template <class T>
-bool LDLfBox<T>::is_canonical(const set_formulas &container_) const {
+bool LDLfDiamond::is_equal(const Basic &o) const {
+  return is_a<LDLfDiamond>(o) and
+         unified_eq(this->get_regex(),
+                    dynamic_cast<const LDLfDiamond &>(o).get_regex()) and
+         unified_eq(this->get_formula(),
+                    dynamic_cast<const LDLfDiamond &>(o).get_formula());
+}
+
+int LDLfDiamond::compare(const Basic &o) const {
+  auto regex_compare = unified_compare(
+      this->get_regex(), dynamic_cast<const LDLfDiamond &>(o).get_regex());
+  if (regex_compare != 0)
+    return regex_compare;
+  return unified_compare(this->get_formula(),
+                         dynamic_cast<const LDLfDiamond &>(o).get_formula());
+}
+
+std::shared_ptr<const LDLfFormula> LDLfDiamond::logical_not() const {
+  return std::make_shared<LDLfBox>(this->get_regex(),
+                                   this->get_formula()->logical_not());
+};
+
+LDLfBox::LDLfBox(const regex_ptr &regex, const ldlf_ptr &formula)
+    : LDLfTemporal(regex, formula) {
+  this->type_code_ = type_code_id;
+}
+
+bool LDLfBox::is_canonical(const set_formulas &container_) const {
   // TODO
   return true;
+}
+bool LDLfBox::is_equal(const Basic &o) const {
+  return is_a<LDLfBox>(o) and
+         unified_eq(this->get_regex(),
+                    dynamic_cast<const LDLfBox &>(o).get_regex()) and
+         unified_eq(this->get_formula(),
+                    dynamic_cast<const LDLfBox &>(o).get_formula());
+}
+
+int LDLfBox::compare(const Basic &o) const {
+  auto regex_compare = unified_compare(
+      this->get_regex(), dynamic_cast<const LDLfBox &>(o).get_regex());
+  if (regex_compare != 0)
+    return regex_compare;
+  return unified_compare(this->get_formula(),
+                         dynamic_cast<const LDLfBox &>(o).get_formula());
+}
+
+std::shared_ptr<const LDLfFormula> LDLfBox::logical_not() const {
+  return std::make_shared<LDLfDiamond>(this->get_regex(),
+                                       this->get_formula()->logical_not());
 }
 
 PropositionalRegExp::PropositionalRegExp(
@@ -279,6 +321,162 @@ int TestRegExp::compare(const Basic &o) const {
 bool TestRegExp::is_canonical(const LDLfFormula &f) const {
   // TODO
   return true;
+}
+
+UnionRegExp::UnionRegExp(const set_regex &args) : container_{args} {
+  this->type_code_ = type_code_id;
+}
+
+bool UnionRegExp::is_canonical(const set_regex &args) const { return true; }
+
+hash_t UnionRegExp::compute_hash_() const {
+  hash_t seed = TypeID::t_UnionRegExp;
+  for (const auto &a : container_)
+    hash_combine<Basic>(seed, *a);
+  return seed;
+}
+
+const set_regex &UnionRegExp::get_container() const { return container_; }
+
+bool UnionRegExp::is_equal(const Basic &o) const {
+  return is_a<UnionRegExp>(o) and
+         unified_eq(container_,
+                    dynamic_cast<const UnionRegExp &>(o).get_container());
+}
+
+int UnionRegExp::compare(const Basic &o) const {
+  assert(is_a<UnionRegExp>(o));
+  return unified_compare(container_,
+                         dynamic_cast<const UnionRegExp &>(o).get_container());
+}
+
+SequenceRegExp::SequenceRegExp(const vec_regex &args)
+    : container_{std::move(args)} {
+  this->type_code_ = type_code_id;
+}
+
+bool SequenceRegExp::is_canonical(const set_regex &args) const { return true; }
+
+hash_t SequenceRegExp::compute_hash_() const {
+  hash_t seed = TypeID::t_SequenceRegExp;
+  for (const auto &a : container_)
+    hash_combine<Basic>(seed, *a);
+  return seed;
+}
+
+const vec_regex &SequenceRegExp::get_container() const { return container_; }
+
+bool SequenceRegExp::is_equal(const Basic &o) const {
+  return is_a<SequenceRegExp>(o) and
+         unified_eq(container_,
+                    dynamic_cast<const SequenceRegExp &>(o).get_container());
+}
+
+int SequenceRegExp::compare(const Basic &o) const {
+  assert(is_a<SequenceRegExp>(o));
+  return unified_compare(
+      container_, dynamic_cast<const SequenceRegExp &>(o).get_container());
+}
+
+StarRegExp::StarRegExp(regex_ptr arg) : arg_{std::move(arg)} {
+  this->type_code_ = type_code_id;
+}
+
+bool StarRegExp::is_canonical(const set_regex &args) const { return true; }
+
+hash_t StarRegExp::compute_hash_() const {
+  hash_t seed = TypeID::t_StarRegExp;
+  hash_combine<Basic>(seed, *arg_);
+  return seed;
+}
+
+const regex_ptr &StarRegExp::get_arg() const { return arg_; }
+
+bool StarRegExp::is_equal(const Basic &o) const {
+  return is_a<StarRegExp>(o) and
+         eq(*arg_, *dynamic_cast<const StarRegExp &>(o).get_arg());
+}
+
+int StarRegExp::compare(const Basic &o) const {
+  assert(is_a<StarRegExp>(o));
+  return arg_->compare_(*dynamic_cast<const StarRegExp &>(o).get_arg());
+}
+
+LDLfF::LDLfF(const LDLfFormula &formula) : arg_{formula} {
+  this->type_code_ = type_code_id;
+}
+
+hash_t LDLfF::compute_hash_() const {
+  hash_t seed = TypeID::t_LDLfF;
+  hash_combine<Basic>(seed, *this);
+  return seed;
+}
+
+bool LDLfF::is_canonical(const set_regex &args) const { return true; }
+
+ldlf_ptr LDLfF::logical_not() const {
+  return std::make_shared<LDLfT>(*this->get_arg().logical_not());
+}
+
+const LDLfFormula &LDLfF::get_arg() const { return this->arg_; }
+
+bool LDLfF::is_equal(const Basic &rhs) const {
+  return is_a<LDLfF>(rhs) and
+         eq(arg_, dynamic_cast<const LDLfF &>(rhs).get_arg());
+}
+
+int LDLfF::compare(const Basic &rhs) const {
+  assert(is_a<LDLfF>(rhs));
+  return arg_.compare_(dynamic_cast<const LDLfF &>(rhs).get_arg());
+}
+
+LDLfT::LDLfT(const LDLfFormula &formula) : arg_{formula} {
+  this->type_code_ = type_code_id;
+}
+
+hash_t LDLfT::compute_hash_() const {
+  hash_t seed = TypeID::t_LDLfT;
+  hash_combine<Basic>(seed, *this);
+  return seed;
+}
+
+bool LDLfT::is_canonical(const set_regex &args) const { return true; }
+
+const LDLfFormula &LDLfT::get_arg() const { return this->arg_; }
+
+ldlf_ptr LDLfT::logical_not() const {
+  return std::make_shared<LDLfF>(*this->get_arg().logical_not());
+}
+
+bool LDLfT::is_equal(const Basic &rhs) const {
+  return is_a<LDLfT>(rhs) and
+         eq(arg_, dynamic_cast<const LDLfT &>(rhs).get_arg());
+}
+
+int LDLfT::compare(const Basic &rhs) const {
+  assert(is_a<LDLfT>(rhs));
+  return arg_.compare_(dynamic_cast<const LDLfT &>(rhs).get_arg());
+}
+
+QuotedFormula::QuotedFormula(ldlf_ptr formula) : formula{std::move(formula)} {
+  this->type_code_ = type_code_id;
+}
+
+hash_t QuotedFormula::compute_hash_() const {
+  hash_t seed = TypeID::t_QuotedFormula;
+  hash_combine<Basic>(seed, *this->formula);
+  return seed;
+}
+
+int QuotedFormula::compare(const Basic &rhs) const {
+  assert(is_a<QuotedFormula>(rhs));
+  return this->formula->compare_(
+      *dynamic_cast<const QuotedFormula &>(rhs).formula);
+}
+
+bool QuotedFormula::is_equal(const Basic &rhs) const {
+  return is_a<QuotedFormula>(rhs) and
+         eq(*formula, *dynamic_cast<const QuotedFormula &>(rhs).formula);
 }
 
 std::shared_ptr<const QuotedFormula> quote(const ldlf_ptr &p) {

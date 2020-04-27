@@ -47,14 +47,14 @@ void NNFTransformer::visit(const LDLfNot &x) {
   result = new_formula;
 }
 
-std::shared_ptr<const LDLfFormula> NNFTransformer::apply(const LDLfFormula &b) {
-  b.accept(*this);
-  return result;
+void NNFTransformer::visit(const LDLfDiamond &x) {
+  result = std::make_shared<LDLfDiamond>(apply(*x.get_regex()),
+                                         apply(*x.get_formula()));
 }
 
-std::shared_ptr<const RegExp> NNFTransformer::apply(const RegExp &b) {
-  b.accept(*this);
-  return regex_result;
+void NNFTransformer::visit(const LDLfBox &x) {
+  result =
+      std::make_shared<LDLfBox>(apply(*x.get_regex()), apply(*x.get_formula()));
 }
 
 void NNFTransformer::visit(const PropositionalRegExp &x) {
@@ -63,6 +63,42 @@ void NNFTransformer::visit(const PropositionalRegExp &x) {
 
 void NNFTransformer::visit(const TestRegExp &x) {
   regex_result = std::make_shared<TestRegExp>(apply(*x.get_arg()));
+}
+
+void NNFTransformer::visit(const UnionRegExp &x) {
+  auto container = x.get_container();
+  set_regex new_container;
+  for (auto &a : container) {
+    new_container.insert(apply(*a));
+  }
+  regex_result = std::make_shared<UnionRegExp>(new_container);
+}
+
+void NNFTransformer::visit(const SequenceRegExp &x) {
+  auto container = x.get_container();
+  vec_regex new_container;
+  for (auto &a : container) {
+    new_container.push_back(apply(*a));
+  }
+  regex_result = std::make_shared<SequenceRegExp>(new_container);
+}
+
+void NNFTransformer::visit(const StarRegExp &x) {
+  regex_result = std::make_shared<StarRegExp>(apply(*x.get_arg()));
+}
+
+void NNFTransformer::visit(const LDLfF &x) { result = apply(x.get_arg()); }
+
+void NNFTransformer::visit(const LDLfT &x) { result = apply(x.get_arg()); }
+
+std::shared_ptr<const LDLfFormula> NNFTransformer::apply(const LDLfFormula &b) {
+  b.accept(*this);
+  return result;
+}
+
+std::shared_ptr<const RegExp> NNFTransformer::apply(const RegExp &b) {
+  b.accept(*this);
+  return regex_result;
 }
 
 std::shared_ptr<const LDLfFormula> to_nnf(const LDLfFormula &x) {
