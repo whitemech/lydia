@@ -19,3 +19,6 @@ cd ..
 echo "========== Code coverage =========="
 gcovr -r . -e "third_party/*" --print-summary --html --html-details -o coverage.html
 gcovr -r . -e "third_party/*" --xml -o coverage.xml
+
+echo "========== Benchmark =========="
+./build/bin/lydiaBench
