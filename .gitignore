@@ -243,8 +243,11 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/vim,c++,code,linux,macos,cmake,clion,windows
 
-# custom
+# custom coverage
 coverage.xml
 coverage.html
 coverage.*.html
 
+# custom flex and bison
+lib/parser/*.cc
+lib/parser/*.hh
