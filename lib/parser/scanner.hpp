@@ -16,8 +16,8 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __MCSCANNER_HPP__
-#define __MCSCANNER_HPP__ 1
+#ifndef __SCANNER_HPP__
+#define __SCANNER_HPP__ 1
 
 #if !defined(yyFlexLexerOnce)
 #include <FlexLexer.h>
@@ -39,8 +39,8 @@ public:
 
   virtual int yylex(Parser::semantic_type *const lval,
                     Parser::location_type *location);
-  // YY_DECL defined in mc_lexer.l
-  // Method body created by flex in mc_lexer.yy.cc
+  // YY_DECL defined in lexer.l
+  // Method body created by flex in lexer.yy.cc
 
 private:
   /* yyval ptr */

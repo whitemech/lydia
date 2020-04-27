@@ -28,6 +28,7 @@ using token = whitemech::lydia::Parser::token;
 %option c++
 
 %%
+
 %{          /** Code executed at the beginning of yylex **/
             yylval = lval;
 %}
@@ -41,14 +42,14 @@ using token = whitemech::lydia::Parser::token;
             }
 
 [a-zA-Z]+   {
-               /**
+               /*
                 * Section 10.1.5.1 of the 3.0.2 Bison Manual says the 
                 * following should work:
                 * yylval.build( yytext );
                 * but it doesn't.
                 * ref: http://goo.gl/KLn0w2
                 */
-               yylval->build< std::string >( yytext );
+               yylval->build<std::string>(yytext);
                return( token::WORD );
             }
 

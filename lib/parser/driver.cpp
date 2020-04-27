@@ -38,16 +38,13 @@ void Driver::parse(const char *const filename) {
     exit(EXIT_FAILURE);
   }
   parse_helper(in_file);
-  return;
 }
 
 void Driver::parse(std::istream &stream) {
   if (!stream.good() && stream.eof()) {
     return;
   }
-  // else
   parse_helper(stream);
-  return;
 }
 
 void Driver::parse_helper(std::istream &stream) {

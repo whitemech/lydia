@@ -4,11 +4,10 @@
 %defines 
 %define api.namespace {whitemech::lydia}
 
-/**
- * bison 3.3.2 change
- * %define parser_class_name to this, updated
- * should work for previous bison versions as 
- * well. -jcb 24 Jan 2020
+/*
+ * bison 3.3.2 deprecates %define parser_class_name
+ * for %define api.parser.class {Parser}, but
+ * we want backward compatibility for bison 3.0.4.
  */
 %define parser_class_name {Parser}
 
@@ -78,6 +77,6 @@ item
 %%
 
 
-void whitemech::lydia::Parser::error( const location_type &l, const std::string &err_message ) {
+void whitemech::lydia::Parser::error(const location_type &l, const std::string &err_message) {
    std::cerr << "Error: " << err_message << " at " << l << "\n";
 }
