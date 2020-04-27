@@ -25,10 +25,10 @@ set (APP_MODULE_PATH "${PROJECT_SOURCE_DIR}/app/parser")
 set (APP_SRC_PATH  "${APP_MODULE_PATH}/src" )
 
 #set includes
-include_directories (${LIBRARY_INCLUDE_PATH} ${THIRD_PARTY_INCLUDE_PATH})
+include_directories (${LIBRARY_PARSER_PATH})
 
 #set sources
-file (GLOB APP_SOURCE_FILES "${APP_SRC_PATH}/*.cc")
+file (GLOB APP_SOURCE_FILES "${APP_SRC_PATH}/*.cpp")
 
 #set target executable
 add_executable (${APP_NAME} ${APP_SOURCE_FILES})
