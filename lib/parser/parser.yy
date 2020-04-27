@@ -10,7 +10,7 @@
  * should work for previous bison versions as 
  * well. -jcb 24 Jan 2020
  */
-%define api.parser.class {Parser}
+%define parser_class_name {Parser}
 
 %code requires{
    namespace whitemech {

@@ -17,12 +17,13 @@
 
 # CMake build : global project
 
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.10)
 
 project (Lydia
          VERSION 0.0.1
-         DESCRIPTION "Lydia is a tool for LDLf translation to DFA and for LDLf synthesis."
-         HOMEPAGE_URL https://github.com/whitemech/lydia.git)
+         LANGUAGES CXX
+         #HOMEPAGE_URL https://github.com/whitemech/lydia.git
+         DESCRIPTION "Lydia is a tool for LDLf translation to DFA and for LDLf synthesis.")
 
 set_property (GLOBAL PROPERTY USE_FOLDERS ON)
 
