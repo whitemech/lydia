@@ -60,15 +60,15 @@ TEST_CASE("binary vector/string to int", "[bin2state]") {
 }
 
 TEST_CASE("DFA to Graphviz", "[dfa_transform]") {
-  auto *mgr = new CUDD::Cudd();
-  dfa *my_dfa = new dfa(mgr, 1, 1);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = dfa(mgr, 1, 1);
 
-  my_dfa->add_state();
-  my_dfa->add_transition(0, interpretation_set{}, 1);
-  my_dfa->add_transition(1, interpretation_set{}, 1);
-  my_dfa->set_final_state(1, true);
+  my_dfa.add_state();
+  my_dfa.add_transition(0, interpretation_set{}, 1);
+  my_dfa.add_transition(1, interpretation_set{}, 1);
+  my_dfa.set_final_state(1, true);
 
-  dfa_to_graphviz(*my_dfa, "output.svg", "svg");
+  dfa_to_graphviz(my_dfa, "output.svg", "svg");
 }
 
 } // namespace whitemech::lydia::Test

@@ -25,29 +25,31 @@ namespace whitemech::lydia::Benchmark {
 
 static void BM_translate_boolean(benchmark::State &state) {
   // we keep this outside since it's the operation that takes more time
-  auto mgr = new CUDD::Cudd();
+  auto mgr =
+      CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
   auto x = LDLfBooleanAtom(true);
   for (auto _ : state) {
     auto my_dfa = to_dfa(x, mgr);
-    escape(my_dfa);
+    escape(&my_dfa);
     (void)my_dfa;
   }
 }
-// BENCHMARK(BM_translate_boolean);
+BENCHMARK(BM_translate_boolean);
 
 static void BM_translate_diamond(benchmark::State &state) {
   // we keep this outside since it's the operation that takes more time
-  auto mgr = new CUDD::Cudd();
+  auto mgr =
+      CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
   auto tt = std::make_shared<const LDLfBooleanAtom>(true);
   auto true_ = std::make_shared<const PropositionalTrue>();
   auto regex_true_ = std::make_shared<const PropositionalRegExp>(true_);
   auto diamond = LDLfDiamond(regex_true_, tt);
   for (auto _ : state) {
     auto my_dfa = to_dfa(diamond, mgr);
-    escape(my_dfa);
+    escape(&my_dfa);
     (void)my_dfa;
   }
 }
-// BENCHMARK(BM_translate_diamond);
+BENCHMARK(BM_translate_diamond);
 
 } // namespace whitemech::lydia::Benchmark

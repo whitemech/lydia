@@ -19,3 +19,6 @@
 static void escape(void *p) { asm volatile("" : : "g"(p) : "memory"); }
 
 static void clobber() { asm volatile("" : : : "memory"); }
+
+static const int BENCH_CUDD_UNIQUE_SLOTS = CUDD_UNIQUE_SLOTS;
+static const int BENCH_CUDD_CACHE_SLOTS = CUDD_CACHE_SLOTS;

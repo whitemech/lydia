@@ -38,10 +38,27 @@ public:
   int nb_states{};
   int nb_variables{};
 
+  CUDD::BDD finalstatesBDD;
+  /*!
+   * Store the BDD roots - LSB order, i.e.:
+   * b_{n-1}, ..., b_1, b_0
+   */
+  vec_bdd root_bdds;
+
+  /*!
+   * Store the BDD variables - LSB order, i.e.:
+   * b_{n-1}, ..., b_1, b_0, var_0, var_1, ... var_{m-1}
+   */
+  vec_bdd bddvars;
+
+  const CUDD::Cudd &mgr;
+
   dfa(const dfa &) = delete;
   dfa &operator=(const dfa &) = delete;
   dfa(dfa &&) = delete;
   dfa &operator=(dfa &&) = delete;
+
+  ~dfa();
 
   /*!
    * Initialize the DFA from scratch.
@@ -67,8 +84,7 @@ public:
    * @param nb_bits the maximum number of bits available.
    * @param nb_variables the number of variables to be used.
    */
-  dfa(CUDD::Cudd *mgr, int nb_bits, int nb_variables);
-  dfa(int nb_bits, int nb_variables);
+  dfa(const CUDD::Cudd &mgr, int nb_bits, int nb_variables);
 
   /*
    *
@@ -91,19 +107,9 @@ public:
    * @param behaviour the MONA behaviours
    * @param mona_bdd_nodes the shared multi-terminal BDD nodes (MONA DFA)
    */
-  dfa(CUDD::Cudd *mgr, const std::vector<std::string> &variables, int nb_states,
-      int initial_state, const std::vector<int> &final_states,
+  dfa(const CUDD::Cudd &mgr, const std::vector<std::string> &variables,
+      int nb_states, int initial_state, const std::vector<int> &final_states,
       const std::vector<int> &behaviour, std::vector<item> &mona_bdd_nodes);
-
-  /*
-   * The same constructor as above, but the manager
-   * will be instantiated in the constructor.
-   */
-  dfa(const std::vector<std::string> &variables, int nb_states,
-      int initial_state, const std::vector<int> &final_states,
-      const std::vector<int> &behaviour, std::vector<item> &smtbdd)
-      : dfa(new CUDD::Cudd(), variables, nb_states, initial_state, final_states,
-            behaviour, smtbdd) {}
 
   static Logger logger;
 
@@ -128,21 +134,6 @@ public:
   void dumpdot(CUDD::BDD &b, const std::string &filename);
   CUDD::BDD state2bdd(int s);
 
-  CUDD::BDD finalstatesBDD;
-  /*!
-   * Store the BDD roots - LSB order, i.e.:
-   * b_{n-1}, ..., b_1, b_0
-   */
-  vec_bdd root_bdds;
-
-  /*!
-   * Store the BDD variables - LSB order, i.e.:
-   * b_{n-1}, ..., b_1, b_0, var_0, var_1, ... var_{m-1}
-   */
-  vec_bdd bddvars;
-
-  const std::unique_ptr<CUDD::Cudd> mgr;
-
   /*!
    *
    * Parse a MONA DFA file.
@@ -154,8 +145,7 @@ public:
    * @param filename path to the MONA DFA file.
    * @return a raw pointer to a DFA.
    */
-  static dfa *read_from_file(const std::string &filename,
-                             CUDD::Cudd *mgr = nullptr);
+  static dfa read_from_file(const std::string &filename, const CUDD::Cudd &mgr);
 
   /*!
    * Check whether a word of propositional interpretations
