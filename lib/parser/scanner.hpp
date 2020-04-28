@@ -30,6 +30,10 @@ namespace whitemech {
 namespace lydia {
 
 class Scanner : public yyFlexLexer {
+private:
+  /* yyval ptr */
+  Parser::semantic_type *yylval = nullptr;
+
 public:
   explicit Scanner(std::istream *in) : yyFlexLexer(in){};
   virtual ~Scanner(){};
@@ -41,10 +45,6 @@ public:
                     Parser::location_type *location);
   // YY_DECL defined in lexer.l
   // Method body created by flex in lexer.yy.cc
-
-private:
-  /* yyval ptr */
-  Parser::semantic_type *yylval = nullptr;
 };
 
 } // namespace lydia

@@ -33,13 +33,19 @@ using token = whitemech::lydia::Parser::token;
             yylval = lval;
 %}
 
-[a-z]       {
-               return( token::LOWER );
-            }
+"&&"|"&"    { return token::AND; }
 
-[A-Z]       {
-               return( token::UPPER );
-            }
+"||"|"|"    { return token::OR; }
+
+"!"|"~"     { return token::NOT; }
+
+[a-z]       { return token::LOWER; }
+
+[A-Z]       { return token::UPPER; }
+
+(?i:tt)     { return token::TT; }
+
+(?i:ff)     { return token::FF; }
 
 [a-zA-Z]+   {
                /*
@@ -50,17 +56,17 @@ using token = whitemech::lydia::Parser::token;
                 * ref: http://goo.gl/KLn0w2
                 */
                yylval->build<std::string>(yytext);
-               return( token::WORD );
+               return token::WORD;
             }
 
 \n          {
                // Update line number
                loc->lines();
-               return( token::NEWLINE );
+               return token::NEWLINE;
             }
 
 .           {
-               return( token::CHAR );
+               return token::CHAR;
             }
 %%
 

@@ -103,8 +103,13 @@ void Driver::add_newline() {
 
 void Driver::add_char() { chars++; }
 
+std::shared_ptr<const LDLfFormula> Driver::add_LDLfBooleanAtom(const bool &flag) const {
+  return std::make_shared<LDLfBooleanAtom>(flag);
+}
+
 std::ostream &Driver::print(std::ostream &stream) {
   stream << red << "Results: " << norm << "\n";
+  stream << blue << "BooleanAtoms: " << norm << booleanAtoms << "\n";
   stream << blue << "Uppercase: " << norm << uppercase << "\n";
   stream << blue << "Lowercase: " << norm << lowercase << "\n";
   stream << blue << "Lines: " << norm << lines << "\n";

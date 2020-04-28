@@ -1,17 +1,18 @@
-%skeleton "lalr1.cc"
+%skeleton "lalr1.cc" /* -*- C++ -*- */
 %require  "3.0"
 %debug 
 %defines 
 %define api.namespace {whitemech::lydia}
 
 /*
- * bison 3.3.2 deprecates %define parser_class_name
- * for %define api.parser.class {Parser}, but
+ * bison 3.3.2 deprecates %define parser_class_name {}
+ * for %define api.parser.class {}, but
  * we want backward compatibility for bison 3.0.4.
  */
 %define parser_class_name {Parser}
 
 %code requires{
+   #include "logic.hpp"
    namespace whitemech {
    namespace lydia {
       class Driver;
@@ -48,12 +49,19 @@
 %define api.value.type variant
 %define parse.assert
 
-%token               END    0     "end of file"
-%token               UPPER
-%token               LOWER
-%token <std::string> WORD
-%token               NEWLINE
-%token               CHAR
+
+%left                   OR
+%left                   AND
+%right                  NOT
+
+%token                  END    0     "end of file"
+%token                  UPPER
+%token                  LOWER
+%token                  TT
+%token                  FF
+%token <std::string>    WORD
+%token                  NEWLINE
+%token                  CHAR
 
 %locations
 
@@ -67,7 +75,9 @@ list
   ;
 
 item
-  : UPPER   { driver.add_upper(); }
+  : TT      { $$ = driver.add_LDLfBooleanAtom(true); }
+  | FF      { driver.add_LDLfBooleanAtom(false); }
+  | UPPER   { driver.add_upper(); }
   | LOWER   { driver.add_lower(); }
   | WORD    { driver.add_word( $1 ); }
   | NEWLINE { driver.add_newline(); }
