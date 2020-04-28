@@ -16,8 +16,10 @@
  */
 
 #include "utils/dfa_transform.hpp"
+#include "cpphoafparser/consumer/hoa_consumer_print.hh"
 #include <cstdio>
 #include <graphviz/gvc.h>
+#include <numeric>
 #include <queue>
 #include <utils/misc.hpp>
 #include <utils/print.hpp>
@@ -101,5 +103,31 @@ void dfa_to_graphviz(const dfa &automaton, const std::string &output_filename,
   agclose(g);
   gvFreeContext(gvc);
 }
+
+void dfa_to_hoa(const dfa &automaton, std::ostream &o) {
+  auto printer = cpphoafparser::HOAConsumerPrint(o);
+  printer.notifyHeaderStart("v1");
+  printer.setNumberOfStates(automaton.nb_states);
+  printer.addStartStates({static_cast<unsigned int>(automaton.initial_state)});
+  printer.provideAcceptanceName("Rabin", {1});
+
+  auto fin0 = cpphoafparser::HOAConsumer::acceptance_expr::Atom(
+      cpphoafparser::AtomAcceptance::Fin(0));
+  auto inf1 = cpphoafparser::HOAConsumer::acceptance_expr::Atom(
+      cpphoafparser::AtomAcceptance::Inf(1));
+  printer.setAcceptanceCondition(2, fin0 & inf1);
+
+  std::vector<int> range(automaton.nb_variables);
+  std::vector<std::string> ap_names;
+  ap_names.reserve(automaton.nb_variables);
+  std::iota(range.begin(), range.end(), 0);
+  std::transform(std::begin(range), std::end(range),
+                 std::back_inserter(ap_names),
+                 [](int i) { return std::to_string(i); });
+  printer.setAPs(ap_names);
+  printer.notifyBodyStart();
+  // TODO do body according to automaton
+}
+
 } // namespace lydia
 } // namespace whitemech
