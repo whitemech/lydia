@@ -17,7 +17,6 @@
 
 #include "dfa.hpp"
 #include <cuddObj.hh>
-#include <exception>
 #include <utils/misc.hpp>
 #include <utils/strings.hpp>
 
@@ -442,12 +441,6 @@ int dfa::get_successor(int state, const interpretation_set &symbol) const {
 bool dfa::is_final(int state) const {
   std::vector<int> state_as_binary_vect = state2binvec(state, nb_bits);
   return finalstatesBDD.Eval(state_as_binary_vect.data()).IsOne();
-}
-
-dfa::~dfa() {
-  for (const auto &var : bddvars) {
-    Cudd_Deref(var.getNode());
-  }
 }
 
 } // namespace lydia

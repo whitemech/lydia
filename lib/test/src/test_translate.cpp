@@ -531,4 +531,26 @@ TEST_CASE("Translate <a*, b>tt", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{a_, b_, e}));
 }
 
+TEST_CASE("translate_sequence", "[translate]") {
+  auto mgr = CUDD::Cudd();
+  std::string alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  auto tt = boolean(true);
+  auto true_ = std::make_shared<const PropositionalTrue>();
+  auto a = std::make_shared<const PropositionalAtom>("a");
+  auto regex_true = std::make_shared<const PropositionalRegexp>(true_);
+  auto regex_a = std::make_shared<const PropositionalRegexp>(a);
+  auto N = 2;
+  auto vregex = vec_regex();
+  vregex.reserve(N);
+  for (int i = 0; i < N; i++) {
+    auto tmp_symbol = std::to_string(alphabet.at(i));
+    auto tmp = std::make_shared<const PropositionalAtom>(tmp_symbol);
+    auto tmp_ptr = std::make_shared<const PropositionalRegExp>(tmp);
+    vregex.push_back(tmp_ptr);
+  }
+  auto regex_seq = std::make_shared<const SequenceRegExp>(vregex);
+  auto diamond_formula = std::make_shared<LDLfDiamond>(regex_seq, tt);
+  auto my_dfa = to_dfa(*diamond_formula, mgr);
+}
+
 } // namespace whitemech::lydia::Test

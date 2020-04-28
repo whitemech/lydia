@@ -52,4 +52,50 @@ static void BM_translate_diamond(benchmark::State &state) {
 }
 BENCHMARK(BM_translate_diamond);
 
+static void BM_translate_sequence(benchmark::State &state) {
+  auto mgr =
+      CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
+  auto tt = boolean(true);
+  for (auto _ : state) {
+    auto N = state.range(0);
+    auto regex = intitialize_sequence_regex(N);
+    auto diamond_formula = std::make_shared<LDLfDiamond>(regex, tt);
+    auto my_dfa = to_dfa(*diamond_formula, mgr);
+    escape(&my_dfa);
+    (void)my_dfa;
+  }
+}
+// clang-format off
+BENCHMARK(BM_translate_sequence)->Arg(2)->Arg(3)->Arg(4)
+                                ->Arg(5)->Arg(6)->Arg(7)
+                                ->Arg(8)->Arg(9)->Arg(10)
+                                ->Arg(11)->Arg(12)->Arg(13)
+                                ->Unit(benchmark::kMillisecond)
+                                ->Repetitions(5)
+                                ->DisplayAggregatesOnly(true);
+// clang-format on
+
+static void BM_translate_union(benchmark::State &state) {
+  auto mgr =
+      CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
+  auto tt = boolean(true);
+  for (auto _ : state) {
+    auto N = state.range(0);
+    auto regex = intitialize_union_regex(N);
+    auto diamond_formula = std::make_shared<LDLfDiamond>(regex, tt);
+    auto my_dfa = to_dfa(*diamond_formula, mgr);
+    escape(&my_dfa);
+    (void)my_dfa;
+  }
+}
+// clang-format off
+BENCHMARK(BM_translate_union)->Arg(2)->Arg(3)->Arg(4)
+                             ->Arg(5)->Arg(6)->Arg(7)
+                             ->Arg(8)->Arg(9)->Arg(10)
+                             ->Arg(11)->Arg(12)->Arg(13)
+                             ->Unit(benchmark::kMillisecond)
+                             ->Repetitions(5)
+                             ->DisplayAggregatesOnly(true);
+// clang-format on
+
 } // namespace whitemech::lydia::Benchmark

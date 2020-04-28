@@ -58,8 +58,6 @@ public:
   dfa(dfa &&) = delete;
   dfa &operator=(dfa &&) = delete;
 
-  ~dfa();
-
   /*!
    * Initialize the DFA from scratch.
    *
