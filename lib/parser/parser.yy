@@ -13,6 +13,7 @@
 
 %code requires{
    #include "logic.hpp"
+   #include "parser_stype.h"
    namespace whitemech {
    namespace lydia {
       class Driver;
@@ -46,22 +47,20 @@
 #define yylex scanner.yylex
 }
 
-%define api.value.type variant
 %define parse.assert
 
+%define api.value.type {struct whitemech::lydia::YYSTYPE}
+
+%type<formula> item
 
 %left                   OR
 %left                   AND
 %right                  NOT
 
 %token                  END    0     "end of file"
-%token                  UPPER
-%token                  LOWER
 %token                  TT
 %token                  FF
-%token <std::string>    WORD
 %token                  NEWLINE
-%token                  CHAR
 
 %locations
 
@@ -77,11 +76,7 @@ list
 item
   : TT      { $$ = driver.add_LDLfBooleanAtom(true); }
   | FF      { driver.add_LDLfBooleanAtom(false); }
-  | UPPER   { driver.add_upper(); }
-  | LOWER   { driver.add_lower(); }
-  | WORD    { driver.add_word( $1 ); }
   | NEWLINE { driver.add_newline(); }
-  | CHAR    { driver.add_char(); }
   ;
 
 %%

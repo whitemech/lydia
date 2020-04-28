@@ -34,12 +34,7 @@ class Driver {
 private:
   void parse_helper(std::istream &stream);
 
-  std::size_t chars = 0;
-  std::size_t words = 0;
   std::size_t lines = 0;
-  std::size_t uppercase = 0;
-  std::size_t lowercase = 0;
-  std::size_t booleanAtoms = 0;
   Parser *parser = nullptr;
   Scanner *scanner = nullptr;
 
@@ -63,11 +58,7 @@ public:
    */
   void parse(std::istream &iss);
 
-  void add_upper();
-  void add_lower();
-  void add_word(const std::string &word);
   void add_newline();
-  void add_char();
 
   std::shared_ptr<const LDLfFormula> add_LDLfBooleanAtom(const bool &flag) const;
 

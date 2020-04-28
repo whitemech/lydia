@@ -1,11 +1,12 @@
 %{
 /* C++ string header, for string ops below */
 #include <string>
+#include "parser_stype.h"
 
 /* Implementation of yyFlexScanner */
 #include "scanner.hpp"
 #undef  YY_DECL
-#define YY_DECL int whitemech::lydia::Scanner::yylex( whitemech::lydia::Parser::semantic_type * const lval, whitemech::lydia::Parser::location_type *loc )
+#define YY_DECL int whitemech::lydia::Scanner::yylex( whitemech::lydia::YYSTYPE * lval, whitemech::lydia::Parser::location_type *loc )
 
 /* typedef to make the returns for the tokens shorter */
 using token = whitemech::lydia::Parser::token;
@@ -39,25 +40,9 @@ using token = whitemech::lydia::Parser::token;
 
 "!"|"~"     { return token::NOT; }
 
-[a-z]       { return token::LOWER; }
-
-[A-Z]       { return token::UPPER; }
-
 (?i:tt)     { return token::TT; }
 
 (?i:ff)     { return token::FF; }
-
-[a-zA-Z]+   {
-               /*
-                * Section 10.1.5.1 of the 3.0.2 Bison Manual says the 
-                * following should work:
-                * yylval.build( yytext );
-                * but it doesn't.
-                * ref: http://goo.gl/KLn0w2
-                */
-               yylval->build<std::string>(yytext);
-               return token::WORD;
-            }
 
 \n          {
                // Update line number
@@ -65,9 +50,6 @@ using token = whitemech::lydia::Parser::token;
                return token::NEWLINE;
             }
 
-.           {
-               return token::CHAR;
-            }
 %%
 
 
