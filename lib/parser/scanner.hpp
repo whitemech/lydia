@@ -16,9 +16,6 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __SCANNER_HPP__
-#define __SCANNER_HPP__ 1
-
 #if !defined(yyFlexLexerOnce)
 #include <FlexLexer.h>
 #endif
@@ -50,5 +47,3 @@ public:
 
 } // namespace lydia
 } // namespace whitemech
-
-#endif /* END __SCANNER_HPP__ */

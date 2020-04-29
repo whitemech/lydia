@@ -16,9 +16,6 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __DRIVER_HPP__
-#define __DRIVER_HPP__ 1
-
 #include <cstddef>
 #include <istream>
 #include <string>
@@ -77,4 +74,3 @@ public:
 
 } // namespace lydia
 } // namespace whitemech
-#endif /* END __DRIVER_HPP__ */

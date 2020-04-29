@@ -16,9 +16,6 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LYDIA_PARSER_STYPE_H
-#define LYDIA_PARSER_STYPE_H
-
 #include "logic.hpp"
 #include <string>
 
@@ -41,5 +38,3 @@ struct YYSTYPE {
 
 } // namespace lydia
 } // namespace whitemech
-
-#endif // LYDIA_PARSER_STYPE_H
