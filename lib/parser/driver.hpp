@@ -23,9 +23,9 @@
 #include <istream>
 #include <string>
 
+#include "logic.hpp"
 #include "parser.tab.hh"
 #include "scanner.hpp"
-#include "logic.hpp"
 
 namespace whitemech {
 namespace lydia {
@@ -61,12 +61,16 @@ public:
 
   void add_newline();
 
-  std::shared_ptr<const LDLfFormula> add_LDLfBooleanAtom(const bool &flag) const;
-  std::shared_ptr<const LDLfFormula> add_LDLfAnd(std::shared_ptr<const LDLfFormula>  &lhs,
-                                                 std::shared_ptr<const LDLfFormula>  &rhs) const;
-  std::shared_ptr<const LDLfFormula> add_LDLfOr(std::shared_ptr<const LDLfFormula>  &lhs,
-                                                 std::shared_ptr<const LDLfFormula>  &rhs) const;
-  std::shared_ptr<const LDLfFormula> add_LDLfNot(std::shared_ptr<const LDLfFormula>  &formula) const;
+  std::shared_ptr<const LDLfFormula>
+  add_LDLfBooleanAtom(const bool &flag) const;
+  std::shared_ptr<const LDLfFormula>
+  add_LDLfAnd(std::shared_ptr<const LDLfFormula> &lhs,
+              std::shared_ptr<const LDLfFormula> &rhs) const;
+  std::shared_ptr<const LDLfFormula>
+  add_LDLfOr(std::shared_ptr<const LDLfFormula> &lhs,
+             std::shared_ptr<const LDLfFormula> &rhs) const;
+  std::shared_ptr<const LDLfFormula>
+  add_LDLfNot(std::shared_ptr<const LDLfFormula> &formula) const;
 
   std::ostream &print(std::ostream &stream);
 };

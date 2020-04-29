@@ -71,27 +71,29 @@ void Driver::parse_helper(std::istream &stream) {
   }
 }
 
-void Driver::add_newline() {
-  lines++;
-}
+void Driver::add_newline() { lines++; }
 
-std::shared_ptr<const LDLfFormula> Driver::add_LDLfBooleanAtom(const bool &flag) const {
+std::shared_ptr<const LDLfFormula>
+Driver::add_LDLfBooleanAtom(const bool &flag) const {
   return std::make_shared<LDLfBooleanAtom>(flag);
 }
 
-std::shared_ptr<const LDLfFormula> Driver::add_LDLfAnd(std::shared_ptr<const LDLfFormula>  &lhs,
-                                               std::shared_ptr<const LDLfFormula>  &rhs) const {
-  set_formulas children = set_formulas ({lhs, rhs});
+std::shared_ptr<const LDLfFormula>
+Driver::add_LDLfAnd(std::shared_ptr<const LDLfFormula> &lhs,
+                    std::shared_ptr<const LDLfFormula> &rhs) const {
+  set_formulas children = set_formulas({lhs, rhs});
   return std::make_shared<LDLfAnd>(children);
 }
 
-std::shared_ptr<const LDLfFormula> Driver::add_LDLfOr(std::shared_ptr<const LDLfFormula>  &lhs,
-                                                       std::shared_ptr<const LDLfFormula>  &rhs) const {
-  set_formulas children = set_formulas ({lhs, rhs});
+std::shared_ptr<const LDLfFormula>
+Driver::add_LDLfOr(std::shared_ptr<const LDLfFormula> &lhs,
+                   std::shared_ptr<const LDLfFormula> &rhs) const {
+  set_formulas children = set_formulas({lhs, rhs});
   return std::make_shared<LDLfOr>(children);
 }
 
-std::shared_ptr<const LDLfFormula> Driver::add_LDLfNot(std::shared_ptr<const LDLfFormula>  &formula) const{
+std::shared_ptr<const LDLfFormula>
+Driver::add_LDLfNot(std::shared_ptr<const LDLfFormula> &formula) const {
   return std::make_shared<LDLfNot>(formula);
 }
 

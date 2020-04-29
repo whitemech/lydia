@@ -31,89 +31,93 @@ TEST_CASE("Driver LDLf Boolean Atoms", "[parser]") {
 
   SECTION("test parsing tt") {
     std::istringstream tt("tt");
-    driver.parse( tt );
+    driver.parse(tt);
     auto parsedBoolTrue = driver.result;
-    REQUIRE( *parsedBoolTrue == *actualBoolTrue );
+    REQUIRE(*parsedBoolTrue == *actualBoolTrue);
   }
   SECTION("test parsing TT") {
     std::istringstream tt_maiusc("TT");
-    driver.parse( tt_maiusc );
+    driver.parse(tt_maiusc);
     auto parsedBoolTrue_MAIUSC = driver.result;
-    REQUIRE( *parsedBoolTrue_MAIUSC == *actualBoolTrue );
+    REQUIRE(*parsedBoolTrue_MAIUSC == *actualBoolTrue);
   }
   SECTION("test parsing ff") {
     std::istringstream ff("ff");
-    driver.parse( ff );
+    driver.parse(ff);
     auto parsedBoolFalse = driver.result;
-    REQUIRE( *parsedBoolFalse == *actualBoolFalse );
+    REQUIRE(*parsedBoolFalse == *actualBoolFalse);
   }
   SECTION("test parsing FF") {
     std::istringstream ff_maiusc("FF");
-    driver.parse( ff_maiusc );
+    driver.parse(ff_maiusc);
     auto parsedBoolFalse_MAIUSC = driver.result;
-    REQUIRE( *parsedBoolFalse_MAIUSC == *actualBoolFalse );
+    REQUIRE(*parsedBoolFalse_MAIUSC == *actualBoolFalse);
   }
 }
 
 TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser]") {
   auto driver = Driver();
-  auto actualAnd_true_false = std::make_shared<LDLfAnd>(set_formulas({boolean(true), boolean(false)}));
-  auto actualAnd_false_true = std::make_shared<LDLfAnd>(set_formulas({boolean(false), boolean(true)}));
+  auto actualAnd_true_false =
+      std::make_shared<LDLfAnd>(set_formulas({boolean(true), boolean(false)}));
+  auto actualAnd_false_true =
+      std::make_shared<LDLfAnd>(set_formulas({boolean(false), boolean(true)}));
 
   SECTION("test parsing tt && ff") {
     std::istringstream tt_and_ff("tt && ff");
-    driver.parse( tt_and_ff );
+    driver.parse(tt_and_ff);
     auto parsedAnd = driver.result;
-    REQUIRE( *parsedAnd == *actualAnd_true_false );
+    REQUIRE(*parsedAnd == *actualAnd_true_false);
   }
   SECTION("test parsing tt & ff") {
     std::istringstream tt_and_ff("tt & ff");
-    driver.parse( tt_and_ff );
+    driver.parse(tt_and_ff);
     auto parsedAnd = driver.result;
-    REQUIRE( *parsedAnd == *actualAnd_true_false );
+    REQUIRE(*parsedAnd == *actualAnd_true_false);
   }
   SECTION("test parsing ff && tt") {
     std::istringstream ff_and_tt("ff && tt");
-    driver.parse( ff_and_tt );
+    driver.parse(ff_and_tt);
     auto parsedAnd = driver.result;
-    REQUIRE( *parsedAnd == *actualAnd_false_true );
+    REQUIRE(*parsedAnd == *actualAnd_false_true);
   }
   SECTION("test parsing (ff && tt)") {
     std::istringstream par_ff_and_tt_par("(ff && tt)");
-    driver.parse( par_ff_and_tt_par );
+    driver.parse(par_ff_and_tt_par);
     auto parsedAnd = driver.result;
-    REQUIRE( *parsedAnd == *actualAnd_false_true );
+    REQUIRE(*parsedAnd == *actualAnd_false_true);
   }
 }
 
 TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser]") {
   auto driver = Driver();
-  auto actualOr_true_false = std::make_shared<LDLfOr>(set_formulas({boolean(true), boolean(false)}));
-  auto actualOr_false_true = std::make_shared<LDLfOr>(set_formulas({boolean(false), boolean(true)}));
+  auto actualOr_true_false =
+      std::make_shared<LDLfOr>(set_formulas({boolean(true), boolean(false)}));
+  auto actualOr_false_true =
+      std::make_shared<LDLfOr>(set_formulas({boolean(false), boolean(true)}));
 
   SECTION("test parsing tt || ff") {
     std::istringstream tt_or_ff("tt || ff");
-    driver.parse( tt_or_ff );
+    driver.parse(tt_or_ff);
     auto parsedOr = driver.result;
-    REQUIRE( *parsedOr == *actualOr_true_false );
+    REQUIRE(*parsedOr == *actualOr_true_false);
   }
   SECTION("test parsing tt | ff") {
     std::istringstream tt_or_ff("tt | ff");
-    driver.parse( tt_or_ff );
+    driver.parse(tt_or_ff);
     auto parsedOr = driver.result;
-    REQUIRE( *parsedOr == *actualOr_true_false );
+    REQUIRE(*parsedOr == *actualOr_true_false);
   }
   SECTION("test parsing ff || tt") {
     std::istringstream ff_or_tt("ff || tt");
-    driver.parse( ff_or_tt );
+    driver.parse(ff_or_tt);
     auto parsedOr = driver.result;
-    REQUIRE( *parsedOr == *actualOr_false_true );
+    REQUIRE(*parsedOr == *actualOr_false_true);
   }
   SECTION("test parsing (ff || tt)") {
     std::istringstream par_ff_or_tt_par("(ff || tt)");
-    driver.parse( par_ff_or_tt_par );
+    driver.parse(par_ff_or_tt_par);
     auto parsedOr = driver.result;
-    REQUIRE( *parsedOr == *actualOr_false_true );
+    REQUIRE(*parsedOr == *actualOr_false_true);
   }
 }
 
@@ -122,47 +126,49 @@ TEST_CASE("Driver LDLfNot", "[parser]") {
   auto actualNot_true = std::make_shared<LDLfNot>(boolean(true));
   auto actualNot_false = std::make_shared<LDLfNot>(boolean(false));
 
-  auto actualAnd_true_false = std::make_shared<LDLfAnd>(set_formulas({boolean(true), boolean(false)}));
+  auto actualAnd_true_false =
+      std::make_shared<LDLfAnd>(set_formulas({boolean(true), boolean(false)}));
   auto actualNot_and = std::make_shared<LDLfNot>(actualAnd_true_false);
 
-  auto actualOr_true_false = std::make_shared<LDLfOr>(set_formulas({boolean(true), boolean(false)}));
+  auto actualOr_true_false =
+      std::make_shared<LDLfOr>(set_formulas({boolean(true), boolean(false)}));
   auto actualNot_or = std::make_shared<LDLfNot>(actualOr_true_false);
 
   SECTION("test parsing ~tt") {
     std::istringstream not_tt("~tt");
-    driver.parse( not_tt );
+    driver.parse(not_tt);
     auto parsedNot_tt = driver.result;
-    REQUIRE( *parsedNot_tt == *actualNot_true );
+    REQUIRE(*parsedNot_tt == *actualNot_true);
   }
   SECTION("test parsing ~(tt)") {
     std::istringstream not_tt_par("~(tt)");
-    driver.parse( not_tt_par );
+    driver.parse(not_tt_par);
     auto parsedNot_tt = driver.result;
-    REQUIRE( *parsedNot_tt == *actualNot_true );
+    REQUIRE(*parsedNot_tt == *actualNot_true);
   }
   SECTION("test parsing ~ff") {
     std::istringstream not_ff("~ff");
-    driver.parse( not_ff );
+    driver.parse(not_ff);
     auto parsedNot_ff = driver.result;
-    REQUIRE( *parsedNot_ff == *actualNot_false );
+    REQUIRE(*parsedNot_ff == *actualNot_false);
   }
   SECTION("test parsing ~(ff)") {
     std::istringstream not_ff_par("~(ff)");
-    driver.parse( not_ff_par );
+    driver.parse(not_ff_par);
     auto parsedNot_ff_par = driver.result;
-    REQUIRE( *parsedNot_ff_par == *actualNot_false );
+    REQUIRE(*parsedNot_ff_par == *actualNot_false);
   }
   SECTION("test parsing !(tt & ff)") {
     std::istringstream not_tt_and_ff("!(tt & ff)");
-    driver.parse( not_tt_and_ff );
+    driver.parse(not_tt_and_ff);
     auto parsedNot_tt_and_ff = driver.result;
-    REQUIRE( *parsedNot_tt_and_ff == *actualNot_and );
+    REQUIRE(*parsedNot_tt_and_ff == *actualNot_and);
   }
   SECTION("test parsing ~(ff || tt)") {
     std::istringstream par_ff_and_tt_par("~(ff || tt)");
-    driver.parse( par_ff_and_tt_par );
+    driver.parse(par_ff_and_tt_par);
     auto parsedNot_ff_or_tt = driver.result;
-    REQUIRE( *parsedNot_ff_or_tt == *actualNot_or );
+    REQUIRE(*parsedNot_ff_or_tt == *actualNot_or);
   }
 }
 
