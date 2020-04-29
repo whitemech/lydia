@@ -1,18 +1,19 @@
-%skeleton "lalr1.cc"
+%skeleton "lalr1.cc" /* -*- C++ -*- */
 %require  "3.0"
 %debug 
 %defines 
 %define api.namespace {whitemech::lydia}
 
-/**
- * bison 3.3.2 change
- * %define parser_class_name to this, updated
- * should work for previous bison versions as 
- * well. -jcb 24 Jan 2020
+/*
+ * bison 3.3.2 deprecates %define parser_class_name {}
+ * for %define api.parser.class {}, but
+ * we want backward compatibility for bison 3.0.4.
  */
 %define parser_class_name {Parser}
 
 %code requires{
+   #include "logic.hpp"
+   #include "parser_stype.h"
    namespace whitemech {
    namespace lydia {
       class Driver;
@@ -46,38 +47,49 @@
 #define yylex scanner.yylex
 }
 
-%define api.value.type variant
 %define parse.assert
 
-%token               END    0     "end of file"
-%token               UPPER
-%token               LOWER
-%token <std::string> WORD
-%token               NEWLINE
-%token               CHAR
+%define api.value.type {struct whitemech::lydia::YYSTYPE}
+
+%type<formula> input
+%type<formula> ldlf_formula
+
+%token                  TT
+%token                  FF
+%token                  LPAR
+%token                  RPAR
+%token                  NEWLINE
+%token                  END_OF_FILE    0
+
+%left                   OR
+%left                   AND
+%right                  NOT
+%nonassoc               LPAR
 
 %locations
 
-%%
-
-list_option : END | list END;
-
-list
-  : item
-  | list item
-  ;
-
-item
-  : UPPER   { driver.add_upper(); }
-  | LOWER   { driver.add_lower(); }
-  | WORD    { driver.add_word( $1 ); }
-  | NEWLINE { driver.add_newline(); }
-  | CHAR    { driver.add_char(); }
-  ;
+%start input
 
 %%
 
+input
+    : ldlf_formula { $$ = $1;
+                     driver.result = $$; }
+    ;
 
-void whitemech::lydia::Parser::error( const location_type &l, const std::string &err_message ) {
+ldlf_formula
+    : TT                                { $$ = driver.add_LDLfBooleanAtom(true); }
+    | FF                                { $$ = driver.add_LDLfBooleanAtom(false); }
+    | LPAR ldlf_formula RPAR            { $$ = $2; }
+    | ldlf_formula AND ldlf_formula     { $$ = driver.add_LDLfAnd($1, $3); }
+    | ldlf_formula OR ldlf_formula      { $$ = driver.add_LDLfOr($1, $3); }
+    | NOT ldlf_formula                  { $$ = driver.add_LDLfNot($2); }
+    | NEWLINE                           { driver.add_newline(); }
+    ;
+
+%%
+
+
+void whitemech::lydia::Parser::error(const location_type &l, const std::string &err_message) {
    std::cerr << "Error: " << err_message << " at " << l << "\n";
 }

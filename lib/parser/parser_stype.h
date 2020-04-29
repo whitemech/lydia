@@ -16,33 +16,24 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if !defined(yyFlexLexerOnce)
-#include <FlexLexer.h>
-#endif
-
-#include "location.hh"
-#include "parser.tab.hh"
-#include "parser_stype.h"
+#include "logic.hpp"
+#include <string>
 
 namespace whitemech {
 namespace lydia {
 
-class Scanner : public yyFlexLexer {
-private:
-public:
-  /* yyval ptr */
-  whitemech::lydia::YYSTYPE *yylval = nullptr;
-
-  explicit Scanner(std::istream *in) : yyFlexLexer(in){};
-  virtual ~Scanner(){};
-
-  // get rid of override virtual function warning
-  using FlexLexer::yylex;
-
-  virtual int yylex(whitemech::lydia::YYSTYPE *lval,
-                    Parser::location_type *location);
-  // YY_DECL defined in lexer.l
-  // Method body created by flex in lexer.yy.cc
+struct YYSTYPE {
+  std::shared_ptr<const LDLfFormula> formula;
+  // Constructor
+  YYSTYPE() = default;
+  // Destructor
+  ~YYSTYPE() = default;
+  // Copy constructor and assignment
+  YYSTYPE(const YYSTYPE &) = default;
+  YYSTYPE &operator=(const YYSTYPE &) = default;
+  // Move constructor and assignment
+  YYSTYPE(YYSTYPE &&) = default;
+  YYSTYPE &operator=(YYSTYPE &&) = default;
 };
 
 } // namespace lydia

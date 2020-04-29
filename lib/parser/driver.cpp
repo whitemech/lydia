@@ -38,16 +38,13 @@ void Driver::parse(const char *const filename) {
     exit(EXIT_FAILURE);
   }
   parse_helper(in_file);
-  return;
 }
 
 void Driver::parse(std::istream &stream) {
   if (!stream.good() && stream.eof()) {
     return;
   }
-  // else
   parse_helper(stream);
-  return;
 }
 
 void Driver::parse_helper(std::istream &stream) {
@@ -72,47 +69,36 @@ void Driver::parse_helper(std::istream &stream) {
   if (parser->parse() != accept) {
     std::cerr << "Parse failed!!\n";
   }
-  return;
 }
 
-void Driver::add_upper() {
-  uppercase++;
-  chars++;
-  words++;
+void Driver::add_newline() { lines++; }
+
+std::shared_ptr<const LDLfFormula>
+Driver::add_LDLfBooleanAtom(const bool &flag) const {
+  return std::make_shared<LDLfBooleanAtom>(flag);
 }
 
-void Driver::add_lower() {
-  lowercase++;
-  chars++;
-  words++;
+std::shared_ptr<const LDLfFormula>
+Driver::add_LDLfAnd(std::shared_ptr<const LDLfFormula> &lhs,
+                    std::shared_ptr<const LDLfFormula> &rhs) const {
+  set_formulas children = set_formulas({lhs, rhs});
+  return std::make_shared<LDLfAnd>(children);
 }
 
-void Driver::add_word(const std::string &word) {
-  words++;
-  chars += word.length();
-  for (const char &c : word) {
-    if (islower(c)) {
-      lowercase++;
-    } else if (isupper(c)) {
-      uppercase++;
-    }
-  }
+std::shared_ptr<const LDLfFormula>
+Driver::add_LDLfOr(std::shared_ptr<const LDLfFormula> &lhs,
+                   std::shared_ptr<const LDLfFormula> &rhs) const {
+  set_formulas children = set_formulas({lhs, rhs});
+  return std::make_shared<LDLfOr>(children);
 }
 
-void Driver::add_newline() {
-  lines++;
-  chars++;
+std::shared_ptr<const LDLfFormula>
+Driver::add_LDLfNot(std::shared_ptr<const LDLfFormula> &formula) const {
+  return std::make_shared<LDLfNot>(formula);
 }
-
-void Driver::add_char() { chars++; }
 
 std::ostream &Driver::print(std::ostream &stream) {
   stream << red << "Results: " << norm << "\n";
-  stream << blue << "Uppercase: " << norm << uppercase << "\n";
-  stream << blue << "Lowercase: " << norm << lowercase << "\n";
-  stream << blue << "Lines: " << norm << lines << "\n";
-  stream << blue << "Words: " << norm << words << "\n";
-  stream << blue << "Characters: " << norm << chars << "\n";
   return (stream);
 }
 
