@@ -29,21 +29,28 @@ namespace lydia {
 
 class Basic;
 class Symbol;
-class RegExp;
 class LDLfFormula;
 class LDLfBooleanAtom;
 class LDLfAnd;
 class LDLfOr;
 class LDLfNot;
-template <class T> class LDLfDiamond;
-template <class T> class LDLfBox;
+class RegExp;
 class PropositionalRegExp;
+class TestRegExp;
+class UnionRegExp;
+class SequenceRegExp;
+class StarRegExp;
+class LDLfTemporal;
+class LDLfDiamond;
+class LDLfBox;
 class PropositionalFormula;
 class PropositionalAtom;
 class PropositionalTrue;
 class PropositionalFalse;
 class PropositionalAtom;
 class QuotedFormula;
+class LDLfF;
+class LDLfT;
 class PropositionalAnd;
 class PropositionalOr;
 class PropositionalNot;
@@ -83,6 +90,8 @@ typedef std::vector<std::shared_ptr<const PropositionalFormula>>
 typedef std::set<std::shared_ptr<const PropositionalFormula>, SharedComparator>
     set_prop_formulas;
 typedef std::shared_ptr<const RegExp> regex_ptr;
+typedef std::set<regex_ptr, SharedComparator> set_regex;
+typedef std::vector<regex_ptr> vec_regex;
 typedef std::shared_ptr<const NFAState> nfa_state_ptr;
 typedef std::shared_ptr<const DFAState> dfa_state_ptr;
 typedef std::shared_ptr<tuple_dfa_transition> dfa_transition_ptr;

@@ -3,5 +3,7 @@
 set -e
 
 mkdir -p ./build && cd ./build && rm -rf ./*
-cmake ..
-make -j "$@"
+cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake --build . --config Release -j "$@"
+
+cd ..

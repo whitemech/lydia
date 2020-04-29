@@ -58,7 +58,13 @@ void StrPrinter::visit(const LDLfNot &x) {
   result = s.str();
 }
 
-template <class T> void StrPrinter::visit(const LDLfDiamond<T> &x) {
+void StrPrinter::visit(const LDLfDiamond &x) {
+  std::ostringstream s;
+  s << "<" << apply(*x.get_regex()) << ">(" << apply(*x.get_formula()) << ")";
+  result = s.str();
+}
+
+void StrPrinter::visit(const LDLfBox &x) {
   std::ostringstream s;
   s << "<" << apply(*x.get_regex()) << ">(" << apply(*x.get_formula()) << ")";
   result = s.str();

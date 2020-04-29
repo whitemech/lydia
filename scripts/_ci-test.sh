@@ -12,4 +12,3 @@ gcovr -r . -e "third_party/*" -e "build/lib/CMakeFiles/lydia.dir/parser/parser.y
 gcovr -r . -e "third_party/*" -e "build/lib/CMakeFiles/lydia.dir/parser/parser.yy" \
            -e "build/lib/CMakeFiles/lydia.dir/parser/lexer.l" -e "lib/test/*" -e "lib/benchmark/*" \
            --xml -o coverage.xml
-

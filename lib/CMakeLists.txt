@@ -57,3 +57,4 @@ set (LIB_NAME ${LIB_NAME} PARENT_SCOPE)
 #test
 enable_testing ()
 add_subdirectory (test)
+add_subdirectory (benchmark)

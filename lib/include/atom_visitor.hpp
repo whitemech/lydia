@@ -31,6 +31,22 @@ protected:
 public:
   static Logger logger;
 
+  // callbacks for LDLf
+  void visit(const LDLfBooleanAtom &) override;
+  void visit(const LDLfAnd &) override;
+  void visit(const LDLfOr &) override;
+  void visit(const LDLfNot &) override;
+  void visit(const LDLfDiamond &x) override;
+  void visit(const LDLfBox &x) override;
+
+  // callbacks for regular expressions
+  void visit(const PropositionalRegExp &) override;
+  void visit(const TestRegExp &) override;
+  void visit(const UnionRegExp &) override;
+  void visit(const SequenceRegExp &) override;
+  void visit(const StarRegExp &) override;
+
+  // callbacks for propositional logic
   void visit(const PropositionalTrue &) override;
   void visit(const PropositionalFalse &) override;
   void visit(const PropositionalAtom &) override;
@@ -40,10 +56,10 @@ public:
 
   void visit(const QuotedFormula &) override{};
   void visit(const Symbol &) override{};
-  void visit(const LDLfDiamond<PropositionalRegExp> &) override;
 
   set_atoms_ptr apply(const PropositionalFormula &b);
   set_atoms_ptr apply(const LDLfFormula &b);
+  set_atoms_ptr apply(const RegExp &b);
 };
 
 set_atoms_ptr find_atoms(const LDLfFormula &);
