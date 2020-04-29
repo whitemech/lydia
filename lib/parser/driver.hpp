@@ -43,8 +43,9 @@ private:
   const std::string norm = "\033[0m";
 
 public:
-  Driver() = default;
+  std::shared_ptr<const LDLfFormula> result;
 
+  Driver() = default;
   virtual ~Driver();
 
   /**
@@ -61,6 +62,11 @@ public:
   void add_newline();
 
   std::shared_ptr<const LDLfFormula> add_LDLfBooleanAtom(const bool &flag) const;
+  std::shared_ptr<const LDLfFormula> add_LDLfAnd(std::shared_ptr<const LDLfFormula>  &lhs,
+                                                 std::shared_ptr<const LDLfFormula>  &rhs) const;
+  std::shared_ptr<const LDLfFormula> add_LDLfOr(std::shared_ptr<const LDLfFormula>  &lhs,
+                                                 std::shared_ptr<const LDLfFormula>  &rhs) const;
+  std::shared_ptr<const LDLfFormula> add_LDLfNot(std::shared_ptr<const LDLfFormula>  &formula) const;
 
   std::ostream &print(std::ostream &stream);
 };
