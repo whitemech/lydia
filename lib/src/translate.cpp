@@ -27,7 +27,7 @@
 namespace whitemech {
 namespace lydia {
 
-dfa *to_dfa(LDLfFormula &formula) {
+std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula, const CUDD::Cudd &mgr) {
   //  build initial state of the DFA.
   auto formula_nnf = to_nnf(formula);
   set_formulas initial_state_formulas{formula_nnf};
@@ -43,7 +43,7 @@ dfa *to_dfa(LDLfFormula &formula) {
   auto all_interpretations = powerset<atom_ptr, SharedComparator>(atoms);
 
   // TODO max number of bits
-  dfa *automaton = new dfa(10, atoms.size());
+  std::shared_ptr<dfa> automaton = std::make_shared<dfa>(mgr, 10, atoms.size());
   automaton->add_state();
   automaton->set_initial_state(1);
 

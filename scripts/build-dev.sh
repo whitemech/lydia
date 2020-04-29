@@ -7,7 +7,7 @@ BUILD_DIR=build
 mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} && rm -rf ./*
 
 # Configure compiler build with coverage flas
-cmake .. -DENABLE_COVERAGE=ON
+cmake .. -DCMAKE_BUILD_TYPE=Debug
 # compiler will generate *.gcno files for each compiled object
 # running tests will generate *.gcda for each compiled object
 #  excuted partially or entirely by tests

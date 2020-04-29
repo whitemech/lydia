@@ -40,7 +40,8 @@ TEST_CASE("Translate !(ff & tt)", "[translate]") {
   auto not_and = LDLfNot(ff_and_tt);
   auto formula_name = to_string(*ff_and_tt);
   // TODO complete.
-  auto *my_dfa = to_dfa(not_and);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(not_and, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -59,7 +60,8 @@ TEST_CASE("Translate (ff & tt)", "[translate]") {
   auto ff_and_tt = std::make_shared<LDLfAnd>(args);
   auto formula_name = to_string(*ff_and_tt);
 
-  auto *my_dfa = to_dfa(*ff_and_tt);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*ff_and_tt, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -80,7 +82,8 @@ TEST_CASE("Translate <true>tt", "[translate]") {
   auto tt = boolean(true);
   auto diamond_formula_true_tt = std::make_shared<LDLfDiamond>(regex_true, tt);
 
-  auto *my_dfa = to_dfa(*diamond_formula_true_tt);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*diamond_formula_true_tt, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -99,7 +102,8 @@ TEST_CASE("Translate <a>tt", "[translate]") {
   auto tt = boolean(true);
   auto diamond_formula_a_tt = std::make_shared<LDLfDiamond>(regex_a, tt);
 
-  auto *my_dfa = to_dfa(*diamond_formula_a_tt);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*diamond_formula_a_tt, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -127,7 +131,8 @@ TEST_CASE("Translate <a & b>tt", "[translate]") {
   auto diamond_formula_a_and_b_tt =
       std::make_shared<LDLfDiamond>(regex_a_and_b, tt);
 
-  auto *my_dfa = to_dfa(*diamond_formula_a_and_b_tt);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*diamond_formula_a_and_b_tt, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -156,7 +161,8 @@ TEST_CASE("Translate {true}tt", "[translate]") {
   auto tt = boolean(true);
   auto box_formula_true_tt = std::make_shared<LDLfBox>(regex_true, tt);
 
-  auto *my_dfa = to_dfa(*box_formula_true_tt);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*box_formula_true_tt, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -175,7 +181,8 @@ TEST_CASE("Translate {a}tt", "[translate]") {
   auto tt = boolean(true);
   auto box_formula_a_tt = std::make_shared<LDLfBox>(regex_a, tt);
 
-  auto *my_dfa = to_dfa(*box_formula_a_tt);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*box_formula_a_tt, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -202,7 +209,8 @@ TEST_CASE("Translate {a & b}tt", "[translate]") {
   auto tt = boolean(true);
   auto box_formula_a_and_b_tt = std::make_shared<LDLfBox>(regex_a_and_b, tt);
 
-  auto *my_dfa = to_dfa(*box_formula_a_and_b_tt);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*box_formula_a_and_b_tt, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -231,7 +239,8 @@ TEST_CASE("Translate {a}ff", "[translate]") {
   auto tt = boolean(false);
   auto box_formula_a_tt = std::make_shared<LDLfBox>(regex_a, tt);
 
-  auto *my_dfa = to_dfa(*box_formula_a_tt);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*box_formula_a_tt, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -257,7 +266,8 @@ TEST_CASE("Translate <<true>tt?>tt", "[translate]") {
   auto regex_test = std::make_shared<const TestRegExp>(diamond_formula_true_tt);
   auto diamond_test = std::make_shared<LDLfDiamond>(regex_test, tt);
 
-  auto *my_dfa = to_dfa(*diamond_test);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*diamond_test, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -279,7 +289,8 @@ TEST_CASE("Translate <{true}ff?>tt", "[translate]") {
   auto regex_test = std::make_shared<const TestRegExp>(box_formula_true_ff);
   auto diamond_test = std::make_shared<LDLfDiamond>(regex_test, tt);
 
-  auto *my_dfa = to_dfa(*diamond_test);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*diamond_test, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -303,7 +314,8 @@ TEST_CASE("Translate <a plus b>tt", "[translate]") {
   auto diamond_formula_a_plus_b_tt =
       std::make_shared<LDLfDiamond>(regex_a_union_b, tt);
 
-  auto *my_dfa = to_dfa(*diamond_formula_a_plus_b_tt);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*diamond_formula_a_plus_b_tt, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -336,7 +348,8 @@ TEST_CASE("Translate {a plus b}ff", "[translate]") {
   auto ff = boolean(false);
   auto box_formula_a_plus_b_ff = std::make_shared<LDLfBox>(regex_a_union_b, ff);
 
-  auto *my_dfa = to_dfa(*box_formula_a_plus_b_ff);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*box_formula_a_plus_b_ff, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -370,7 +383,8 @@ TEST_CASE("Translate <a , b>tt", "[translate]") {
   auto diamond_formula_a_seq_b_tt =
       std::make_shared<LDLfDiamond>(regex_a_seq_b, tt);
 
-  auto *my_dfa = to_dfa(*diamond_formula_a_seq_b_tt);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*diamond_formula_a_seq_b_tt, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -405,7 +419,8 @@ TEST_CASE("Translate {a , b}ff", "[translate]") {
       std::make_shared<const SequenceRegExp>(vec_regex{regex_a, regex_b});
   auto box_formula_a_seq_b_ff = std::make_shared<LDLfBox>(regex_a_seq_b, ff);
 
-  auto *my_dfa = to_dfa(*box_formula_a_seq_b_ff);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*box_formula_a_seq_b_ff, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -437,7 +452,8 @@ TEST_CASE("Translate <a*>tt", "[translate]") {
   auto tt = boolean(true);
   auto diamond_formula_a_tt = std::make_shared<LDLfDiamond>(regex_star_a, tt);
 
-  auto *my_dfa = to_dfa(*diamond_formula_a_tt);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*diamond_formula_a_tt, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -462,7 +478,8 @@ TEST_CASE("Translate {a*}tt", "[translate]") {
   auto tt = boolean(true);
   auto box_formula_a_star_tt = std::make_shared<LDLfBox>(regex_star_a, tt);
 
-  auto *my_dfa = to_dfa(*box_formula_a_star_tt);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*box_formula_a_star_tt, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
@@ -491,7 +508,8 @@ TEST_CASE("Translate <a*, b>tt", "[translate]") {
   auto tt = boolean(true);
   auto diamond_formula = std::make_shared<LDLfDiamond>(regex_seq, tt);
 
-  auto *my_dfa = to_dfa(*diamond_formula);
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = to_dfa(*diamond_formula, mgr);
 
   // print the DFA
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
