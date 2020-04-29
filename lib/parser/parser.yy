@@ -51,33 +51,41 @@
 
 %define api.value.type {struct whitemech::lydia::YYSTYPE}
 
-%type<formula> item
+%type<formula> input
+%type<formula> ldlf_formula
+
+%token                  TT
+%token                  FF
+%token                  LPAR
+%token                  RPAR
+%token                  NEWLINE
+%token                  END_OF_FILE    0
 
 %left                   OR
 %left                   AND
 %right                  NOT
-
-%token                  END    0     "end of file"
-%token                  TT
-%token                  FF
-%token                  NEWLINE
+%nonassoc               LPAR
 
 %locations
 
+%start input
+
 %%
 
-list_option : END | list END;
+input
+    : ldlf_formula { $$ = $1;
+                     driver.result = $$; }
+    ;
 
-list
-  : item
-  | list item
-  ;
-
-item
-  : TT      { $$ = driver.add_LDLfBooleanAtom(true); }
-  | FF      { driver.add_LDLfBooleanAtom(false); }
-  | NEWLINE { driver.add_newline(); }
-  ;
+ldlf_formula
+    : TT                                { $$ = driver.add_LDLfBooleanAtom(true); }
+    | FF                                { $$ = driver.add_LDLfBooleanAtom(false); }
+    | LPAR ldlf_formula RPAR            { $$ = $2; }
+    | ldlf_formula AND ldlf_formula     { $$ = driver.add_LDLfAnd($1, $3); }
+    | ldlf_formula OR ldlf_formula      { $$ = driver.add_LDLfOr($1, $3); }
+    | NOT ldlf_formula                  { $$ = driver.add_LDLfNot($2); }
+    | NEWLINE                           { driver.add_newline(); }
+    ;
 
 %%
 

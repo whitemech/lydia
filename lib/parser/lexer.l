@@ -1,7 +1,6 @@
 %{
 /* C++ string header, for string ops below */
 #include <string>
-#include "parser_stype.h"
 
 /* Implementation of yyFlexScanner */
 #include "scanner.hpp"
@@ -12,7 +11,7 @@
 using token = whitemech::lydia::Parser::token;
 
 /* define yyterminate as this instead of NULL */
-#define yyterminate() return( token::END )
+#define yyterminate() return( token::END_OF_FILE )
 
 /* msvc2010 requires that we exclude this header file. */
 #define YY_NO_UNISTD_H
@@ -44,11 +43,19 @@ using token = whitemech::lydia::Parser::token;
 
 (?i:ff)     { return token::FF; }
 
+"("         { return token::LPAR; }
+
+")"         { return token::RPAR; }
+
+
+
 \n          {
                // Update line number
                loc->lines();
                return token::NEWLINE;
             }
+
+[ \r\n\t]*  { ; }
 
 %%
 

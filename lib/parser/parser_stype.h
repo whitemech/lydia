@@ -27,7 +27,6 @@ namespace lydia {
 
 struct YYSTYPE {
   std::shared_ptr<const LDLfFormula> formula;
-  int counter;
   // Constructor
   YYSTYPE() = default;
   // Destructor
