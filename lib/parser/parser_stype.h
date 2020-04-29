@@ -19,10 +19,10 @@
 #ifndef LYDIA_PARSER_STYPE_H
 #define LYDIA_PARSER_STYPE_H
 
-#include <string>
 #include "logic.hpp"
+#include <string>
 
-namespace whitemech{
+namespace whitemech {
 namespace lydia {
 
 struct YYSTYPE {
