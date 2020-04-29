@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:19.10
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -43,15 +43,20 @@ ENV CCACHE_DIR=/build/docker_ccache
 
 USER default
 
-RUN sudo apt-get install -y flex bison libgraphviz-dev
+RUN sudo apt-get install -y flex libgraphviz-dev
 
 WORKDIR /home/default
 
 RUN git clone https://github.com/KavrakiLab/cudd --recursive && \
-cd cudd && \
-autoreconf -i && \
-./configure --enable-silent-rules --enable-obj --enable-dddmp && \
-sudo make install
+  cd cudd && \
+  autoreconf -i && \
+  ./configure --enable-silent-rules --enable-obj --enable-dddmp && \
+  sudo make install
+
+RUN wget http://ftp.us.debian.org/debian/pool/main/b/bison/libbison-dev_3.0.4.dfsg-1+b1_amd64.deb &&\
+  wget http://ftp.us.debian.org/debian/pool/main/b/bison/bison_3.0.4.dfsg-1+b1_amd64.deb &&\
+  sudo dpkg -i libbison-dev_3.0.4.dfsg-1+b1_amd64.deb &&\
+  sudo dpkg -i bison_3.0.4.dfsg-1+b1_amd64.deb
 
 WORKDIR /build
 
