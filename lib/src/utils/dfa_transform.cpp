@@ -18,6 +18,7 @@
 #include "utils/dfa_transform.hpp"
 #include <cstdio>
 #include <graphviz/gvc.h>
+#include <numeric>
 #include <queue>
 #include <utils/misc.hpp>
 #include <utils/print.hpp>
@@ -101,5 +102,43 @@ void dfa_to_graphviz(const dfa &automaton, const std::string &output_filename,
   agclose(g);
   gvFreeContext(gvc);
 }
+
+void dumpdot(const CUDD::Cudd &mgr, const CUDD::BDD &b,
+             const std::vector<const char *> &inames,
+             const std::string &filename) {
+  FILE *fp = fopen(filename.c_str(), "w");
+  std::vector<CUDD::BDD> single(1);
+  single[0] = b;
+  mgr.DumpDot(single, inames.data(), nullptr, fp);
+  fclose(fp);
+}
+
+void bdd2dot(const dfa &automaton, const std::vector<std::string> &names,
+             const std::string &directory) {
+  const auto size = automaton.root_bdds.size();
+  std::vector<const char *> inames;
+  inames.reserve(names.size());
+  std::transform(names.begin(), names.end(), std::back_inserter(inames),
+                 [](const std::string &s) { return s.c_str(); });
+  for (int i = 0; i < size; i++) {
+    std::string filename = directory + "/" + std::to_string(i);
+    dumpdot(automaton.mgr, automaton.root_bdds[i], inames, filename);
+    std::system(("dot -Tsvg " + filename + " > " + filename + ".svg").c_str());
+  }
+}
+
+void dfa_to_bdds(const dfa &automaton, const std::string &directory_path) {
+  auto names = std::vector<std::string>();
+  names.reserve(automaton.nb_bits + automaton.nb_variables);
+  // populate bit names
+  for (int i = 0; i < automaton.nb_bits; i++) {
+    names.push_back("b" + std::to_string(i));
+  }
+  // populate variable names
+  names.insert(names.end(), automaton.variables.begin(),
+               automaton.variables.end());
+  bdd2dot(automaton, names, directory_path);
+}
+
 } // namespace lydia
 } // namespace whitemech

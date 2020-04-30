@@ -101,6 +101,10 @@ typedef std::map<dfa_state_ptr, int, SharedComparator> map_dfa_states;
 typedef std::set<tuple_dfa_transition> set_dfa_transitions;
 typedef std::vector<int> item;
 typedef std::vector<CUDD::BDD> vec_bdd;
+typedef unsigned long int state_t;
+typedef unsigned long int variable_t;
+typedef bool bit;
+typedef std::vector<bool> bitvec;
 
 class not_implemented_error : public std::logic_error {
 public:

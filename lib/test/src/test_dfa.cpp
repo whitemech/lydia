@@ -18,6 +18,7 @@
 #include "dfa.hpp"
 #include <cuddObj.hh>
 #include <graphviz/gvc.h>
+#include <utils/dfa_transform.hpp>
 
 namespace whitemech::lydia::Test {
 
@@ -104,14 +105,6 @@ TEST_CASE("Test DFA initialization", "[dfa]") {
     auto my_dfa = dfa::read_from_file( // NOLINT
         "../../../lib/test/src/data/mona/eventually_a.dfa", mgr);
   }
-}
-
-TEST_CASE("Test bdd2dot", "[dfa]") {
-  whitemech::lydia::Logger::level(LogLevel::debug);
-  auto mgr = CUDD::Cudd();
-  auto my_dfa = dfa::read_from_file(
-      "../../../lib/test/src/data/mona/mona_example.dfa", mgr);
-  my_dfa.bdd2dot();
 }
 
 TEST_CASE("Test accepts", "[dfa]") {
