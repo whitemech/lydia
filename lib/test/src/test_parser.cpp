@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 #include "catch.hpp"
 #include "logger.hpp"
 #include "parser/driver.hpp"

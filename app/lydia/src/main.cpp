@@ -16,26 +16,34 @@
  */
 
 #include "CLI/CLI.hpp"
+#include "driver.cpp"
 #include <iostream>
 #include <istream>
-#include "driver.cpp"
 
 int main(int argc, char **argv) {
   CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
 
-  std::string filename = "default";
-  app.add_option("-f,--file", filename, "A help string");
-
   std::string ldlf_formula;
-  app.add_option("-l,--ldlf", ldlf_formula, "An LDLf formula");
+  CLI::Option *str_opt =
+      app.add_option("-l,--ldlf", ldlf_formula, "An LDLf formula.");
+
+  // TODO add support for reading from a file .ldlf
+  //  std::string filename = "formula";
+  //  CLI::Option *file_opt = app.add_option("-f,--file", filename, "A file
+  //  containing the LDLf formula.");
+  //
+  //  file_opt->excludes(str_opt);
+  //  str_opt->excludes(file_opt);
 
   CLI11_PARSE(app, argc, argv);
 
-  if (ldlf_formula != "") {
-    auto driver = whitemech::lydia::Driver();
+  auto driver = whitemech::lydia::Driver();
+
+  if (str_opt) {
     std::stringstream ldlf_formula_stream(ldlf_formula);
     driver.parse(ldlf_formula_stream);
     driver.print(std::cout);
   }
+
   return 0;
 }
