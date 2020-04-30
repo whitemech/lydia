@@ -530,7 +530,6 @@ TEST_CASE("Translate <a*, b>tt", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{a_, b_}));
   REQUIRE(my_dfa->accepts(trace{a_, b_, e}));
 
-  dfa_to_bdds(*my_dfa, "example");
 }
 
 } // namespace whitemech::lydia::Test

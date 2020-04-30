@@ -43,7 +43,7 @@ std::vector<std::set<T, U>> powerset(std::set<T, U> &s) {
     u_int64_t mask = i;
     int index = 0;
     while (mask) {
-      if (mask & 1 != 0) {
+      if ((mask & 1) != 0) {
         tmp.insert(vect[index]);
       }
       mask >>= 1;
