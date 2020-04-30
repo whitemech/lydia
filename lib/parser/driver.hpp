@@ -22,7 +22,9 @@
 
 #include "logic.hpp"
 #include "parser.tab.hh"
+#include "propositional_logic.hpp"
 #include "scanner.hpp"
+#include "symbol.hpp"
 
 namespace whitemech {
 namespace lydia {
@@ -68,6 +70,51 @@ public:
              std::shared_ptr<const LDLfFormula> &rhs) const;
   std::shared_ptr<const LDLfFormula>
   add_LDLfNot(std::shared_ptr<const LDLfFormula> &formula) const;
+
+  std::shared_ptr<const LDLfFormula>
+  addLDLfDiamond(std::shared_ptr<const RegExp> &regex,
+                 std::shared_ptr<const LDLfFormula> &formula) const;
+  std::shared_ptr<const LDLfFormula>
+  addLDLfBox(std::shared_ptr<const RegExp> &regex,
+             std::shared_ptr<const LDLfFormula> &formula) const;
+  std::shared_ptr<const LDLfFormula>
+  addLDLfImplication(std::shared_ptr<const LDLfFormula> &lhs,
+                     std::shared_ptr<const LDLfFormula> &rhs) const;
+  std::shared_ptr<const LDLfFormula>
+  addLDLfEquivalence(std::shared_ptr<const LDLfFormula> &lhs,
+                     std::shared_ptr<const LDLfFormula> &rhs) const;
+
+  std::shared_ptr<const RegExp> add_PropositionalRegExp(
+      std::shared_ptr<const PropositionalFormula> &prop_formula) const;
+  std::shared_ptr<const RegExp>
+  add_TestRegExp(std::shared_ptr<const LDLfFormula> &formula) const;
+  std::shared_ptr<const RegExp>
+  add_StarRegExp(std::shared_ptr<const RegExp> &regex) const;
+  std::shared_ptr<const RegExp>
+  add_SequenceRegExp(std::shared_ptr<const RegExp> &regex_lhs,
+                     std::shared_ptr<const RegExp> &regex_rhs) const;
+  std::shared_ptr<const RegExp>
+  add_UnionRegExp(std::shared_ptr<const RegExp> &regex_lhs,
+                  std::shared_ptr<const RegExp> &regex_rhs) const;
+
+  std::shared_ptr<const PropositionalFormula>
+  add_PropositionalBooleanAtom(const bool &flag) const;
+  std::shared_ptr<const PropositionalFormula>
+  add_PropositionalAtom(std::string &symbol_name) const;
+  std::shared_ptr<const PropositionalFormula>
+  add_PropositionalAnd(std::shared_ptr<const PropositionalFormula> &lhs,
+                       std::shared_ptr<const PropositionalFormula> &rhs) const;
+  std::shared_ptr<const PropositionalFormula>
+  add_PropositionalOr(std::shared_ptr<const PropositionalFormula> &lhs,
+                      std::shared_ptr<const PropositionalFormula> &rhs) const;
+  std::shared_ptr<const PropositionalFormula> add_PropositionalNot(
+      std::shared_ptr<const PropositionalFormula> &prop_formula) const;
+  std::shared_ptr<const PropositionalFormula> add_PropositionalImplication(
+      std::shared_ptr<const PropositionalFormula> &lhs,
+      std::shared_ptr<const PropositionalFormula> &rhs) const;
+  std::shared_ptr<const PropositionalFormula> add_PropositionalEquivalence(
+      std::shared_ptr<const PropositionalFormula> &lhs,
+      std::shared_ptr<const PropositionalFormula> &rhs) const;
 
   std::ostream &print(std::ostream &stream) const;
 };

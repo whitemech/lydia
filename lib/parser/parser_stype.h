@@ -17,6 +17,7 @@
  */
 
 #include "logic.hpp"
+#include "propositional_logic.hpp"
 #include <string>
 
 namespace whitemech {
@@ -24,6 +25,10 @@ namespace lydia {
 
 struct YYSTYPE {
   std::shared_ptr<const LDLfFormula> formula;
+  std::shared_ptr<const RegExp> regex;
+  std::shared_ptr<const PropositionalFormula> prop_formula;
+  std::string symbol_name;
+
   // Constructor
   YYSTYPE() = default;
   // Destructor
