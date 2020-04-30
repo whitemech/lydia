@@ -54,13 +54,26 @@
 %type<formula> input
 %type<formula> ldlf_formula
 
-%token                  TT
-%token                  FF
 %token                  LPAR
 %token                  RPAR
+%token                  BOX_LPAR
+%token                  BOX_RPAR
+%token                  DIAMOND_LPAR
+%token                  DIAMOND_RPAR
+%token                  UNION
+%token                  SEQUENCE
+%token                  TEST
+%token                  STAR
+%token                  TT
+%token                  FF
+%token                  TRUE
+%token                  FALSE
+%token                  SYMBOL
 %token                  NEWLINE
 %token                  END_OF_FILE    0
 
+%left                   EQUIVALENCE
+%right                  IMPLICATION
 %left                   OR
 %left                   AND
 %right                  NOT
