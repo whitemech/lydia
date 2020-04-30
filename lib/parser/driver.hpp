@@ -69,7 +69,7 @@ public:
   std::shared_ptr<const LDLfFormula>
   add_LDLfNot(std::shared_ptr<const LDLfFormula> &formula) const;
 
-  std::ostream &print(std::ostream &stream);
+  std::ostream &print(std::ostream &stream) const;
 };
 
 } // namespace lydia

@@ -97,8 +97,8 @@ Driver::add_LDLfNot(std::shared_ptr<const LDLfFormula> &formula) const {
   return std::make_shared<LDLfNot>(formula);
 }
 
-std::ostream &Driver::print(std::ostream &stream) {
-  stream << red << "Results: " << norm << "\n";
+std::ostream &Driver::print(std::ostream &stream) const {
+  stream << this->result->str() << "\n";
   return (stream);
 }
 
