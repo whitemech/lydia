@@ -47,7 +47,7 @@ add_library (${LIB_NAME}
         ${BISON_lydia_parser_OUTPUTS}
         ${FLEX_lydia_lexer_OUTPUTS})
 
-target_link_libraries(${LIB_NAME} ${CUDD_LIBRARIES} ${GRAPHVIZ_LIBRARIES})
+target_link_libraries(${LIB_NAME} ${CUDD_LIBRARIES} ${GRAPHVIZ_LIBRARIES} ${CRYPTOMINISAT5_LIBRARIES})
 
 #export vars
 set (LIBRARY_INCLUDE_PATH  ${LIBRARY_INCLUDE_PATH} PARENT_SCOPE)

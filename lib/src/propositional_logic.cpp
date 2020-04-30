@@ -19,6 +19,7 @@
 #include "utils/misc.hpp"
 #include <atom_visitor.hpp>
 #include <cassert>
+#include <cryptominisat5/cryptominisat.h>
 
 namespace whitemech {
 namespace lydia {
@@ -249,6 +250,20 @@ std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f) {
   auto models = all_models(f);
   std::vector<set_atoms_ptr> result;
   return models;
+}
+
+bool is_sat(const PropositionalFormula &f){
+  CMSat::SATSolver solver;
+  std::vector<CMSat::Lit> clause;
+
+  //Let's use 4 threads
+  solver.set_num_threads(4);
+
+  auto atoms = find_atoms(f);
+  solver.new_vars(atoms.size());
+
+  
+
 }
 
 } // namespace lydia

@@ -167,5 +167,8 @@ std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f);
  */
 std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f);
 
+
+bool is_sat(const PropositionalFormula &f);
+
 } // namespace lydia
 } // namespace whitemech
