@@ -71,4 +71,22 @@ TEST_CASE("DFA to Graphviz", "[dfa_transform]") {
   dfa_to_graphviz(my_dfa, "output.svg", "svg");
 }
 
+TEST_CASE("DFA to HOA", "[dfa_transform]") {
+  Logger log("DFA to HOA");
+  auto mgr = CUDD::Cudd();
+  auto my_dfa = dfa(mgr, 1, 1);
+
+  my_dfa.add_state();
+  my_dfa.add_transition(0, interpretation_set{}, 1);
+  my_dfa.add_transition(1, interpretation_set{}, 1);
+  my_dfa.set_final_state(1, true);
+
+  std::stringstream o;
+  dfa_to_hoa(my_dfa, o);
+
+  auto output = o.str();
+  REQUIRE(output.length() > 0);
+  log.debug(output);
+}
+
 } // namespace whitemech::lydia::Test

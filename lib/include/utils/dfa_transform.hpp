@@ -24,5 +24,7 @@ namespace lydia {
 void dfa_to_graphviz(const dfa &automaton, const std::string &output_filename,
                      const std::string &format = "svg");
 
-}
+void dfa_to_hoa(const dfa &automaton, std::ostream &o);
+
+} // namespace lydia
 } // namespace whitemech
