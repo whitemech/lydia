@@ -46,16 +46,19 @@ TEST_CASE("Bit length", "[bit_length]") {
 TEST_CASE("binary vector/string to int", "[bin2state]") {
   REQUIRE(bin2state(std::vector<int>{0}) == 0);
   REQUIRE(bin2state(std::vector<int>{1}) == 1);
-  REQUIRE(bin2state(std::vector<int>{1, 0}) == 2);
+  REQUIRE(bin2state(std::vector<int>{0, 1}) == 2);
   REQUIRE(bin2state(std::vector<int>{1, 1}) == 3);
-  REQUIRE(bin2state(std::vector<int>{0, 0, 1}) == 1);
+  REQUIRE(bin2state(std::vector<int>{0, 0, 1}) == 4);
+  REQUIRE(bin2state(std::vector<int>{1, 0, 0}) == 1);
   REQUIRE(bin2state(std::vector<int>{0, 0, 1, 0, 0}) == 4);
 
   REQUIRE(bin2state("0") == 0);
   REQUIRE(bin2state("1") == 1);
-  REQUIRE(bin2state("10") == 2);
+  REQUIRE(bin2state("10") == 1);
+  REQUIRE(bin2state("01") == 2);
   REQUIRE(bin2state("11") == 3);
-  REQUIRE(bin2state("001") == 1);
+  REQUIRE(bin2state("001") == 4);
+  REQUIRE(bin2state("100") == 1);
   REQUIRE(bin2state("00100") == 4);
 }
 
@@ -69,6 +72,17 @@ TEST_CASE("DFA to Graphviz", "[dfa_transform]") {
   my_dfa.set_final_state(1, true);
 
   dfa_to_graphviz(my_dfa, "output.svg", "svg");
+}
+
+TEST_CASE("Test bdd2dot", "[dfa]") {
+  whitemech::lydia::Logger::level(LogLevel::debug);
+  auto mgr = CUDD::Cudd();
+  const std::string output_dir_path = "output_bdds";
+  auto cmd = "mkdir " + output_dir_path;
+  std::system(cmd.c_str());
+  auto my_dfa = dfa::read_from_file(
+      "../../../lib/test/src/data/mona/mona_example.dfa", mgr);
+  dfa_to_bdds(my_dfa, output_dir_path);
 }
 
 } // namespace whitemech::lydia::Test

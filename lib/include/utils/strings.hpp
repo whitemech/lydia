@@ -52,9 +52,11 @@ std::string join(const std::vector<std::string> &elements,
  *
  * @param n the integer to transform.
  * @param nb_fill_bits the maximum number of MSBs to put to zero.
+ * @param increasing: if true, from the least to the most significant bit.
+ *                    If false, the opposite.
  * @return the binary representation of the integer.
  */
-std::string state2bin(int n, int nb_fill_bits = -1);
+std::string state2bin(int n, int nb_fill_bits = -1, bool increasing = false);
 
 /*
  * From interpretation to symbol

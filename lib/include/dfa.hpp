@@ -37,17 +37,18 @@ public:
   int initial_state{};
   int nb_states{};
   int nb_variables{};
+  std::vector<std::string> variables;
 
   CUDD::BDD finalstatesBDD;
   /*!
-   * Store the BDD roots - LSB order, i.e.:
-   * b_{n-1}, ..., b_1, b_0
+   * Store the BDD roots, from the least to the most significant:
+   * b_0, b_1, ..., b_{n-1}
    */
   vec_bdd root_bdds;
 
   /*!
-   * Store the BDD variables - LSB order, i.e.:
-   * b_{n-1}, ..., b_1, b_0, var_0, var_1, ... var_{m-1}
+   * Store the BDD variables:
+   * b_0, b_1, ..., b_{n-1}, var_0, var_1, ... var_{m-1}
    */
   vec_bdd bddvars;
 
@@ -114,22 +115,6 @@ public:
   // void initialize(string filename, string partfile, Cudd& manager);
   std::vector<item> bdd;
 
-  /*!
-   * Dump the BDDs (one for each bit of the state space).
-   *
-   * The output will be:
-   * output_directory/
-   * - 0.dot
-   * - 1.dot
-   * ...
-   * - n.dot
-   *
-   * That is, a DOT file for each bit.
-   *
-   * @param directory the directory in which to print the BDDs in DOT format.
-   */
-  void bdd2dot(const std::string &directory = "./");
-  void dumpdot(CUDD::BDD &b, const std::string &filename);
   CUDD::BDD state2bdd(int s);
 
   /*!
@@ -220,7 +205,6 @@ public:
 
 protected:
 private:
-  std::vector<std::string> variables;
   void get_successor(const std::vector<int> &state,
                      const interpretation &symbol, std::vector<int> &next_state,
                      std::vector<int> &extended_symbol) const;

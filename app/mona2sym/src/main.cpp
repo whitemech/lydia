@@ -45,7 +45,7 @@ void transform(const std::string &input, const std::string &output_dir,
   //  std::filesystem::create_directory(output_dir);
   auto cmd = "mkdir " + output_dir;
   std::system(cmd.c_str());
-  my_dfa.bdd2dot(output_dir);
+  dfa_to_bdds(my_dfa, output_dir);
   dfa_to_graphviz(my_dfa, "output", "svg");
 }
 

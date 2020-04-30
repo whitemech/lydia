@@ -79,7 +79,7 @@ std::string join(const std::vector<std::string> &elements, const char *delim) {
   return s.str();
 }
 
-std::string state2bin(int n, int nb_fill_bits) {
+std::string state2bin(int n, int nb_fill_bits, bool increasing) {
   std::string res;
   while (n) {
     res.push_back((n & 1) + '0');
@@ -95,7 +95,9 @@ std::string state2bin(int n, int nb_fill_bits) {
 
   if (res.empty())
     res = "0";
-  else
+
+  if (not increasing)
+    // reverse: from the most to the least significant bit.
     std::reverse(res.begin(), res.end());
   return res;
 }
