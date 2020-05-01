@@ -60,7 +60,10 @@ using token = whitemech::lydia::Parser::token;
 (?i:true)                   { return token::TRUE; }
 (?i:false)                  { return token::FALSE; }
 
-[a-zA-Z]|(".*")              { return token::SYMBOL; }
+[a-zA-Z0-9_]|(".*")         {
+                                yylval->symbol_name = yytext;
+                                return token::SYMBOL;
+                            }
 
 \n                          {
                                // Update line number

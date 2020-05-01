@@ -28,35 +28,30 @@ TEST_CASE("LDLf string printer", "[string_printer]") {
     auto actual = strPrinter.apply(f);
     REQUIRE(actual == expected);
   }
-
   SECTION("test ff.str()") {
     auto f = LDLfBooleanAtom(false);
     auto expected = "ff";
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string tt & ff") {
     auto f = LDLfAnd({boolean(true), boolean(false)});
     auto expected = "And(ff, tt)";
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string tt | ff") {
     auto f = LDLfOr({boolean(true), boolean(false)});
     auto expected = "Or(ff, tt)";
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string !tt") {
     auto f = LDLfNot(boolTrue);
     auto expected = "Not(tt)";
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string <a>tt") {
     auto ptr_re = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
     auto ptr_tt = std::make_shared<LDLfBooleanAtom>(true);
@@ -65,7 +60,6 @@ TEST_CASE("LDLf string printer", "[string_printer]") {
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string [a]tt") {
     auto ptr_re = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
     auto ptr_tt = std::make_shared<LDLfBooleanAtom>(true);
@@ -74,7 +68,6 @@ TEST_CASE("LDLf string printer", "[string_printer]") {
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
-
 }
 
 TEST_CASE("RegEx string printer", "[string_printer]") {
@@ -86,7 +79,6 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string true") {
     auto ptr_prop_true = std::make_shared<PropositionalTrue>();
     auto prop_re = PropositionalRegExp(ptr_prop_true);
@@ -94,7 +86,6 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     auto actual = to_string(prop_re);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string false") {
     auto ptr_prop_false = std::make_shared<PropositionalFalse>();
     auto prop_re = PropositionalRegExp(ptr_prop_false);
@@ -102,7 +93,6 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     auto actual = to_string(prop_re);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string ?(tt)") {
     auto ptr_ldlf_formula = std::make_shared<LDLfBooleanAtom>(true);
     auto f = TestRegExp(ptr_ldlf_formula);
@@ -110,7 +100,6 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string ?(tt & ff)") {
     auto tt = std::make_shared<LDLfBooleanAtom>(true);
     auto ff = std::make_shared<LDLfBooleanAtom>(false);
@@ -121,7 +110,6 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     auto actual = to_string(f);
     REQUIRE(actual == expected_2);
   }
-
   SECTION("to string a+b") {
     auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
     auto b = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("b"));
@@ -131,7 +119,6 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     auto actual = to_string(union_re);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string a;b") {
     auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
     auto b = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("b"));
@@ -141,7 +128,6 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     auto actual = to_string(sequence_re);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string a*") {
     auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
     auto star_re = StarRegExp(a);
@@ -149,7 +135,6 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     auto actual = to_string(star_re);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string (a;b)+(c*)") {
     auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
     auto b = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("b"));
@@ -161,7 +146,6 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     auto actual = to_string(union_re);
     REQUIRE(actual == expected);
   }
-
 }
 
 TEST_CASE("PropositionalFormula string printer", "[string_printer]") {
@@ -172,7 +156,6 @@ TEST_CASE("PropositionalFormula string printer", "[string_printer]") {
     auto actual = to_string(prop_true);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string false") {
     auto prop_false = PropositionalFalse();
     auto expected = "false";
@@ -180,34 +163,28 @@ TEST_CASE("PropositionalFormula string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
 
+  auto a = std::make_shared<PropositionalAtom>("a");
+  auto b = std::make_shared<PropositionalAtom>("b");
+  set_prop_formulas set_a_b = set_prop_formulas({a, b});
+
   SECTION("to string a & b") {
-    auto a = std::make_shared<PropositionalAtom>("a");
-    auto b = std::make_shared<PropositionalAtom>("b");
-    set_prop_formulas a_and_b = set_prop_formulas({a, b});
-    auto prop_and = PropositionalAnd(a_and_b);
+    auto prop_and = PropositionalAnd(set_a_b);
     auto expected = "Prop_And(a, b)";
     auto actual = to_string(prop_and);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string a | b") {
-    auto a = std::make_shared<PropositionalAtom>("a");
-    auto b = std::make_shared<PropositionalAtom>("b");
-    set_prop_formulas a_or_b = set_prop_formulas({a, b});
-    auto prop_or = PropositionalOr(a_or_b);
+    auto prop_or = PropositionalOr(set_a_b);
     auto expected = "Prop_Or(a, b)";
     auto actual = to_string(prop_or);
     REQUIRE(actual == expected);
   }
-
   SECTION("to string !a") {
-    auto a = std::make_shared<PropositionalAtom>("a");
     auto not_a = PropositionalNot(a);
     auto expected = "Prop_Not(a)";
     auto actual = to_string(not_a);
     REQUIRE(actual == expected);
   }
-
 }
 
 } // namespace whitemech::lydia::Test
