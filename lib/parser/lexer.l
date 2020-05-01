@@ -22,7 +22,6 @@ using token = whitemech::lydia::Parser::token;
 %}
 
 %option debug
-%option nodefault
 %option yyclass="whitemech::lydia::Scanner"
 %option noyywrap
 %option c++
@@ -61,7 +60,7 @@ using token = whitemech::lydia::Parser::token;
 (?i:true)                   { return token::TRUE; }
 (?i:false)                  { return token::FALSE; }
 
-(\w+)|(".*")                { return token::SYMBOL; }
+[a-zA-Z]|(".*")              { return token::SYMBOL; }
 
 \n                          {
                                // Update line number

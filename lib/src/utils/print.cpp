@@ -121,7 +121,7 @@ void StrPrinter::visit(const PropositionalFalse &) {
 }
 
 void StrPrinter::visit(const PropositionalAtom &x) {
-  result = x.str();
+  result = apply(*x.symbol);
 }
 
 void StrPrinter::visit(const PropositionalAnd &x) {
@@ -150,7 +150,7 @@ void StrPrinter::visit(const PropositionalOr &x) {
 
 void StrPrinter::visit(const PropositionalNot &x) {
   std::ostringstream s;
-  s << "Not(" << apply(*x.get_arg()) << ")";
+  s << "Prop_Not(" << apply(*x.get_arg()) << ")";
   result = s.str();
 }
 
