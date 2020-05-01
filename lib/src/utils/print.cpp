@@ -66,7 +66,7 @@ void StrPrinter::visit(const LDLfDiamond &x) {
 
 void StrPrinter::visit(const LDLfBox &x) {
   std::ostringstream s;
-  s << "<" << apply(*x.get_regex()) << ">(" << apply(*x.get_formula()) << ")";
+  s << "[" << apply(*x.get_regex()) << "](" << apply(*x.get_formula()) << ")";
   result = s.str();
 }
 
