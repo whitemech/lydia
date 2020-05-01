@@ -22,7 +22,6 @@ using token = whitemech::lydia::Parser::token;
 %}
 
 %option debug
-%option nodefault
 %option yyclass="whitemech::lydia::Scanner"
 %option noyywrap
 %option c++
@@ -61,7 +60,7 @@ using token = whitemech::lydia::Parser::token;
 (?i:true)                   { return token::TRUE; }
 (?i:false)                  { return token::FALSE; }
 
-[a-zA-Z0-9_]|(".*")         {
+[a-zA-Z_][a-zA-Z0-9_]*|(".*") {
                                 yylval->symbol_name = yytext;
                                 return token::SYMBOL;
                             }
