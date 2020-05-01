@@ -70,6 +70,90 @@ void StrPrinter::visit(const LDLfBox &x) {
   result = s.str();
 }
 
+void StrPrinter::visit(const PropositionalRegExp &x) {
+  std::ostringstream s;
+  s << apply(*x.get_arg());
+  result = s.str();
+}
+
+void StrPrinter::visit(const TestRegExp &x) {
+  std::ostringstream s;
+  s << "Test(" << apply(*x.get_arg()) << ")";
+  result = s.str();
+}
+
+void StrPrinter::visit(const UnionRegExp &x) {
+  std::ostringstream s;
+  auto container = x.get_container();
+  s << "Union(";
+  s << apply(**container.begin());
+  for (auto it = ++(container.begin()); it != container.end(); ++it) {
+    s << ", " << apply(**it);
+  }
+  s << ")";
+  result = s.str();
+}
+
+void StrPrinter::visit(const SequenceRegExp &x) {
+  std::ostringstream s;
+  auto container = x.get_container();
+  s << "Sequence(";
+  s << apply(**container.begin());
+  for (auto it = ++(container.begin()); it != container.end(); ++it) {
+    s << ", " << apply(**it);
+  }
+  s << ")";
+  result = s.str();
+}
+
+void StrPrinter::visit(const StarRegExp &x) {
+  std::ostringstream s;
+  s << "Star(" << apply(*x.get_arg()) << ")";
+  result = s.str();
+}
+
+void StrPrinter::visit(const PropositionalTrue &) {
+  result = "true";
+}
+
+void StrPrinter::visit(const PropositionalFalse &) {
+  result = "false";
+}
+
+void StrPrinter::visit(const PropositionalAtom &x) {
+  result = x.str();
+}
+
+void StrPrinter::visit(const PropositionalAnd &x) {
+  std::ostringstream s;
+  auto container = x.get_container();
+  s << "Prop_And(";
+  s << apply(**container.begin());
+  for (auto it = ++(container.begin()); it != container.end(); ++it) {
+    s << ", " << apply(**it);
+  }
+  s << ")";
+  result = s.str();
+}
+
+void StrPrinter::visit(const PropositionalOr &x) {
+  std::ostringstream s;
+  auto container = x.get_container();
+  s << "Prop_Or(";
+  s << apply(**container.begin());
+  for (auto it = ++(container.begin()); it != container.end(); ++it) {
+    s << ", " << apply(**it);
+  }
+  s << ")";
+  result = s.str();
+}
+
+void StrPrinter::visit(const PropositionalNot &x) {
+  std::ostringstream s;
+  s << "Not(" << apply(*x.get_arg()) << ")";
+  result = s.str();
+}
+
 std::string StrPrinter::apply(const Basic &b) {
   b.accept(*this);
   return result;
