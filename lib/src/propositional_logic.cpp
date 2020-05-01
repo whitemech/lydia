@@ -252,18 +252,15 @@ std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f) {
   return models;
 }
 
-bool is_sat(const PropositionalFormula &f){
+bool is_sat(const PropositionalFormula &f) {
   CMSat::SATSolver solver;
   std::vector<CMSat::Lit> clause;
 
-  //Let's use 4 threads
+  // Let's use 4 threads
   solver.set_num_threads(4);
 
   auto atoms = find_atoms(f);
   solver.new_vars(atoms.size());
-
-  
-
 }
 
 } // namespace lydia
