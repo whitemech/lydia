@@ -19,7 +19,7 @@
 
 namespace whitemech::lydia::Test {
 
-TEST_CASE("string printer", "[string_printer]") {
+TEST_CASE("LDLf string printer", "[string_printer]") {
 
   SECTION("test tt.str()") {
     StrPrinter strPrinter;
@@ -56,6 +56,139 @@ TEST_CASE("string printer", "[string_printer]") {
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
+}
+
+TEST_CASE("RegEx string printer", "[string_printer]") {
+
+  SECTION("test a") {
+    auto ptr_prop_atom = std::make_shared<PropositionalAtom>("a");
+    auto f = PropositionalRegExp(ptr_prop_atom);
+    auto expected = "a";
+    auto actual = to_string(f);
+    REQUIRE(actual == expected);
+  }
+
+  SECTION("test true") {
+    auto ptr_prop_true = std::make_shared<PropositionalTrue>();
+    auto prop_re = PropositionalRegExp(ptr_prop_true);
+    auto expected = "true";
+    auto actual = to_string(prop_re);
+    REQUIRE(actual == expected);
+  }
+
+  SECTION("test false") {
+    auto ptr_prop_false = std::make_shared<PropositionalFalse>();
+    auto prop_re = PropositionalRegExp(ptr_prop_false);
+    auto expected = "false";
+    auto actual = to_string(prop_re);
+    REQUIRE(actual == expected);
+  }
+
+  SECTION("test ?(tt)") {
+    auto ptr_ldlf_formula = std::make_shared<LDLfBooleanAtom>(true);
+    auto f = TestRegExp(ptr_ldlf_formula);
+    auto expected = "Test(tt)";
+    auto actual = to_string(f);
+    REQUIRE(actual == expected);
+  }
+
+  SECTION("test ?(tt & ff)") {
+    auto tt = std::make_shared<LDLfBooleanAtom>(true);
+    auto ff = std::make_shared<LDLfBooleanAtom>(false);
+    auto ptr_ldlf_formula = std::make_shared<LDLfAnd>(set_formulas ({tt, ff}));
+    auto f = TestRegExp(ptr_ldlf_formula);
+//    auto expected_1 = "Test(And(tt, ff))";
+    auto expected_2 = "Test(And(ff, tt))";
+    auto actual = to_string(f);
+    REQUIRE(actual == expected_2);
+  }
+
+  SECTION("test a+b") {
+    auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
+    auto b = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("b"));
+    set_regex prop_re = set_regex({a, b});
+    auto union_re = UnionRegExp(prop_re);
+    auto expected = "Union(a, b)";
+    auto actual = to_string(union_re);
+    REQUIRE(actual == expected);
+  }
+
+  SECTION("test a;b") {
+    auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
+    auto b = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("b"));
+    vec_regex prop_re = vec_regex({a, b});
+    auto sequence_re = SequenceRegExp(prop_re);
+    auto expected = "Sequence(a, b)";
+    auto actual = to_string(sequence_re);
+    REQUIRE(actual == expected);
+  }
+
+  SECTION("test a*") {
+    auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
+    auto star_re = StarRegExp(a);
+    auto expected = "Star(a)";
+    auto actual = to_string(star_re);
+    REQUIRE(actual == expected);
+  }
+
+  SECTION("test (a;b)+(c*)") {
+    auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
+    auto b = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("b"));
+    auto c = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("c"));
+    auto ptr_sequence_re = std::make_shared<SequenceRegExp>(vec_regex({a, b}));
+    auto ptr_star_re = std::make_shared<StarRegExp>(c);
+    auto union_re = UnionRegExp(set_regex({ptr_sequence_re, ptr_star_re}));
+    auto expected = "Union(Sequence(a, b), Star(c))";
+    auto actual = to_string(union_re);
+    REQUIRE(actual == expected);
+  }
+
+}
+
+TEST_CASE("PropositionalFormula string printer", "[string_printer]") {
+
+  SECTION("test true") {
+    auto prop_true = PropositionalTrue();
+    auto expected = "true";
+    auto actual = to_string(prop_true);
+    REQUIRE(actual == expected);
+  }
+
+  SECTION("test false") {
+    auto prop_false = PropositionalFalse();
+    auto expected = "false";
+    auto actual = to_string(prop_false);
+    REQUIRE(actual == expected);
+  }
+
+  SECTION("test a & b") {
+    auto a = std::make_shared<PropositionalAtom>("a");
+    auto b = std::make_shared<PropositionalAtom>("b");
+    set_prop_formulas a_and_b = set_prop_formulas({a, b});
+    auto prop_and = PropositionalAnd(a_and_b);
+    auto expected = "Prop_And(a, b)";
+    auto actual = to_string(prop_and);
+    REQUIRE(actual == expected);
+  }
+
+  SECTION("test a | b") {
+    auto a = std::make_shared<PropositionalAtom>("a");
+    auto b = std::make_shared<PropositionalAtom>("b");
+    set_prop_formulas a_or_b = set_prop_formulas({a, b});
+    auto prop_or = PropositionalOr(a_or_b);
+    auto expected = "Prop_Or(a, b)";
+    auto actual = to_string(prop_or);
+    REQUIRE(actual == expected);
+  }
+
+  SECTION("test !a") {
+    auto a = std::make_shared<PropositionalAtom>("a");
+    auto not_a = PropositionalNot(a);
+    auto expected = "Prop_Not(a)";
+    auto actual = to_string(not_a);
+    REQUIRE(actual == expected);
+  }
+
 }
 
 } // namespace whitemech::lydia::Test
