@@ -87,6 +87,22 @@ TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser]") {
     auto parsedAnd = driver.result;
     REQUIRE(*parsedAnd == *actualAnd_false_true);
   }
+  SECTION("test parsing tt & ff & tt") {
+    auto and_ff_tt = std::make_shared<LDLfAnd>(set_formulas({boolean(false), boolean(true)}));
+    auto actualAnd_tt_ff_tt = std::make_shared<LDLfAnd>(set_formulas({and_ff_tt, boolean(true)}));
+    std::istringstream tt_and_ff_and_tt("tt & ff & tt");
+    driver.parse(tt_and_ff_and_tt);
+    auto parsedAnd = driver.result;
+    REQUIRE(*parsedAnd == *actualAnd_tt_ff_tt);
+  }
+  SECTION("test parsing (tt & ff) & tt") {
+    auto and_tt_ff = std::make_shared<LDLfAnd>(set_formulas({boolean(true), boolean(false)}));
+    auto actualAnd_tt_ff_tt = std::make_shared<LDLfAnd>(set_formulas({and_tt_ff, boolean(true)}));
+    std::istringstream tt_and_ff_and_tt("(tt & ff) & tt");
+    driver.parse(tt_and_ff_and_tt);
+    auto parsedAnd = driver.result;
+    REQUIRE(*parsedAnd == *actualAnd_tt_ff_tt);
+  }
 }
 
 TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser]") {
@@ -171,6 +187,57 @@ TEST_CASE("Driver LDLfNot", "[parser]") {
     auto parsedNot_ff_or_tt = driver.result;
     REQUIRE(*parsedNot_ff_or_tt == *actualNot_or);
   }
+}
+
+TEST_CASE("Driver LDLfTemporal", "[parser]") {
+  auto driver = Driver();
+
+  auto ptr_prop_re_a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
+  auto ptr_prop_re_b = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("b"));
+  auto ptr_prop_re_c = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("c"));
+//  auto ptr_seq_re = std::make_shared<SequenceRegExp>(vec_regex({ptr_prop_re_a, ptr_prop_re_b, ptr_prop_re_c}));
+  auto ptr_seq_re_ab = std::make_shared<SequenceRegExp>(vec_regex({ptr_prop_re_a, ptr_prop_re_b}));
+  auto ptr_seq_re = std::make_shared<SequenceRegExp>(vec_regex({ptr_seq_re_ab, ptr_prop_re_c}));
+
+  auto ptr_union_re = std::make_shared<UnionRegExp>(set_regex({ptr_prop_re_a, ptr_prop_re_b}));
+  auto ptr_star_re = std::make_shared<StarRegExp>(ptr_prop_re_c);
+//  auto ptr_test_re = std::make_shared<SequenceRegExp>(vec_regex({ptr_prop_re_a, ptr_prop_re_b}));
+  auto ptr_tt = std::make_shared<LDLfBooleanAtom>(true);
+
+  auto actualDiamond_prop_re_tt = std::make_shared<LDLfDiamond>(ptr_prop_re_a, ptr_tt);
+  auto actualDiamond_seq_re_tt = std::make_shared<LDLfDiamond>(ptr_seq_re, ptr_tt);
+  auto actualDiamond_union_re_tt = std::make_shared<LDLfDiamond>(ptr_union_re, ptr_tt);
+  auto actualDiamond_star_re_tt = std::make_shared<LDLfDiamond>(ptr_star_re, ptr_tt);
+
+  auto actualBox_prop_re_tt = std::make_shared<LDLfBox>(ptr_prop_re_a, ptr_tt);
+  auto actualBox_seq_re_tt = std::make_shared<LDLfBox>(ptr_seq_re, ptr_tt);
+  auto actualBox_union_re_tt = std::make_shared<LDLfBox>(ptr_union_re, ptr_tt);
+  auto actualBox_star_re_tt = std::make_shared<LDLfBox>(ptr_star_re, ptr_tt);
+
+  SECTION("test parsing <a>tt") {
+    std::istringstream a_tt("<a>tt");
+    driver.parse(a_tt);
+    auto parsedDiamond = driver.result;
+    REQUIRE(*parsedDiamond == *actualDiamond_prop_re_tt);
+  }
+//  SECTION("test parsing <a;b;c>tt") {
+//    std::istringstream abc_tt("<(a;b);c>tt");
+//    driver.parse(abc_tt);
+//    auto parsedDiamond = driver.result;
+//    REQUIRE(*parsedDiamond == *actualDiamond_seq_re_tt);
+//  }
+//  SECTION("test parsing <a+b>tt") {
+//    std::istringstream ab_tt("<a+b>tt");
+//    driver.parse(ab_tt);
+//    auto parsedDiamond = driver.result;
+//    REQUIRE(*parsedDiamond == *actualDiamond_union_re_tt);
+//  }
+//  SECTION("test parsing [a]tt") {
+//    std::istringstream a_tt("[a]tt");
+//    driver.parse(a_tt);
+//    auto parsedBox = driver.result;
+//    REQUIRE(*parsedBox == *actualBox_prop_re_tt);
+//  }
 }
 
 } // namespace whitemech::lydia::Test

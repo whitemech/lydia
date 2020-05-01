@@ -115,6 +115,7 @@ ldlf_unaryop
     : ldlf_box                                                          { $$ = $1; }
     | ldlf_diamond                                                      { $$ = $1; }
     | ldlf_not                                                          { $$ = $1; }
+    | ldlf_atom                                                         { $$ = $1; }
     | ldlf_wrapped                                                      { $$ = $1; }
     ;
 ldlf_box: BOX_LPAR regular_expression BOX_RPAR ldlf_unaryop             { $$ = d.addLDLfBox($2, $4); };
@@ -123,8 +124,8 @@ ldlf_diamond
     ;
 ldlf_not: NOT ldlf_unaryop                                              { $$ = d.add_LDLfNot($2); };
 ldlf_wrapped
-    : ldlf_atom                                                         { $$ = $1; }
-    | LPAR ldlf_formula RPAR                                            { $$ = $2; }
+    : LPAR ldlf_formula RPAR                                            { $$ = $2; }
+    | ldlf_formula                                                      { $$ = $1; }
     ;
 ldlf_atom
     : ldlf_tt                                                           { $$ = $1; }
@@ -153,6 +154,7 @@ re_test
 re_wrapped
     : re_propositional                                                  { $$ = $1; }
     | LPAR regular_expression RPAR                                      { $$ = $2; }
+    | regular_expression                                                { $$ = $1; }
     ;
 re_propositional: propositional_formula                                 { $$ = d.add_PropositionalRegExp($1); };
 
@@ -180,6 +182,7 @@ prop_not
 prop_wrapped
     : prop_atom                                                         { $$ = $1; }
     | LPAR propositional_formula RPAR                                   { $$ = $2; }
+    | propositional_formula                                             { $$ = $1; }
     ;
 prop_atom
     : atom                                                              { $$ = $1; }

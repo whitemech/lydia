@@ -22,6 +22,7 @@ using token = whitemech::lydia::Parser::token;
 %}
 
 %option debug
+%option nodefault
 %option yyclass="whitemech::lydia::Scanner"
 %option noyywrap
 %option c++
