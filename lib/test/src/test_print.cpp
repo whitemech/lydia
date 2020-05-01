@@ -53,17 +53,19 @@ TEST_CASE("LDLf string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
   SECTION("to string <a>tt") {
-    auto ptr_re = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
+    auto ptr_re = std::make_shared<PropositionalRegExp>(
+        std::make_shared<PropositionalAtom>("a"));
     auto ptr_tt = std::make_shared<LDLfBooleanAtom>(true);
-    auto f = LDLfDiamond(ptr_re,ptr_tt);
+    auto f = LDLfDiamond(ptr_re, ptr_tt);
     auto expected = "<a>(tt)";
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
   SECTION("to string [a]tt") {
-    auto ptr_re = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
+    auto ptr_re = std::make_shared<PropositionalRegExp>(
+        std::make_shared<PropositionalAtom>("a"));
     auto ptr_tt = std::make_shared<LDLfBooleanAtom>(true);
-    auto f = LDLfBox(ptr_re,ptr_tt);
+    auto f = LDLfBox(ptr_re, ptr_tt);
     auto expected = "[a](tt)";
     auto actual = to_string(f);
     REQUIRE(actual == expected);
@@ -103,16 +105,18 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
   SECTION("to string ?(tt & ff)") {
     auto tt = std::make_shared<LDLfBooleanAtom>(true);
     auto ff = std::make_shared<LDLfBooleanAtom>(false);
-    auto ptr_ldlf_formula = std::make_shared<LDLfAnd>(set_formulas ({tt, ff}));
+    auto ptr_ldlf_formula = std::make_shared<LDLfAnd>(set_formulas({tt, ff}));
     auto f = TestRegExp(ptr_ldlf_formula);
-//    auto expected_1 = "Test(And(tt, ff))";
+    //    auto expected_1 = "Test(And(tt, ff))";
     auto expected_2 = "Test(And(ff, tt))";
     auto actual = to_string(f);
     REQUIRE(actual == expected_2);
   }
   SECTION("to string a+b") {
-    auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
-    auto b = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("b"));
+    auto a = std::make_shared<PropositionalRegExp>(
+        std::make_shared<PropositionalAtom>("a"));
+    auto b = std::make_shared<PropositionalRegExp>(
+        std::make_shared<PropositionalAtom>("b"));
     set_regex prop_re = set_regex({a, b});
     auto union_re = UnionRegExp(prop_re);
     auto expected = "Union(a, b)";
@@ -120,8 +124,10 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
   SECTION("to string a;b") {
-    auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
-    auto b = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("b"));
+    auto a = std::make_shared<PropositionalRegExp>(
+        std::make_shared<PropositionalAtom>("a"));
+    auto b = std::make_shared<PropositionalRegExp>(
+        std::make_shared<PropositionalAtom>("b"));
     vec_regex prop_re = vec_regex({a, b});
     auto sequence_re = SequenceRegExp(prop_re);
     auto expected = "Sequence(a, b)";
@@ -129,16 +135,20 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
   SECTION("to string a*") {
-    auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
+    auto a = std::make_shared<PropositionalRegExp>(
+        std::make_shared<PropositionalAtom>("a"));
     auto star_re = StarRegExp(a);
     auto expected = "Star(a)";
     auto actual = to_string(star_re);
     REQUIRE(actual == expected);
   }
   SECTION("to string (a;b)+(c*)") {
-    auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
-    auto b = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("b"));
-    auto c = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("c"));
+    auto a = std::make_shared<PropositionalRegExp>(
+        std::make_shared<PropositionalAtom>("a"));
+    auto b = std::make_shared<PropositionalRegExp>(
+        std::make_shared<PropositionalAtom>("b"));
+    auto c = std::make_shared<PropositionalRegExp>(
+        std::make_shared<PropositionalAtom>("c"));
     auto ptr_sequence_re = std::make_shared<SequenceRegExp>(vec_regex({a, b}));
     auto ptr_star_re = std::make_shared<StarRegExp>(c);
     auto union_re = UnionRegExp(set_regex({ptr_sequence_re, ptr_star_re}));

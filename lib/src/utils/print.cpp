@@ -112,13 +112,9 @@ void StrPrinter::visit(const StarRegExp &x) {
   result = s.str();
 }
 
-void StrPrinter::visit(const PropositionalTrue &) {
-  result = "true";
-}
+void StrPrinter::visit(const PropositionalTrue &) { result = "true"; }
 
-void StrPrinter::visit(const PropositionalFalse &) {
-  result = "false";
-}
+void StrPrinter::visit(const PropositionalFalse &) { result = "false"; }
 
 void StrPrinter::visit(const PropositionalAtom &x) {
   result = apply(*x.symbol);
