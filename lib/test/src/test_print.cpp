@@ -56,11 +56,30 @@ TEST_CASE("LDLf string printer", "[string_printer]") {
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
+
+  SECTION("to string <a>tt") {
+    auto ptr_re = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
+    auto ptr_tt = std::make_shared<LDLfBooleanAtom>(true);
+    auto f = LDLfDiamond(ptr_re,ptr_tt);
+    auto expected = "<a>(tt)";
+    auto actual = to_string(f);
+    REQUIRE(actual == expected);
+  }
+
+  SECTION("to string [a]tt") {
+    auto ptr_re = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
+    auto ptr_tt = std::make_shared<LDLfBooleanAtom>(true);
+    auto f = LDLfBox(ptr_re,ptr_tt);
+    auto expected = "[a](tt)";
+    auto actual = to_string(f);
+    REQUIRE(actual == expected);
+  }
+
 }
 
 TEST_CASE("RegEx string printer", "[string_printer]") {
 
-  SECTION("test a") {
+  SECTION("to string a") {
     auto ptr_prop_atom = std::make_shared<PropositionalAtom>("a");
     auto f = PropositionalRegExp(ptr_prop_atom);
     auto expected = "a";
@@ -68,7 +87,7 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
 
-  SECTION("test true") {
+  SECTION("to string true") {
     auto ptr_prop_true = std::make_shared<PropositionalTrue>();
     auto prop_re = PropositionalRegExp(ptr_prop_true);
     auto expected = "true";
@@ -76,7 +95,7 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
 
-  SECTION("test false") {
+  SECTION("to string false") {
     auto ptr_prop_false = std::make_shared<PropositionalFalse>();
     auto prop_re = PropositionalRegExp(ptr_prop_false);
     auto expected = "false";
@@ -84,7 +103,7 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
 
-  SECTION("test ?(tt)") {
+  SECTION("to string ?(tt)") {
     auto ptr_ldlf_formula = std::make_shared<LDLfBooleanAtom>(true);
     auto f = TestRegExp(ptr_ldlf_formula);
     auto expected = "Test(tt)";
@@ -92,7 +111,7 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
 
-  SECTION("test ?(tt & ff)") {
+  SECTION("to string ?(tt & ff)") {
     auto tt = std::make_shared<LDLfBooleanAtom>(true);
     auto ff = std::make_shared<LDLfBooleanAtom>(false);
     auto ptr_ldlf_formula = std::make_shared<LDLfAnd>(set_formulas ({tt, ff}));
@@ -103,7 +122,7 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     REQUIRE(actual == expected_2);
   }
 
-  SECTION("test a+b") {
+  SECTION("to string a+b") {
     auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
     auto b = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("b"));
     set_regex prop_re = set_regex({a, b});
@@ -113,7 +132,7 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
 
-  SECTION("test a;b") {
+  SECTION("to string a;b") {
     auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
     auto b = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("b"));
     vec_regex prop_re = vec_regex({a, b});
@@ -123,7 +142,7 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
 
-  SECTION("test a*") {
+  SECTION("to string a*") {
     auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
     auto star_re = StarRegExp(a);
     auto expected = "Star(a)";
@@ -131,7 +150,7 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
 
-  SECTION("test (a;b)+(c*)") {
+  SECTION("to string (a;b)+(c*)") {
     auto a = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("a"));
     auto b = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("b"));
     auto c = std::make_shared<PropositionalRegExp>(std::make_shared<PropositionalAtom>("c"));
@@ -147,21 +166,21 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
 
 TEST_CASE("PropositionalFormula string printer", "[string_printer]") {
 
-  SECTION("test true") {
+  SECTION("to string true") {
     auto prop_true = PropositionalTrue();
     auto expected = "true";
     auto actual = to_string(prop_true);
     REQUIRE(actual == expected);
   }
 
-  SECTION("test false") {
+  SECTION("to string false") {
     auto prop_false = PropositionalFalse();
     auto expected = "false";
     auto actual = to_string(prop_false);
     REQUIRE(actual == expected);
   }
 
-  SECTION("test a & b") {
+  SECTION("to string a & b") {
     auto a = std::make_shared<PropositionalAtom>("a");
     auto b = std::make_shared<PropositionalAtom>("b");
     set_prop_formulas a_and_b = set_prop_formulas({a, b});
@@ -171,7 +190,7 @@ TEST_CASE("PropositionalFormula string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
 
-  SECTION("test a | b") {
+  SECTION("to string a | b") {
     auto a = std::make_shared<PropositionalAtom>("a");
     auto b = std::make_shared<PropositionalAtom>("b");
     set_prop_formulas a_or_b = set_prop_formulas({a, b});
@@ -181,7 +200,7 @@ TEST_CASE("PropositionalFormula string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
 
-  SECTION("test !a") {
+  SECTION("to string !a") {
     auto a = std::make_shared<PropositionalAtom>("a");
     auto not_a = PropositionalNot(a);
     auto expected = "Prop_Not(a)";
