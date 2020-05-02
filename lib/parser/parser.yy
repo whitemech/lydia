@@ -33,7 +33,7 @@
 }
 
 %parse-param { Scanner  &scanner  }
-%parse-param { Driver  &driver  }
+%parse-param { Driver  &d  }
 
 %code{
    #include <iostream>
@@ -51,18 +51,35 @@
 
 %define api.value.type {struct whitemech::lydia::YYSTYPE}
 
-%type<formula> input
-%type<formula> ldlf_formula
+%type<formula> input ldlf_formula
+%type<regex> regular_expression
+%type<prop_formula> propositional_formula
+%type<symbol_name> SYMBOL
 
-%token                  TT
-%token                  FF
 %token                  LPAR
 %token                  RPAR
+%token                  TT
+%token                  FF
+%token                  END
+%token                  LAST
+%token                  TRUE
+%token                  FALSE
+%token                  SYMBOL
 %token                  NEWLINE
 %token                  END_OF_FILE    0
 
+%left                   EQUIVALENCE
+%right                  IMPLICATION
+%left                   UNION
+%left                   SEQUENCE
+%left                   STAR
+%left                   TEST
 %left                   OR
 %left                   AND
+%left                   DIAMOND_LPAR
+%left                   BOX_LPAR
+%right                  DIAMOND_RPAR
+%right                  BOX_RPAR
 %right                  NOT
 %nonassoc               LPAR
 
@@ -72,23 +89,44 @@
 
 %%
 
-input
-    : ldlf_formula { $$ = $1;
-                     driver.result = $$; }
-    ;
+input: ldlf_formula                                                                     { $$ = $1;
+                                                                                          d.result = $$; };
 
-ldlf_formula
-    : TT                                { $$ = driver.add_LDLfBooleanAtom(true); }
-    | FF                                { $$ = driver.add_LDLfBooleanAtom(false); }
-    | LPAR ldlf_formula RPAR            { $$ = $2; }
-    | ldlf_formula AND ldlf_formula     { $$ = driver.add_LDLfAnd($1, $3); }
-    | ldlf_formula OR ldlf_formula      { $$ = driver.add_LDLfOr($1, $3); }
-    | NOT ldlf_formula                  { $$ = driver.add_LDLfNot($2); }
-    | NEWLINE                           { driver.add_newline(); }
-    ;
+ldlf_formula: ldlf_formula EQUIVALENCE ldlf_formula                                     { $$ = d.add_LDLfEquivalence($1, $3); }
+            | ldlf_formula IMPLICATION ldlf_formula                                     { $$ = d.add_LDLfImplication($1, $3); }
+            | ldlf_formula OR ldlf_formula                                              { $$ = d.add_LDLfOr($1, $3); }
+            | ldlf_formula AND ldlf_formula                                             { $$ = d.add_LDLfAnd($1, $3); }
+            | BOX_LPAR regular_expression BOX_RPAR ldlf_formula                         { $$ = d.add_LDLfBox($2, $4); };
+            | DIAMOND_LPAR regular_expression DIAMOND_RPAR ldlf_formula                 { $$ = d.add_LDLfDiamond($2, $4); }
+            | NOT ldlf_formula                                                          { $$ = d.add_LDLfNot($2); }
+            | TT                                                                        { $$ = d.add_LDLfBooleanAtom(true); }
+            | FF                                                                        { $$ = d.add_LDLfBooleanAtom(false); }
+            | END                                                                       { $$ = d.add_LDLfEnd(); }
+            | LAST                                                                      { $$ = d.add_LDLfLast(); }
+            ;
 
+regular_expression: regular_expression UNION regular_expression                         { $$ = d.add_UnionRegExp($1, $3); }
+                  | regular_expression SEQUENCE regular_expression                      { $$ = d.add_SequenceRegExp($1, $3); }
+                  | regular_expression STAR                                             { $$ = d.add_StarRegExp($1); }
+                  | ldlf_formula TEST                                                   { $$ = d.add_TestRegExp($1); }
+                  | propositional_formula                                               { $$ = d.add_PropositionalRegExp($1); }
+                  ;
+
+propositional_formula: propositional_formula EQUIVALENCE propositional_formula          { $$ = d.add_PropositionalEquivalence($1, $3); }
+                     | propositional_formula IMPLICATION propositional_formula          { $$ = d.add_PropositionalImplication($1, $3); }
+                     | propositional_formula OR propositional_formula                   { $$ = d.add_PropositionalOr($1, $3); }
+                     | propositional_formula AND propositional_formula                  { $$ = d.add_PropositionalAnd($1, $3); }
+                     | NOT propositional_formula                                        { $$ = d.add_PropositionalNot($2); }
+                     | FALSE                                                            { $$ = d.add_PropositionalBooleanAtom(false); }
+                     | TRUE                                                             { $$ = d.add_PropositionalBooleanAtom(true); }
+                     | SYMBOL                                                           { $$ = d.add_PropositionalAtom($1); }
+                     ;
+
+ldlf_formula: LPAR ldlf_formula RPAR                                                    { $$ = $2; };
+regular_expression: LPAR regular_expression RPAR                                        { $$ = $2; };
+propositional_formula: LPAR propositional_formula RPAR                                  { $$ = $2; };
+    
 %%
-
 
 void whitemech::lydia::Parser::error(const location_type &l, const std::string &err_message) {
    std::cerr << "Error: " << err_message << " at " << l << "\n";

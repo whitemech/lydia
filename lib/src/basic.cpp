@@ -16,6 +16,7 @@
  */
 
 #include "basic.hpp"
+#include <utils/print.hpp>
 
 namespace whitemech::lydia {
 
@@ -33,9 +34,6 @@ int Basic::compare_(const Basic &o) const {
   }
 }
 
-std::string Basic::str() const {
-  // TODO: use visitor
-  return std::string();
-}
+std::string Basic::str() const { return to_string(*this); }
 
 } // namespace whitemech::lydia
