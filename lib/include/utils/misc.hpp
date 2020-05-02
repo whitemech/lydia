@@ -43,7 +43,7 @@ std::vector<std::set<T, U>> powerset(std::set<T, U> &s) {
     u_int64_t mask = i;
     int index = 0;
     while (mask) {
-      if (mask % 2 != 0) {
+      if ((mask & 1) != 0) {
         tmp.insert(vect[index]);
       }
       mask >>= 1;
@@ -61,19 +61,26 @@ unsigned inline bit_length(int x) {
   return bits;
 }
 
+/*
+ * From a vector of bits (least to most significant) to the integer.
+ */
 int inline bin2state(const std::vector<int> &v) {
-  int size = v.size();
-  int result = v[0];
-  for (int i = 1; i < size; ++i) {
+  const int size = v.size();
+  int result = v[v.size() - 1];
+  for (int i = size - 2; i >= 0; --i) {
     result *= 2;
-    result += v[i] % 2;
+    result += v[i] & 1;
   }
   return result;
 }
+
+/*
+ * From a vector of bits (least to most significant) to the integer.
+ */
 int inline bin2state(const std::string &s) {
   int size = s.size();
-  int result = s[0] - '0';
-  for (int i = 1; i < size; ++i) {
+  int result = s[size - 1] - '0';
+  for (int i = size - 2; i >= 0; --i) {
     result *= 2;
     result += s[i] - '0';
   }
@@ -81,7 +88,7 @@ int inline bin2state(const std::string &s) {
 }
 
 std::vector<int> inline state2binvec(int n, int nb_fill_bits) {
-  auto bin_string = state2bin(n, nb_fill_bits);
+  auto bin_string = state2bin(n, nb_fill_bits, true);
   std::vector<int> result(bin_string.size(), 0);
   int i = 0;
   for (const char &c : bin_string) {

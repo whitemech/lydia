@@ -15,25 +15,6 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "basic.hpp"
-#include <utils/print.hpp>
+#include <benchmark/benchmark.h>
 
-namespace whitemech::lydia {
-
-int Basic::compare_(const Basic &o) const {
-  auto a = this->get_type_code();
-  auto b = o.get_type_code();
-  if (a == b) {
-    return this->compare(o);
-  } else {
-    // We return the order given by the numerical value of the TypeID enum
-    // type.
-    // The types don't need to be ordered in any given way, they just need
-    // to be ordered.
-    return a < b ? -1 : 1;
-  }
-}
-
-std::string Basic::str() const { return to_string(*this); }
-
-} // namespace whitemech::lydia
+BENCHMARK_MAIN();

@@ -26,35 +26,107 @@ void AtomsVisitor::visit(const PropositionalTrue &) {}
 void AtomsVisitor::visit(const PropositionalFalse &) {}
 
 void AtomsVisitor::visit(const PropositionalAtom &x) {
+  set_atoms_ptr atoms_result;
   if (x.symbol->get_type_code() == TypeID::t_Symbol) {
-    result.insert(std::make_shared<const PropositionalAtom>(
+    atoms_result.insert(std::make_shared<const PropositionalAtom>(
         dynamic_cast<const Symbol &>(*x.symbol)));
   } else if (x.symbol->get_type_code() == TypeID::t_QuotedFormula) {
     basic_ptr ptr = std::make_shared<const QuotedFormula>(
         dynamic_cast<const QuotedFormula &>(*x.symbol).formula);
-    result.insert(std::make_shared<const PropositionalAtom>(ptr));
+    atoms_result.insert(std::make_shared<const PropositionalAtom>(ptr));
   } else {
     logger.error("Should not be here...");
     assert(false);
   }
+  result = atoms_result;
 }
 
 void AtomsVisitor::visit(const PropositionalAnd &x) {
+  set_atoms_ptr atoms_result, tmp;
   for (auto &a : x.get_container()) {
-    apply(*a);
+    tmp = apply(*a);
+    atoms_result.insert(tmp.begin(), tmp.end());
   }
+  result = atoms_result;
 }
 
 void AtomsVisitor::visit(const PropositionalOr &x) {
+  set_atoms_ptr atoms_result, tmp;
   for (auto &a : x.get_container()) {
-    apply(*a);
+    tmp = apply(*a);
+    atoms_result.insert(tmp.begin(), tmp.end());
   }
+  result = atoms_result;
 }
 
-void AtomsVisitor::visit(const PropositionalNot &x) { apply(*x.get_arg()); }
+void AtomsVisitor::visit(const PropositionalNot &x) {
+  result = apply(*x.get_arg());
+}
 
-void AtomsVisitor::visit(const LDLfDiamond<PropositionalRegExp> &f) {
-  result = apply(*f.get_regex()->get_arg());
+// LDLf
+
+void AtomsVisitor::visit(const LDLfBooleanAtom &) {}
+
+void AtomsVisitor::visit(const LDLfAnd &x) {
+  set_atoms_ptr atoms_result, tmp;
+  for (auto &a : x.get_container()) {
+    tmp = apply(*a);
+    atoms_result.insert(tmp.begin(), tmp.end());
+  }
+  result = atoms_result;
+}
+
+void AtomsVisitor::visit(const LDLfOr &x) {
+  set_atoms_ptr atoms_result, tmp;
+  for (auto &a : x.get_container()) {
+    tmp = apply(*a);
+    atoms_result.insert(tmp.begin(), tmp.end());
+  }
+  result = atoms_result;
+}
+
+void AtomsVisitor::visit(const LDLfNot &x) { result = apply(*x.get_arg()); }
+
+void AtomsVisitor::visit(const LDLfDiamond &x) {
+  result = apply(*x.get_regex());
+  auto y = apply(*x.get_formula());
+  result.insert(y.begin(), y.end());
+}
+
+void AtomsVisitor::visit(const LDLfBox &x) {
+  result = apply(*x.get_regex());
+  auto y = apply(*x.get_formula());
+  result.insert(y.begin(), y.end());
+}
+
+void AtomsVisitor::visit(const UnionRegExp &x) {
+  set_atoms_ptr atoms_result, tmp;
+  for (auto &a : x.get_container()) {
+    tmp = apply(*a);
+    atoms_result.insert(tmp.begin(), tmp.end());
+  }
+  result = atoms_result;
+}
+
+void AtomsVisitor::visit(const SequenceRegExp &x) {
+  set_atoms_ptr atoms_result, tmp;
+  for (auto &a : x.get_container()) {
+    tmp = apply(*a);
+    atoms_result.insert(tmp.begin(), tmp.end());
+  }
+  result = atoms_result;
+}
+
+void AtomsVisitor::visit(const StarRegExp &x) { result = apply(*x.get_arg()); }
+
+void AtomsVisitor::visit(const PropositionalRegExp &r) {
+  result = apply(*r.get_arg());
+}
+
+void AtomsVisitor::visit(const TestRegExp &r) { result = apply(*r.get_arg()); }
+set_atoms_ptr AtomsVisitor::apply(const RegExp &b) {
+  b.accept(*this);
+  return result;
 }
 
 set_atoms_ptr AtomsVisitor::apply(const PropositionalFormula &b) {

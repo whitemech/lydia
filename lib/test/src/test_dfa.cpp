@@ -18,6 +18,7 @@
 #include "dfa.hpp"
 #include <cuddObj.hh>
 #include <graphviz/gvc.h>
+#include <utils/dfa_transform.hpp>
 
 namespace whitemech::lydia::Test {
 
@@ -99,23 +100,11 @@ TEST_CASE("Test Cudd", "[cudd]") {
 TEST_CASE("Test DFA initialization", "[dfa]") {
   whitemech::lydia::Logger::level(LogLevel::debug);
 
-  SECTION("Initialize without Cudd manager.") {
-    auto my_dfa = // NOLINT
-        dfa::read_from_file("../../../lib/test/src/data/mona/eventually_a.dfa");
-  }
-
   SECTION("Initialize with Cudd manager.") {
-    auto mgr = new CUDD::Cudd();
+    auto mgr = CUDD::Cudd();
     auto my_dfa = dfa::read_from_file( // NOLINT
-        "../../../lib/test/src/data/mona/eventually_a.dfa", mgr = mgr);
+        "../../../lib/test/src/data/mona/eventually_a.dfa", mgr);
   }
-}
-
-TEST_CASE("Test bdd2dot", "[dfa]") {
-  whitemech::lydia::Logger::level(LogLevel::debug);
-  auto my_dfa =
-      dfa::read_from_file("../../../lib/test/src/data/mona/mona_example.dfa");
-  my_dfa->bdd2dot();
 }
 
 TEST_CASE("Test accepts", "[dfa]") {
@@ -137,29 +126,31 @@ TEST_CASE("Test accepts", "[dfa]") {
   auto t_a_a = trace{empty, a, a};
 
   SECTION("Test F(a)") {
-    auto my_dfa =
-        dfa::read_from_file("../../../lib/test/src/data/mona/eventually_a.dfa");
+    auto mgr = CUDD::Cudd();
+    auto my_dfa = dfa::read_from_file(
+        "../../../lib/test/src/data/mona/eventually_a.dfa", mgr);
 
-    REQUIRE(!my_dfa->accepts(t_));
-    REQUIRE(!my_dfa->accepts(t_na));
-    REQUIRE(my_dfa->accepts(t_a));
-    REQUIRE(!my_dfa->accepts(t_na_na));
-    REQUIRE(my_dfa->accepts(t_na_a));
-    REQUIRE(my_dfa->accepts(t_a_na));
-    REQUIRE(my_dfa->accepts(t_a_a));
+    REQUIRE(!my_dfa.accepts(t_));
+    REQUIRE(!my_dfa.accepts(t_na));
+    REQUIRE(my_dfa.accepts(t_a));
+    REQUIRE(!my_dfa.accepts(t_na_na));
+    REQUIRE(my_dfa.accepts(t_na_a));
+    REQUIRE(my_dfa.accepts(t_a_na));
+    REQUIRE(my_dfa.accepts(t_a_a));
   }
 
   SECTION("Test G(a)") {
-    auto my_dfa =
-        dfa::read_from_file("../../../lib/test/src/data/mona/always_a.dfa");
+    auto mgr = CUDD::Cudd();
+    auto my_dfa = dfa::read_from_file(
+        "../../../lib/test/src/data/mona/always_a.dfa", mgr);
 
-    REQUIRE(!my_dfa->accepts(t_));
-    REQUIRE(!my_dfa->accepts(t_na));
-    REQUIRE(my_dfa->accepts(t_a));
-    REQUIRE(!my_dfa->accepts(t_na_na));
-    REQUIRE(!my_dfa->accepts(t_na_a));
-    REQUIRE(!my_dfa->accepts(t_a_na));
-    REQUIRE(my_dfa->accepts(t_a_a));
+    REQUIRE(!my_dfa.accepts(t_));
+    REQUIRE(!my_dfa.accepts(t_na));
+    REQUIRE(my_dfa.accepts(t_a));
+    REQUIRE(!my_dfa.accepts(t_na_na));
+    REQUIRE(!my_dfa.accepts(t_na_a));
+    REQUIRE(!my_dfa.accepts(t_a_na));
+    REQUIRE(my_dfa.accepts(t_a_a));
   }
 }
 
@@ -175,50 +166,50 @@ TEST_CASE("Incremental construction", "[dfa]") {
   auto t_a_a = trace{a, a};
 
   SECTION("The starting DFA does not accept anything") {
-    auto mgr = new CUDD::Cudd();
-    auto my_dfa = new dfa(mgr, 10, 1);
+    auto mgr = CUDD::Cudd();
+    auto my_dfa = dfa(mgr, 10, 1);
 
-    REQUIRE(my_dfa->get_successor(0, t_na[0]) == 0);
-    REQUIRE(my_dfa->get_successor(0, t_a[0]) == 0);
+    REQUIRE(my_dfa.get_successor(0, t_na[0]) == 0);
+    REQUIRE(my_dfa.get_successor(0, t_a[0]) == 0);
 
-    REQUIRE(!my_dfa->accepts(t_));
-    REQUIRE(!my_dfa->accepts(t_na));
-    REQUIRE(!my_dfa->accepts(t_a));
-    REQUIRE(!my_dfa->accepts(t_na_na));
-    REQUIRE(!my_dfa->accepts(t_na_a));
-    REQUIRE(!my_dfa->accepts(t_a_na));
-    REQUIRE(!my_dfa->accepts(t_a_a));
+    REQUIRE(!my_dfa.accepts(t_));
+    REQUIRE(!my_dfa.accepts(t_na));
+    REQUIRE(!my_dfa.accepts(t_a));
+    REQUIRE(!my_dfa.accepts(t_na_na));
+    REQUIRE(!my_dfa.accepts(t_na_a));
+    REQUIRE(!my_dfa.accepts(t_a_na));
+    REQUIRE(!my_dfa.accepts(t_a_a));
   }
 
   SECTION("With the state 0 as final will make the DFA accept everything.") {
-    auto mgr = new CUDD::Cudd();
-    auto my_dfa = new dfa(mgr, 10, 1);
-    my_dfa->set_final_state(0, true);
-    REQUIRE(my_dfa->accepts(t_));
-    REQUIRE(my_dfa->accepts(t_na));
-    REQUIRE(my_dfa->accepts(t_a));
-    REQUIRE(my_dfa->accepts(t_na_na));
-    REQUIRE(my_dfa->accepts(t_na_a));
-    REQUIRE(my_dfa->accepts(t_a_na));
-    REQUIRE(my_dfa->accepts(t_a_a));
+    auto mgr = CUDD::Cudd();
+    auto my_dfa = dfa(mgr, 10, 1);
+    my_dfa.set_final_state(0, true);
+    REQUIRE(my_dfa.accepts(t_));
+    REQUIRE(my_dfa.accepts(t_na));
+    REQUIRE(my_dfa.accepts(t_a));
+    REQUIRE(my_dfa.accepts(t_na_na));
+    REQUIRE(my_dfa.accepts(t_na_a));
+    REQUIRE(my_dfa.accepts(t_a_na));
+    REQUIRE(my_dfa.accepts(t_a_a));
   }
 
   SECTION("Create a simple DFA: add new state, make it final, and add a "
           "transition to it.") {
-    auto mgr = new CUDD::Cudd();
-    auto my_dfa = new dfa(mgr, 10, 1);
+    auto mgr = CUDD::Cudd();
+    auto my_dfa = dfa(mgr, 10, 1);
 
-    int new_state = my_dfa->add_state();
+    int new_state = my_dfa.add_state();
     REQUIRE(new_state == 1);
-    my_dfa->set_initial_state(new_state);
+    my_dfa.set_initial_state(new_state);
 
-    REQUIRE(!my_dfa->accepts(t_));
-    REQUIRE(!my_dfa->accepts(t_na));
-    REQUIRE(!my_dfa->accepts(t_a));
-    REQUIRE(!my_dfa->accepts(t_na_na));
-    REQUIRE(!my_dfa->accepts(t_na_a));
-    REQUIRE(!my_dfa->accepts(t_a_na));
-    REQUIRE(!my_dfa->accepts(t_a_a));
+    REQUIRE(!my_dfa.accepts(t_));
+    REQUIRE(!my_dfa.accepts(t_na));
+    REQUIRE(!my_dfa.accepts(t_a));
+    REQUIRE(!my_dfa.accepts(t_na_na));
+    REQUIRE(!my_dfa.accepts(t_na_a));
+    REQUIRE(!my_dfa.accepts(t_a_na));
+    REQUIRE(!my_dfa.accepts(t_a_a));
 
     SECTION("... and add a self-loop with dont_care=true") {
       /*
@@ -226,21 +217,21 @@ TEST_CASE("Incremental construction", "[dfa]") {
        * That is, with dont_care=true and an empty
        * set of constraints.
        */
-      my_dfa->set_final_state(1, true);
-      my_dfa->add_transition(1, interpretation_set{}, 1, true);
+      my_dfa.set_final_state(1, true);
+      my_dfa.add_transition(1, interpretation_set{}, 1, true);
 
-      REQUIRE(my_dfa->get_successor(0, t_na[0]) == 0);
-      REQUIRE(my_dfa->get_successor(0, t_a[0]) == 0);
-      REQUIRE(my_dfa->get_successor(1, t_na[0]) == 1);
-      REQUIRE(my_dfa->get_successor(1, t_a[0]) == 1);
+      REQUIRE(my_dfa.get_successor(0, t_na[0]) == 0);
+      REQUIRE(my_dfa.get_successor(0, t_a[0]) == 0);
+      REQUIRE(my_dfa.get_successor(1, t_na[0]) == 1);
+      REQUIRE(my_dfa.get_successor(1, t_a[0]) == 1);
 
-      REQUIRE(my_dfa->accepts(t_));
-      REQUIRE(my_dfa->accepts(t_na));
-      REQUIRE(my_dfa->accepts(t_a));
-      REQUIRE(my_dfa->accepts(t_na_na));
-      REQUIRE(my_dfa->accepts(t_na_a));
-      REQUIRE(my_dfa->accepts(t_a_na));
-      REQUIRE(my_dfa->accepts(t_a_a));
+      REQUIRE(my_dfa.accepts(t_));
+      REQUIRE(my_dfa.accepts(t_na));
+      REQUIRE(my_dfa.accepts(t_a));
+      REQUIRE(my_dfa.accepts(t_na_na));
+      REQUIRE(my_dfa.accepts(t_na_a));
+      REQUIRE(my_dfa.accepts(t_a_na));
+      REQUIRE(my_dfa.accepts(t_a_a));
     }
 
     SECTION("... and add a self-loop with dont_care=false") {
@@ -250,21 +241,21 @@ TEST_CASE("Incremental construction", "[dfa]") {
        * That means all the propositions not present in the interpretation set
        * have to be necessarily false in order to satisfy the guard.
        */
-      my_dfa->set_final_state(1, true);
-      my_dfa->add_transition(1, interpretation_set{}, 1, false);
+      my_dfa.set_final_state(1, true);
+      my_dfa.add_transition(1, interpretation_set{}, 1, false);
 
-      REQUIRE(my_dfa->get_successor(0, t_na[0]) == 0);
-      REQUIRE(my_dfa->get_successor(0, t_a[0]) == 0);
-      REQUIRE(my_dfa->get_successor(1, t_na[0]) == 1);
-      REQUIRE(my_dfa->get_successor(1, t_a[0]) == 0);
+      REQUIRE(my_dfa.get_successor(0, t_na[0]) == 0);
+      REQUIRE(my_dfa.get_successor(0, t_a[0]) == 0);
+      REQUIRE(my_dfa.get_successor(1, t_na[0]) == 1);
+      REQUIRE(my_dfa.get_successor(1, t_a[0]) == 0);
 
-      REQUIRE(my_dfa->accepts(t_));
-      REQUIRE(my_dfa->accepts(t_na));
-      REQUIRE(!my_dfa->accepts(t_a));
-      REQUIRE(my_dfa->accepts(t_na_na));
-      REQUIRE(!my_dfa->accepts(t_na_a));
-      REQUIRE(!my_dfa->accepts(t_a_na));
-      REQUIRE(!my_dfa->accepts(t_a_a));
+      REQUIRE(my_dfa.accepts(t_));
+      REQUIRE(my_dfa.accepts(t_na));
+      REQUIRE(!my_dfa.accepts(t_a));
+      REQUIRE(my_dfa.accepts(t_na_na));
+      REQUIRE(!my_dfa.accepts(t_na_a));
+      REQUIRE(!my_dfa.accepts(t_a_na));
+      REQUIRE(!my_dfa.accepts(t_a_a));
     }
   }
 

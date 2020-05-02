@@ -17,7 +17,7 @@
 
 #include "dfa.hpp"
 #include <cuddObj.hh>
-#include <exception>
+#include <numeric>
 #include <utils/misc.hpp>
 #include <utils/strings.hpp>
 
@@ -26,33 +26,38 @@ namespace lydia {
 
 Logger dfa::logger = Logger("dfa");
 
-dfa::dfa(CUDD::Cudd *mgr, int nb_bits, int nb_variables)
+dfa::dfa(const CUDD::Cudd &mgr, int nb_bits, int nb_variables)
     : mgr{mgr}, nb_bits{nb_bits}, nb_variables{nb_variables}, nb_states{1},
       initial_state{0} {
+
+  bddvars.reserve(nb_variables);
+  root_bdds.reserve(nb_bits + nb_variables);
+  variables.reserve(nb_variables);
+
   //  add BDD variables for all the bits and variables
   for (int i = 0; i < nb_bits + nb_variables; i++) {
-    CUDD::BDD b = this->mgr->bddVar();
+    CUDD::BDD b = this->mgr.bddVar();
     bddvars.push_back(b);
   }
 
   for (int i = 0; i < nb_bits; i++) {
     // state 0 is a sink state - put a self-loop at bit 0.
-    CUDD::BDD zero = this->mgr->bddZero();
+    CUDD::BDD zero = this->mgr.bddZero();
     root_bdds.push_back(zero);
   }
 
   //  start with empty set of final states.
-  finalstatesBDD = this->mgr->bddZero();
-}
+  finalstatesBDD = this->mgr.bddZero();
 
-dfa::dfa(int nb_bits, int nb_variables)
-    : dfa(new CUDD::Cudd, nb_bits, nb_variables) {}
-
-void dfa::bdd2dot(const std::string &directory) {
-  for (int i = 0; i < root_bdds.size(); i++) {
-    std::string filename = directory + "/" + std::to_string(i);
-    dumpdot(root_bdds[i], filename);
-    std::system(("dot -Tsvg " + filename + " > " + filename + ".svg").c_str());
+  // populate default names: p_0, p_1, ...
+  std::vector<int> range(nb_variables);
+  std::iota(range.begin(), range.end(), 0);
+  std::transform(std::begin(range), std::end(range),
+                 std::back_inserter(variables),
+                 [](int i) { return "p_" + std::to_string(i); });
+  for (int i = nb_bits; i < nb_variables; i++) {
+    auto s = variables.at(i);
+    mgr.pushVariableName(s);
   }
 }
 
@@ -67,13 +72,13 @@ void dfa::construct_bdd_from_mona(
   // for the variables.
   auto tBDD = std::vector<vec_bdd>(mona_bdd_nodes.size());
   for (int i = 0; i < nb_bits + nb_variables; i++) {
-    CUDD::BDD b = mgr->bddVar();
+    CUDD::BDD b = mgr.bddVar();
     bddvars.push_back(b);
   }
   // For each bit of the state, create a BDD zero constant
   // Each var will be updated later in 'OR' (that's why we put zero)
   for (int i = 0; i < nb_bits; i++) {
-    CUDD::BDD d = mgr->bddZero();
+    CUDD::BDD d = mgr.bddZero();
     root_bdds.push_back(d);
   }
   // populate the tBDD mapping.
@@ -92,20 +97,14 @@ void dfa::construct_bdd_from_mona(
       // Build the BDD representation of a state.
       // we set the temporary variable to 1 because
       // we are going to put it in 'AND' later.
-      CUDD::BDD tmp = mgr->bddOne();
+      CUDD::BDD tmp = mgr.bddOne();
       // the first for-loop handles the most significant bits
       // that are not covered by the binary representation.
       // the second for-loop handles all the other bits.
-      // TODO refactor by using the 'nb_fill_bits' parameter of state2bin.
-      std::string bins = state2bin(j);
-      int offset = nb_bits - bins.size();
-      for (int m = 0; m < offset; m++) {
-        tmp = tmp * var2bddvar(m, false);
-      }
-      for (int m = 0; m < bins.size(); m++) {
-        // from char '1' (or '0') to int 1 (or 0)
+      std::string bins = state2bin(j, nb_bits, true);
+      for (int m = 0; m < nb_bits; m++) {
         bool bit_mth = int(bins[m]) - '0';
-        tmp = tmp * var2bddvar(offset + m, bit_mth);
+        tmp = tmp * var2bddvar(m, bit_mth);
       }
       // Now, put in 'AND' with the correct BDD node
       // (either terminal/leaf or variable) at the bit i_th.
@@ -116,7 +115,7 @@ void dfa::construct_bdd_from_mona(
   }
 
   // Create the BDD for recognizing the accepting states.
-  finalstatesBDD = mgr->bddZero();
+  finalstatesBDD = mgr.bddZero();
   for (int finalstate : final_states) {
     CUDD::BDD ac = state2bdd(finalstate);
     finalstatesBDD += ac;
@@ -124,8 +123,8 @@ void dfa::construct_bdd_from_mona(
 }
 
 CUDD::BDD dfa::state2bdd(int s) {
-  std::string bin = state2bin(s, nb_bits);
-  CUDD::BDD b = mgr->bddOne();
+  std::string bin = state2bin(s, nb_bits, true);
+  CUDD::BDD b = mgr.bddOne();
   for (int j = 0; j < nb_bits; j++) {
     bool bit = int(bin[j]) - '0';
     b *= var2bddvar(j, bit);
@@ -139,26 +138,19 @@ vec_bdd dfa::try_get(int index,
   if (!tBDD[index].empty())
     return tBDD[index];
   vec_bdd b;
+  b.reserve(nb_bits);
   if (mona_bdd_nodes[index][0] == -1) {
     // case when BDD node is a leaf
     // the format is: "-1 val 0"
     int value = mona_bdd_nodes[index][1];
     // get the binary representation of the state
-    std::string bins = state2bin(value);
-    // this representation may use less bits
-    // than all the bits pre-allocated.
-    // Set to zero the bits in excess.
-    for (int m = 0; m < nb_bits - bins.size(); m++) {
-      CUDD::BDD temp_bdd = mgr->bddZero();
-      b.push_back(temp_bdd);
-    }
-    // Populate the LSBs
+    std::string bins = state2bin(value, nb_bits, true);
     for (char bin : bins) {
       if (bin == '0') {
-        CUDD::BDD temp_bdd = mgr->bddZero();
+        CUDD::BDD temp_bdd = mgr.bddZero();
         b.push_back(temp_bdd);
       } else if (bin == '1') {
-        CUDD::BDD temp_bdd = mgr->bddOne();
+        CUDD::BDD temp_bdd = mgr.bddOne();
         b.push_back(temp_bdd);
       } else {
         logger.error("error binary state");
@@ -188,15 +180,7 @@ vec_bdd dfa::try_get(int index,
   }
 }
 
-void dfa::dumpdot(CUDD::BDD &b, const std::string &filename) {
-  FILE *fp = fopen(filename.c_str(), "w");
-  std::vector<CUDD::BDD> single(1);
-  single[0] = b;
-  this->mgr->DumpDot(single, nullptr, nullptr, fp);
-  fclose(fp);
-}
-
-dfa *dfa::read_from_file(const std::string &filename, CUDD::Cudd *mgr) {
+dfa dfa::read_from_file(const std::string &filename, const CUDD::Cudd &mgr) {
   int nb_variables = -1;
   std::vector<std::string> variables;
   int nb_states = -1;
@@ -285,16 +269,11 @@ dfa *dfa::read_from_file(const std::string &filename, CUDD::Cudd *mgr) {
     assert(final_state >= 0 && final_state < nb_states);
   assert(mona_bdd_nodes.size() == nb_nodes);
 
-  if (mgr == nullptr) {
-    return new dfa(variables, nb_states, initial_state, final_states, behaviour,
-                   mona_bdd_nodes);
-  } else {
-    return new dfa(mgr, variables, nb_states, initial_state, final_states,
-                   behaviour, mona_bdd_nodes);
-  }
+  return dfa(mgr, variables, nb_states, initial_state, final_states, behaviour,
+             mona_bdd_nodes);
 }
 
-dfa::dfa(CUDD::Cudd *mgr, const std::vector<std::string> &variables,
+dfa::dfa(const CUDD::Cudd &mgr, const std::vector<std::string> &variables,
          int nb_states, int initial_state, const std::vector<int> &final_states,
          const std::vector<int> &behaviour, std::vector<item> &mona_bdd_nodes)
     : mgr{mgr} {
@@ -313,7 +292,7 @@ bool dfa::accepts(const trace &word) {
   std::vector<int> current_state = std::vector<int>(nb_bits);
 
   //  set next state to initial state
-  auto initial_state_bits = state2bin(initial_state, nb_bits);
+  auto initial_state_bits = state2bin(initial_state, nb_bits, true);
   for (int i = 0; i < nb_bits; i++)
     next_state[i] = (int)(initial_state_bits[i] == '1');
 
@@ -333,7 +312,7 @@ int dfa::add_state() {
      *      How to deal with final_states_BDD?
      *
      *    // add new state variable
-     *    CUDD::BDD b = mgr->bddVar();
+     *    CUDD::BDD b = mgr.bddVar();
      *    bddvars.insert(bddvars.begin() + nb_bits, b);
      *    ++nb_bits;
      */
@@ -368,7 +347,7 @@ void dfa::add_transition(int from, const interpretation_map &symbol, int to) {
     throw std::invalid_argument("Too many variables!");
   //  TODO add some validation on symbol
 
-  std::string to_binary = state2bin(to, nb_bits);
+  std::string to_binary = state2bin(to, nb_bits, true);
 
   // build the extended symbol in form of a BDD
   CUDD::BDD tmp = state2bdd(from);
@@ -410,7 +389,7 @@ int dfa::get_successor(int state, const interpretation &symbol) const {
   std::vector<int> next_state(nb_bits);
   std::vector<int> extended_symbol(nb_bits + nb_variables);
 
-  auto initial_state_bits = state2bin(state, nb_bits);
+  auto initial_state_bits = state2bin(state, nb_bits, true);
   for (int i = 0; i < nb_bits; i++)
     current_state[i] = (int)(initial_state_bits[i] == '1');
 

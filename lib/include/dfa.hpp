@@ -37,6 +37,22 @@ public:
   int initial_state{};
   int nb_states{};
   int nb_variables{};
+  std::vector<std::string> variables;
+
+  CUDD::BDD finalstatesBDD;
+  /*!
+   * Store the BDD roots, from the least to the most significant:
+   * b_0, b_1, ..., b_{n-1}
+   */
+  vec_bdd root_bdds;
+
+  /*!
+   * Store the BDD variables:
+   * b_0, b_1, ..., b_{n-1}, var_0, var_1, ... var_{m-1}
+   */
+  vec_bdd bddvars;
+
+  const CUDD::Cudd &mgr;
 
   dfa(const dfa &) = delete;
   dfa &operator=(const dfa &) = delete;
@@ -67,8 +83,7 @@ public:
    * @param nb_bits the maximum number of bits available.
    * @param nb_variables the number of variables to be used.
    */
-  dfa(CUDD::Cudd *mgr, int nb_bits, int nb_variables);
-  dfa(int nb_bits, int nb_variables);
+  dfa(const CUDD::Cudd &mgr, int nb_bits, int nb_variables);
 
   /*
    *
@@ -91,57 +106,16 @@ public:
    * @param behaviour the MONA behaviours
    * @param mona_bdd_nodes the shared multi-terminal BDD nodes (MONA DFA)
    */
-  dfa(CUDD::Cudd *mgr, const std::vector<std::string> &variables, int nb_states,
-      int initial_state, const std::vector<int> &final_states,
+  dfa(const CUDD::Cudd &mgr, const std::vector<std::string> &variables,
+      int nb_states, int initial_state, const std::vector<int> &final_states,
       const std::vector<int> &behaviour, std::vector<item> &mona_bdd_nodes);
-
-  /*
-   * The same constructor as above, but the manager
-   * will be instantiated in the constructor.
-   */
-  dfa(const std::vector<std::string> &variables, int nb_states,
-      int initial_state, const std::vector<int> &final_states,
-      const std::vector<int> &behaviour, std::vector<item> &smtbdd)
-      : dfa(new CUDD::Cudd(), variables, nb_states, initial_state, final_states,
-            behaviour, smtbdd) {}
 
   static Logger logger;
 
   // void initialize(string filename, string partfile, Cudd& manager);
   std::vector<item> bdd;
 
-  /*!
-   * Dump the BDDs (one for each bit of the state space).
-   *
-   * The output will be:
-   * output_directory/
-   * - 0.dot
-   * - 1.dot
-   * ...
-   * - n.dot
-   *
-   * That is, a DOT file for each bit.
-   *
-   * @param directory the directory in which to print the BDDs in DOT format.
-   */
-  void bdd2dot(const std::string &directory = "./");
-  void dumpdot(CUDD::BDD &b, const std::string &filename);
   CUDD::BDD state2bdd(int s);
-
-  CUDD::BDD finalstatesBDD;
-  /*!
-   * Store the BDD roots - LSB order, i.e.:
-   * b_{n-1}, ..., b_1, b_0
-   */
-  vec_bdd root_bdds;
-
-  /*!
-   * Store the BDD variables - LSB order, i.e.:
-   * b_{n-1}, ..., b_1, b_0, var_0, var_1, ... var_{m-1}
-   */
-  vec_bdd bddvars;
-
-  const std::unique_ptr<CUDD::Cudd> mgr;
 
   /*!
    *
@@ -154,8 +128,7 @@ public:
    * @param filename path to the MONA DFA file.
    * @return a raw pointer to a DFA.
    */
-  static dfa *read_from_file(const std::string &filename,
-                             CUDD::Cudd *mgr = nullptr);
+  static dfa read_from_file(const std::string &filename, const CUDD::Cudd &mgr);
 
   /*!
    * Check whether a word of propositional interpretations
@@ -232,7 +205,6 @@ public:
 
 protected:
 private:
-  std::vector<std::string> variables;
   void get_successor(const std::vector<int> &state,
                      const interpretation &symbol, std::vector<int> &next_state,
                      std::vector<int> &extended_symbol) const;

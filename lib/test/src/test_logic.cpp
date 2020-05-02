@@ -165,22 +165,19 @@ TEST_CASE("LDLfDiamond", "[logic]") {
       std::make_shared<const PropositionalAnd>(set_prop_formulas{a, b});
 
   auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
-  auto diamond_formula_true_tt =
-      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_true, tt);
+  auto diamond_formula_true_tt = std::make_shared<LDLfDiamond>(regex_true, tt);
 
   auto regex_false = std::make_shared<const PropositionalRegExp>(false_);
   auto diamond_formula_false_tt =
-      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_false, tt);
+      std::make_shared<LDLfDiamond>(regex_false, tt);
 
   auto regex_a = std::make_shared<const PropositionalRegExp>(a);
-  auto diamond_formula_a_tt =
-      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_a, tt);
+  auto diamond_formula_a_tt = std::make_shared<LDLfDiamond>(regex_a, tt);
   auto regex_b = std::make_shared<const PropositionalRegExp>(b);
-  auto diamond_formula_b_tt =
-      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_b, tt);
+  auto diamond_formula_b_tt = std::make_shared<LDLfDiamond>(regex_b, tt);
   auto regex_a_and_b = std::make_shared<const PropositionalRegExp>(a_and_b);
   auto diamond_formula_a_and_b_tt =
-      std::make_shared<LDLfDiamond<PropositionalRegExp>>(regex_a_and_b, tt);
+      std::make_shared<LDLfDiamond>(regex_a_and_b, tt);
 
   REQUIRE(*diamond_formula_true_tt == *diamond_formula_true_tt);
   REQUIRE(*diamond_formula_true_tt != *diamond_formula_false_tt);

@@ -1,5 +1,6 @@
 # Lydia
 
+![](https://img.shields.io/github/v/release/whitemech/lydia?sort=semver)
 ![Lydia CI pipeline](https://github.com/whitemech/lydia/workflows/Lydia%20CI%20pipeline/badge.svg)
 ![](https://codecov.io/gh/whitemech/lydia/branch/master/graph/badge.svg)
 ![](https://img.shields.io/badge/iso-c%2B%2B17-ff69b4)
@@ -88,7 +89,8 @@ Afterwards, to run the tests:
 make test
 ```
 
-To configure the build for development, use the flag `-DENABLE_COVERAGE=ON`
+To configure the build for development, 
+use the flag `-DCMAKE_BUILD_TYPE=Debug`
 
 ## Scripts
 
@@ -106,16 +108,35 @@ For building:
 - `build.sh`: for normal build
 - `build-dev.sh` for development build
 
+For benchmarking, use `./scripts/benchmark.sh` 
+(after `./scripts/build.sh`). 
+
 ## Docker development image
 
 We provide a Docker image for development.
 
-- Build:
-```
-./scripts/docker-build.sh
-```
+- Build: `./scripts/docker-build.sh`
 
-- Run:
+- Run: `./scripts/docker-run.sh`
+
+## Notes for macOS users
+
+Although we run and test Lydia on a Linux machine, you can build and run
+Lydia on macOS systems. However, you may need to apply the following.
+ 
+First, be sure you have the compiler toolchain for macOS installed.
+
+Second, we recommend installing dependencies via [Homebrew](https://brew.sh/) (e.g. 
+`brew install flex`, etc.). Also, notice that although macOS systems natively come with flex and bison pre-installed,
+those are not up to date versions and won't work with Lydia. 
+Hence, you have to make sure new versions of `flex` and `bison` executables are in your
+system path as:
 ```
-./scripts/docker-run.sh
+export PATH="/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH"
+```
+Finally, in order to get the Lydia parser working, you may have to set the 
+following environment variable up (e.g. in your `.bashrc`) as follows:
+
+```
+export CPLUS_INCLUDE_PATH="/System/Volumes/Data/usr/local/Cellar/flex/2.6.4_1/include/:$CPLUS_INCLUDE_PATH"
 ```

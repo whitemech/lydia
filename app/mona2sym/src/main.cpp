@@ -38,14 +38,15 @@
  * @param filename the path to the MONA DFA file.
  * @return nothing.
  */
-void transform(const std::string &input, const std::string &output_dir) {
-  auto my_dfa = whitemech::lydia::dfa::read_from_file(input);
-  // TODO reintroduce <filesystem> and make it work on CI...
+void transform(const std::string &input, const std::string &output_dir,
+               const CUDD::Cudd &mgr) {
+  auto my_dfa = whitemech::lydia::dfa::read_from_file(input, mgr);
+  // TODO try to use <filesystem>, check CI
   //  std::filesystem::create_directory(output_dir);
   auto cmd = "mkdir " + output_dir;
   std::system(cmd.c_str());
-  my_dfa->bdd2dot(output_dir);
-  dfa_to_graphviz(*my_dfa, "output", "svg");
+  dfa_to_bdds(my_dfa, output_dir);
+  dfa_to_graphviz(my_dfa, "output", "svg");
 }
 
 int main(int argc, char **argv) {
@@ -63,7 +64,7 @@ int main(int argc, char **argv) {
 
   CLI11_PARSE(app, argc, argv);
 
-  transform(input_file, output_directory);
-
+  auto mgr = CUDD::Cudd();
+  transform(input_file, output_directory, mgr);
   return 0;
 }

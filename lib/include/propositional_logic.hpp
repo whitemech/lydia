@@ -128,12 +128,17 @@ protected:
 public:
   explicit EvalVisitor(const set_atoms_ptr &interpretation)
       : interpretation{interpretation} {};
+
+  // callbacks for propositional logic
   void visit(const PropositionalTrue &) override;
   void visit(const PropositionalFalse &) override;
   void visit(const PropositionalAtom &) override;
   void visit(const PropositionalAnd &) override;
   void visit(const PropositionalOr &) override;
   void visit(const PropositionalNot &) override;
+
+  void visit(const QuotedFormula &) override{};
+
   bool apply(const PropositionalFormula &b);
 };
 

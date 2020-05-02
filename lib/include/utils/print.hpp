@@ -32,12 +32,32 @@ protected:
   std::string result;
 
 public:
+  // callbacks for LDLf
   void visit(const Symbol &) override;
   void visit(const LDLfBooleanAtom &) override;
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
-  template <class T> void visit(const LDLfDiamond<T> &);
+  void visit(const LDLfDiamond &) override;
+  void visit(const LDLfBox &) override;
+
+  // callbacks for regular expressions
+  void visit(const PropositionalRegExp &) override;
+  void visit(const TestRegExp &) override;
+  void visit(const UnionRegExp &) override;
+  void visit(const SequenceRegExp &) override;
+  void visit(const StarRegExp &) override;
+
+  // callbacks for propositional logic
+  void visit(const PropositionalTrue &) override;
+  void visit(const PropositionalFalse &) override;
+  void visit(const PropositionalAtom &) override;
+  void visit(const PropositionalAnd &) override;
+  void visit(const PropositionalOr &) override;
+  void visit(const PropositionalNot &) override;
+
+  void visit(const QuotedFormula &) override{};
+
   std::string apply(const vec_basic &v);
   std::string apply(const set_formulas &v);
   std::string apply(const Basic &b);

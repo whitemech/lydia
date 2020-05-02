@@ -21,6 +21,7 @@
 #include "symbol.hpp"
 #include "utils/compare.hpp"
 #include <cassert>
+#include <utility>
 
 namespace whitemech {
 namespace lydia {
@@ -109,60 +110,39 @@ public:
   std::shared_ptr<const LDLfFormula> logical_not() const override;
 };
 
-// TODO consider template check "enable_if_t" vs static_assert in constructor
-// template <class T, class=std::enable_if_t<std::is_base_of_v<RegExp, T>>>
-template <class T> class LDLfTemporal : public LDLfFormula {
+class LDLfTemporal : public LDLfFormula {
 private:
   const ldlf_ptr arg_;
-  const std::shared_ptr<const T> regex_;
+  const regex_ptr regex_;
 
 public:
-  explicit LDLfTemporal<T>(const std::shared_ptr<const T> &regex,
-                           const ldlf_ptr &formula)
-      : regex_{regex}, arg_{formula} {
-    static_assert(std::is_base_of<RegExp, T>::value,
-                  "concrete RegExp class not derived from RegExp");
-  }
+  LDLfTemporal(regex_ptr regex, ldlf_ptr formula)
+      : regex_{std::move(regex)}, arg_{std::move(formula)} {}
   ldlf_ptr get_formula() const { return arg_; };
-  std::shared_ptr<const T> get_regex() const { return regex_; };
-  hash_t compute_hash_() const override {
-    hash_t seed = this->get_type_code();
-    hash_combine<Basic>(seed, *this->get_regex());
-    hash_combine<Basic>(seed, *this->get_formula());
-    return seed;
-  };
+  regex_ptr get_regex() const { return regex_; };
+  hash_t compute_hash_() const override;
 };
 
-template <class T> class LDLfDiamond : public LDLfTemporal<T> {
+class LDLfDiamond : public LDLfTemporal {
 public:
   const static TypeID type_code_id = TypeID::t_LDLfDiamond;
+  LDLfDiamond(const regex_ptr &regex, const ldlf_ptr &formula);
   bool is_canonical(const set_formulas &container_) const;
-  void accept(Visitor &v) const override { v.visit(*this); };
-  explicit LDLfDiamond<T>(const std::shared_ptr<const T> &regex,
-                          const ldlf_ptr &formula)
-      : LDLfTemporal<T>(regex, formula) {
-    this->type_code_ = type_code_id;
-  }
+  void accept(Visitor &v) const override;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+  std::shared_ptr<const LDLfFormula> logical_not() const override;
+};
 
-  bool is_equal(const Basic &o) const override {
-    return is_a<LDLfDiamond<T>>(o) and
-           unified_eq(this->get_regex(),
-                      dynamic_cast<const LDLfDiamond<T> &>(o).get_regex()) and
-           unified_eq(this->get_formula(),
-                      dynamic_cast<const LDLfDiamond<T> &>(o).get_formula());
-  };
-  int compare(const Basic &o) const override {
-    auto regex_compare = unified_compare(
-        this->get_regex(), dynamic_cast<const LDLfDiamond &>(o).get_regex());
-    if (regex_compare != 0)
-      return regex_compare;
-    return unified_compare(this->get_formula(),
-                           dynamic_cast<const LDLfDiamond &>(o).get_formula());
-  };
-  std::shared_ptr<const LDLfFormula> logical_not() const override {
-    // TODO return the associated LDLfBoxFormula
-    return nullptr;
-  };
+class LDLfBox : public LDLfTemporal {
+public:
+  const static TypeID type_code_id = TypeID::t_LDLfBox;
+  LDLfBox(const regex_ptr &regex, const ldlf_ptr &formula);
+  bool is_canonical(const set_formulas &container_) const;
+  void accept(Visitor &v) const override;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+  std::shared_ptr<const LDLfFormula> logical_not() const override;
 };
 
 class RegExp : public Basic {};
@@ -173,13 +153,113 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_PropositionalRegExp;
-  void accept(Visitor &v) const override{};
+  void accept(Visitor &v) const override;
   explicit PropositionalRegExp(std::shared_ptr<const PropositionalFormula> f);
-  bool is_canonical(const set_formulas &container_) const;
+  bool is_canonical(const PropositionalFormula &f) const;
   hash_t compute_hash_() const override;
   std::shared_ptr<const PropositionalFormula> get_arg() const;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
+};
+
+class TestRegExp : public RegExp {
+private:
+  const std::shared_ptr<const LDLfFormula> arg_;
+
+public:
+  const static TypeID type_code_id = TypeID::t_TestRegExp;
+  void accept(Visitor &v) const override;
+  explicit TestRegExp(std::shared_ptr<const LDLfFormula> f);
+  bool is_canonical(const LDLfFormula &f) const;
+  hash_t compute_hash_() const override;
+  std::shared_ptr<const LDLfFormula> get_arg() const;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+};
+
+class UnionRegExp : public RegExp {
+private:
+  const set_regex container_;
+
+public:
+  const static TypeID type_code_id = TypeID::t_UnionRegExp;
+  explicit UnionRegExp(const set_regex &args);
+  void accept(Visitor &v) const override;
+  bool is_canonical(const set_regex &args) const;
+  hash_t compute_hash_() const override;
+  const set_regex &get_container() const;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+};
+
+class SequenceRegExp : public RegExp {
+private:
+  const vec_regex container_;
+
+public:
+  const static TypeID type_code_id = TypeID::t_SequenceRegExp;
+  explicit SequenceRegExp(const vec_regex &args);
+  void accept(Visitor &v) const override;
+  bool is_canonical(const set_regex &args) const;
+  hash_t compute_hash_() const override;
+  const vec_regex &get_container() const;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+};
+
+class StarRegExp : public RegExp {
+private:
+  const regex_ptr arg_;
+
+public:
+  const static TypeID type_code_id = TypeID::t_StarRegExp;
+  explicit StarRegExp(regex_ptr arg);
+  void accept(Visitor &v) const override;
+  bool is_canonical(const set_regex &args) const;
+  hash_t compute_hash_() const override;
+  const regex_ptr &get_arg() const;
+  bool is_equal(const Basic &o) const override;
+  int compare(const Basic &o) const override;
+};
+
+/*
+ * Auxiliary construct for the delta function.
+ */
+class LDLfF : public LDLfFormula {
+private:
+  const LDLfFormula &arg_;
+
+protected:
+public:
+  const static TypeID type_code_id = TypeID::t_LDLfF;
+  explicit LDLfF(const LDLfFormula &formula);
+  void accept(Visitor &v) const override;
+  bool is_canonical(const set_regex &args) const;
+  hash_t compute_hash_() const override;
+  const LDLfFormula &get_arg() const;
+  int compare(const Basic &rhs) const override;
+  bool is_equal(const Basic &rhs) const override;
+  ldlf_ptr logical_not() const override;
+};
+
+/*
+ * Auxiliary construct for the delta function.
+ */
+class LDLfT : public LDLfFormula {
+private:
+  const LDLfFormula &arg_;
+
+protected:
+public:
+  const static TypeID type_code_id = TypeID::t_LDLfT;
+  explicit LDLfT(const LDLfFormula &formula);
+  void accept(Visitor &v) const override;
+  bool is_canonical(const set_regex &args) const;
+  hash_t compute_hash_() const override;
+  const LDLfFormula &get_arg() const;
+  int compare(const Basic &rhs) const override;
+  bool is_equal(const Basic &rhs) const override;
+  ldlf_ptr logical_not() const override;
 };
 
 class QuotedFormula : public Basic {
@@ -193,9 +273,7 @@ public:
    * Quote an LDLf formula. We assume it is in NNF.
    * @param f: the LDLf formula.
    */
-  explicit QuotedFormula(ldlf_ptr formula) : formula{std::move(formula)} {
-    this->type_code_ = TypeID::t_QuotedFormula;
-  }
+  explicit QuotedFormula(ldlf_ptr formula);
 
   void accept(Visitor &v) const override;
   hash_t compute_hash_() const override;
