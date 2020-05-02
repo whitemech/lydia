@@ -27,7 +27,7 @@ jobs:
           sudo apt-get install -f flex bison
           sudo apt-get install -f libgraphviz-dev
           sudo apt-get install -f clang-format-9 clang-tidy-9
-          sudo apt-get install -f gcovr
+          sudo python -m pip install gcovr
       - name: Install CUDD
         run: |
           sudo apt-get install -f automake libtool
@@ -44,14 +44,11 @@ jobs:
       - name: Check File Headers
         run: python3 ./scripts/check_copyright_notice.py
       - name: Configure CMake
-        run: |
-          ./scripts/_ci-configure.sh .
+        run: ./scripts/_ci-configure.sh
       - name: Build
-        run: |
-          cd build && make -j
+        run: cd build && make -j
       - name: Test
-        run: |
-          ./scripts/_ci-test.sh
+        run: ./scripts/_ci-test.sh
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
@@ -61,6 +58,3 @@ jobs:
           name: codecov-umbrella
           yml: ./codecov.yml
           fail_ci_if_error: true
-      - name: Benchmarks
-        run: |
-          ./scripts/_ci-bench.sh
