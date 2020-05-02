@@ -22,7 +22,9 @@
 
 #include "logic.hpp"
 #include "parser.tab.hh"
+#include "propositional_logic.hpp"
 #include "scanner.hpp"
+#include "symbol.hpp"
 
 namespace whitemech {
 namespace lydia {
@@ -31,13 +33,8 @@ class Driver {
 private:
   void parse_helper(std::istream &stream);
 
-  std::size_t lines = 0;
   Parser *parser = nullptr;
   Scanner *scanner = nullptr;
-
-  const std::string red = "\033[1;31m";
-  const std::string blue = "\033[1;36m";
-  const std::string norm = "\033[0m";
 
 public:
   std::shared_ptr<const LDLfFormula> result;
@@ -56,8 +53,6 @@ public:
    */
   void parse(std::istream &iss);
 
-  void add_newline();
-
   std::shared_ptr<const LDLfFormula>
   add_LDLfBooleanAtom(const bool &flag) const;
   std::shared_ptr<const LDLfFormula>
@@ -69,7 +64,54 @@ public:
   std::shared_ptr<const LDLfFormula>
   add_LDLfNot(std::shared_ptr<const LDLfFormula> &formula) const;
 
-  std::ostream &print(std::ostream &stream);
+  std::shared_ptr<const LDLfFormula>
+  add_LDLfDiamond(std::shared_ptr<const RegExp> &regex,
+                  std::shared_ptr<const LDLfFormula> &formula) const;
+  std::shared_ptr<const LDLfFormula>
+  add_LDLfBox(std::shared_ptr<const RegExp> &regex,
+              std::shared_ptr<const LDLfFormula> &formula) const;
+  std::shared_ptr<const LDLfFormula>
+  add_LDLfImplication(std::shared_ptr<const LDLfFormula> &lhs,
+                      std::shared_ptr<const LDLfFormula> &rhs) const;
+  std::shared_ptr<const LDLfFormula>
+  add_LDLfEquivalence(std::shared_ptr<const LDLfFormula> &lhs,
+                      std::shared_ptr<const LDLfFormula> &rhs) const;
+  std::shared_ptr<const LDLfFormula> add_LDLfEnd() const;
+  std::shared_ptr<const LDLfFormula> add_LDLfLast() const;
+
+  std::shared_ptr<const RegExp> add_PropositionalRegExp(
+      std::shared_ptr<const PropositionalFormula> &prop_formula) const;
+  std::shared_ptr<const RegExp>
+  add_TestRegExp(std::shared_ptr<const LDLfFormula> &formula) const;
+  std::shared_ptr<const RegExp>
+  add_StarRegExp(std::shared_ptr<const RegExp> &regex) const;
+  std::shared_ptr<const RegExp>
+  add_SequenceRegExp(std::shared_ptr<const RegExp> &regex_lhs,
+                     std::shared_ptr<const RegExp> &regex_rhs) const;
+  std::shared_ptr<const RegExp>
+  add_UnionRegExp(std::shared_ptr<const RegExp> &regex_lhs,
+                  std::shared_ptr<const RegExp> &regex_rhs) const;
+
+  std::shared_ptr<const PropositionalFormula>
+  add_PropositionalBooleanAtom(const bool &flag) const;
+  std::shared_ptr<const PropositionalFormula>
+  add_PropositionalAtom(std::string &symbol_name) const;
+  std::shared_ptr<const PropositionalFormula>
+  add_PropositionalAnd(std::shared_ptr<const PropositionalFormula> &lhs,
+                       std::shared_ptr<const PropositionalFormula> &rhs) const;
+  std::shared_ptr<const PropositionalFormula>
+  add_PropositionalOr(std::shared_ptr<const PropositionalFormula> &lhs,
+                      std::shared_ptr<const PropositionalFormula> &rhs) const;
+  std::shared_ptr<const PropositionalFormula> add_PropositionalNot(
+      std::shared_ptr<const PropositionalFormula> &prop_formula) const;
+  std::shared_ptr<const PropositionalFormula> add_PropositionalImplication(
+      std::shared_ptr<const PropositionalFormula> &lhs,
+      std::shared_ptr<const PropositionalFormula> &rhs) const;
+  std::shared_ptr<const PropositionalFormula> add_PropositionalEquivalence(
+      std::shared_ptr<const PropositionalFormula> &lhs,
+      std::shared_ptr<const PropositionalFormula> &rhs) const;
+
+  std::ostream &print(std::ostream &stream) const;
 };
 
 } // namespace lydia

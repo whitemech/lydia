@@ -22,7 +22,6 @@ using token = whitemech::lydia::Parser::token;
 %}
 
 %option debug
-%option nodefault
 %option yyclass="whitemech::lydia::Scanner"
 %option noyywrap
 %option c++
@@ -33,29 +32,48 @@ using token = whitemech::lydia::Parser::token;
             yylval = lval;
 %}
 
-"&&"|"&"    { return token::AND; }
+"("                         { return token::LPAR; }
+")"                         { return token::RPAR; }
 
-"||"|"|"    { return token::OR; }
+"["                         { return token::BOX_LPAR; }
+"]"                         { return token::BOX_RPAR; }
 
-"!"|"~"     { return token::NOT; }
+"<"                         { return token::DIAMOND_LPAR; }
+">"                         { return token::DIAMOND_RPAR; }
 
-(?i:tt)     { return token::TT; }
+"+"                         { return token::UNION; }
+";"                         { return token::SEQUENCE; }
+"?"                         { return token::TEST; }
+"*"                         { return token::STAR; }
 
-(?i:ff)     { return token::FF; }
+"<=>"|"<->"                 { return token::EQUIVALENCE; }
+"=>"|"->"                   { return token::IMPLICATION; }
 
-"("         { return token::LPAR; }
+"&&"|"&"                    { return token::AND; }
+"||"|"|"                    { return token::OR; }
 
-")"         { return token::RPAR; }
+"!"|"~"                     { return token::NOT; }
 
+(?i:tt)                     { return token::TT; }
+(?i:ff)                     { return token::FF; }
 
+(?i:true)                   { return token::TRUE; }
+(?i:false)                  { return token::FALSE; }
 
-\n          {
-               // Update line number
-               loc->lines();
-               return token::NEWLINE;
-            }
+(?i:end)                    { return token::END; }
+(?i:last)                   { return token::LAST; }
 
-[ \r\n\t]*  { ; }
+[a-zA-Z_][a-zA-Z0-9_]*|(".*") {
+                                yylval->symbol_name = yytext;
+                                return token::SYMBOL;
+                            }
+
+\n                          {
+                               // Update line number
+                               loc->lines();
+                               return token::NEWLINE;
+                            }
+\s+                         { ; }
 
 %%
 

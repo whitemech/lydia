@@ -7,7 +7,7 @@ BUILD_DIR=build
 mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} && rm -rf ./*
 
 # Configure compiler build with coverage flas
-cmake .. -DCMAKE_BUILD_TYPE=Debug
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON
 # compiler will generate *.gcno files for each compiled object
 # running tests will generate *.gcda for each compiled object
 #  excuted partially or entirely by tests
@@ -17,9 +17,5 @@ make test
 # generate coverage information using lcov (that uses gcov)
 cd ..
 echo "========== Code coverage =========="
-gcovr -r . -e "third_party/*" -e "build/lib/CMakeFiles/lydia.dir/parser/parser.yy" \
-           -e "build/lib/CMakeFiles/lydia.dir/parser/lexer.l" -e "lib/test/*" -e "lib/benchmark/*"\
-           --print-summary --html --html-details -o coverage.html
-gcovr -r . -e "third_party/*" -e "build/lib/CMakeFiles/lydia.dir/parser/parser.yy" \
-           -e "build/lib/CMakeFiles/lydia.dir/parser/lexer.l" -e "lib/test/*" -e "lib/benchmark/*" \
-           --xml -o coverage.xml
+gcovr -r . --config "gcovr.cfg" --print-summary --html --html-details -o coverage.html
+gcovr -r . --config "gcovr.cfg" --xml -o coverage.xml
