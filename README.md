@@ -121,14 +121,21 @@ We provide a Docker image for development.
 ## Notes for macOS users
 
 Although we run and test Lydia on a Linux machine, you can build and run
- Lydia on macOS systems. However, you may need to apply the following.
+Lydia on macOS systems. However, you may need to apply the following.
+ 
+First, be sure you have the compiler toolchain for macOS installed.
 
-Install dependencies via [Homebrew](https://brew.sh/) (e.g. `brew install flex`,
-etc.). Then, in order to get the Lydia parser working, you may have to set the 
-following environment variables up (e.g. in your `.bashrc`) as follows:
-
+Second, we recommend installing dependencies via [Homebrew](https://brew.sh/) (e.g. 
+`brew install flex`, etc.). Also, notice that although macOS systems natively come with flex and bison pre-installed,
+those are not up to date versions and won't work with Lydia. 
+Hence, you have to make sure new versions of `flex` and `bison` executables are in your
+system path as:
 ```
 export PATH="/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH"
-export CXX="/usr/bin/clang++"
+```
+Finally, in order to get the Lydia parser working, you may have to set the 
+following environment variable up (e.g. in your `.bashrc`) as follows:
+
+```
 export CPLUS_INCLUDE_PATH="/System/Volumes/Data/usr/local/Cellar/flex/2.6.4_1/include/:$CPLUS_INCLUDE_PATH"
 ```
