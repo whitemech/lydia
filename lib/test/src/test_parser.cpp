@@ -216,6 +216,8 @@ TEST_CASE("Driver LDLfNot", "[parser]") {
 TEST_CASE("Driver LDLfTemporal", "[parser]") {
   auto driver = Driver();
 
+  auto ptr_prop_re_true = std::make_shared<PropositionalRegExp>(
+      std::make_shared<PropositionalTrue>());
   auto ptr_prop_re_a = std::make_shared<PropositionalRegExp>(
       std::make_shared<PropositionalAtom>("a"));
   auto ptr_prop_re_b = std::make_shared<PropositionalRegExp>(
@@ -234,6 +236,9 @@ TEST_CASE("Driver LDLfTemporal", "[parser]") {
       std::make_shared<TestRegExp>(std::make_shared<LDLfBooleanAtom>(false));
 
   auto ptr_tt = std::make_shared<LDLfBooleanAtom>(true);
+  auto ptr_ff = std::make_shared<LDLfBooleanAtom>(false);
+  auto ptr_end = std::make_shared<LDLfBox>(ptr_prop_re_true, ptr_ff);
+  auto ptr_last = std::make_shared<LDLfDiamond>(ptr_prop_re_true, ptr_end);
 
   auto actualDiamond_prop_re_tt =
       std::make_shared<LDLfDiamond>(ptr_prop_re_a, ptr_tt);
@@ -251,6 +256,13 @@ TEST_CASE("Driver LDLfTemporal", "[parser]") {
   auto actualBox_union_re_tt = std::make_shared<LDLfBox>(ptr_union_re, ptr_tt);
   auto actualBox_star_re_tt = std::make_shared<LDLfBox>(ptr_star_re, ptr_tt);
   auto actualBox_test_re_tt = std::make_shared<LDLfBox>(ptr_test_re, ptr_tt);
+
+  auto actualDiamond_a_end =
+      std::make_shared<LDLfDiamond>(ptr_prop_re_a, ptr_end);
+  auto actualDiamond_a_last =
+      std::make_shared<LDLfDiamond>(ptr_prop_re_a, ptr_last);
+  auto actualBox_a_end = std::make_shared<LDLfBox>(ptr_prop_re_a, ptr_end);
+  auto actualBox_a_last = std::make_shared<LDLfBox>(ptr_prop_re_a, ptr_last);
 
   SECTION("test parsing <a>tt") {
     std::istringstream a_tt("<a>tt");
@@ -291,26 +303,38 @@ TEST_CASE("Driver LDLfTemporal", "[parser]") {
   SECTION("test parsing [a;b;c]tt") {
     std::istringstream abc_tt("[a;b;c]tt");
     driver.parse(abc_tt);
-    auto parsedDiamond = driver.result;
-    REQUIRE(*parsedDiamond == *actualBox_seq_re_tt);
+    auto parsedBox = driver.result;
+    REQUIRE(*parsedBox == *actualBox_seq_re_tt);
   }
   SECTION("test parsing [a+b]tt") {
     std::istringstream ab_tt("[a+b]tt");
     driver.parse(ab_tt);
-    auto parsedDiamond = driver.result;
-    REQUIRE(*parsedDiamond == *actualBox_union_re_tt);
+    auto parsedBox = driver.result;
+    REQUIRE(*parsedBox == *actualBox_union_re_tt);
   }
   SECTION("test parsing [c*]tt") {
     std::istringstream c_tt("[c*]tt");
     driver.parse(c_tt);
-    auto parsedDiamond = driver.result;
-    REQUIRE(*parsedDiamond == *actualBox_star_re_tt);
+    auto parsedBox = driver.result;
+    REQUIRE(*parsedBox == *actualBox_star_re_tt);
   }
   SECTION("test parsing [ff?]tt") {
     std::istringstream ff_tt("[ff?]tt");
     driver.parse(ff_tt);
-    auto parsedDiamond = driver.result;
-    REQUIRE(*parsedDiamond == *actualBox_test_re_tt);
+    auto parsedBox = driver.result;
+    REQUIRE(*parsedBox == *actualBox_test_re_tt);
+  }
+  SECTION("test parsing [a]end") {
+    std::istringstream a_end("[a]end");
+    driver.parse(a_end);
+    auto parsedBox = driver.result;
+    REQUIRE(*parsedBox == *actualBox_a_end);
+  }
+  SECTION("test parsing [a]last") {
+    std::istringstream a_last("[a]last");
+    driver.parse(a_last);
+    auto parsedBox = driver.result;
+    REQUIRE(*parsedBox == *actualBox_a_last);
   }
 }
 

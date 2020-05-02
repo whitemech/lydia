@@ -13,7 +13,6 @@
 
 %code requires{
    #include "logic.hpp"
-   #include "propositional_logic.hpp"
    #include "parser_stype.h"
    namespace whitemech {
    namespace lydia {
@@ -59,16 +58,10 @@
 
 %token                  LPAR
 %token                  RPAR
-%token                  BOX_LPAR
-%token                  BOX_RPAR
-%token                  DIAMOND_LPAR
-%token                  DIAMOND_RPAR
-%token                  UNION
-%token                  SEQUENCE
-%token                  TEST
-%token                  STAR
 %token                  TT
 %token                  FF
+%token                  END
+%token                  LAST
 %token                  TRUE
 %token                  FALSE
 %token                  SYMBOL
@@ -99,15 +92,17 @@
 input: ldlf_formula                                                                     { $$ = $1;
                                                                                           d.result = $$; };
 
-ldlf_formula: ldlf_formula EQUIVALENCE ldlf_formula                                     { $$ = d.addLDLfEquivalence($1, $3); }
-            | ldlf_formula IMPLICATION ldlf_formula                                     { $$ = d.addLDLfImplication($1, $3); }
+ldlf_formula: ldlf_formula EQUIVALENCE ldlf_formula                                     { $$ = d.add_LDLfEquivalence($1, $3); }
+            | ldlf_formula IMPLICATION ldlf_formula                                     { $$ = d.add_LDLfImplication($1, $3); }
             | ldlf_formula OR ldlf_formula                                              { $$ = d.add_LDLfOr($1, $3); }
             | ldlf_formula AND ldlf_formula                                             { $$ = d.add_LDLfAnd($1, $3); }
-            | BOX_LPAR regular_expression BOX_RPAR ldlf_formula                         { $$ = d.addLDLfBox($2, $4); };
-            | DIAMOND_LPAR regular_expression DIAMOND_RPAR ldlf_formula                 { $$ = d.addLDLfDiamond($2, $4); }
+            | BOX_LPAR regular_expression BOX_RPAR ldlf_formula                         { $$ = d.add_LDLfBox($2, $4); };
+            | DIAMOND_LPAR regular_expression DIAMOND_RPAR ldlf_formula                 { $$ = d.add_LDLfDiamond($2, $4); }
             | NOT ldlf_formula                                                          { $$ = d.add_LDLfNot($2); }
             | TT                                                                        { $$ = d.add_LDLfBooleanAtom(true); }
             | FF                                                                        { $$ = d.add_LDLfBooleanAtom(false); }
+            | END                                                                       { $$ = d.add_LDLfEnd(); }
+            | LAST                                                                      { $$ = d.add_LDLfLast(); }
             ;
 
 regular_expression: regular_expression UNION regular_expression                         { $$ = d.add_UnionRegExp($1, $3); }
@@ -132,7 +127,6 @@ regular_expression: LPAR regular_expression RPAR                                
 propositional_formula: LPAR propositional_formula RPAR                                  { $$ = $2; };
     
 %%
-
 
 void whitemech::lydia::Parser::error(const location_type &l, const std::string &err_message) {
    std::cerr << "Error: " << err_message << " at " << l << "\n";

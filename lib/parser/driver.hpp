@@ -33,13 +33,8 @@ class Driver {
 private:
   void parse_helper(std::istream &stream);
 
-  std::size_t lines = 0;
   Parser *parser = nullptr;
   Scanner *scanner = nullptr;
-
-  const std::string red = "\033[1;31m";
-  const std::string blue = "\033[1;36m";
-  const std::string norm = "\033[0m";
 
 public:
   std::shared_ptr<const LDLfFormula> result;
@@ -58,8 +53,6 @@ public:
    */
   void parse(std::istream &iss);
 
-  void add_newline();
-
   std::shared_ptr<const LDLfFormula>
   add_LDLfBooleanAtom(const bool &flag) const;
   std::shared_ptr<const LDLfFormula>
@@ -72,17 +65,19 @@ public:
   add_LDLfNot(std::shared_ptr<const LDLfFormula> &formula) const;
 
   std::shared_ptr<const LDLfFormula>
-  addLDLfDiamond(std::shared_ptr<const RegExp> &regex,
-                 std::shared_ptr<const LDLfFormula> &formula) const;
+  add_LDLfDiamond(std::shared_ptr<const RegExp> &regex,
+                  std::shared_ptr<const LDLfFormula> &formula) const;
   std::shared_ptr<const LDLfFormula>
-  addLDLfBox(std::shared_ptr<const RegExp> &regex,
-             std::shared_ptr<const LDLfFormula> &formula) const;
+  add_LDLfBox(std::shared_ptr<const RegExp> &regex,
+              std::shared_ptr<const LDLfFormula> &formula) const;
   std::shared_ptr<const LDLfFormula>
-  addLDLfImplication(std::shared_ptr<const LDLfFormula> &lhs,
-                     std::shared_ptr<const LDLfFormula> &rhs) const;
+  add_LDLfImplication(std::shared_ptr<const LDLfFormula> &lhs,
+                      std::shared_ptr<const LDLfFormula> &rhs) const;
   std::shared_ptr<const LDLfFormula>
-  addLDLfEquivalence(std::shared_ptr<const LDLfFormula> &lhs,
-                     std::shared_ptr<const LDLfFormula> &rhs) const;
+  add_LDLfEquivalence(std::shared_ptr<const LDLfFormula> &lhs,
+                      std::shared_ptr<const LDLfFormula> &rhs) const;
+  std::shared_ptr<const LDLfFormula> add_LDLfEnd() const;
+  std::shared_ptr<const LDLfFormula> add_LDLfLast() const;
 
   std::shared_ptr<const RegExp> add_PropositionalRegExp(
       std::shared_ptr<const PropositionalFormula> &prop_formula) const;

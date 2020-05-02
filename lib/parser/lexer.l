@@ -60,6 +60,9 @@ using token = whitemech::lydia::Parser::token;
 (?i:true)                   { return token::TRUE; }
 (?i:false)                  { return token::FALSE; }
 
+(?i:end)                    { return token::END; }
+(?i:last)                   { return token::LAST; }
+
 [a-zA-Z_][a-zA-Z0-9_]*|(".*") {
                                 yylval->symbol_name = yytext;
                                 return token::SYMBOL;
