@@ -1,5 +1,6 @@
 # Lydia
 
+![](https://img.shields.io/github/v/release/whitemech/lydia?sort=semver)
 ![Lydia CI pipeline](https://github.com/whitemech/lydia/workflows/Lydia%20CI%20pipeline/badge.svg)
 ![](https://codecov.io/gh/whitemech/lydia/branch/master/graph/badge.svg)
 ![](https://img.shields.io/badge/iso-c%2B%2B17-ff69b4)
