@@ -6,5 +6,5 @@ cd build && make test
 cd ..
 
 echo "========== Code coverage =========="
-gcovr -r . --config "gcovr.cfg" --print-summary --html --html-details -o coverage.html
-gcovr -r . --config "gcovr.cfg" --xml -o coverage.xml
+python -m gcovr -r . --config "gcovr.cfg" --print-summary --html --html-details -o coverage.html
+python -m gcovr -r . --config "gcovr.cfg" --xml -o coverage.xml

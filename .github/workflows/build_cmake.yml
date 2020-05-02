@@ -28,7 +28,6 @@ jobs:
           sudo apt-get install -f libgraphviz-dev
           sudo apt-get install -f clang-format-9 clang-tidy-9
           sudo python -m pip install gcovr
-          alias gcovr='python -m gcovr'
       - name: Install CUDD
         run: |
           sudo apt-get install -f automake libtool
