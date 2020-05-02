@@ -20,7 +20,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 project (Lydia
-         VERSION 0.0.1
+         VERSION 0.1.0
          LANGUAGES CXX
          #HOMEPAGE_URL https://github.com/whitemech/lydia.git
          DESCRIPTION "Lydia is a tool for LDLf translation to DFA and for LDLf synthesis.")
