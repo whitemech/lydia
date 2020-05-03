@@ -23,7 +23,10 @@
 namespace whitemech {
 namespace lydia {
 
-class PropositionalFormula : public Basic {};
+class PropositionalFormula : public Basic {
+public:
+  virtual prop_ptr logical_not() const = 0;
+};
 
 class PropositionalTrue : public PropositionalFormula {
 public:
@@ -34,6 +37,7 @@ public:
   hash_t compute_hash_() const override;
   int compare(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
+  prop_ptr logical_not() const override;
 };
 
 class PropositionalFalse : public PropositionalFormula {
@@ -45,6 +49,7 @@ public:
   hash_t compute_hash_() const override;
   int compare(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
+  prop_ptr logical_not() const override;
 };
 
 /*!
@@ -68,6 +73,7 @@ public:
   hash_t compute_hash_() const override;
   int compare(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
+  prop_ptr logical_not() const override;
 };
 
 class PropositionalAnd : public PropositionalFormula {
@@ -84,6 +90,7 @@ public:
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
   const set_prop_formulas &get_container() const;
+  prop_ptr logical_not() const override;
 };
 
 class PropositionalOr : public PropositionalFormula {
@@ -100,47 +107,35 @@ public:
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
   const set_prop_formulas &get_container() const;
+  prop_ptr logical_not() const override;
 };
 
 class PropositionalNot : public PropositionalFormula {
 private:
-  const std::shared_ptr<const PropositionalFormula> arg_;
+  const prop_ptr arg_;
 
 public:
   const static TypeID type_code_id = TypeID::t_PropositionalNot;
   void accept(Visitor &v) const override;
-  explicit PropositionalNot(
-      const std::shared_ptr<const PropositionalFormula> &in);
+  explicit PropositionalNot(const prop_ptr &in);
   bool is_canonical(const PropositionalFormula &s) { return true; };
   hash_t compute_hash_() const override;
   virtual vec_basic get_args() const;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
   std::shared_ptr<const PropositionalFormula> get_arg() const;
+  prop_ptr logical_not() const override;
 };
 
-class EvalVisitor : public Visitor {
-private:
-protected:
-  bool result{};
-  const set_atoms_ptr &interpretation;
+extern prop_ptr prop_true;
+extern prop_ptr prop_false;
 
-public:
-  explicit EvalVisitor(const set_atoms_ptr &interpretation)
-      : interpretation{interpretation} {};
-
-  // callbacks for propositional logic
-  void visit(const PropositionalTrue &) override;
-  void visit(const PropositionalFalse &) override;
-  void visit(const PropositionalAtom &) override;
-  void visit(const PropositionalAnd &) override;
-  void visit(const PropositionalOr &) override;
-  void visit(const PropositionalNot &) override;
-
-  void visit(const QuotedFormula &) override{};
-
-  bool apply(const PropositionalFormula &b);
-};
+prop_ptr boolean_prop(bool b);
+prop_ptr prop_atom(const Symbol &s);
+prop_ptr prop_atom(const std::string &s);
+prop_ptr logical_and(const set_prop_formulas &s);
+prop_ptr logical_or(const set_prop_formulas &s);
+prop_ptr logical_not(const prop_ptr &s);
 
 } // namespace lydia
 } // namespace whitemech

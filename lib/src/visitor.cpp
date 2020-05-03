@@ -39,8 +39,10 @@ void StarRegExp::accept(Visitor &v) const { v.visit(*this); }
 // TODO add other accept methods
 
 void PropositionalTrue::accept(Visitor &v) const { v.visit(*this); }
+
 void PropositionalFalse::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalAtom::accept(Visitor &v) const { v.visit(*this); }
+
 void PropositionalAnd::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalOr::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalNot::accept(Visitor &v) const { v.visit(*this); }

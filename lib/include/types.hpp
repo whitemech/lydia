@@ -85,10 +85,9 @@ typedef std::shared_ptr<const LDLfFormula> ldlf_ptr;
 typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
 typedef std::set<std::shared_ptr<const LDLfFormula>, SharedComparator>
     set_formulas;
-typedef std::vector<std::shared_ptr<const PropositionalFormula>>
-    vec_prop_formulas;
-typedef std::set<std::shared_ptr<const PropositionalFormula>, SharedComparator>
-    set_prop_formulas;
+typedef std::shared_ptr<const PropositionalFormula> prop_ptr;
+typedef std::vector<prop_ptr> vec_prop_formulas;
+typedef std::set<prop_ptr, SharedComparator> set_prop_formulas;
 typedef std::shared_ptr<const RegExp> regex_ptr;
 typedef std::set<regex_ptr, SharedComparator> set_regex;
 typedef std::vector<regex_ptr> vec_regex;

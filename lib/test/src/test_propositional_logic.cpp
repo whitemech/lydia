@@ -19,7 +19,7 @@
 #include <pl/logic.hpp>
 
 namespace whitemech::lydia::Test {
-TEST_CASE("Propositional Logic", "[propositional_logic]") {
+TEST_CASE("Propositional Logic", "[pl/logic]") {
 
   auto t = std::make_shared<PropositionalTrue>();
   auto f = std::make_shared<PropositionalFalse>();
@@ -43,4 +43,40 @@ TEST_CASE("Propositional Logic", "[propositional_logic]") {
   REQUIRE(eval(a_or_b, i_b));
   REQUIRE(eval(a_or_b, i_ab));
 }
+
+TEST_CASE("Logical operation", "[pl/logic]") {
+  auto t = boolean_prop(true);
+  auto f = boolean_prop(false);
+
+  SECTION("true & false = false") {
+    auto t_and_f = logical_and({t, f});
+    REQUIRE(t_and_f == f);
+  }
+
+  SECTION("true | false = true") {
+    auto t_or_f = logical_or({t, f});
+    REQUIRE(t_or_f == t);
+  }
+
+  SECTION("and(p) = p") {
+    auto p = prop_atom("p");
+    auto and_p = logical_and({p});
+    REQUIRE(and_p == p);
+  }
+
+  SECTION("p & ~p = false") {
+    auto p = prop_atom("p");
+    auto not_p = p->logical_not();
+    auto and_p = logical_and({p, not_p});
+    REQUIRE(and_p == f);
+  }
+
+  SECTION("p | ~p = true") {
+    auto p = prop_atom("p");
+    auto not_p = p->logical_not();
+    auto or_p = logical_or({p, not_p});
+    REQUIRE(or_p == t);
+  }
+}
+
 } // namespace whitemech::lydia::Test

@@ -54,7 +54,7 @@ enum TypeID {
 class Visitor;
 class Symbol;
 
-class Basic {
+class Basic : std::enable_shared_from_this<const Basic> {
 private:
   // The hash_ is defined as mutable, because its value is initialized to 0
   // in the constructor and then it can be changed in Basic::hash() to the

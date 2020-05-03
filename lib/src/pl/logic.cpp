@@ -24,6 +24,9 @@
 namespace whitemech {
 namespace lydia {
 
+prop_ptr prop_true = std::make_shared<PropositionalTrue>();
+prop_ptr prop_false = std::make_shared<PropositionalFalse>();
+
 hash_t PropositionalTrue::compute_hash_() const {
   hash_t seed = type_code_id;
   return seed;
@@ -38,6 +41,8 @@ bool PropositionalTrue::is_equal(const Basic &rhs) const {
   return is_a<PropositionalTrue>(rhs);
 };
 
+prop_ptr PropositionalTrue::logical_not() const { return prop_false; }
+
 hash_t PropositionalFalse::compute_hash_() const {
   hash_t seed = type_code_id;
   return seed;
@@ -51,6 +56,8 @@ int PropositionalFalse::compare(const Basic &rhs) const {
 bool PropositionalFalse::is_equal(const Basic &rhs) const {
   return is_a<PropositionalFalse>(rhs);
 }
+
+prop_ptr PropositionalFalse::logical_not() const { return prop_true; }
 
 PropositionalAtom::PropositionalAtom(const Symbol &s)
     : symbol{std::make_shared<const Symbol>(s.get_name())} {
@@ -81,6 +88,11 @@ bool PropositionalAtom::is_equal(const Basic &rhs) const {
   return is_a<PropositionalAtom>(rhs) and
          this->symbol->is_equal(
              *dynamic_cast<const PropositionalAtom &>(rhs).symbol);
+}
+
+prop_ptr PropositionalAtom::logical_not() const {
+  prop_ptr ptr = std::make_shared<const PropositionalAtom>(this->symbol);
+  return std::make_shared<PropositionalNot>(ptr);
 }
 
 PropositionalAnd::PropositionalAnd(const set_prop_formulas &s) : container_{s} {
@@ -114,6 +126,15 @@ int PropositionalAnd::compare(const Basic &o) const {
 
 const set_prop_formulas &PropositionalAnd::get_container() const {
   return container_;
+}
+
+prop_ptr PropositionalAnd::logical_not() const {
+  auto container = this->get_container();
+  set_prop_formulas cont;
+  for (auto &a : container) {
+    cont.insert(a->logical_not());
+  }
+  return std::make_shared<PropositionalOr>(cont);
 }
 
 PropositionalOr::PropositionalOr(const set_prop_formulas &s) : container_{s} {
@@ -153,6 +174,15 @@ const set_prop_formulas &PropositionalOr::get_container() const {
   return container_;
 }
 
+prop_ptr PropositionalOr::logical_not() const {
+  auto container = this->get_container();
+  set_prop_formulas cont;
+  for (auto &a : container) {
+    cont.insert(a->logical_not());
+  }
+  return std::make_shared<PropositionalAnd>(cont);
+}
+
 PropositionalNot::PropositionalNot(
     const std::shared_ptr<const PropositionalFormula> &in)
     : arg_{in} {
@@ -185,6 +215,67 @@ int PropositionalNot::compare(const Basic &o) const {
 std::shared_ptr<const PropositionalFormula> PropositionalNot::get_arg() const {
   return arg_;
 }
+
+prop_ptr PropositionalNot::logical_not() const { return this->get_arg(); }
+
+prop_ptr boolean_prop(bool b) { return b ? prop_true : prop_false; }
+
+template <typename caller>
+prop_ptr and_or(const set_prop_formulas &s, const bool &op_x_notx) {
+  set_prop_formulas args;
+  for (auto &a : s) {
+    // handle the case when a subformula is true
+    if (is_a<PropositionalTrue>(*a)) {
+      if (op_x_notx)
+        return a;
+      else
+        continue;
+    }
+    // handle the case when a subformula is true
+    else if (is_a<PropositionalFalse>(*a)) {
+      if (!op_x_notx)
+        return a;
+      else
+        continue;
+    }
+    // handle the case when a subformula is of the same type of the caller
+    else if (is_a<caller>(*a)) {
+      const auto &to_insert = dynamic_cast<const caller &>(*a);
+      const auto &container = to_insert.get_container();
+      args.insert(container.begin(), container.end());
+      continue;
+    } else {
+      args.insert(a);
+    }
+  }
+  for (auto &a : args) {
+    if (args.find(logical_not(a)) != args.end())
+      return boolean_prop(op_x_notx);
+  }
+  if (args.size() == 1)
+    return *(args.begin());
+  else if (args.empty())
+    return boolean_prop(not op_x_notx);
+  return std::make_shared<caller>(s);
+}
+
+prop_ptr prop_atom(const Symbol &s) {
+  return std::make_shared<const PropositionalAtom>(s);
+}
+
+prop_ptr prop_atom(const std::string &s) {
+  return std::make_shared<const PropositionalAtom>(s);
+}
+
+prop_ptr logical_and(const set_prop_formulas &s) {
+  return and_or<PropositionalAnd>(s, false);
+}
+
+prop_ptr logical_or(const set_prop_formulas &s) {
+  return and_or<PropositionalOr>(s, true);
+}
+
+prop_ptr logical_not(const prop_ptr &f) { return f->logical_not(); }
 
 } // namespace lydia
 } // namespace whitemech
