@@ -142,32 +142,5 @@ public:
   bool apply(const PropositionalFormula &b);
 };
 
-/*!
- * Evaluate a formula.
- *
- * @param interpretation the set of atoms that are true in the interpretation.
- *                     | Atoms that are not members are considered false.
- * @return true if the formula is true in the interpretation, false otherwise.
- */
-bool eval(const PropositionalFormula &, const set_atoms_ptr &interpretation);
-
-/*!
- * Compute all the models of a propositional formula.
- *
- * @param f the propositional formula
- * @return the set of the models of a formula
- */
-std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f);
-
-/*!
- * Compute the minimal models of a propositional formula.
- *
- * @param f the propositional formula
- * @return the set of minimal models.
- */
-std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f);
-
-bool is_sat(const PropositionalFormula &f);
-
 } // namespace lydia
 } // namespace whitemech

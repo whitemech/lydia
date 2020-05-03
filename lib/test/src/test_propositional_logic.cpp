@@ -15,7 +15,8 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "catch.hpp"
-#include <propositional_logic.hpp>
+#include <pl/eval.hpp>
+#include <pl/logic.hpp>
 
 namespace whitemech::lydia::Test {
 TEST_CASE("Propositional Logic", "[propositional_logic]") {

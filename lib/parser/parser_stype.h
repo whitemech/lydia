@@ -17,7 +17,7 @@
  */
 
 #include "logic.hpp"
-#include "propositional_logic.hpp"
+#include "pl/logic.hpp"
 #include <string>
 
 namespace whitemech {

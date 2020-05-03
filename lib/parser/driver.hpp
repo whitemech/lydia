@@ -22,7 +22,7 @@
 
 #include "logic.hpp"
 #include "parser.tab.hh"
-#include "propositional_logic.hpp"
+#include "pl/logic.hpp"
 #include "scanner.hpp"
 #include "symbol.hpp"
 

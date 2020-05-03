@@ -18,7 +18,7 @@
 
 #include "cuddObj.hh"
 #include "logger.hpp"
-#include "propositional_logic.hpp"
+#include "pl/logic.hpp"
 #include "visitor.hpp"
 #include <logic.hpp>
 #include <utility>

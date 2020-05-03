@@ -18,7 +18,7 @@
 #include "visitor.hpp"
 #include <delta.hpp>
 #include <logic.hpp>
-#include <propositional_logic.hpp>
+#include <pl/logic.hpp>
 
 namespace whitemech {
 namespace lydia {

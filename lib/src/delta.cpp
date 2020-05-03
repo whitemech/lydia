@@ -15,6 +15,8 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "pl/eval.hpp"
+#include "pl/logic.hpp"
 #include <cassert>
 #include <delta.hpp>
 #include <logger.hpp>

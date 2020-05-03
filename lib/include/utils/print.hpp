@@ -18,7 +18,7 @@
 
 #include "logic.hpp"
 #include "nnf.hpp"
-#include "propositional_logic.hpp"
+#include "pl/logic.hpp"
 #include "visitor.hpp"
 
 namespace whitemech {

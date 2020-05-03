@@ -17,7 +17,7 @@
  */
 
 #include "basic.hpp"
-#include "propositional_logic.hpp"
+#include "pl/logic.hpp"
 #include "symbol.hpp"
 #include "utils/compare.hpp"
 #include <cassert>
