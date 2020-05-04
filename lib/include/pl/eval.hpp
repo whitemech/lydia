@@ -53,23 +53,6 @@ public:
  */
 bool eval(const PropositionalFormula &, const set_atoms_ptr &interpretation);
 
-/*!
- * Compute all the models of a propositional formula.
- *
- * @param f the propositional formula
- * @return the set of the models of a formula
- */
-std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f);
-
-/*!
- * Compute the minimal models of a propositional formula.
- *
- * @param f the propositional formula
- * @return the set of minimal models.
- */
-std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f);
-
-bool is_sat(const PropositionalFormula &f);
 
 } // namespace lydia
 } // namespace whitemech

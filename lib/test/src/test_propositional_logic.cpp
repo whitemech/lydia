@@ -15,6 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "catch.hpp"
+#include <cryptominisat5/cryptominisat.h>
 #include <pl/cnf.hpp>
 #include <pl/eval.hpp>
 #include <pl/logic.hpp>
@@ -159,6 +160,66 @@ TEST_CASE("to cnf", "[pl/cnf]") {
     auto actual = to_cnf(*and_rs_pq);
     REQUIRE(*actual == *and_rs_pq);
   }
+}
+
+TEST_CASE("Test Cryptominisat", "[cryptominisat]"){
+    CMSat::SATSolver solver;
+    std::vector<CMSat::Lit> clause;
+
+    //Let's use 4 threads
+    solver.set_num_threads(4);
+
+    //We need 3 variables. They will be: 0,1,2
+    //Variable numbers are always trivially increasing
+    solver.new_vars(3);
+
+    //add "1 0"
+    clause.push_back(CMSat::Lit(0, false));
+    solver.add_clause(clause);
+
+    //add "-2 0"
+    clause.clear();
+    clause.push_back(CMSat::Lit(1, true));
+    solver.add_clause(clause);
+
+    //add "-1 2 3 0"
+    clause.clear();
+    clause.push_back(CMSat::Lit(0, true));
+    clause.push_back(CMSat::Lit(1, false));
+    clause.push_back(CMSat::Lit(2, false));
+    solver.add_clause(clause);
+
+    CMSat::lbool ret = solver.solve();
+    REQUIRE(ret == CMSat::l_True);
+    std::cout
+        << "Solution is: "
+        << solver.get_model()[0]
+        << ", " << solver.get_model()[1]
+        << ", " << solver.get_model()[2]
+        << std::endl;
+
+    //assumes 3 = FALSE, no solutions left
+    std::vector<CMSat::Lit> assumptions;
+    assumptions.push_back(CMSat::Lit(2, true));
+    ret = solver.solve(&assumptions);
+    REQUIRE(ret == CMSat::l_False);
+
+    //without assumptions we still have a solution
+    ret = solver.solve();
+    REQUIRE(ret == CMSat::l_True);
+
+    //add "-3 0"
+    //No solutions left, UNSATISFIABLE returned
+    clause.clear();
+    clause.push_back(CMSat::Lit(2, true));
+    solver.add_clause(clause);
+    ret = solver.solve();
+    REQUIRE(ret == CMSat::l_False);
+
+}
+
+TEST_CASE("models", "[pl/models]"){
+
 }
 
 } // namespace whitemech::lydia::Test

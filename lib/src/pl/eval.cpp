@@ -17,6 +17,7 @@
 #include "pl/eval.hpp"
 #include "pl/logic.hpp"
 #include "utils/misc.hpp"
+#include "pl/models.hpp"
 #include <atom_visitor.hpp>
 #include <cryptominisat5/cryptominisat.h>
 
@@ -68,38 +69,6 @@ bool EvalVisitor::apply(const PropositionalFormula &b) {
 bool eval(const PropositionalFormula &f, const set_atoms_ptr &interpretation) {
   EvalVisitor evalVisitor{interpretation};
   return evalVisitor.apply(f);
-}
-
-std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f) {
-  std::vector<set_atoms_ptr> models;
-  auto all_atoms = find_atoms(f);
-  std::vector<set_atoms_ptr> all_interpretations =
-      powerset<atom_ptr, SharedComparator>(all_atoms);
-  for (set_atoms_ptr &interpretation : all_interpretations) {
-    if (eval(f, interpretation)) {
-      models.emplace_back(interpretation);
-    }
-  }
-  return models;
-}
-
-std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f) {
-  auto models = all_models(f);
-  std::vector<set_atoms_ptr> result;
-  return models;
-}
-
-bool is_sat(const PropositionalFormula &f) {
-  CMSat::SATSolver solver;
-  std::vector<CMSat::Lit> clause;
-
-  // Let's use 4 threads
-  solver.set_num_threads(4);
-
-  auto atoms = find_atoms(f);
-  solver.new_vars(atoms.size());
-
-  return false;
 }
 
 } // namespace lydia
