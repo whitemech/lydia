@@ -15,6 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "catch.hpp"
+#include <pl/cnf.hpp>
 #include <pl/eval.hpp>
 #include <pl/logic.hpp>
 
@@ -76,6 +77,87 @@ TEST_CASE("Logical operation", "[pl/logic]") {
     auto not_p = p->logical_not();
     auto or_p = logical_or({p, not_p});
     REQUIRE(or_p == t);
+  }
+
+  SECTION("~(p & q) = ~p | ~q") {
+    auto p = prop_atom("p");
+    auto q = prop_atom("q");
+    auto not_p = p->logical_not();
+    auto not_q = q->logical_not();
+    auto and_pq = logical_and({p, q});
+    auto expected = logical_or({not_p, not_q});
+    REQUIRE(and_pq->logical_not()->is_equal(*expected));
+  }
+}
+
+TEST_CASE("to cnf", "[pl/cnf]") {
+  SECTION("Propositional is in CNF") {
+    auto p = prop_atom("p");
+    auto actual = to_cnf(*p);
+    REQUIRE(*actual == *p);
+  }
+  SECTION("Not of atom is in CNF") {
+    auto p = prop_atom("p");
+    auto not_p = p->logical_not();
+    auto actual = to_cnf(*not_p);
+    REQUIRE(*actual == *not_p);
+  }
+  SECTION("Or of atoms is in CNF") {
+    auto p = prop_atom("p");
+    auto q = prop_atom("q");
+    auto expected = PropositionalOr({p, q});
+    auto actual = to_cnf(expected);
+    REQUIRE(*actual == expected);
+  }
+  SECTION("And of atoms is in CNF") {
+    auto p = prop_atom("p");
+    auto q = prop_atom("q");
+    auto expected = PropositionalAnd({p, q});
+    auto actual = to_cnf(expected);
+    REQUIRE(*actual == expected);
+  }
+  SECTION("Or with one And") {
+    auto p = prop_atom("p");
+    auto q = prop_atom("q");
+    auto r = prop_atom("r");
+    auto and_pq = logical_and({p, q});
+    auto or_r = logical_or({r, and_pq});
+    auto expected = logical_and({
+        logical_or({r, p}),
+        logical_or({r, q}),
+    });
+    auto actual = to_cnf(*or_r);
+    REQUIRE(*actual == *expected);
+  }
+  SECTION("Or with two Ands") {
+    // (p & q) | (r & s)
+    // expected: (p | r) & (p | s) & (q | r) & (q | s)
+    auto p = prop_atom("p");
+    auto q = prop_atom("q");
+    auto r = prop_atom("r");
+    auto s = prop_atom("s");
+    auto and_pq = logical_and({p, q});
+    auto and_rs = logical_and({r, s});
+    auto or_rs_pq = logical_or({and_rs, and_pq});
+    auto expected = logical_and({
+        logical_or({r, p}),
+        logical_or({r, q}),
+        logical_or({s, p}),
+        logical_or({s, q}),
+    });
+    auto actual = to_cnf(*or_rs_pq);
+    REQUIRE(*actual == *expected);
+  }
+  SECTION("And of Ors is in CNF") {
+    auto p = prop_atom("p");
+    auto q = prop_atom("q");
+    auto r = prop_atom("r");
+    auto s = prop_atom("s");
+    auto or_pq = logical_or({p, q});
+    auto or_rs = logical_or({r, s});
+    auto and_rs_pq = logical_or({or_rs, or_pq});
+    auto actual = to_cnf(*and_rs_pq);
+    REQUIRE(*actual == *and_rs_pq);
   }
 }
 
