@@ -15,6 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <pl/cnf.hpp>
 #include "pl/models.hpp"
 
 namespace whitemech{
@@ -44,12 +45,16 @@ namespace lydia{
   bool is_sat(const PropositionalFormula &f) {
     CMSat::SATSolver solver;
     std::vector<CMSat::Lit> clause;
-
-    // Let's use 4 threads
     solver.set_num_threads(4);
 
-    auto atoms = find_atoms(f);
+    auto f_cnf = to_cnf(f);
+    auto atoms = find_atoms(*f_cnf);
+
     solver.new_vars(atoms.size());
+//    for (const auto& prop_clause : f_cnf){
+//
+//    }
+//
 
     return false;
   }

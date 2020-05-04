@@ -41,7 +41,7 @@ namespace lydia{
   std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f);
 
   /*
-   * Check whether the
+   * Check whether the formula is satisfiable.
    */
   bool is_sat(const PropositionalFormula &f);
 

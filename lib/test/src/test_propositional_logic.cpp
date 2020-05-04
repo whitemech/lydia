@@ -174,19 +174,19 @@ TEST_CASE("Test Cryptominisat", "[cryptominisat]"){
     solver.new_vars(3);
 
     //add "1 0"
-    clause.push_back(CMSat::Lit(0, false));
+    clause.emplace_back(0, false);
     solver.add_clause(clause);
 
     //add "-2 0"
     clause.clear();
-    clause.push_back(CMSat::Lit(1, true));
+    clause.emplace_back(1, true);
     solver.add_clause(clause);
 
     //add "-1 2 3 0"
     clause.clear();
-    clause.push_back(CMSat::Lit(0, true));
-    clause.push_back(CMSat::Lit(1, false));
-    clause.push_back(CMSat::Lit(2, false));
+    clause.emplace_back(0, true);
+    clause.emplace_back(1, false);
+    clause.emplace_back(2, false);
     solver.add_clause(clause);
 
     CMSat::lbool ret = solver.solve();
@@ -200,7 +200,7 @@ TEST_CASE("Test Cryptominisat", "[cryptominisat]"){
 
     //assumes 3 = FALSE, no solutions left
     std::vector<CMSat::Lit> assumptions;
-    assumptions.push_back(CMSat::Lit(2, true));
+    assumptions.emplace_back(2, true);
     ret = solver.solve(&assumptions);
     REQUIRE(ret == CMSat::l_False);
 
@@ -211,7 +211,7 @@ TEST_CASE("Test Cryptominisat", "[cryptominisat]"){
     //add "-3 0"
     //No solutions left, UNSATISFIABLE returned
     clause.clear();
-    clause.push_back(CMSat::Lit(2, true));
+    clause.emplace_back(2, true);
     solver.add_clause(clause);
     ret = solver.solve();
     REQUIRE(ret == CMSat::l_False);
