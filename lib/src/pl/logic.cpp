@@ -231,7 +231,7 @@ prop_ptr and_or(const set_prop_formulas &s, const bool &op_x_notx) {
       else
         continue;
     }
-    // handle the case when a subformula is true
+    // handle the case when a subformula is false
     else if (is_a<PropositionalFalse>(*a)) {
       if (!op_x_notx)
         return a;
@@ -259,11 +259,11 @@ prop_ptr and_or(const set_prop_formulas &s, const bool &op_x_notx) {
   return std::make_shared<caller>(s);
 }
 
-prop_ptr prop_atom(const Symbol &s) {
+atom_ptr prop_atom(const Symbol &s) {
   return std::make_shared<const PropositionalAtom>(s);
 }
 
-prop_ptr prop_atom(const std::string &s) {
+atom_ptr prop_atom(const std::string &s) {
   return std::make_shared<const PropositionalAtom>(s);
 }
 

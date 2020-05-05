@@ -131,8 +131,8 @@ extern prop_ptr prop_true;
 extern prop_ptr prop_false;
 
 prop_ptr boolean_prop(bool b);
-prop_ptr prop_atom(const Symbol &s);
-prop_ptr prop_atom(const std::string &s);
+atom_ptr prop_atom(const Symbol &s);
+atom_ptr prop_atom(const std::string &s);
 prop_ptr logical_and(const set_prop_formulas &s);
 prop_ptr logical_or(const set_prop_formulas &s);
 prop_ptr logical_not(const prop_ptr &s);

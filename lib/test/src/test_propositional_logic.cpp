@@ -243,4 +243,42 @@ TEST_CASE("is_sat", "[pl/models]") {
   REQUIRE(!is_sat(*non_sat));
 }
 
+TEST_CASE("All models", "[pl/models]") {
+  auto p = prop_atom("p");
+  auto q = prop_atom("q");
+
+  SECTION("models of p") {
+    auto models = all_models(*p);
+    REQUIRE(models.size() == 1);
+    REQUIRE(models[0] == set_atoms_ptr{p});
+  }
+  SECTION("models of ~q") {
+    auto models = all_models(*p->logical_not());
+    REQUIRE(models.size() == 1);
+    REQUIRE(models[0].empty());
+  }
+
+  SECTION("models of p | q") {
+    auto models = all_models(*logical_or({p, q}));
+    REQUIRE(models.size() == 3);
+    auto expected_models = std::set<set_atoms_ptr>({
+        set_atoms_ptr({p, q}),
+        set_atoms_ptr({p}),
+        set_atoms_ptr({q}),
+    });
+    auto actual_models = std::set<set_atoms_ptr>(models.begin(), models.end());
+    REQUIRE(expected_models == actual_models);
+  }
+  SECTION("models of p & q") {
+    auto models = all_models(*logical_and({p, q}));
+    REQUIRE(models.size() == 1);
+    REQUIRE(models[0] == set_atoms_ptr({p, q}));
+  }
+  SECTION("models of !(p | q)") {
+    auto models = all_models(*logical_or({p, q})->logical_not());
+    REQUIRE(models.size() == 1);
+    REQUIRE(models[0] == set_atoms_ptr({}));
+  }
+}
+
 } // namespace whitemech::lydia::Test
