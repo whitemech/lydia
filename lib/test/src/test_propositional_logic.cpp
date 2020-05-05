@@ -19,7 +19,7 @@
 #include <pl/cnf.hpp>
 #include <pl/eval.hpp>
 #include <pl/logic.hpp>
-#include <pl/models.hpp>
+#include <pl/models_sat.hpp>
 
 namespace whitemech::lydia::Test {
 TEST_CASE("Propositional Logic", "[pl/logic]") {
@@ -248,18 +248,18 @@ TEST_CASE("All models", "[pl/models]") {
   auto q = prop_atom("q");
 
   SECTION("models of p") {
-    auto models = all_models(*p);
+    auto models = all_models_sat(*p);
     REQUIRE(models.size() == 1);
     REQUIRE(models[0] == set_atoms_ptr{p});
   }
   SECTION("models of ~q") {
-    auto models = all_models(*p->logical_not());
+    auto models = all_models_sat(*p->logical_not());
     REQUIRE(models.size() == 1);
     REQUIRE(models[0].empty());
   }
 
   SECTION("models of p | q") {
-    auto models = all_models(*logical_or({p, q}));
+    auto models = all_models_sat(*logical_or({p, q}));
     REQUIRE(models.size() == 3);
     auto expected_models = std::set<set_atoms_ptr>({
         set_atoms_ptr({p, q}),
@@ -270,12 +270,12 @@ TEST_CASE("All models", "[pl/models]") {
     REQUIRE(expected_models == actual_models);
   }
   SECTION("models of p & q") {
-    auto models = all_models(*logical_and({p, q}));
+    auto models = all_models_sat(*logical_and({p, q}));
     REQUIRE(models.size() == 1);
     REQUIRE(models[0] == set_atoms_ptr({p, q}));
   }
   SECTION("models of !(p | q)") {
-    auto models = all_models(*logical_or({p, q})->logical_not());
+    auto models = all_models_sat(*logical_or({p, q})->logical_not());
     REQUIRE(models.size() == 1);
     REQUIRE(models[0] == set_atoms_ptr({}));
   }
