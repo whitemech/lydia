@@ -16,13 +16,13 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <atom_visitor.hpp>
-#include <utils/misc.hpp>
-#include <cryptominisat5/cryptominisat.h>
 #include "eval.hpp"
+#include <atom_visitor.hpp>
+#include <cryptominisat5/cryptominisat.h>
+#include <utils/misc.hpp>
 
-namespace whitemech{
-namespace lydia{
+namespace whitemech {
+namespace lydia {
 
 /*!
  * Compute all the models of a propositional formula.
@@ -30,7 +30,7 @@ namespace lydia{
  * @param f the propositional formula
  * @return the set of the models of a formula
  */
-  std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f);
+std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f);
 
 /*!
  * Compute the minimal models of a propositional formula.
@@ -38,14 +38,12 @@ namespace lydia{
  * @param f the propositional formula
  * @return the set of minimal models.
  */
-  std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f);
+std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f);
 
-  /*
-   * Check whether the formula is satisfiable.
-   */
-  bool is_sat(const PropositionalFormula &f);
+/*
+ * Check whether the formula is satisfiable.
+ */
+bool is_sat(const PropositionalFormula &f);
 
-
-
-}
-}
+} // namespace lydia
+} // namespace whitemech

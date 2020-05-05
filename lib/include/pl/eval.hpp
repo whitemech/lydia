@@ -53,6 +53,5 @@ public:
  */
 bool eval(const PropositionalFormula &, const set_atoms_ptr &interpretation);
 
-
 } // namespace lydia
 } // namespace whitemech

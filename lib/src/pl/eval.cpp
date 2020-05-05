@@ -16,8 +16,8 @@
  */
 #include "pl/eval.hpp"
 #include "pl/logic.hpp"
-#include "utils/misc.hpp"
 #include "pl/models.hpp"
+#include "utils/misc.hpp"
 #include <atom_visitor.hpp>
 #include <cryptominisat5/cryptominisat.h>
 
