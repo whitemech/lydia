@@ -45,5 +45,31 @@ std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f);
  */
 bool is_sat(const PropositionalFormula &f);
 
+CMSat::SATSolver from_propositional_formula(const PropositionalFormula &f);
+
+class SATConverter : public Visitor {
+public:
+  CMSat::SATSolver solver;
+  std::vector<CMSat::Lit> clause;
+  std::map<prop_ptr, int, SharedComparator> atom2id;
+  std::map<int, prop_ptr> id2atom;
+
+  SATConverter() {
+    solver.set_num_threads(4);
+    // add dummy symbol to encode true and false
+  }
+
+  void visit(const PropositionalTrue &) override;
+  void visit(const PropositionalFalse &) override;
+  void visit(const PropositionalAtom &) override;
+  void visit(const PropositionalAnd &) override;
+  void visit(const PropositionalOr &) override;
+  void visit(const PropositionalNot &) override;
+
+  void apply(const PropositionalFormula &);
+};
+
+std::vector<CMSat::Lit> get_clauses();
+
 } // namespace lydia
 } // namespace whitemech

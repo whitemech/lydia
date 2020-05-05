@@ -33,7 +33,12 @@ jobs:
           wget https://github.com/msoos/cryptominisat/archive/5.7.1.tar.gz
           tar -xzvf 5.7.1.tar.gz
           cd cryptominisat-5.7.1
-          mkdir build && cd build && cmake .. && make && sudo make install && sudo ldconfig
+          mkdir build
+          cd build
+          cmake ..
+          make
+          sudo make install
+          sudo ldconfig
       - name: Install CUDD
         run: |
           sudo apt-get install -f automake libtool

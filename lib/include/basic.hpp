@@ -54,7 +54,7 @@ enum TypeID {
 class Visitor;
 class Symbol;
 
-class Basic : std::enable_shared_from_this<const Basic> {
+class Basic : public std::enable_shared_from_this<Basic> {
 private:
   // The hash_ is defined as mutable, because its value is initialized to 0
   // in the constructor and then it can be changed in Basic::hash() to the
@@ -122,6 +122,10 @@ public:
   int compare_(const Basic &o) const;
   virtual void accept(Visitor &v) const = 0;
   std::string str() const;
+
+  template <typename Derived> std::shared_ptr<Derived> shared_from_base() {
+    return std::static_pointer_cast<Derived>(shared_from_this());
+  }
 };
 
 // TODO decide what to do with this:

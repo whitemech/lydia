@@ -41,20 +41,55 @@ std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f) {
 }
 
 bool is_sat(const PropositionalFormula &f) {
-  CMSat::SATSolver solver;
-  std::vector<CMSat::Lit> clause;
-  solver.set_num_threads(4);
-
-  auto f_cnf = to_cnf(f);
-  auto atoms = find_atoms(*f_cnf);
-
-  solver.new_vars(atoms.size());
-  //    for (const auto& prop_clause : f_cnf){
-  //
-  //    }
-  //
-
-  return false;
+  SATConverter solver;
+  solver.apply(f);
+  return solver.solver.solve() == CMSat::l_True;
 }
+
+void SATConverter::visit(const PropositionalTrue &) { assert(false); }
+
+void SATConverter::visit(const PropositionalFalse &) { assert(false); }
+
+void SATConverter::visit(const PropositionalAtom &f) {
+  auto x =
+      std::static_pointer_cast<const PropositionalAtom>(f.shared_from_this());
+  auto it = atom2id.find(x);
+  if (it == atom2id.end()) {
+    auto id = atom2id.size();
+    atom2id[x] = id;
+    id2atom[id] = x;
+    solver.new_var();
+  }
+  clause.emplace_back(it->second, false);
+}
+
+void SATConverter::visit(const PropositionalAnd &f) {
+  for (const auto &subformula : f.get_container()) {
+    clause.clear();
+    apply(*subformula);
+    solver.add_clause(clause);
+  }
+}
+
+void SATConverter::visit(const PropositionalOr &f) {
+  for (const auto &subformula : f.get_container()) {
+    apply(*subformula);
+  }
+}
+
+void SATConverter::visit(const PropositionalNot &f) {
+  auto x = std::static_pointer_cast<const PropositionalAtom>(f.get_arg());
+  auto it = atom2id.find(x);
+  if (it == atom2id.end()) {
+    auto id = atom2id.size();
+    atom2id[x] = id;
+    id2atom[id] = x;
+    solver.new_var();
+  }
+  clause.emplace_back(it->second, true);
+}
+
+void SATConverter::apply(const PropositionalFormula &f) { f.accept(*this); }
+
 } // namespace lydia
 } // namespace whitemech

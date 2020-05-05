@@ -57,11 +57,10 @@ public:
   void visit(const LDLfF &) override{};
   void visit(const LDLfT &) override{};
 
-  set_prop_formulas to_container(prop_ptr p);
-
   prop_ptr apply(const PropositionalFormula &b);
 };
 
+set_prop_formulas to_container(prop_ptr p);
 prop_ptr to_cnf(const PropositionalFormula &);
 
 } // namespace lydia

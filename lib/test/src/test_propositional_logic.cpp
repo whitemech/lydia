@@ -19,6 +19,7 @@
 #include <pl/cnf.hpp>
 #include <pl/eval.hpp>
 #include <pl/logic.hpp>
+#include <pl/models.hpp>
 
 namespace whitemech::lydia::Test {
 TEST_CASE("Propositional Logic", "[pl/logic]") {
@@ -92,6 +93,19 @@ TEST_CASE("Logical operation", "[pl/logic]") {
 }
 
 TEST_CASE("to cnf", "[pl/cnf]") {
+
+  SECTION("True is in CNF") {
+    auto t = boolean_prop(true);
+    auto actual = to_cnf(*t);
+    REQUIRE(*t == *actual);
+  }
+
+  SECTION("False is in CNF") {
+    auto f = boolean_prop(false);
+    auto actual = to_cnf(*f);
+    REQUIRE(*f == *actual);
+  }
+
   SECTION("Propositional is in CNF") {
     auto p = prop_atom("p");
     auto actual = to_cnf(*p);
@@ -214,6 +228,19 @@ TEST_CASE("Test Cryptominisat", "[cryptominisat]") {
   REQUIRE(ret == CMSat::l_False);
 }
 
-TEST_CASE("models", "[pl/models]") {}
+TEST_CASE("is_sat", "[pl/models]") {
+  //  auto t = boolean_prop(true);
+  //  auto f = boolean_prop(false);
+  auto p = prop_atom("p");
+  auto q = prop_atom("q");
+  REQUIRE(is_sat(*p));
+  REQUIRE(is_sat(*q));
+  REQUIRE(is_sat(*logical_or({p, q})));
+  REQUIRE(is_sat(*logical_and({p, q})));
+
+  auto non_sat =
+      logical_and({logical_or({p, q}), p->logical_not(), q->logical_not()});
+  REQUIRE(!is_sat(*non_sat));
+}
 
 } // namespace whitemech::lydia::Test

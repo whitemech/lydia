@@ -71,8 +71,8 @@ void CNFTransformer::visit(const PropositionalOr &f) {
     return;
   } else {
     // one of them is an And.
-    first_container = this->to_container(first);
-    tail_container = this->to_container(tail);
+    first_container = to_container(first);
+    tail_container = to_container(tail);
   }
 
   for (const auto &x : first_container) {
@@ -93,7 +93,7 @@ void CNFTransformer::visit(const PropositionalNot &f) {
     result = apply(*f.get_arg()->logical_not());
 }
 
-set_prop_formulas CNFTransformer::to_container(prop_ptr p) {
+set_prop_formulas to_container(prop_ptr p) {
   if (is_a<PropositionalAnd>(*p)) {
     return dynamic_cast<const PropositionalAnd &>(*p).get_container();
   } else if (is_a<PropositionalOr>(*p)) {
