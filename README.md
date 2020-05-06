@@ -69,7 +69,9 @@ On Ubuntu, this should work:
 sudo apt-get install libgraphviz-dev
 ```
 
-## Build
+## Installation
+
+### Build
 
 To build from source, clone the repository:
 ```
@@ -84,7 +86,18 @@ mkdir build && cd build
 cmake ..
 make -j4
 ```
-Afterwards, to run the tests:
+
+### Install
+Afterwards, to install Lydia in your system:
+```
+make install
+```
+This will install Lydia under the default path: `/usr/local/bin`. To specify a custom path, use the flag 
+`-DCMAKE_INSTALL_PREFIX:PATH="<custom/path>"`
+
+### Tests
+
+Finally, to run the tests:
 ```
 make test
 ```
