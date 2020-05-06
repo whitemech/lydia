@@ -95,9 +95,9 @@ std::optional<std::vector<uint32_t>> SATSolverWrapper::find_minimal_model() {
   return model;
 }
 
-void SATSolverWrapper::visit(const PropositionalTrue &) { assert(false); }
+void SATSolverWrapper::visit(const PropositionalTrue &) {}
 
-void SATSolverWrapper::visit(const PropositionalFalse &) { assert(false); }
+void SATSolverWrapper::visit(const PropositionalFalse &) {}
 
 void SATSolverWrapper::visit(const PropositionalAtom &f) {
   auto x =
@@ -146,7 +146,10 @@ set_atoms_ptr SATSolverWrapper::get_model(const std::vector<uint32_t> &model) {
 SATSolverWrapper SATSolverWrapper::create(const PropositionalFormula &f) {
   auto converter = SATSolverWrapper();
   converter.apply(f);
-  if (!is_a<PropositionalAnd>(f)) {
+  if (is_a<PropositionalFalse>(f)) {
+    converter.clause.clear();
+    converter.clauses.emplace_back(converter.clause);
+  } else if (!is_a<PropositionalAnd>(f) and !is_a<PropositionalTrue>(f)) {
     // add clause
     converter.clauses.emplace_back(converter.clause);
   }

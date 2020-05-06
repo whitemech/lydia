@@ -18,10 +18,13 @@
 #include "pl/eval.hpp"
 #include "pl/logic.hpp"
 #include "pl/models.hpp"
+#include "pl/models_sat.hpp"
 #include <atom_visitor.hpp>
 #include <delta.hpp>
+#include <delta_sat.hpp>
 #include <dfa.hpp>
 #include <nnf.hpp>
+#include <pl/cnf.hpp>
 #include <queue>
 #include <translate.hpp>
 #include <utility>
@@ -95,6 +98,68 @@ std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula, const CUDD::Cudd &mgr) {
   return automaton;
 }
 
+std::shared_ptr<dfa> to_dfa_sat(const LDLfFormula &formula,
+                                const CUDD::Cudd &mgr) {
+  //  build initial state of the DFA.
+  auto formula_nnf = to_nnf(formula);
+  set_formulas initial_state_formulas{formula_nnf};
+  dfa_state_ptr initial_state =
+      std::make_shared<DFAState>(initial_state_formulas);
+
+  // find all atoms
+  set_atoms_ptr atoms = find_atoms(*formula_nnf);
+  map_atoms_ptr atom2index;
+  int index = 0;
+  for (const auto &atom : atoms)
+    atom2index[atom] = index++;
+
+  std::shared_ptr<dfa> automaton = std::make_shared<dfa>(mgr, 10, atoms.size());
+  automaton->add_state();
+  automaton->set_initial_state(1);
+
+  //  Check if the initial state is final
+  if (initial_state->is_final()) {
+    automaton->set_final_state(1, true);
+  }
+
+  // BFS exploration of the automaton.
+  map_dfa_states discovered;
+  std::queue<std::pair<dfa_state_ptr, int>> to_be_visited;
+  to_be_visited.push(std::make_pair(initial_state, 1));
+  while (!to_be_visited.empty()) {
+    auto pair = to_be_visited.front();
+    to_be_visited.pop();
+    const dfa_state_ptr current_state = pair.first;
+    auto current_state_index = pair.second;
+    vec_dfa_states next_states;
+    std::vector<set_atoms_ptr> symbols;
+    const auto &next_transitions = current_state->next_transitions();
+    for (const auto &state_symbol : next_transitions) {
+      const auto &next_state = state_symbol.first;
+      const auto &symbol = state_symbol.second;
+      // update states/transitions
+      int next_state_index = 0;
+      if (discovered.find(next_state) == discovered.end()) {
+        next_state_index = automaton->add_state();
+        discovered[next_state] = next_state_index;
+        to_be_visited.push(std::make_pair(next_state, next_state_index));
+        if (next_state->is_final()) {
+          automaton->set_final_state(next_state_index, true);
+        }
+      } else {
+        next_state_index = discovered[next_state];
+      }
+
+      interpretation_set x{};
+      for (const atom_ptr &atom : symbol)
+        x.insert(atom2index[atom]);
+      automaton->add_transition(current_state_index, x, next_state_index, true);
+    }
+  }
+
+  return automaton;
+}
+
 NFAState::NFAState(set_formulas formulas) : formulas{std::move(formulas)} {
   this->type_code_ = type_code_id;
 };
@@ -158,6 +223,45 @@ set_nfa_states NFAState::next_states(const set_atoms_ptr &i) const {
   return result;
 }
 
+std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
+NFAState::next_transitions() const {
+  std::vector<std::pair<set_atoms_ptr, set_nfa_states>> result;
+  std::map<set_atoms_ptr, set_nfa_states> symbol2nfastates;
+  set_prop_formulas setPropFormulas;
+  set_nfa_states v;
+  for (const auto &f : formulas) {
+    const auto &delta_formula = delta_symbolic(*f, false);
+    setPropFormulas.insert(delta_formula);
+  }
+  auto and_ = to_cnf(*logical_and(setPropFormulas));
+  const auto &all_minimal_models = all_minimal_models_sat(*and_);
+  for (const auto &model : all_minimal_models) {
+    set_nfa_states nfa_states;
+    set_formulas quoted_formulas;
+    set_atoms_ptr symbol;
+    for (const atom_ptr &ptr : model) {
+      if (is_a<QuotedFormula>(*ptr->symbol))
+        quoted_formulas.insert(
+            dynamic_cast<const QuotedFormula &>(*ptr->symbol).formula);
+      else
+        symbol.insert(ptr);
+    }
+
+    auto successor = symbol2nfastates.find(symbol);
+    if (successor == symbol2nfastates.end()) {
+      symbol2nfastates[symbol] = set_nfa_states();
+    }
+    symbol2nfastates[symbol].insert(
+        std::make_shared<NFAState>(quoted_formulas));
+  }
+
+  result.reserve(symbol2nfastates.size());
+  for (const auto &pair : symbol2nfastates) {
+    result.emplace_back(pair);
+  }
+  return result;
+}
+
 DFAState::DFAState(set_nfa_states states) : states{std::move(states)} {
   this->type_code_ = type_code_id;
 }
@@ -199,6 +303,23 @@ dfa_state_ptr DFAState::next_state(const set_atoms_ptr &i) const {
     successor_nfa_states.insert(successors.begin(), successors.end());
   }
   return std::make_shared<DFAState>(successor_nfa_states);
+}
+
+std::vector<std::pair<dfa_state_ptr, set_atoms_ptr>>
+DFAState::next_transitions() const {
+  std::vector<std::pair<dfa_state_ptr, set_atoms_ptr>> result;
+  set_dfa_states discovered;
+  set_nfa_states v;
+  set_atoms_ptr symbol;
+  for (const auto &nfa_state : this->states) {
+    const auto &next_transitions = nfa_state->next_transitions();
+    for (const auto &symbol_states : next_transitions) {
+      std::tie(symbol, v) = symbol_states;
+      auto pair = std::make_pair(std::make_shared<DFAState>(v), symbol);
+      result.emplace_back(pair);
+    }
+  }
+  return result;
 }
 
 } // namespace lydia

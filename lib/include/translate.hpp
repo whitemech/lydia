@@ -37,6 +37,9 @@ namespace lydia {
  */
 std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula, const CUDD::Cudd &mgr);
 
+std::shared_ptr<dfa> to_dfa_sat(const LDLfFormula &formula,
+                                const CUDD::Cudd &mgr);
+
 /*!
  * This class represents an NFA state in
  * the LDLf2NFA algorithm presented in [1].
@@ -82,6 +85,8 @@ public:
    * @return the next NFA states.
    */
   set_nfa_states next_states(const set_atoms_ptr &i) const;
+  std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
+  next_transitions() const;
 };
 
 /*!
@@ -129,6 +134,7 @@ public:
    * @return the next DFA state.
    */
   dfa_state_ptr next_state(const set_atoms_ptr &i) const;
+  std::vector<std::pair<dfa_state_ptr, set_atoms_ptr>> next_transitions() const;
 };
 
 } // namespace lydia

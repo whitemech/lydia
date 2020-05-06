@@ -267,6 +267,10 @@ atom_ptr prop_atom(const std::string &s) {
   return std::make_shared<const PropositionalAtom>(s);
 }
 
+atom_ptr prop_atom(const basic_ptr &p) {
+  return std::make_shared<const PropositionalAtom>(p);
+}
+
 prop_ptr logical_and(const set_prop_formulas &s) {
   return and_or<PropositionalAnd>(s, false);
 }

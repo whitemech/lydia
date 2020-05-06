@@ -183,6 +183,10 @@ TEST_CASE("Test Cryptominisat", "[cryptominisat]") {
   // Let's use 4 threads
   solver.set_num_threads(4);
 
+  // without literals
+  auto result = solver.solve();
+  REQUIRE(result == CMSat::l_True);
+
   // We need 3 variables. They will be: 0,1,2
   // Variable numbers are always trivially increasing
   solver.new_vars(3);
@@ -247,6 +251,18 @@ TEST_CASE("All models", "[pl/models]") {
   auto p = prop_atom("p");
   auto q = prop_atom("q");
   auto r = prop_atom("r");
+  auto true_ = boolean_prop(true);
+  auto false_ = boolean_prop(false);
+
+  SECTION("models of true") {
+    auto models = all_models_sat(*true_);
+    REQUIRE(models.size() == 1);
+    REQUIRE(models[0].empty());
+  }
+  SECTION("models of false") {
+    auto models = all_models_sat(*false_);
+    REQUIRE(models.empty());
+  }
 
   SECTION("models of p") {
     auto models = all_models_sat(*p);
@@ -298,6 +314,18 @@ TEST_CASE("Minmal models", "[pl/models]") {
   auto p = prop_atom("p");
   auto q = prop_atom("q");
   auto r = prop_atom("r");
+  auto true_ = boolean_prop(true);
+  auto false_ = boolean_prop(false);
+
+  SECTION("models of true") {
+    auto models = all_minimal_models_sat(*true_);
+    REQUIRE(models.size() == 1);
+    REQUIRE(models[0].empty());
+  }
+  SECTION("models of false") {
+    auto models = all_minimal_models_sat(*false_);
+    REQUIRE(models.empty());
+  }
 
   SECTION("models of p") {
     auto models = all_minimal_models_sat(*p);
