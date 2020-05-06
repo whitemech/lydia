@@ -98,5 +98,14 @@ std::vector<int> inline state2binvec(int n, int nb_fill_bits) {
   return result;
 }
 
+template <typename T, typename U>
+inline std::vector<T> set_union(const std::vector<T> &a,
+                                const std::vector<U> &b) {
+  std::vector<uint32_t> a_union_b;
+  std::set_union(a.begin(), a.end(), b.begin(), b.end(),
+                 std::inserter(a_union_b, a_union_b.begin()));
+  return a_union_b;
+}
+
 } // namespace lydia
 } // namespace whitemech

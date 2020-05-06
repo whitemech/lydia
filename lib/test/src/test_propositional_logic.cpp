@@ -246,6 +246,7 @@ TEST_CASE("is_sat", "[pl/models]") {
 TEST_CASE("All models", "[pl/models]") {
   auto p = prop_atom("p");
   auto q = prop_atom("q");
+  auto r = prop_atom("r");
 
   SECTION("models of p") {
     auto models = all_models_sat(*p);
@@ -278,6 +279,58 @@ TEST_CASE("All models", "[pl/models]") {
     auto models = all_models_sat(*logical_or({p, q})->logical_not());
     REQUIRE(models.size() == 1);
     REQUIRE(models[0] == set_atoms_ptr({}));
+  }
+  SECTION("models of r & (p | q)") {
+    auto f = logical_and({r, logical_or({p, q})});
+    auto models = all_models_sat(*f);
+    REQUIRE(models.size() == 3);
+    auto expected_models = std::set<set_atoms_ptr>({
+        set_atoms_ptr({r, p}),
+        set_atoms_ptr({r, q}),
+        set_atoms_ptr({r, p, q}),
+    });
+    auto actual_models = std::set<set_atoms_ptr>(models.begin(), models.end());
+    REQUIRE(actual_models == expected_models);
+  }
+}
+
+TEST_CASE("Minmal models", "[pl/models]") {
+  auto p = prop_atom("p");
+  auto q = prop_atom("q");
+  auto r = prop_atom("r");
+
+  SECTION("models of p") {
+    auto models = all_minimal_models_sat(*p);
+    REQUIRE(models.size() == 1);
+    REQUIRE(models[0] == set_atoms_ptr{p});
+  }
+  SECTION("models of ~q") {
+    auto models = all_minimal_models_sat(*p->logical_not());
+    REQUIRE(models.size() == 1);
+    REQUIRE(models[0].empty());
+  }
+
+  SECTION("models of p | q") {
+    auto models = all_minimal_models_sat(*logical_or({p, q}));
+    REQUIRE(models.size() == 2);
+    auto expected_models = std::set<set_atoms_ptr>({
+        set_atoms_ptr({p}),
+        set_atoms_ptr({q}),
+    });
+    auto actual_models = std::set<set_atoms_ptr>(models.begin(), models.end());
+    REQUIRE(expected_models == actual_models);
+  }
+
+  SECTION("models of r & (p | q)") {
+    auto f = logical_and({r, logical_or({p, q})});
+    auto models = all_minimal_models_sat(*f);
+    REQUIRE(models.size() == 2);
+    auto expected_models = std::set<set_atoms_ptr>({
+        set_atoms_ptr({r, p}),
+        set_atoms_ptr({r, q}),
+    });
+    auto actual_models = std::set<set_atoms_ptr>(models.begin(), models.end());
+    REQUIRE(expected_models == actual_models);
   }
 }
 

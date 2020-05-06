@@ -16,116 +16,206 @@
  */
 
 #include "pl/models_sat.hpp"
+#include <numeric>
 #include <pl/cnf.hpp>
 
 namespace whitemech {
 namespace lydia {
 
-bool SATConverter::is_sat() { return solver.solve() == CMSat::l_True; }
+bool SATSolverWrapper::is_sat() {
+  return this->get_solver().solve() == CMSat::l_True;
+}
 
 std::vector<set_atoms_ptr> all_models_sat(const PropositionalFormula &f) {
   std::vector<set_atoms_ptr> models;
-  auto sat_converter = SATConverter::create(f);
+  auto sat_converter = SATSolverWrapper::create(f);
+  auto solver = sat_converter.get_solver();
+
   while (true) {
-    CMSat::lbool ret = sat_converter.solver.solve();
+    CMSat::lbool ret = solver.solve();
     if (ret != CMSat::l_True) {
       assert(ret == CMSat::l_False);
       // All solutions found.
       return models;
     }
-    models.push_back(sat_converter.get_model());
+    models.push_back(sat_converter.get_model(solver.get_model()));
 
     // Banning found solution
     std::vector<CMSat::Lit> ban_solution;
-    for (uint32_t var = 0; var < sat_converter.solver.nVars(); var++) {
-      if (sat_converter.solver.get_model()[var] != CMSat::l_Undef) {
-        ban_solution.emplace_back(var, sat_converter.solver.get_model()[var] ==
-                                           CMSat::l_True);
+    for (uint32_t var = 0; var < solver.nVars(); var++) {
+      if (solver.get_model()[var] != CMSat::l_Undef) {
+        ban_solution.emplace_back(var,
+                                  solver.get_model()[var] == CMSat::l_True);
       }
     }
-    sat_converter.solver.add_clause(ban_solution);
+    solver.add_clause(ban_solution);
   }
 }
 
-std::vector<set_atoms_ptr> minimal_models_sat(const PropositionalFormula &f) {
-  std::vector<set_atoms_ptr> result;
-  //  auto converter = SATConverter::create(f);
-  //  if (not converter.is_sat()){
-  //    return result;
-  //  }
-  //  finder = QuickXPlain(clauses)
-  //  return finder.quickxplain(set(), finder.vars, True)
-  auto models = all_models_sat(f);
-  return models;
+set_atoms_ptr minimal_model_sat(const PropositionalFormula &f) {
+  set_atoms_ptr result;
+  auto converter = SATSolverWrapper::create(f);
+  return result;
+}
+
+std::vector<set_atoms_ptr>
+all_minimal_models_sat(const PropositionalFormula &f) {
+  std::vector<set_atoms_ptr> models;
+  auto sat_converter = SATSolverWrapper::create(f);
+
+  while (true) {
+    auto model = sat_converter.find_minimal_model();
+    if (!model.has_value()) {
+      return models;
+    }
+    models.push_back(sat_converter.get_model(model.value()));
+
+    // Banning found solution
+    std::vector<CMSat::Lit> ban_solution;
+    for (const auto &i : model.value()) {
+      ban_solution.emplace_back(i, true);
+    }
+    sat_converter.clauses.emplace_back(ban_solution);
+  }
 }
 
 bool is_sat(const PropositionalFormula &f) {
-  auto sat_converter = SATConverter::create(f);
-  return sat_converter.solver.solve() == CMSat::l_True;
+  auto sat_converter = SATSolverWrapper::create(f);
+  return sat_converter.get_solver().solve() == CMSat::l_True;
 }
 
-void SATConverter::visit(const PropositionalTrue &) { assert(false); }
+std::optional<std::vector<uint32_t>> SATSolverWrapper::find_minimal_model() {
+  if (this->get_solver().solve() != CMSat::l_True) {
+    return std::nullopt;
+  }
+  auto b = std::vector<uint32_t>();
+  auto target = std::vector<uint32_t>(this->id2atom.size());
+  std::iota(target.begin(), target.end(), 0);
+  auto model = quickxplain(b, target, true);
+  return model;
+}
 
-void SATConverter::visit(const PropositionalFalse &) { assert(false); }
+void SATSolverWrapper::visit(const PropositionalTrue &) { assert(false); }
 
-void SATConverter::visit(const PropositionalAtom &f) {
+void SATSolverWrapper::visit(const PropositionalFalse &) { assert(false); }
+
+void SATSolverWrapper::visit(const PropositionalAtom &f) {
   auto x =
       std::static_pointer_cast<const PropositionalAtom>(f.shared_from_this());
   visit_atom(x, false);
 }
 
-void SATConverter::visit(const PropositionalAnd &f) {
+void SATSolverWrapper::visit(const PropositionalAnd &f) {
   for (const auto &subformula : f.get_container()) {
     clause.clear();
     apply(*subformula);
-    solver.add_clause(clause);
+    clauses.emplace_back(clause);
   }
 }
 
-void SATConverter::visit(const PropositionalOr &f) {
+void SATSolverWrapper::visit(const PropositionalOr &f) {
   for (const auto &subformula : f.get_container()) {
     apply(*subformula);
   }
 }
 
-void SATConverter::visit(const PropositionalNot &f) {
+void SATSolverWrapper::visit(const PropositionalNot &f) {
   auto x = std::static_pointer_cast<const PropositionalAtom>(f.get_arg());
   visit_atom(x, true);
 }
 
-void SATConverter::apply(const PropositionalFormula &f) { f.accept(*this); }
+void SATSolverWrapper::apply(const PropositionalFormula &f) { f.accept(*this); }
 
-set_atoms_ptr SATConverter::get_model() {
+set_atoms_ptr
+SATSolverWrapper::get_model(const std::vector<CMSat::lbool> &model) {
   set_atoms_ptr result;
-  for (uint32_t i = 0; i < solver.nVars(); i++) {
-    if (solver.get_model()[i] == CMSat::l_True)
+  for (uint32_t i = 0; i < id2atom.size(); i++) {
+    if (model[i] == CMSat::l_True)
       result.insert(this->id2atom[i]);
   }
   return result;
 }
+set_atoms_ptr SATSolverWrapper::get_model(const std::vector<uint32_t> &model) {
+  set_atoms_ptr result;
+  for (const auto &i : model) {
+    result.insert(this->id2atom[i]);
+  }
+  return result;
+}
 
-SATConverter SATConverter::create(const PropositionalFormula &f) {
-  auto converter = SATConverter();
+SATSolverWrapper SATSolverWrapper::create(const PropositionalFormula &f) {
+  auto converter = SATSolverWrapper();
   converter.apply(f);
   if (!is_a<PropositionalAnd>(f)) {
     // add clause
-    converter.solver.add_clause(converter.clause);
+    converter.clauses.emplace_back(converter.clause);
   }
+  converter.varset = std::vector<uint32_t>(converter.id2atom.size());
+  std::iota(converter.varset.begin(), converter.varset.end(), 0);
   return converter;
 }
 
-void SATConverter::visit_atom(const atom_ptr &f, bool is_inverted) {
+void SATSolverWrapper::visit_atom(const atom_ptr &f, bool is_inverted) {
   auto it = atom2id.find(f);
   uint32_t id;
   if (it == atom2id.end()) {
     id = atom2id.size();
     atom2id[f] = id;
     id2atom[id] = f;
-    solver.new_var();
   } else {
     id = it->second;
   }
   clause.emplace_back(id, is_inverted);
+}
+
+CMSat::SATSolver SATSolverWrapper::get_solver() {
+  auto solver = CMSat::SATSolver();
+  solver.set_num_threads(4);
+  solver.new_vars(this->id2atom.size());
+  for (const auto &clause_ : this->clauses) {
+    solver.add_clause(clause_);
+  }
+  return solver;
+}
+
+bool SATSolverWrapper::predicate(const std::vector<uint32_t> &v) {
+  auto solver = this->get_solver();
+  std::vector<uint32_t> negated_atoms;
+  std::set_difference(varset.begin(), varset.end(), v.begin(), v.end(),
+                      std::inserter(negated_atoms, negated_atoms.begin()));
+  for (const auto &x : negated_atoms) {
+    solver.add_clause(std::vector<CMSat::Lit>{CMSat::Lit(x, true)});
+  }
+  return solver.solve() == CMSat::l_True;
+}
+
+std::vector<uint32_t> SATSolverWrapper::quickxplain(std::vector<uint32_t> &b,
+                                                    std::vector<uint32_t> &t,
+                                                    bool has_set) {
+  if (has_set and this->predicate(b)) {
+    return std::vector<uint32_t>();
+  }
+  if (t.size() == 1) {
+    return t;
+  }
+  size_t m = t.size() / 2;
+  std::vector<uint32_t> t1, t2;
+  t1 = std::vector<uint32_t>(t.begin(), t.begin() + m);
+  t2 = std::vector<uint32_t>(t.begin() + m, t.end());
+  assert(t1.size() + t2.size() == t.size());
+
+  //    no need to sort
+  //    std::sort(t1.begin(), t1.end());
+  //    std::sort(t2.begin(), t2.end());
+
+  auto b_union_t1 = set_union(b, t1);
+  auto m2 = quickxplain(b_union_t1, t2, not t1.empty());
+
+  auto b_union_m2 = set_union(b, m2);
+  auto m1 = quickxplain(b_union_m2, t1, not m2.empty());
+
+  auto m1_union_m2 = set_union(m1, m2);
+  return m1_union_m2;
 }
 
 } // namespace lydia
