@@ -16,7 +16,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "delta.hpp"
+#include "dfa_transform/delta.hpp"
 #include "visitor.hpp"
 #include <variant>
 

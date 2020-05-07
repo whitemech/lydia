@@ -16,8 +16,9 @@
  */
 #include "catch.hpp"
 #include "nnf.hpp"
+#include <dfa_transform/dfa_state.hpp>
+#include <dfa_transform/translate.hpp>
 #include <iostream>
-#include <translate.hpp>
 #include <utils/dfa_transform.hpp>
 #include <utils/print.hpp>
 

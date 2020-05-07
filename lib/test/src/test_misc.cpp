@@ -62,7 +62,7 @@ TEST_CASE("binary vector/string to int", "[bin2state]") {
   REQUIRE(bin2state("00100") == 4);
 }
 
-TEST_CASE("DFA to Graphviz", "[dfa_transform]") {
+TEST_CASE("DFA to Graphviz", "[to_dfa]") {
   auto mgr = CUDD::Cudd();
   auto my_dfa = dfa(mgr, 1, 1);
 

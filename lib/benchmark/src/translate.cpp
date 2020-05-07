@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "translate.hpp"
+#include "dfa_transform/translate.hpp"
 #include "logic.hpp"
 #include "utils/benchmark.hpp"
 #include <benchmark/benchmark.h>

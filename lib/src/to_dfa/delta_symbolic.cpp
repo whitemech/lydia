@@ -18,7 +18,7 @@
 #include "pl/eval.hpp"
 #include "pl/logic.hpp"
 #include <cassert>
-#include <delta_sat.hpp>
+#include <dfa_transform/delta_symbolic.hpp>
 #include <logger.hpp>
 #include <nnf.hpp>
 

@@ -16,7 +16,7 @@
  */
 
 #include "visitor.hpp"
-#include <delta.hpp>
+#include <dfa_transform/delta.hpp>
 #include <logic.hpp>
 #include <pl/logic.hpp>
 
