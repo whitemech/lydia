@@ -16,10 +16,10 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "strings.hpp"
 #include <cassert>
+#include <lydia/types.hpp>
+#include <lydia/utils/strings.hpp>
 #include <set>
-#include <types.hpp>
 
 namespace whitemech {
 namespace lydia {

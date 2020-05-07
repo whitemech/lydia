@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "pl/cnf.hpp"
+#include <lydia/pl/cnf.hpp>
 
 namespace whitemech {
 namespace lydia {

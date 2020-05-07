@@ -16,29 +16,30 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "logic.hpp"
-#include "pl/logic.hpp"
-#include "visitor.hpp"
+#include <lydia/logic.hpp>
+#include <lydia/nnf.hpp>
+#include <lydia/pl/logic.hpp>
+#include <lydia/visitor.hpp>
 
 namespace whitemech {
 namespace lydia {
 
-class NNFTransformer : public Visitor {
+class StrPrinter : public Visitor {
 private:
+  static const std::vector<std::string> names_;
+
 protected:
-  // TODO split into several transformers?
-  std::shared_ptr<const LDLfFormula> result;
-  std::shared_ptr<const RegExp> regex_result;
+  std::string result;
 
 public:
   // callbacks for LDLf
-  void visit(const Symbol &) override{};
+  void visit(const Symbol &) override;
   void visit(const LDLfBooleanAtom &) override;
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
-  void visit(const LDLfDiamond &x) override;
-  void visit(const LDLfBox &x) override;
+  void visit(const LDLfDiamond &) override;
+  void visit(const LDLfBox &) override;
 
   // callbacks for regular expressions
   void visit(const PropositionalRegExp &) override;
@@ -48,22 +49,21 @@ public:
   void visit(const StarRegExp &) override;
 
   // callbacks for propositional logic
-  void visit(const PropositionalTrue &) override{};
-  void visit(const PropositionalFalse &) override{};
-  void visit(const PropositionalAtom &) override{};
-  void visit(const PropositionalAnd &) override{};
-  void visit(const PropositionalOr &) override{};
-  void visit(const PropositionalNot &) override{};
+  void visit(const PropositionalTrue &) override;
+  void visit(const PropositionalFalse &) override;
+  void visit(const PropositionalAtom &) override;
+  void visit(const PropositionalAnd &) override;
+  void visit(const PropositionalOr &) override;
+  void visit(const PropositionalNot &) override;
 
   void visit(const QuotedFormula &) override{};
-  void visit(const LDLfF &) override;
-  void visit(const LDLfT &) override;
 
-  std::shared_ptr<const LDLfFormula> apply(const LDLfFormula &b);
-  std::shared_ptr<const RegExp> apply(const RegExp &b);
+  std::string apply(const vec_basic &v);
+  std::string apply(const set_formulas &v);
+  std::string apply(const Basic &b);
 };
 
-std::shared_ptr<const LDLfFormula> to_nnf(const LDLfFormula &);
+std::string to_string(const Basic &);
 
 } // namespace lydia
 } // namespace whitemech

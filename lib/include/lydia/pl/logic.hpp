@@ -16,9 +16,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "basic.hpp"
-#include "symbol.hpp"
-#include "visitor.hpp"
+#include <lydia/basic.hpp>
+#include <lydia/symbol.hpp>
+#include <lydia/visitor.hpp>
 
 namespace whitemech {
 namespace lydia {

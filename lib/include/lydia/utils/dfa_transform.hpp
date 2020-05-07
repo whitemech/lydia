@@ -16,7 +16,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "dfa.hpp"
+#include <lydia/dfa.hpp>
 
 namespace whitemech {
 namespace lydia {

@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "catch.hpp"
+#include <catch.hpp>
 #include <cryptominisat5/cryptominisat.h>
-#include <pl/cnf.hpp>
-#include <pl/eval.hpp>
-#include <pl/logic.hpp>
-#include <pl/models_sat.hpp>
+#include <lydia/pl/cnf.hpp>
+#include <lydia/pl/eval.hpp>
+#include <lydia/pl/logic.hpp>
+#include <lydia/pl/models_sat.hpp>
 
 namespace whitemech::lydia::Test {
 TEST_CASE("Propositional Logic", "[pl/logic]") {

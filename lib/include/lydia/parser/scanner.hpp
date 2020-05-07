@@ -16,29 +16,34 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "dfa.hpp"
-#include "logic.hpp"
-#include "types.hpp"
-#include <memory>
-#include <utility>
-#include <utils/compare.hpp>
+#if !defined(yyFlexLexerOnce)
+#include <FlexLexer.h>
+#endif
+
+#include <lydia/parser/location.hh>
+#include <lydia/parser/parser.tab.hh>
+#include <lydia/parser/parser_stype.h>
 
 namespace whitemech {
 namespace lydia {
 
-/*!
- *
- * Translate an LDLf formula into an DFA.
- *
- * This is one of the main procedures of the library.
- *
- * @param formula the LDLf formula.
- * @return the equivalent DFA.
- */
-std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula, const CUDD::Cudd &mgr);
+class Scanner : public yyFlexLexer {
+private:
+public:
+  /* yyval ptr */
+  whitemech::lydia::YYSTYPE *yylval = nullptr;
 
-std::shared_ptr<dfa> to_dfa_sat(const LDLfFormula &formula,
-                                const CUDD::Cudd &mgr);
+  explicit Scanner(std::istream *in) : yyFlexLexer(in){};
+  virtual ~Scanner(){};
+
+  // get rid of override virtual function warning
+  using FlexLexer::yylex;
+
+  virtual int yylex(whitemech::lydia::YYSTYPE *lval,
+                    Parser::location_type *location);
+  // YY_DECL defined in lexer.l
+  // Method body created by flex in lexer.yy.cc
+};
 
 } // namespace lydia
 } // namespace whitemech

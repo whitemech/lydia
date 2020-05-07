@@ -16,34 +16,20 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "logic.hpp"
-#include "pl/logic.hpp"
-#include "visitor.hpp"
+#include <lydia/logic.hpp>
 
 namespace whitemech {
 namespace lydia {
 
-class CNFTransformer : public Visitor {
+class EvalVisitor : public Visitor {
 private:
 protected:
-  std::shared_ptr<const PropositionalFormula> result;
+  bool result{};
+  const set_atoms_ptr &interpretation;
 
 public:
-  // callbacks for LDLf
-  void visit(const Symbol &) override{};
-  void visit(const LDLfBooleanAtom &) override{};
-  void visit(const LDLfAnd &) override{};
-  void visit(const LDLfOr &) override{};
-  void visit(const LDLfNot &) override{};
-  void visit(const LDLfDiamond &x) override{};
-  void visit(const LDLfBox &x) override{};
-
-  // callbacks for regular expressions
-  void visit(const PropositionalRegExp &) override{};
-  void visit(const TestRegExp &) override{};
-  void visit(const UnionRegExp &) override{};
-  void visit(const SequenceRegExp &) override{};
-  void visit(const StarRegExp &) override{};
+  explicit EvalVisitor(const set_atoms_ptr &interpretation)
+      : interpretation{interpretation} {};
 
   // callbacks for propositional logic
   void visit(const PropositionalTrue &) override;
@@ -54,14 +40,18 @@ public:
   void visit(const PropositionalNot &) override;
 
   void visit(const QuotedFormula &) override{};
-  void visit(const LDLfF &) override{};
-  void visit(const LDLfT &) override{};
 
-  prop_ptr apply(const PropositionalFormula &b);
+  bool apply(const PropositionalFormula &b);
 };
 
-set_prop_formulas to_container(prop_ptr p);
-prop_ptr to_cnf(const PropositionalFormula &);
+/*!
+ * Evaluate a formula.
+ *
+ * @param interpretation the set of atoms that are true in the interpretation.
+ *                     | Atoms that are not members are considered false.
+ * @return true if the formula is true in the interpretation, false otherwise.
+ */
+bool eval(const PropositionalFormula &, const set_atoms_ptr &interpretation);
 
 } // namespace lydia
 } // namespace whitemech

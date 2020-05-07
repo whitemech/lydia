@@ -16,11 +16,11 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "basic.hpp"
-#include "pl/logic.hpp"
-#include "symbol.hpp"
-#include "utils/compare.hpp"
 #include <cassert>
+#include <lydia/basic.hpp>
+#include <lydia/pl/logic.hpp>
+#include <lydia/symbol.hpp>
+#include <lydia/utils/compare.hpp>
 #include <utility>
 
 namespace whitemech {

@@ -16,7 +16,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "basic.hpp"
+#include <lydia/basic.hpp>
 
 namespace whitemech::lydia {
 

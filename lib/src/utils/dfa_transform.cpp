@@ -15,14 +15,14 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "utils/dfa_transform.hpp"
 #include <cstdio>
 #include <graphviz/gvc.h>
+#include <lydia/utils/dfa_transform.hpp>
+#include <lydia/utils/misc.hpp>
+#include <lydia/utils/print.hpp>
+#include <lydia/utils/strings.hpp>
 #include <numeric>
 #include <queue>
-#include <utils/misc.hpp>
-#include <utils/print.hpp>
-#include <utils/strings.hpp>
 
 namespace whitemech {
 namespace lydia {

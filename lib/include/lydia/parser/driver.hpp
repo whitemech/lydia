@@ -20,11 +20,11 @@
 #include <istream>
 #include <string>
 
-#include "logic.hpp"
-#include "parser.tab.hh"
-#include "pl/logic.hpp"
-#include "scanner.hpp"
-#include "symbol.hpp"
+#include <lydia/logic.hpp>
+#include <lydia/parser/parser.tab.hh>
+#include <lydia/parser/scanner.hpp>
+#include <lydia/pl/logic.hpp>
+#include <lydia/symbol.hpp>
 
 namespace whitemech {
 namespace lydia {

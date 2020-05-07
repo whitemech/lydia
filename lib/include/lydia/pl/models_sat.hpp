@@ -16,10 +16,10 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "eval.hpp"
-#include <atom_visitor.hpp>
 #include <cryptominisat5/cryptominisat.h>
-#include <utils/misc.hpp>
+#include <lydia/atom_visitor.hpp>
+#include <lydia/pl/eval.hpp>
+#include <lydia/utils/misc.hpp>
 
 namespace whitemech {
 namespace lydia {

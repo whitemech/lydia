@@ -16,8 +16,8 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "cuddObj.hh"
 #include <cstdint>
+#include <cuddObj.hh>
 #include <exception>
 #include <map>
 #include <memory>

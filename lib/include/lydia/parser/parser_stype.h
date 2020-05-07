@@ -16,29 +16,30 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "eval.hpp"
-#include <atom_visitor.hpp>
-#include <cryptominisat5/cryptominisat.h>
-#include <utils/misc.hpp>
+#include "lydia/logic.hpp"
+#include "lydia/pl/logic.hpp"
+#include <string>
 
 namespace whitemech {
 namespace lydia {
 
-/*!
- * Compute all the models of a propositional formula.
- *
- * @param f the propositional formula
- * @return the set of the models of a formula
- */
-std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f);
+struct YYSTYPE {
+  std::shared_ptr<const LDLfFormula> formula;
+  std::shared_ptr<const RegExp> regex;
+  std::shared_ptr<const PropositionalFormula> prop_formula;
+  std::string symbol_name;
 
-/*!
- * Compute the minimal models of a propositional formula.
- *
- * @param f the propositional formula
- * @return the set of minimal models.
- */
-std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f);
+  // Constructor
+  YYSTYPE() = default;
+  // Destructor
+  ~YYSTYPE() = default;
+  // Copy constructor and assignment
+  YYSTYPE(const YYSTYPE &) = default;
+  YYSTYPE &operator=(const YYSTYPE &) = default;
+  // Move constructor and assignment
+  YYSTYPE(YYSTYPE &&) = default;
+  YYSTYPE &operator=(YYSTYPE &&) = default;
+};
 
 } // namespace lydia
 } // namespace whitemech

@@ -20,9 +20,9 @@
 // Some functions should be improved and generalized.
 // They are inherited from other implementations.
 
+#include <lydia/types.hpp>
 #include <regex>
 #include <string>
-#include <types.hpp>
 #include <vector>
 
 namespace whitemech {

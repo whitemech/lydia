@@ -16,9 +16,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <lydia/types.hpp>
 #include <memory>
 #include <type_traits>
-#include <types.hpp>
 
 static void escape(void *p) { asm volatile("" : : "g"(p) : "memory"); }
 

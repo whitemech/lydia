@@ -15,10 +15,10 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "visitor.hpp"
-#include <dfa_transform/delta.hpp>
-#include <logic.hpp>
-#include <pl/logic.hpp>
+#include <lydia/logic.hpp>
+#include <lydia/pl/logic.hpp>
+#include <lydia/to_dfa/delta.hpp>
+#include <lydia/visitor.hpp>
 
 namespace whitemech {
 namespace lydia {

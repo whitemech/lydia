@@ -15,9 +15,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "pl/models_sat.hpp"
+#include <lydia/pl/cnf.hpp>
+#include <lydia/pl/models_sat.hpp>
 #include <numeric>
-#include <pl/cnf.hpp>
 
 namespace whitemech {
 namespace lydia {

@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "pl/eval.hpp"
-#include "pl/logic.hpp"
-#include "pl/models.hpp"
-#include "utils/misc.hpp"
-#include <atom_visitor.hpp>
 #include <cryptominisat5/cryptominisat.h>
+#include <lydia/atom_visitor.hpp>
+#include <lydia/pl/eval.hpp>
+#include <lydia/pl/logic.hpp>
+#include <lydia/pl/models.hpp>
+#include <lydia/utils/misc.hpp>
 
 namespace whitemech {
 namespace lydia {

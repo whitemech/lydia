@@ -16,35 +16,33 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "dfa_transform/delta.hpp"
-#include "visitor.hpp"
-#include <variant>
+#include <lydia/logic.hpp>
+#include <lydia/visitor.hpp>
 
 namespace whitemech {
 namespace lydia {
 
-class AtomsVisitor : public Visitor {
+class CNFTransformer : public Visitor {
 private:
 protected:
-  set_atoms_ptr result;
+  std::shared_ptr<const PropositionalFormula> result;
 
 public:
-  static Logger logger;
-
   // callbacks for LDLf
-  void visit(const LDLfBooleanAtom &) override;
-  void visit(const LDLfAnd &) override;
-  void visit(const LDLfOr &) override;
-  void visit(const LDLfNot &) override;
-  void visit(const LDLfDiamond &x) override;
-  void visit(const LDLfBox &x) override;
+  void visit(const Symbol &) override{};
+  void visit(const LDLfBooleanAtom &) override{};
+  void visit(const LDLfAnd &) override{};
+  void visit(const LDLfOr &) override{};
+  void visit(const LDLfNot &) override{};
+  void visit(const LDLfDiamond &x) override{};
+  void visit(const LDLfBox &x) override{};
 
   // callbacks for regular expressions
-  void visit(const PropositionalRegExp &) override;
-  void visit(const TestRegExp &) override;
-  void visit(const UnionRegExp &) override;
-  void visit(const SequenceRegExp &) override;
-  void visit(const StarRegExp &) override;
+  void visit(const PropositionalRegExp &) override{};
+  void visit(const TestRegExp &) override{};
+  void visit(const UnionRegExp &) override{};
+  void visit(const SequenceRegExp &) override{};
+  void visit(const StarRegExp &) override{};
 
   // callbacks for propositional logic
   void visit(const PropositionalTrue &) override;
@@ -55,15 +53,14 @@ public:
   void visit(const PropositionalNot &) override;
 
   void visit(const QuotedFormula &) override{};
-  void visit(const Symbol &) override{};
+  void visit(const LDLfF &) override{};
+  void visit(const LDLfT &) override{};
 
-  set_atoms_ptr apply(const PropositionalFormula &b);
-  set_atoms_ptr apply(const LDLfFormula &b);
-  set_atoms_ptr apply(const RegExp &b);
+  prop_ptr apply(const PropositionalFormula &b);
 };
 
-set_atoms_ptr find_atoms(const LDLfFormula &);
-set_atoms_ptr find_atoms(const PropositionalFormula &);
+set_prop_formulas to_container(prop_ptr p);
+prop_ptr to_cnf(const PropositionalFormula &);
 
 } // namespace lydia
 } // namespace whitemech

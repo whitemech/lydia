@@ -16,30 +16,29 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "logic.hpp"
-#include "pl/logic.hpp"
-#include <string>
+#include <lydia/dfa.hpp>
+#include <lydia/logic.hpp>
+#include <lydia/types.hpp>
+#include <lydia/utils/compare.hpp>
+#include <memory>
+#include <utility>
 
 namespace whitemech {
 namespace lydia {
 
-struct YYSTYPE {
-  std::shared_ptr<const LDLfFormula> formula;
-  std::shared_ptr<const RegExp> regex;
-  std::shared_ptr<const PropositionalFormula> prop_formula;
-  std::string symbol_name;
+/*!
+ *
+ * Translate an LDLf formula into an DFA.
+ *
+ * This is one of the main procedures of the library.
+ *
+ * @param formula the LDLf formula.
+ * @return the equivalent DFA.
+ */
+std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula, const CUDD::Cudd &mgr);
 
-  // Constructor
-  YYSTYPE() = default;
-  // Destructor
-  ~YYSTYPE() = default;
-  // Copy constructor and assignment
-  YYSTYPE(const YYSTYPE &) = default;
-  YYSTYPE &operator=(const YYSTYPE &) = default;
-  // Move constructor and assignment
-  YYSTYPE(YYSTYPE &&) = default;
-  YYSTYPE &operator=(YYSTYPE &&) = default;
-};
+std::shared_ptr<dfa> to_dfa_sat(const LDLfFormula &formula,
+                                const CUDD::Cudd &mgr);
 
 } // namespace lydia
 } // namespace whitemech

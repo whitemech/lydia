@@ -18,7 +18,7 @@
 #include <cassert>
 #include <fstream>
 
-#include "driver.hpp"
+#include <lydia/parser/driver.hpp>
 
 namespace whitemech {
 namespace lydia {

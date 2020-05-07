@@ -15,9 +15,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "logic.hpp"
-#include "utils/compare.hpp"
 #include <cassert>
+#include <lydia/logic.hpp>
+#include <lydia/utils/compare.hpp>
 #include <utility>
 
 namespace whitemech {

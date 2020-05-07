@@ -15,10 +15,10 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "pl/logic.hpp"
-#include "pl/models_sat.hpp"
-#include "utils/benchmark.hpp"
 #include <benchmark/benchmark.h>
+#include <lydia/pl/logic.hpp>
+#include <lydia/pl/models_sat.hpp>
+#include <lydia/utils/benchmark.hpp>
 #include <random>
 
 namespace whitemech::lydia::Benchmark {

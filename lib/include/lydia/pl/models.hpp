@@ -16,34 +16,29 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if !defined(yyFlexLexerOnce)
-#include <FlexLexer.h>
-#endif
-
-#include "location.hh"
-#include "parser.tab.hh"
-#include "parser_stype.h"
+#include <cryptominisat5/cryptominisat.h>
+#include <lydia/atom_visitor.hpp>
+#include <lydia/pl/eval.hpp>
+#include <lydia/utils/misc.hpp>
 
 namespace whitemech {
 namespace lydia {
 
-class Scanner : public yyFlexLexer {
-private:
-public:
-  /* yyval ptr */
-  whitemech::lydia::YYSTYPE *yylval = nullptr;
+/*!
+ * Compute all the models of a propositional formula.
+ *
+ * @param f the propositional formula
+ * @return the set of the models of a formula
+ */
+std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f);
 
-  explicit Scanner(std::istream *in) : yyFlexLexer(in){};
-  virtual ~Scanner(){};
-
-  // get rid of override virtual function warning
-  using FlexLexer::yylex;
-
-  virtual int yylex(whitemech::lydia::YYSTYPE *lval,
-                    Parser::location_type *location);
-  // YY_DECL defined in lexer.l
-  // Method body created by flex in lexer.yy.cc
-};
+/*!
+ * Compute the minimal models of a propositional formula.
+ *
+ * @param f the propositional formula
+ * @return the set of minimal models.
+ */
+std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f);
 
 } // namespace lydia
 } // namespace whitemech

@@ -16,12 +16,12 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "dfa.hpp"
-#include "logic.hpp"
-#include "types.hpp"
+#include <lydia/dfa.hpp>
+#include <lydia/logic.hpp>
+#include <lydia/types.hpp>
+#include <lydia/utils/compare.hpp>
 #include <memory>
 #include <utility>
-#include <utils/compare.hpp>
 
 namespace whitemech {
 namespace lydia {

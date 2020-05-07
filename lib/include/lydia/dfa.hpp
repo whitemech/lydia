@@ -16,13 +16,14 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "cuddObj.hh"
-#include "logger.hpp"
-#include "types.hpp"
+// TODO require CUDD headers are installed in cudd/
 #include <algorithm>
 #include <cassert>
+#include <cuddObj.hh>
 #include <fstream>
 #include <iostream>
+#include <lydia/logger.hpp>
+#include <lydia/types.hpp>
 #include <set>
 #include <string>
 #include <utility>

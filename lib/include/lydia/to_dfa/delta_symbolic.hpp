@@ -16,12 +16,12 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "cuddObj.hh"
-#include "delta.hpp"
-#include "logger.hpp"
-#include "pl/logic.hpp"
-#include "visitor.hpp"
-#include <logic.hpp>
+#include <cuddObj.hh>
+#include <lydia/logger.hpp>
+#include <lydia/logic.hpp>
+#include <lydia/pl/logic.hpp>
+#include <lydia/to_dfa/delta.hpp>
+#include <lydia/visitor.hpp>
 #include <utility>
 
 namespace whitemech {
