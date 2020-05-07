@@ -25,8 +25,8 @@
  */
 
 #include "CLI/CLI.hpp"
-#include "dfa.hpp"
-#include "utils/dfa_transform.hpp"
+#include "lydia/dfa.hpp"
+#include "lydia/utils/dfa_transform.hpp"
 #include <cstdlib>
 #include <string>
 

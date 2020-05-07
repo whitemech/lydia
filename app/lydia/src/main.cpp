@@ -16,7 +16,7 @@
  */
 
 #include "CLI/CLI.hpp"
-#include "driver.cpp"
+#include "lydia/parser/driver.cpp"
 #include <iostream>
 #include <istream>
 

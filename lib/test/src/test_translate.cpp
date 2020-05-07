@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "catch.hpp"
-#include "nnf.hpp"
-#include <dfa_transform/dfa_state.hpp>
-#include <dfa_transform/translate.hpp>
+#include <catch.hpp>
 #include <iostream>
-#include <utils/dfa_transform.hpp>
-#include <utils/print.hpp>
+#include <lydia/nnf.hpp>
+#include <lydia/to_dfa/dfa_state.hpp>
+#include <lydia/to_dfa/translate.hpp>
+#include <lydia/utils/dfa_transform.hpp>
+#include <lydia/utils/print.hpp>
 
 namespace whitemech::lydia::Test {
 

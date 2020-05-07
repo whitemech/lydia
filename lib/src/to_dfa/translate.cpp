@@ -15,15 +15,15 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "pl/logic.hpp"
-#include "to_dfa/dfa_state.hpp"
-#include <atom_visitor.hpp>
-#include <dfa.hpp>
-#include <dfa_transform/translate.hpp>
-#include <nnf.hpp>
+#include <lydia/atom_visitor.hpp>
+#include <lydia/dfa.hpp>
+#include <lydia/nnf.hpp>
+#include <lydia/pl/logic.hpp>
+#include <lydia/to_dfa/dfa_state.hpp>
+#include <lydia/to_dfa/translate.hpp>
+#include <lydia/utils/misc.hpp>
 #include <queue>
 #include <utility>
-#include <utils/misc.hpp>
 
 namespace whitemech {
 namespace lydia {

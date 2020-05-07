@@ -15,11 +15,10 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "to_dfa/nfa_state.hpp"
-#include "pl/cnf.hpp"
-#include "pl/models.hpp"
-#include "to_dfa/delta_symbolic.hpp"
-#include "to_dfa/nfa_state.hpp"
+#include <lydia/pl/cnf.hpp>
+#include <lydia/pl/models.hpp>
+#include <lydia/to_dfa/delta_symbolic.hpp>
+#include <lydia/to_dfa/nfa_state.hpp>
 
 namespace whitemech {
 namespace lydia {

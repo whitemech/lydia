@@ -15,11 +15,11 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "dfa.hpp"
 #include <cuddObj.hh>
+#include <lydia/dfa.hpp>
+#include <lydia/utils/misc.hpp>
+#include <lydia/utils/strings.hpp>
 #include <numeric>
-#include <utils/misc.hpp>
-#include <utils/strings.hpp>
 
 namespace whitemech {
 namespace lydia {

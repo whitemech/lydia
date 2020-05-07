@@ -15,12 +15,12 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "pl/eval.hpp"
-#include "pl/logic.hpp"
 #include <cassert>
-#include <dfa_transform/delta.hpp>
-#include <logger.hpp>
-#include <nnf.hpp>
+#include <lydia/logger.hpp>
+#include <lydia/nnf.hpp>
+#include <lydia/pl/eval.hpp>
+#include <lydia/pl/logic.hpp>
+#include <lydia/to_dfa/delta.hpp>
 
 namespace whitemech {
 namespace lydia {
