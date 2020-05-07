@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "dfa_transform/dfa_state.hpp"
+#include "to_dfa/dfa_state.hpp"
 
 namespace whitemech {
 namespace lydia {

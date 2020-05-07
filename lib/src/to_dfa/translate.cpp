@@ -15,8 +15,8 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "dfa_transform/dfa_state.hpp"
 #include "pl/logic.hpp"
+#include "to_dfa/dfa_state.hpp"
 #include <atom_visitor.hpp>
 #include <dfa.hpp>
 #include <dfa_transform/translate.hpp>

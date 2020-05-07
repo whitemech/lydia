@@ -16,8 +16,8 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "dfa_transform/nfa_state.hpp"
 #include "logic.hpp"
+#include "to_dfa/nfa_state.hpp"
 #include "types.hpp"
 #include <memory>
 #include <utility>
