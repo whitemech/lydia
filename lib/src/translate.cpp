@@ -134,9 +134,9 @@ std::shared_ptr<dfa> to_dfa_sat(const LDLfFormula &formula,
     vec_dfa_states next_states;
     std::vector<set_atoms_ptr> symbols;
     const auto &next_transitions = current_state->next_transitions();
-    for (const auto &state_symbol : next_transitions) {
-      const auto &next_state = state_symbol.first;
-      const auto &symbol = state_symbol.second;
+    for (const auto &symbol_state : next_transitions) {
+      const auto &symbol = symbol_state.first;
+      const auto &next_state = symbol_state.second;
       // update states/transitions
       int next_state_index = 0;
       if (discovered.find(next_state) == discovered.end()) {
@@ -234,7 +234,7 @@ NFAState::next_transitions() const {
     setPropFormulas.insert(delta_formula);
   }
   auto and_ = to_cnf(*logical_and(setPropFormulas));
-  const auto &all_minimal_models = all_minimal_models_sat(*and_);
+  const auto &all_minimal_models = all_models(*and_);
   for (const auto &model : all_minimal_models) {
     set_nfa_states nfa_states;
     set_formulas quoted_formulas;
@@ -305,19 +305,27 @@ dfa_state_ptr DFAState::next_state(const set_atoms_ptr &i) const {
   return std::make_shared<DFAState>(successor_nfa_states);
 }
 
-std::vector<std::pair<dfa_state_ptr, set_atoms_ptr>>
+std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>>
 DFAState::next_transitions() const {
-  std::vector<std::pair<dfa_state_ptr, set_atoms_ptr>> result;
+  std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>> result;
+  std::map<set_atoms_ptr, set_nfa_states> symbol2nfastates;
   set_dfa_states discovered;
-  set_nfa_states v;
+  set_nfa_states nfa_states;
   set_atoms_ptr symbol;
   for (const auto &nfa_state : this->states) {
     const auto &next_transitions = nfa_state->next_transitions();
     for (const auto &symbol_states : next_transitions) {
-      std::tie(symbol, v) = symbol_states;
-      auto pair = std::make_pair(std::make_shared<DFAState>(v), symbol);
-      result.emplace_back(pair);
+      symbol = symbol_states.first;
+      nfa_states = symbol_states.second;
+      if (symbol2nfastates.find(symbol) == symbol2nfastates.end()) {
+        symbol2nfastates[symbol] = set_nfa_states{};
+      }
+      symbol2nfastates[symbol].insert(nfa_states.begin(), nfa_states.end());
     }
+  }
+
+  for (const auto &pair : symbol2nfastates) {
+    result.emplace_back(pair.first, std::make_shared<DFAState>(pair.second));
   }
   return result;
 }

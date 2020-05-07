@@ -233,10 +233,12 @@ TEST_CASE("Test Cryptominisat", "[cryptominisat]") {
 }
 
 TEST_CASE("is_sat", "[pl/models]") {
-  //  auto t = boolean_prop(true);
-  //  auto f = boolean_prop(false);
+  auto t = boolean_prop(true);
+  auto f = boolean_prop(false);
   auto p = prop_atom("p");
   auto q = prop_atom("q");
+  REQUIRE(is_sat(*t));
+  REQUIRE(!is_sat(*f));
   REQUIRE(is_sat(*p));
   REQUIRE(is_sat(*q));
   REQUIRE(is_sat(*logical_or({p, q})));

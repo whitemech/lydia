@@ -149,8 +149,7 @@ void DeltaSymbolicBoxRegExpVisitor::visit(const PropositionalRegExp &r) {
   ExpandVisitor e;
   auto expanded_formula = e.apply(*formula.get_formula());
   auto quoted_formula = prop_atom(quote(expanded_formula));
-  result =
-      logical_or({logical_and({quoted_formula, prop}), prop->logical_not()});
+  result = logical_or({quoted_formula, prop->logical_not()});
 }
 
 void DeltaSymbolicBoxRegExpVisitor::visit(const TestRegExp &r) {

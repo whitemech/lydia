@@ -134,7 +134,7 @@ public:
    * @return the next DFA state.
    */
   dfa_state_ptr next_state(const set_atoms_ptr &i) const;
-  std::vector<std::pair<dfa_state_ptr, set_atoms_ptr>> next_transitions() const;
+  std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>> next_transitions() const;
 };
 
 } // namespace lydia
