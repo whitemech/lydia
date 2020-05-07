@@ -26,7 +26,7 @@ set (APP_MODULE_PATH "${PROJECT_SOURCE_DIR}/app/lydia")
 set (APP_SRC_PATH  "${APP_MODULE_PATH}/src" )
 
 #set includes
-include_directories (${LIBRARY_PARSER_PATH} ${LIBRARY_INCLUDE_PATH} ${THIRD_PARTY_INCLUDE_PATH})
+include_directories (${APP_SRC_PATH} ${LIBRARY_PARSER_PATH} ${LIBRARY_INCLUDE_PATH} ${THIRD_PARTY_INCLUDE_PATH})
 
 #set sources
 file (GLOB APP_SOURCE_FILES "${APP_SRC_PATH}/*.cpp")
@@ -35,8 +35,10 @@ file (GLOB APP_SOURCE_FILES "${APP_SRC_PATH}/*.cpp")
 add_executable (${APP_NAME} ${APP_SOURCE_FILES})
 
 #add the library
-target_link_libraries (${APP_NAME} ${LIB_NAME} Threads::Threads)
+#target_link_libraries (${APP_NAME} ${LIB_NAME} ${CUDD_LIBRARIES})
+target_link_libraries (${APP_NAME} ${LIB_NAME} Threads::Threads ${CUDD_LIBRARIES})
 
+#set_target_properties(${APP_NAME} PROPERTIES ENABLE_EXPORTS 1 OUTPUT_NAME lydia-binTest)
 set_target_properties(${APP_NAME} PROPERTIES OUTPUT_NAME lydia)
 
 #test
