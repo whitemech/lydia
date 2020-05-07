@@ -17,28 +17,39 @@
  */
 
 #include <lydia/dfa.hpp>
-#include <lydia/logic.hpp>
-#include <lydia/types.hpp>
-#include <lydia/utils/compare.hpp>
 #include <memory>
-#include <utility>
 
 namespace whitemech {
 namespace lydia {
+
+class Strategy {
+public:
+  virtual std::shared_ptr<dfa> to_dfa(const LDLfFormula &f) = 0;
+};
+
+class Translator {
+private:
+  Strategy &strategy;
+
+public:
+  explicit Translator(Strategy &strategy) : strategy{strategy} {}
+
+  std::shared_ptr<dfa> to_dfa(const LDLfFormula &f) const {
+    return strategy.to_dfa(f);
+  }
+};
 
 /*!
  *
  * Translate an LDLf formula into an DFA.
  *
- * This is one of the main procedures of the library.
+ * TODO legacy function, please use Translator + Strategy in
+ * lydia/to_dfa/core.hpp
  *
  * @param formula the LDLf formula.
  * @return the equivalent DFA.
  */
 std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula, const CUDD::Cudd &mgr);
-
-std::shared_ptr<dfa> to_dfa_sat(const LDLfFormula &formula,
-                                const CUDD::Cudd &mgr);
 
 } // namespace lydia
 } // namespace whitemech

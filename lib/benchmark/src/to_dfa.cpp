@@ -17,7 +17,7 @@
 
 #include <benchmark/benchmark.h>
 #include <lydia/logic.hpp>
-#include <lydia/to_dfa/translate.hpp>
+#include <lydia/to_dfa/core.hpp>
 #include <lydia/utils/benchmark.hpp>
 #include <random>
 

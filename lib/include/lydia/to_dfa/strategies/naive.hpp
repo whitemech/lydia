@@ -16,6 +16,30 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <lydia/atom_visitor.hpp>
+#include <lydia/dfa.hpp>
+#include <lydia/nnf.hpp>
+#include <lydia/pl/logic.hpp>
+#include <lydia/to_dfa/core.hpp>
+#include <lydia/to_dfa/dfa_state.hpp>
+#include <lydia/utils/misc.hpp>
+#include <queue>
+#include <utility>
+
 namespace whitemech {
-namespace lydia {}
+namespace lydia {
+
+class NaiveStrategy : public Strategy {
+private:
+  const CUDD::Cudd &mgr;
+  const size_t max_nb_bits;
+
+public:
+  explicit NaiveStrategy(const CUDD::Cudd &mgr, uint32_t max_nb_bits = 10)
+      : mgr{mgr}, max_nb_bits{max_nb_bits} {};
+
+  std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula);
+};
+
+} // namespace lydia
 } // namespace whitemech

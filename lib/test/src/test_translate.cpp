@@ -17,8 +17,8 @@
 #include <catch.hpp>
 #include <iostream>
 #include <lydia/nnf.hpp>
+#include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/dfa_state.hpp>
-#include <lydia/to_dfa/translate.hpp>
 #include <lydia/utils/dfa_transform.hpp>
 #include <lydia/utils/print.hpp>
 
