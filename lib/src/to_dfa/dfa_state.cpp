@@ -54,39 +54,5 @@ bool DFAState::is_final() const {
   return false;
 }
 
-dfa_state_ptr DFAState::next_state(const set_atoms_ptr &i) const {
-  set_nfa_states successor_nfa_states;
-  for (const auto &nfa_state : states) {
-    auto successors = nfa_state->next_states(i);
-    successor_nfa_states.insert(successors.begin(), successors.end());
-  }
-  return std::make_shared<DFAState>(successor_nfa_states);
-}
-
-std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>>
-DFAState::next_transitions() const {
-  std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>> result;
-  std::map<set_atoms_ptr, set_nfa_states> symbol2nfastates;
-  set_dfa_states discovered;
-  set_nfa_states nfa_states;
-  set_atoms_ptr symbol;
-  for (const auto &nfa_state : this->states) {
-    const auto &next_transitions = nfa_state->next_transitions();
-    for (const auto &symbol_states : next_transitions) {
-      symbol = symbol_states.first;
-      nfa_states = symbol_states.second;
-      if (symbol2nfastates.find(symbol) == symbol2nfastates.end()) {
-        symbol2nfastates[symbol] = set_nfa_states{};
-      }
-      symbol2nfastates[symbol].insert(nfa_states.begin(), nfa_states.end());
-    }
-  }
-
-  for (const auto &pair : symbol2nfastates) {
-    result.emplace_back(pair.first, std::make_shared<DFAState>(pair.second));
-  }
-  return result;
-}
-
 } // namespace lydia
 } // namespace whitemech

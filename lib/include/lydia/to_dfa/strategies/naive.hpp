@@ -39,6 +39,30 @@ public:
       : mgr{mgr}, max_nb_bits{max_nb_bits} {};
 
   std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula);
+
+  /*!
+   * Compute the next state, given a propositional interpretation.
+   *
+   * That is, compute the successor of each NFA state in the current DFA state.
+   *
+   * @param state the current DFA state
+   * @param i the propositional interpretation (a set of propositional atoms).
+   * @return the next DFA state.
+   */
+  static dfa_state_ptr next_state(const DFAState &state,
+                                  const set_atoms_ptr &i);
+
+  /*!
+   * Compute the next states, given a propositional interpretation.
+   *
+   * That is, compute the successors of each NFA state in the current DFA state.
+   *
+   * @param state the current NFA state
+   * @param i the propositional interpretation (a set of propositional atoms).
+   * @return the next NFA states.
+   */
+  static set_nfa_states next_states(const NFAState &state,
+                                    const set_atoms_ptr &i);
 };
 
 } // namespace lydia

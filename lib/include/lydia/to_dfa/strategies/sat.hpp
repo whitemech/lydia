@@ -38,6 +38,11 @@ public:
       : mgr{mgr}, max_nb_bits{max_nb_bits} {};
 
   std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula);
+
+  std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>>
+  next_transitions(const DFAState &state);
+  std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
+  next_transitions(const NFAState &state);
 };
 
 } // namespace lydia

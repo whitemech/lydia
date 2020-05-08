@@ -14,6 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include <lydia/pl/cnf.hpp>
+#include <lydia/pl/models.hpp>
+#include <lydia/to_dfa/delta_symbolic.hpp>
 #include <lydia/to_dfa/strategies/sat.hpp>
 
 namespace whitemech {
@@ -54,7 +57,7 @@ std::shared_ptr<dfa> SATStrategy::to_dfa(const LDLfFormula &formula) {
     auto current_state_index = pair.second;
     vec_dfa_states next_states;
     std::vector<set_atoms_ptr> symbols;
-    const auto &next_transitions = current_state->next_transitions();
+    const auto &next_transitions = this->next_transitions(*current_state);
     for (const auto &symbol_state : next_transitions) {
       const auto &symbol = symbol_state.first;
       const auto &next_state = symbol_state.second;
@@ -79,6 +82,70 @@ std::shared_ptr<dfa> SATStrategy::to_dfa(const LDLfFormula &formula) {
   }
 
   return automaton;
+}
+
+std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>>
+SATStrategy::next_transitions(const DFAState &state) {
+  std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>> result;
+  std::map<set_atoms_ptr, set_nfa_states> symbol2nfastates;
+  set_dfa_states discovered;
+  set_nfa_states nfa_states;
+  set_atoms_ptr symbol;
+  for (const auto &nfa_state : state.states) {
+    const auto &next_transitions = this->next_transitions(*nfa_state);
+    for (const auto &symbol_states : next_transitions) {
+      symbol = symbol_states.first;
+      nfa_states = symbol_states.second;
+      if (symbol2nfastates.find(symbol) == symbol2nfastates.end()) {
+        symbol2nfastates[symbol] = set_nfa_states{};
+      }
+      symbol2nfastates[symbol].insert(nfa_states.begin(), nfa_states.end());
+    }
+  }
+
+  for (const auto &pair : symbol2nfastates) {
+    result.emplace_back(pair.first, std::make_shared<DFAState>(pair.second));
+  }
+  return result;
+}
+
+std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
+SATStrategy::next_transitions(const NFAState &state) {
+  std::vector<std::pair<set_atoms_ptr, set_nfa_states>> result;
+  std::map<set_atoms_ptr, set_nfa_states> symbol2nfastates;
+  set_prop_formulas setPropFormulas;
+  set_nfa_states v;
+  for (const auto &f : state.formulas) {
+    const auto &delta_formula = delta_symbolic(*f, false);
+    setPropFormulas.insert(delta_formula);
+  }
+  auto and_ = to_cnf(*logical_and(setPropFormulas));
+  const auto &all_minimal_models = all_models(*and_);
+  for (const auto &model : all_minimal_models) {
+    set_nfa_states nfa_states;
+    set_formulas quoted_formulas;
+    set_atoms_ptr symbol;
+    for (const atom_ptr &ptr : model) {
+      if (is_a<QuotedFormula>(*ptr->symbol))
+        quoted_formulas.insert(
+            dynamic_cast<const QuotedFormula &>(*ptr->symbol).formula);
+      else
+        symbol.insert(ptr);
+    }
+
+    auto successor = symbol2nfastates.find(symbol);
+    if (successor == symbol2nfastates.end()) {
+      symbol2nfastates[symbol] = set_nfa_states();
+    }
+    symbol2nfastates[symbol].insert(
+        std::make_shared<NFAState>(quoted_formulas));
+  }
+
+  result.reserve(symbol2nfastates.size());
+  for (const auto &pair : symbol2nfastates) {
+    result.emplace_back(pair);
+  }
+  return result;
 }
 
 } // namespace lydia

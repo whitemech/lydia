@@ -15,6 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <lydia/pl/models.hpp>
 #include <lydia/to_dfa/strategies/naive.hpp>
 
 namespace whitemech {
@@ -61,7 +62,8 @@ std::shared_ptr<dfa> NaiveStrategy::to_dfa(const LDLfFormula &formula) {
      *                    (no interpretation to provide)
      */
     for (const auto &i : all_interpretations) {
-      const dfa_state_ptr next_state = current_state->next_state(i);
+      const dfa_state_ptr next_state =
+          NaiveStrategy::next_state(*current_state, i);
       // update states/transitions
       int next_state_index = 0;
       if (discovered.find(next_state) == discovered.end()) {
@@ -85,5 +87,41 @@ std::shared_ptr<dfa> NaiveStrategy::to_dfa(const LDLfFormula &formula) {
 
   return automaton;
 }
+
+dfa_state_ptr NaiveStrategy::next_state(const DFAState &state,
+                                        const set_atoms_ptr &i) {
+  set_nfa_states successor_nfa_states;
+  for (const auto &nfa_state : state.states) {
+    auto successors = NaiveStrategy::next_states(*nfa_state, i);
+    successor_nfa_states.insert(successors.begin(), successors.end());
+  }
+  return std::make_shared<DFAState>(successor_nfa_states);
+}
+
+set_nfa_states NaiveStrategy::next_states(const NFAState &state,
+                                          const set_atoms_ptr &i) {
+  // This will be put in conjunction with o ther formulas
+  vec_prop_formulas args{std::make_shared<PropositionalTrue>(),
+                         std::make_shared<PropositionalTrue>()};
+  for (const auto &formula : state.formulas) {
+    args.push_back(delta(*formula, i));
+  }
+  auto conjunction =
+      PropositionalAnd(set_prop_formulas(args.begin(), args.end()));
+
+  set_nfa_states result;
+  auto models = minimal_models(conjunction);
+  for (const auto &model : models) {
+    set_formulas tmp;
+    for (const auto &atom : model) {
+      assert(is_a<QuotedFormula>(*atom->symbol));
+      tmp.insert(dynamic_cast<const QuotedFormula &>(*atom->symbol).formula);
+    }
+    result.emplace(std::make_shared<NFAState>(tmp));
+  }
+
+  return result;
+}
+
 } // namespace lydia
 } // namespace whitemech

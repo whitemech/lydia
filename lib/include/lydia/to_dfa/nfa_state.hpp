@@ -60,18 +60,6 @@ public:
    * @return whether the NFA state is final.
    */
   bool is_final() const;
-
-  /*!
-   * Compute the next states, given a propositional interpretation.
-   *
-   * That is, compute the successors of each NFA state in the current DFA state.
-   *
-   * @param i the propositional interpretation (a set of propositional atoms).
-   * @return the next NFA states.
-   */
-  set_nfa_states next_states(const set_atoms_ptr &i) const;
-  std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
-  next_transitions() const;
 };
 
 } // namespace lydia
