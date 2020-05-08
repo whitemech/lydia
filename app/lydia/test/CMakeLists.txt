@@ -33,12 +33,12 @@ include_directories (${LIBRARY_PARSER_PATH} ${LIBRARY_INCLUDE_PATH} ${TEST_THIRD
 file (GLOB TEST_SOURCE_FILES "${TEST_SRC_PATH}/*.cpp")
 
 #set target executable
-add_executable (${TEST_APP_NAME} ${TEST_SOURCE_FILES})
+#add_executable (${TEST_APP_NAME} ${TEST_SOURCE_FILES})
 
 #add the library
-target_link_libraries (${TEST_APP_NAME} ${APP_NAME} Threads::Threads ${CUDD_LIBRARIES})
+#target_link_libraries (${TEST_APP_NAME} ${APP_NAME} Threads::Threads ${CUDD_LIBRARIES})
 
-enable_testing ()
+#enable_testing ()
 
 #parse catch tests
-ParseAndAddCatchTests (${TEST_APP_NAME})
+#ParseAndAddCatchTests (${TEST_APP_NAME})
