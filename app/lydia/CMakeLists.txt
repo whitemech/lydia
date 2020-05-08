@@ -26,7 +26,7 @@ set (APP_MODULE_PATH "${PROJECT_SOURCE_DIR}/app/lydia")
 set (APP_SRC_PATH  "${APP_MODULE_PATH}/src" )
 
 #set includes
-include_directories (${LIBRARY_PARSER_PATH} ${LIBRARY_INCLUDE_PATH} ${THIRD_PARTY_INCLUDE_PATH})
+include_directories (${APP_SRC_PATH} ${LIBRARY_PARSER_PATH} ${LIBRARY_INCLUDE_PATH} ${THIRD_PARTY_INCLUDE_PATH})
 
 #set sources
 file (GLOB APP_SOURCE_FILES "${APP_SRC_PATH}/*.cpp")
