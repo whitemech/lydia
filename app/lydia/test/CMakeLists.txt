@@ -18,29 +18,27 @@
 # CMake build : main application test
 
 #configure variables
-#set (APP_NAME "${PROJECT_NAME}App")
 set (TEST_APP_NAME "${APP_NAME}Test")
 
 #configure directories
-#set (TEST_MODULE_PATH "${APP_MODULE_PATH}/test")
+set (TEST_MODULE_PATH "${APP_MODULE_PATH}/test")
 
 #configure test directories
-#set (TEST_SRC_PATH  "${TEST_MODULE_PATH}/src" )
+set (TEST_SRC_PATH "${TEST_MODULE_PATH}/src" )
 
 #set includes
-#include_directories ( ${TEST_THIRD_PARTY_INCLUDE_PATH})
+include_directories (${LIBRARY_PARSER_PATH} ${LIBRARY_INCLUDE_PATH} ${TEST_THIRD_PARTY_INCLUDE_PATH})
 
 #set test sources
-#file (GLOB TEST_SOURCE_FILES "${TEST_SRC_PATH}/*.cpp")
+file (GLOB TEST_SOURCE_FILES "${TEST_SRC_PATH}/*.cpp")
 
 #set target executable
-#add_executable (${TEST_APP_NAME} ${TEST_SOURCE_FILES})
+add_executable (${TEST_APP_NAME} ${TEST_SOURCE_FILES})
 
 #add the library
-#target_link_libraries (${TEST_APP_NAME} ${APP_NAME} Threads::Threads ${CUDD_LIBRARIES})
+target_link_libraries (${TEST_APP_NAME} ${APP_NAME} Threads::Threads ${CUDD_LIBRARIES})
 
 enable_testing ()
-#add_test (NAME ${TEST_APP_NAME} COMMAND ${APP_NAME} )
 
 #parse catch tests
-#ParseAndAddCatchTests (${TEST_APP_NAME})
+ParseAndAddCatchTests (${TEST_APP_NAME})
