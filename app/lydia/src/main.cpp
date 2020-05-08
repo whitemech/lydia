@@ -17,10 +17,10 @@
 
 #include "CLI/CLI.hpp"
 #include "driver.cpp"
+#include "logger.hpp"
 #include "translate.hpp"
 #include "utils/dfa_transform.hpp"
 #include "utils/print.hpp"
-#include "logger.hpp"
 #include <iostream>
 #include <istream>
 

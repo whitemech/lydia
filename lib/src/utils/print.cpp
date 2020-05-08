@@ -31,10 +31,10 @@ void StrPrinter::visit(const LDLfBooleanAtom &x) {
 void StrPrinter::visit(const LDLfAnd &x) {
   std::ostringstream s;
   auto container = x.get_container();
-  s << "And(";
+  s << "(";
   s << apply(**container.begin());
   for (auto it = ++(container.begin()); it != container.end(); ++it) {
-    s << ", " << apply(**it);
+    s << " & " << apply(**it);
   }
   s << ")";
   result = s.str();
@@ -43,10 +43,10 @@ void StrPrinter::visit(const LDLfAnd &x) {
 void StrPrinter::visit(const LDLfOr &x) {
   std::ostringstream s;
   auto container = x.get_container();
-  s << "Or(";
+  s << "(";
   s << apply(**container.begin());
   for (auto it = ++(container.begin()); it != container.end(); ++it) {
-    s << ", " << apply(**it);
+    s << " | " << apply(**it);
   }
   s << ")";
   result = s.str();
@@ -54,7 +54,7 @@ void StrPrinter::visit(const LDLfOr &x) {
 
 void StrPrinter::visit(const LDLfNot &x) {
   std::ostringstream s;
-  s << "Not(" << apply(*x.get_arg()) << ")";
+  s << "!(" << apply(*x.get_arg()) << ")";
   result = s.str();
 }
 
@@ -78,17 +78,17 @@ void StrPrinter::visit(const PropositionalRegExp &x) {
 
 void StrPrinter::visit(const TestRegExp &x) {
   std::ostringstream s;
-  s << "Test(" << apply(*x.get_arg()) << ")";
+  s << "(" << apply(*x.get_arg()) << ")?";
   result = s.str();
 }
 
 void StrPrinter::visit(const UnionRegExp &x) {
   std::ostringstream s;
   auto container = x.get_container();
-  s << "Union(";
+  s << "(";
   s << apply(**container.begin());
   for (auto it = ++(container.begin()); it != container.end(); ++it) {
-    s << ", " << apply(**it);
+    s << " + " << apply(**it);
   }
   s << ")";
   result = s.str();
@@ -97,10 +97,10 @@ void StrPrinter::visit(const UnionRegExp &x) {
 void StrPrinter::visit(const SequenceRegExp &x) {
   std::ostringstream s;
   auto container = x.get_container();
-  s << "Sequence(";
+  s << "(";
   s << apply(**container.begin());
   for (auto it = ++(container.begin()); it != container.end(); ++it) {
-    s << ", " << apply(**it);
+    s << " ; " << apply(**it);
   }
   s << ")";
   result = s.str();
@@ -108,7 +108,7 @@ void StrPrinter::visit(const SequenceRegExp &x) {
 
 void StrPrinter::visit(const StarRegExp &x) {
   std::ostringstream s;
-  s << "Star(" << apply(*x.get_arg()) << ")";
+  s << "(" << apply(*x.get_arg()) << ")*";
   result = s.str();
 }
 
@@ -123,10 +123,10 @@ void StrPrinter::visit(const PropositionalAtom &x) {
 void StrPrinter::visit(const PropositionalAnd &x) {
   std::ostringstream s;
   auto container = x.get_container();
-  s << "Prop_And(";
+  s << "(";
   s << apply(**container.begin());
   for (auto it = ++(container.begin()); it != container.end(); ++it) {
-    s << ", " << apply(**it);
+    s << " & " << apply(**it);
   }
   s << ")";
   result = s.str();
@@ -135,10 +135,10 @@ void StrPrinter::visit(const PropositionalAnd &x) {
 void StrPrinter::visit(const PropositionalOr &x) {
   std::ostringstream s;
   auto container = x.get_container();
-  s << "Prop_Or(";
+  s << "(";
   s << apply(**container.begin());
   for (auto it = ++(container.begin()); it != container.end(); ++it) {
-    s << ", " << apply(**it);
+    s << " | " << apply(**it);
   }
   s << ")";
   result = s.str();
@@ -146,7 +146,7 @@ void StrPrinter::visit(const PropositionalOr &x) {
 
 void StrPrinter::visit(const PropositionalNot &x) {
   std::ostringstream s;
-  s << "Prop_Not(" << apply(*x.get_arg()) << ")";
+  s << "!(" << apply(*x.get_arg()) << ")";
   result = s.str();
 }
 
