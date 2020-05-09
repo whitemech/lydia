@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <atom_visitor.hpp>
+#include <lydia/atom_visitor.hpp>
 
 namespace whitemech {
 namespace lydia {

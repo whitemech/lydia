@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "catch.hpp"
-#include "utils/print.hpp"
+#include <catch.hpp>
+#include <lydia/utils/print.hpp>
 
 namespace whitemech::lydia::Test {
 

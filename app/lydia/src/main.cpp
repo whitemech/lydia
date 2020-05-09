@@ -16,11 +16,11 @@
  */
 
 #include "CLI/CLI.hpp"
-#include "driver.cpp"
-#include "translate.hpp"
-#include "utils/dfa_transform.hpp"
 #include <iostream>
 #include <istream>
+#include <lydia/parser/driver.cpp>
+#include <lydia/to_dfa/core.hpp>
+#include <lydia/utils/dfa_transform.hpp>
 
 std::string dump_formula(const std::string &filename) {
   std::ifstream f(filename);

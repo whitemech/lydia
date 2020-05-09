@@ -58,6 +58,16 @@ RUN wget http://ftp.us.debian.org/debian/pool/main/b/bison/libbison-dev_3.0.4.df
   sudo dpkg -i libbison-dev_3.0.4.dfsg-1+b1_amd64.deb &&\
   sudo dpkg -i bison_3.0.4.dfsg-1+b1_amd64.deb
 
+RUN wget https://github.com/msoos/cryptominisat/archive/5.7.1.tar.gz &&\
+    tar -xzvf 5.7.1.tar.gz &&\
+    cd cryptominisat-5.7.1 &&\
+    mkdir build &&\
+    cd build &&\
+    cmake .. &&\
+    make &&\
+    sudo make install &&\
+    sudo ldconfig
+
 WORKDIR /build
 
 ENTRYPOINT []

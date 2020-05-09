@@ -15,10 +15,10 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "utils/strings.hpp"
 #include <algorithm>
 #include <iostream>
 #include <iterator>
+#include <lydia/utils/strings.hpp>
 #include <sstream>
 
 namespace whitemech {

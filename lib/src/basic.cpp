@@ -15,8 +15,8 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "basic.hpp"
-#include <utils/print.hpp>
+#include <lydia/basic.hpp>
+#include <lydia/utils/print.hpp>
 
 namespace whitemech::lydia {
 

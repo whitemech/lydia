@@ -14,12 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "catch.hpp"
-#include "nnf.hpp"
+#include <catch.hpp>
 #include <iostream>
-#include <translate.hpp>
-#include <utils/dfa_transform.hpp>
-#include <utils/print.hpp>
+#include <lydia/nnf.hpp>
+#include <lydia/to_dfa/core.hpp>
+#include <lydia/to_dfa/dfa_state.hpp>
+#include <lydia/utils/dfa_transform.hpp>
+#include <lydia/utils/print.hpp>
 
 namespace whitemech::lydia::Test {
 
@@ -39,7 +40,6 @@ TEST_CASE("Translate !(ff & tt)", "[translate]") {
   auto ff_and_tt = std::make_shared<LDLfAnd>(args);
   auto not_and = LDLfNot(ff_and_tt);
   auto formula_name = to_string(*ff_and_tt);
-  // TODO complete.
   auto mgr = CUDD::Cudd();
   auto my_dfa = to_dfa(not_and, mgr);
 
@@ -67,12 +67,9 @@ TEST_CASE("Translate (ff & tt)", "[translate]") {
   dfa_to_graphviz(*my_dfa, "translate_output_" + formula_name + ".svg", "svg");
 
   auto false_ = interpretation{};
-  auto empty_trace = trace{};
-  auto trace_one = trace{false_};
-  auto trace_two = trace{false_, false_};
-  REQUIRE(!my_dfa->accepts(empty_trace));
-  REQUIRE(!my_dfa->accepts(trace_one));
-  REQUIRE(!my_dfa->accepts(trace_two));
+  REQUIRE(!my_dfa->accepts(trace{}));
+  REQUIRE(!my_dfa->accepts(trace{false_}));
+  REQUIRE(!my_dfa->accepts(trace{false_, false_}));
 }
 
 TEST_CASE("Translate <true>tt", "[translate]") {
@@ -408,7 +405,7 @@ TEST_CASE("Translate <a , b>tt", "[translate]") {
   REQUIRE(my_dfa->accepts(trace{a_, b_, e}));
 }
 
-TEST_CASE("Translate {a , b}ff", "[translate]") {
+TEST_CASE("Translate {a,b}ff", "[translate]") {
   std::string formula_name = "[a ; b]ff";
   auto a = std::make_shared<const PropositionalAtom>("a");
   auto b = std::make_shared<const PropositionalAtom>("b");
@@ -526,6 +523,7 @@ TEST_CASE("Translate <a*, b>tt", "[translate]") {
   REQUIRE(!my_dfa->accepts(trace{a_, e}));
   REQUIRE(!my_dfa->accepts(trace{a_, a_}));
   REQUIRE(!my_dfa->accepts(trace{e, e, e}));
+  REQUIRE(my_dfa->accepts(trace{b_}));
   REQUIRE(my_dfa->accepts(trace{ab_}));
   REQUIRE(my_dfa->accepts(trace{a_, b_}));
   REQUIRE(my_dfa->accepts(trace{a_, b_, e}));

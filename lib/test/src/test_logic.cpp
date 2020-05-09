@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "catch.hpp"
-#include "logger.hpp"
-#include "logic.hpp"
+#include <catch.hpp>
 #include <iostream>
-#include <utils/compare.hpp>
+#include <lydia/logger.hpp>
+#include <lydia/logic.hpp>
+#include <lydia/utils/compare.hpp>
 
 namespace whitemech::lydia::Test {
 
