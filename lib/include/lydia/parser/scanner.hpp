@@ -20,8 +20,8 @@
 #include <FlexLexer.h>
 #endif
 
-#include "../../../parser/location.hh"
-#include "../../../parser/parser.tab.hh"
+#include "location.hh"
+#include "parser.tab.hh"
 #include <lydia/parser/parser_stype.h>
 
 namespace whitemech {

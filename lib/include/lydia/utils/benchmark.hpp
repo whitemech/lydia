@@ -16,9 +16,12 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/types.hpp>
 #include <memory>
 #include <type_traits>
+
+#include <lydia/logic.hpp>
+#include <lydia/pl/logic.hpp>
+#include <lydia/types.hpp>
 
 static void escape(void *p) { asm volatile("" : : "g"(p) : "memory"); }
 
@@ -30,10 +33,10 @@ static const int BENCH_CUDD_CACHE_SLOTS = CUDD_CACHE_SLOTS;
 namespace whitemech::lydia {
 
 // function generator:
-std::string propositional(int i) { return "p_" + std::to_string(i); }
+inline std::string propositional(int i) { return "p_" + std::to_string(i); }
 
 // class generator:
-struct c_unique {
+static struct c_unique {
   int current;
   c_unique() { current = 0; }
   std::string operator()() { return propositional(current++); }
