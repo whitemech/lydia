@@ -19,6 +19,20 @@
 #include <iostream>
 #include <istream>
 #include <lydia/parser/driver.cpp>
+#include <lydia/to_dfa/core.hpp>
+#include <lydia/utils/dfa_transform.hpp>
+
+std::string dump_formula(const std::string &filename) {
+  std::ifstream f(filename);
+  std::string result;
+  if (f) {
+    std::ostringstream ss;
+    ss << f.rdbuf(); // reading data
+    result = ss.str();
+  }
+  f.close();
+  return result;
+}
 
 int main(int argc, char **argv) {
   CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
@@ -27,23 +41,42 @@ int main(int argc, char **argv) {
   CLI::Option *str_opt =
       app.add_option("-l,--ldlf", ldlf_formula, "An LDLf formula.");
 
-  // TODO add support for reading from a file .ldlf
-  //  std::string filename = "formula";
-  //  CLI::Option *file_opt = app.add_option("-f,--file", filename, "A file
-  //  containing the LDLf formula.");
-  //
-  //  file_opt->excludes(str_opt);
-  //  str_opt->excludes(file_opt);
+  std::string filename;
+  CLI::Option *file_opt = app.add_option(
+      "-f,--file", filename, "A .ldlf file containing an LDLf formula.");
+
+  // you can either enter the formula inline or within a file, not both.
+  file_opt->excludes(str_opt);
+  str_opt->excludes(file_opt);
+
+  std::string graphviz_path;
+  CLI::Option *dot_option =
+      app.add_option("-g, --graphviz", graphviz_path,
+                     "Output the automaton in Graphviz format.")
+          ->check(CLI::NonexistentPath);
+
+  // TODO add possibility to print in HOA format in future work
+  //  bool hoa_flag = false;
+  //  app.add_option("-a, --hoa", hoa_flag, "Output the
+  //  automaton in HOA format.");
 
   CLI11_PARSE(app, argc, argv);
 
   auto driver = whitemech::lydia::Driver();
+  auto mgr = CUDD::Cudd();
 
-  if (str_opt) {
+  if (!str_opt->empty()) {
     std::stringstream ldlf_formula_stream(ldlf_formula);
     driver.parse(ldlf_formula_stream);
-    driver.print(std::cout);
+  } else if (!file_opt->empty()) {
+    std::string formula = dump_formula(filename);
+    std::stringstream ldlf_formula_stream(formula);
+    driver.parse(ldlf_formula_stream);
   }
+
+  auto my_dfa = to_dfa(*driver.result, mgr);
+  if (!dot_option->empty())
+    dfa_to_graphviz(*my_dfa, graphviz_path + "-lydia.svg", "svg");
 
   return 0;
 }

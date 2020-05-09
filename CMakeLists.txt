@@ -84,3 +84,6 @@ add_subdirectory (lib)
 add_subdirectory (app)
 
 enable_testing ()
+
+install(TARGETS lydia-bin
+        DESTINATION ${CMAKE_INSTALL_BINDIR})
