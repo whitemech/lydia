@@ -20,8 +20,8 @@
 #include <istream>
 #include <string>
 
+#include "../../../parser/parser.tab.hh"
 #include <lydia/logic.hpp>
-#include <lydia/parser/parser.tab.hh>
 #include <lydia/parser/scanner.hpp>
 #include <lydia/pl/logic.hpp>
 #include <lydia/symbol.hpp>

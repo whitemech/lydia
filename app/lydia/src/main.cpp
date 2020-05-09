@@ -16,9 +16,9 @@
  */
 
 #include "CLI/CLI.hpp"
-#include "lydia/parser/driver.cpp"
 #include <iostream>
 #include <istream>
+#include <lydia/parser/driver.cpp>
 
 int main(int argc, char **argv) {
   CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
