@@ -256,7 +256,7 @@ prop_ptr and_or(const set_prop_formulas &s, const bool &op_x_notx) {
     return *(args.begin());
   else if (args.empty())
     return boolean_prop(not op_x_notx);
-  return std::make_shared<caller>(s);
+  return std::make_shared<caller>(args);
 }
 
 atom_ptr prop_atom(const Symbol &s) {
