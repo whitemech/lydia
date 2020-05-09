@@ -73,7 +73,7 @@ using token = whitemech::lydia::Parser::token;
                                loc->lines();
                                return token::NEWLINE;
                             }
-\s+                         { ; }
+[\t\r\n ]+                  { ; }
 
 %%
 
