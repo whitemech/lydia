@@ -18,6 +18,7 @@
 #include <benchmark/benchmark.h>
 #include <lydia/logic.hpp>
 #include <lydia/to_dfa/core.hpp>
+#include <lydia/to_dfa/strategies/sat.hpp>
 #include <lydia/utils/benchmark.hpp>
 #include <random>
 
@@ -52,27 +53,57 @@ static void BM_translate_diamond(benchmark::State &state) {
 }
 BENCHMARK(BM_translate_diamond);
 
-static void BM_translate_sequence(benchmark::State &state) {
+static void BM_translate_sequence_of_atoms(benchmark::State &state) {
   auto mgr =
       CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
+  auto sat_strategy = SATStrategy(mgr, 20);
+  auto translator = Translator(sat_strategy);
   auto tt = boolean(true);
   for (auto _ : state) {
     auto N = state.range(0);
     auto regex = intitialize_sequence_regex(N);
     auto diamond_formula = std::make_shared<LDLfDiamond>(regex, tt);
-    auto my_dfa = to_dfa(*diamond_formula, mgr);
+    auto my_dfa = translator.to_dfa(*diamond_formula);
     escape(&my_dfa);
     (void)my_dfa;
   }
 }
 // clang-format off
-BENCHMARK(BM_translate_sequence)->Arg(2)->Arg(3)->Arg(4)
-                                ->Arg(5)->Arg(6)->Arg(7)
-                                ->Arg(8)->Arg(9)->Arg(10)
-                                ->Arg(11)->Arg(12)->Arg(13)
-                                ->Unit(benchmark::kMillisecond)
-                                ->Repetitions(5)
-                                ->DisplayAggregatesOnly(true);
+BENCHMARK(BM_translate_sequence_of_atoms)
+  ->Arg(5)->Arg(10)->Arg(15)
+  ->Arg(20)->Arg(25)->Arg(30)
+  ->Arg(40)->Arg(80)->Arg(100)
+  ->Arg(200)->Arg(500)->Arg(1000)
+  ->Unit(benchmark::kMillisecond)
+  ->Repetitions(5)
+  ->DisplayAggregatesOnly(true);
+
+// clang-format on
+
+static void BM_translate_sequence_of_stars_of_atoms(benchmark::State &state) {
+  auto mgr =
+      CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
+  auto sat_strategy = SATStrategy(mgr, 20);
+  auto translator = Translator(sat_strategy);
+  auto tt = boolean(true);
+  for (auto _ : state) {
+    auto N = state.range(0);
+    auto regex = intitialize_sequence_regex(N);
+    auto diamond_formula = std::make_shared<LDLfDiamond>(regex, tt);
+    auto my_dfa = translator.to_dfa(*diamond_formula);
+    escape(&my_dfa);
+    (void)my_dfa;
+  }
+}
+// clang-format off
+BENCHMARK(BM_translate_sequence_of_stars_of_atoms)
+  ->Arg(5)->Arg(10)->Arg(15)
+  ->Arg(20)->Arg(25)->Arg(30)
+  ->Arg(40)->Arg(80)->Arg(100)
+  ->Arg(200)->Arg(500)->Arg(1000)
+  ->Unit(benchmark::kMillisecond)
+  ->Repetitions(5)
+  ->DisplayAggregatesOnly(true);
 // clang-format on
 
 static void BM_translate_union(benchmark::State &state) {
@@ -89,13 +120,14 @@ static void BM_translate_union(benchmark::State &state) {
   }
 }
 // clang-format off
-BENCHMARK(BM_translate_union)->Arg(2)->Arg(3)->Arg(4)
-                             ->Arg(5)->Arg(6)->Arg(7)
-                             ->Arg(8)->Arg(9)->Arg(10)
-                             ->Arg(11)->Arg(12)->Arg(13)
-                             ->Unit(benchmark::kMillisecond)
-                             ->Repetitions(5)
-                             ->DisplayAggregatesOnly(true);
+BENCHMARK(BM_translate_union)
+->Arg(5)->Arg(10)->Arg(15)
+->Arg(20)->Arg(25)->Arg(30)
+->Arg(40)->Arg(80)->Arg(100)
+->Arg(200)->Arg(500)->Arg(1000)
+->Unit(benchmark::kMillisecond)
+->Repetitions(5)
+->DisplayAggregatesOnly(true);
 // clang-format on
 
 } // namespace whitemech::lydia::Benchmark
