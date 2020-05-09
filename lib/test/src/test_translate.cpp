@@ -523,6 +523,7 @@ TEST_CASE("Translate <a*, b>tt", "[translate]") {
   REQUIRE(!my_dfa->accepts(trace{a_, e}));
   REQUIRE(!my_dfa->accepts(trace{a_, a_}));
   REQUIRE(!my_dfa->accepts(trace{e, e, e}));
+  REQUIRE(my_dfa->accepts(trace{b_}));
   REQUIRE(my_dfa->accepts(trace{ab_}));
   REQUIRE(my_dfa->accepts(trace{a_, b_}));
   REQUIRE(my_dfa->accepts(trace{a_, b_, e}));

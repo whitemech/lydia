@@ -19,6 +19,7 @@
 #include <lydia/dfa.hpp>
 #include <lydia/nnf.hpp>
 #include <lydia/pl/logic.hpp>
+#include <lydia/pl/replace.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/dfa_state.hpp>
 #include <lydia/utils/misc.hpp>
@@ -43,6 +44,9 @@ public:
   next_transitions(const DFAState &state);
   std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
   next_transitions(const NFAState &state);
+
+  static std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
+  next_transitions_from_delta_formula(const PropositionalFormula &f);
 };
 
 } // namespace lydia

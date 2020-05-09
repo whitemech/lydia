@@ -57,7 +57,15 @@ std::shared_ptr<dfa> SATStrategy::to_dfa(const LDLfFormula &formula) {
     auto current_state_index = pair.second;
     vec_dfa_states next_states;
     std::vector<set_atoms_ptr> symbols;
+
     const auto &next_transitions = this->next_transitions(*current_state);
+    // push this inside "next_transitions"
+    set_atoms_ptr all_symbols_current_transition;
+    for (const auto &symbol_state : next_transitions) {
+      all_symbols_current_transition.insert(symbol_state.first.begin(),
+                                            symbol_state.first.end());
+    }
+
     for (const auto &symbol_state : next_transitions) {
       const auto &symbol = symbol_state.first;
       const auto &next_state = symbol_state.second;
@@ -74,10 +82,10 @@ std::shared_ptr<dfa> SATStrategy::to_dfa(const LDLfFormula &formula) {
         next_state_index = discovered[next_state];
       }
 
-      interpretation_set x{};
-      for (const atom_ptr &atom : symbol)
-        x.insert(atom2index[atom]);
-      automaton->add_transition(current_state_index, x, next_state_index, true);
+      interpretation_map x;
+      for (const atom_ptr &atom : all_symbols_current_transition)
+        x[atom2index[atom]] = symbol.find(atom) != symbol.end();
+      automaton->add_transition(current_state_index, x, next_state_index);
     }
   }
 
@@ -111,34 +119,53 @@ SATStrategy::next_transitions(const DFAState &state) {
 
 std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
 SATStrategy::next_transitions(const NFAState &state) {
-  std::vector<std::pair<set_atoms_ptr, set_nfa_states>> result;
-  std::map<set_atoms_ptr, set_nfa_states> symbol2nfastates;
   set_prop_formulas setPropFormulas;
-  set_nfa_states v;
   for (const auto &f : state.formulas) {
     const auto &delta_formula = delta_symbolic(*f, false);
     setPropFormulas.insert(delta_formula);
   }
-  auto and_ = to_cnf(*logical_and(setPropFormulas));
-  const auto &all_minimal_models = all_models(*and_);
-  for (const auto &model : all_minimal_models) {
-    set_nfa_states nfa_states;
-    set_formulas quoted_formulas;
-    set_atoms_ptr symbol;
-    for (const atom_ptr &ptr : model) {
-      if (is_a<QuotedFormula>(*ptr->symbol))
-        quoted_formulas.insert(
-            dynamic_cast<const QuotedFormula &>(*ptr->symbol).formula);
-      else
-        symbol.insert(ptr);
-    }
+  // Don't do CNF, o/w the replacement does not work
+  auto and_ = logical_and(setPropFormulas);
+  return this->next_transitions_from_delta_formula(*and_);
+}
 
-    auto successor = symbol2nfastates.find(symbol);
-    if (successor == symbol2nfastates.end()) {
-      symbol2nfastates[symbol] = set_nfa_states();
+std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
+SATStrategy::next_transitions_from_delta_formula(
+    const PropositionalFormula &f) {
+  std::vector<std::pair<set_atoms_ptr, set_nfa_states>> result;
+  std::map<set_atoms_ptr, set_nfa_states> symbol2nfastates;
+  set_formulas quoted_formulas;
+  set_atoms_ptr propositionals;
+  auto atoms = find_atoms(f);
+  for (const atom_ptr &ptr : atoms) {
+    if (is_a<QuotedFormula>(*ptr->symbol))
+      quoted_formulas.insert(
+          dynamic_cast<const QuotedFormula &>(*ptr->symbol).formula);
+    else
+      propositionals.insert(ptr);
+  }
+
+  auto symbols = powerset(propositionals);
+  for (const auto &symbol : symbols) {
+    std::map<prop_ptr, prop_ptr, SharedComparator> replacements;
+    for (const auto &x : propositionals) {
+      replacements[x] = boolean_prop(!(symbol.end() == symbol.find(x)));
     }
-    symbol2nfastates[symbol].insert(
-        std::make_shared<NFAState>(quoted_formulas));
+    set_nfa_states nfa_states;
+    symbol2nfastates[symbol] = set_nfa_states();
+
+    auto replaced_delta = replace(replacements, f);
+    const auto &all_minimal_models = all_models(*replaced_delta);
+    for (const auto &model : all_minimal_models) {
+      set_formulas current_formulas;
+      for (const auto &current_quoted_formula : model) {
+        current_formulas.insert(
+            dynamic_cast<const QuotedFormula &>(*current_quoted_formula->symbol)
+                .formula);
+      }
+      symbol2nfastates[symbol].insert(
+          std::make_shared<NFAState>(current_formulas));
+    }
   }
 
   result.reserve(symbol2nfastates.size());

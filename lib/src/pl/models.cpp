@@ -35,8 +35,8 @@ std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f) {
 }
 
 std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f) {
+  // TODO
   auto models = all_models(f);
-  std::vector<set_atoms_ptr> result;
   return models;
 }
 
