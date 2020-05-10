@@ -14,12 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include "utils/to_dfa.hpp"
 #include <catch.hpp>
 #include <lydia/symbol.hpp>
 #include <lydia/types.hpp>
 #include <lydia/utils/compare.hpp>
 #include <lydia/utils/dfa_transform.hpp>
 #include <lydia/utils/misc.hpp>
+#include <powerset.hpp>
+#include <product.hpp>
 #include <set>
 
 namespace whitemech::lydia::Test {
@@ -94,23 +97,24 @@ struct cmp_set_of_ptr {
     return unified_compare(a, b);
   }
 };
-TEST_CASE("Test map of sets", "[dfa]") {
-  whitemech::lydia::Logger::level(LogLevel::debug);
-  auto ptr1 = std::make_shared<Symbol>("hello");
-  auto ptr2 = std::make_shared<Symbol>("world");
-  auto ptr3 = std::make_shared<Symbol>("hello");
 
-  auto s1 = std::set<std::shared_ptr<Symbol>, SharedComparator>({ptr1, ptr2});
-  auto s2 = std::set<std::shared_ptr<Symbol>, SharedComparator>({ptr3, ptr2});
+TEST_CASE("Test cppitertools", "[cppitertools]") {
+  using TP = std::tuple<char, char, char>;
+  using ResType = const std::vector<TP>;
+  std::vector<int> full_interpretation(3);
+  std::iota(full_interpretation.begin(), full_interpretation.end(), 0);
+  const auto &my_powerset = iter::powerset(full_interpretation);
+  std::vector<std::vector<int>> all_interpretations;
+  for (auto &&st : my_powerset) {
+    all_interpretations.emplace_back(std::begin(st), std::end(st));
+  }
 
-  std::map<std::set<std::shared_ptr<Symbol>, SharedComparator>, int,
-           cmp_set_of_ptr>
-      x;
-  x.insert(std::make_pair<>(s1, 1));
-  x.insert(std::make_pair<>(s1, 2));
-  x.insert(std::make_pair<>(s2, 3));
-  bool test = x.find(s2) == x.end();
-  std::cout << test << std::endl;
+  for (const auto trace_ : iter::product<3>(all_interpretations)) {
+    std::vector<std::vector<int>> x = to_vector(trace_);
+    CHECK(true);
+  }
+
+  CHECK(true);
 }
 
 } // namespace whitemech::lydia::Test

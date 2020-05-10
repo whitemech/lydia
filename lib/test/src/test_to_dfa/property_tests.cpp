@@ -14,25 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include "../data/formulas.hpp"
+#include "../utils/to_dfa.hpp"
+#include <catch.hpp>
 
-#include "acceptance_test.hpp"
+namespace whitemech::lydia::Test {
 
-namespace whitemech {
-namespace lydia {
-
-bool verify(const dfa &automaton, const std::vector<std::string> &trace_,
-            bool expected) {
-  trace t;
-  t.reserve(trace_.size());
-  for (const auto &s : trace_) {
-    interpretation p;
-    for (int i = s.size() - 1; i >= 0; --i) {
-      p.push_back(s[i] - 48);
+TEST_CASE("Duality", "[to_dfa]") {
+  CUDD::Cudd mgr1;
+  CUDD::Cudd mgr2;
+  for (const auto &formula : FORMULAS) {
+    SECTION("Test duality of " + formula) {
+      dfa_ptr automaton_1 = to_dfa_from_formula_string(formula, mgr1);
+      dfa_ptr automaton_2 =
+          to_dfa_from_formula_string("!(" + formula + ")", mgr2);
+      REQUIRE(compare<5>(*automaton_1, *automaton_2, automaton_1->nb_variables,
+                         not_equal));
     }
-    t.push_back(p);
   }
-  return automaton.accepts(t) == expected;
 }
-
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia::Test

@@ -16,3 +16,6 @@
 [submodule "third_party/google/benchmark"]
 	path = third_party/google/benchmark
 	url = https://github.com/google/benchmark.git
+[submodule "third_party/cppitertools"]
+	path = third_party/cppitertools
+	url = https://github.com/ryanhaining/cppitertools.git
