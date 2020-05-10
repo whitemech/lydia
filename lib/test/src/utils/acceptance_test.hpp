@@ -1,3 +1,4 @@
+#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -14,6 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this
-                          // in one cpp file
-#include <catch.hpp>
+
+#include <bitset>
+#include <lydia/dfa.hpp>
+#include <lydia/types.hpp>
+
+namespace whitemech {
+namespace lydia {
+
+bool verify(const dfa &automaton, const std::vector<std::string> &trace_,
+            bool expected);
+}
+} // namespace whitemech

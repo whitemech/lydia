@@ -1,3 +1,4 @@
+#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -15,20 +16,29 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cuddObj.hh>
 #include <lydia/dfa.hpp>
+#include <lydia/logic.hpp>
+#include <lydia/parser/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
-#include <lydia/to_dfa/strategies/naive.hpp>
-#include <lydia/to_dfa/strategies/sat.hpp>
-#include <memory>
+#include <sstream>
 
 namespace whitemech {
 namespace lydia {
 
-std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula, const CUDD::Cudd &mgr) {
-  auto s = NaiveStrategy(mgr);
-  //  auto s = SATStrategy(mgr);
-  auto t = Translator(s);
-  return t.to_dfa(formula);
+static dfa_ptr to_dfa_from_formula_string(const std::string &f,
+                                          const CUDD::Cudd &mgr) {
+  auto driver = Driver();
+  std::stringstream ldlf_formula_stream(f);
+  driver.parse(ldlf_formula_stream);
+  const auto &formula = *driver.result;
+  return to_dfa(formula, mgr);
 }
+
+static void print_dfa(const dfa &automaton, const std::string &name,
+                      const std::string &format = "svg") {
+  dfa_to_graphviz(automaton, name + format, format);
+}
+
 } // namespace lydia
 } // namespace whitemech

@@ -30,10 +30,11 @@ set (TEST_SRC_PATH  "${TEST_MODULE_PATH}/src" )
 include_directories (${LIBRARY_INCLUDE_PATH} ${TEST_THIRD_PARTY_INCLUDE_PATH})
 
 #set test sources
-file (GLOB TEST_SOURCE_FILES "${TEST_SRC_PATH}/*.cpp")
+file (GLOB_RECURSE TEST_SOURCE_FILES "${TEST_SRC_PATH}/*.cpp")
+file (GLOB_RECURSE TEST_HEADER_FILES "${TEST_SRC_PATH}/*.hpp")
 
 #set target executable
-add_executable (${TEST_APP_NAME} ${TEST_SOURCE_FILES})
+add_executable (${TEST_APP_NAME} ${TEST_SOURCE_FILES} ${TEST_HEADER_FILES})
 
 #add the library
 target_link_libraries (${TEST_APP_NAME} ${LIB_NAME} Threads::Threads ${CUDD_LIBRARIES})

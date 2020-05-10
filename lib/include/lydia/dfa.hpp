@@ -139,7 +139,7 @@ public:
    *
    * @return true if the word is accepted, false otherwise.
    */
-  bool accepts(const trace &word);
+  bool accepts(const trace &word) const;
 
   int get_successor(int state, const interpretation &symbol) const;
   int get_successor(int state, const interpretation_set &symbol) const;

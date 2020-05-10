@@ -15,6 +15,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <catch.hpp>
+#include <lydia/symbol.hpp>
+#include <lydia/types.hpp>
+#include <lydia/utils/compare.hpp>
 #include <lydia/utils/dfa_transform.hpp>
 #include <lydia/utils/misc.hpp>
 #include <set>
@@ -83,6 +86,31 @@ TEST_CASE("Test bdd2dot", "[dfa]") {
   auto my_dfa = dfa::read_from_file(
       "../../../lib/test/src/data/mona/mona_example.dfa", mgr);
   dfa_to_bdds(my_dfa, output_dir_path);
+}
+
+struct cmp_set_of_ptr {
+  template <typename T, typename U>
+  bool operator()(const std::set<T, U> &a, const std::set<T, U> &b) const {
+    return unified_compare(a, b);
+  }
+};
+TEST_CASE("Test map of sets", "[dfa]") {
+  whitemech::lydia::Logger::level(LogLevel::debug);
+  auto ptr1 = std::make_shared<Symbol>("hello");
+  auto ptr2 = std::make_shared<Symbol>("world");
+  auto ptr3 = std::make_shared<Symbol>("hello");
+
+  auto s1 = std::set<std::shared_ptr<Symbol>, SharedComparator>({ptr1, ptr2});
+  auto s2 = std::set<std::shared_ptr<Symbol>, SharedComparator>({ptr3, ptr2});
+
+  std::map<std::set<std::shared_ptr<Symbol>, SharedComparator>, int,
+           cmp_set_of_ptr>
+      x;
+  x.insert(std::make_pair<>(s1, 1));
+  x.insert(std::make_pair<>(s1, 2));
+  x.insert(std::make_pair<>(s2, 3));
+  bool test = x.find(s2) == x.end();
+  std::cout << test << std::endl;
 }
 
 } // namespace whitemech::lydia::Test

@@ -22,6 +22,13 @@
 namespace whitemech {
 namespace lydia {
 
+struct cmp_set_of_ptr {
+  template <typename T, typename U>
+  bool operator()(const std::set<T, U> &a, const std::set<T, U> &b) const {
+    return unified_compare(a, b) < 0;
+  }
+};
+
 std::shared_ptr<dfa> SATStrategy::to_dfa(const LDLfFormula &formula) {
   //  build initial state of the DFA.
   auto formula_nnf = to_nnf(formula);
@@ -95,7 +102,7 @@ std::shared_ptr<dfa> SATStrategy::to_dfa(const LDLfFormula &formula) {
 std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>>
 SATStrategy::next_transitions(const DFAState &state) {
   std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>> result;
-  std::map<set_atoms_ptr, set_nfa_states> symbol2nfastates;
+  std::map<set_atoms_ptr, set_nfa_states, cmp_set_of_ptr> symbol2nfastates;
   set_dfa_states discovered;
   set_nfa_states nfa_states;
   set_atoms_ptr symbol;
@@ -111,6 +118,7 @@ SATStrategy::next_transitions(const DFAState &state) {
     }
   }
 
+  result.reserve(symbol2nfastates.size());
   for (const auto &pair : symbol2nfastates) {
     result.emplace_back(pair.first, std::make_shared<DFAState>(pair.second));
   }
@@ -133,7 +141,7 @@ std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
 SATStrategy::next_transitions_from_delta_formula(
     const PropositionalFormula &f) {
   std::vector<std::pair<set_atoms_ptr, set_nfa_states>> result;
-  std::map<set_atoms_ptr, set_nfa_states> symbol2nfastates;
+  std::map<set_atoms_ptr, set_nfa_states, cmp_set_of_ptr> symbol2nfastates;
   set_formulas quoted_formulas;
   set_atoms_ptr propositionals;
   auto atoms = find_atoms(f);

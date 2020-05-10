@@ -14,6 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this
-                          // in one cpp file
-#include <catch.hpp>
+
+#include "acceptance_test.hpp"
+
+namespace whitemech {
+namespace lydia {
+
+bool verify(const dfa &automaton, const std::vector<std::string> &trace_,
+            bool expected) {
+  trace t;
+  t.reserve(trace_.size());
+  for (const auto &s : trace_) {
+    interpretation p;
+    for (int i = s.size() - 1; i >= 0; --i) {
+      p.push_back(s[i] - 48);
+    }
+    t.push_back(p);
+  }
+  return automaton.accepts(t) == expected;
+}
+
+} // namespace lydia
+} // namespace whitemech
