@@ -483,5 +483,59 @@ std::shared_ptr<const QuotedFormula> quote(const ldlf_ptr &p) {
   return std::make_shared<QuotedFormula>(p);
 }
 
+template <typename caller>
+ldlf_ptr and_or(const set_formulas &s, const bool &op_x_notx) {
+  set_formulas args;
+  for (auto &a : s) {
+    if (is_a<LDLfBooleanAtom>(*a)) {
+      // handle the case when a subformula is tt
+      if (a->is_equal(LDLfBooleanAtom(true))) {
+        if (op_x_notx)
+          return a;
+        else
+          continue;
+      }
+      // handle the case when a subformula is ff
+      else {
+        assert(a->is_equal(LDLfBooleanAtom(false)));
+        if (!op_x_notx)
+          return a;
+        else
+          continue;
+      }
+    }
+    // handle the case when a subformula is of the same type of the caller
+    else if (is_a<caller>(*a)) {
+      const auto &to_insert = dynamic_cast<const caller &>(*a);
+      const auto &container = to_insert.get_container();
+      args.insert(container.begin(), container.end());
+      continue;
+    } else {
+      args.insert(a);
+    }
+  }
+  for (auto &a : args) {
+    if (args.find(ldlf_logical_not(a)) != args.end())
+      return boolean(op_x_notx);
+  }
+  if (args.size() == 1)
+    return *(args.begin());
+  else if (args.empty())
+    return boolean(not op_x_notx);
+  return std::make_shared<caller>(args);
+}
+
+ldlf_ptr ldlf_logical_and(const set_formulas &s) {
+  return and_or<LDLfAnd>(s, false);
+}
+
+ldlf_ptr ldlf_logical_or(const set_formulas &s) {
+  return and_or<LDLfOr>(s, true);
+}
+
+ldlf_ptr ldlf_logical_not(const ldlf_ptr &f) {
+  return f->logical_not();
+}
+
 } // namespace lydia
 } // namespace whitemech

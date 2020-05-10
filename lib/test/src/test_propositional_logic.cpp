@@ -92,7 +92,7 @@ TEST_CASE("Simple logical operation", "[pl/logic]") {
   }
 }
 
-TEST_CASE("Logical and", "[logic]") {
+TEST_CASE("Logical and", "[pl/logic]") {
   auto ptr_a = std::make_shared<PropositionalAtom>("a");
   auto ptr_b = std::make_shared<PropositionalAtom>("b");
   auto ptr_c = std::make_shared<PropositionalAtom>("c");
@@ -138,7 +138,7 @@ TEST_CASE("Logical and", "[logic]") {
   }
 }
 
-TEST_CASE("Logical or", "[logic]") {
+TEST_CASE("Logical or", "[pl/logic]") {
   auto ptr_a = std::make_shared<PropositionalAtom>("a");
   auto ptr_b = std::make_shared<PropositionalAtom>("b");
   auto ptr_c = std::make_shared<PropositionalAtom>("c");

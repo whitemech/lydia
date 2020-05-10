@@ -30,7 +30,7 @@ class RegExp;
 
 class LDLfFormula : public Basic {
 public:
-  virtual std::shared_ptr<const LDLfFormula> logical_not() const = 0;
+  virtual ldlf_ptr logical_not() const = 0;
 };
 
 // Temporal True and False (tt and ff)
@@ -49,7 +49,7 @@ public:
   virtual vec_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
-  std::shared_ptr<const LDLfFormula> logical_not() const override;
+  ldlf_ptr logical_not() const override;
 };
 
 extern const std::shared_ptr<const LDLfBooleanAtom> boolTrue;
@@ -73,7 +73,7 @@ public:
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
   const set_formulas &get_container() const;
-  std::shared_ptr<const LDLfFormula> logical_not() const override;
+  ldlf_ptr logical_not() const override;
 };
 
 class LDLfOr : public LDLfFormula {
@@ -90,7 +90,7 @@ public:
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
   const set_formulas &get_container() const;
-  std::shared_ptr<const LDLfFormula> logical_not() const override;
+  ldlf_ptr logical_not() const override;
 };
 
 class LDLfNot : public LDLfFormula {
@@ -107,7 +107,7 @@ public:
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
   std::shared_ptr<const LDLfFormula> get_arg() const;
-  std::shared_ptr<const LDLfFormula> logical_not() const override;
+  ldlf_ptr logical_not() const override;
 };
 
 class LDLfTemporal : public LDLfFormula {
@@ -131,7 +131,7 @@ public:
   void accept(Visitor &v) const override;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
-  std::shared_ptr<const LDLfFormula> logical_not() const override;
+  ldlf_ptr logical_not() const override;
 };
 
 class LDLfBox : public LDLfTemporal {
@@ -142,7 +142,7 @@ public:
   void accept(Visitor &v) const override;
   bool is_equal(const Basic &o) const override;
   int compare(const Basic &o) const override;
-  std::shared_ptr<const LDLfFormula> logical_not() const override;
+  ldlf_ptr logical_not() const override;
 };
 
 class RegExp : public Basic {};
@@ -282,6 +282,10 @@ public:
 };
 
 std::shared_ptr<const QuotedFormula> quote(const ldlf_ptr &p);
+
+ldlf_ptr ldlf_logical_and(const set_formulas &s);
+ldlf_ptr ldlf_logical_or(const set_formulas &s);
+ldlf_ptr ldlf_logical_not(const ldlf_ptr &f);
 
 } // namespace lydia
 } // namespace whitemech

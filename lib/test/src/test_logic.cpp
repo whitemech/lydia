@@ -83,7 +83,7 @@ TEST_CASE("LDLfNot", "[logic]") {
   }
 }
 
-TEST_CASE("And", "[logic]") {
+TEST_CASE("LDLfAnd", "[logic]") {
   set_formulas and_1_args = {};
   set_formulas and_2_args = set_formulas();
   set_formulas and_3_args = {boolean(true), boolean(true), boolean(false)};
@@ -153,6 +153,141 @@ TEST_CASE("Logical not", "[logic]") {
     REQUIRE(actual_and->is_equal(*expected_and));
   }
 }
+
+TEST_CASE("LDLf simple logical operation", "[logic]") {
+  auto tt = boolean(true);
+  auto ff = boolean(false);
+
+  SECTION("tt & ff = false") {
+    auto tt_and_ff = ldlf_logical_and({tt, ff});
+    REQUIRE(tt_and_ff == ff);
+  }
+  SECTION("tt | ff = tt") {
+    auto tt_or_ff = ldlf_logical_or({tt, ff});
+    REQUIRE(tt_or_ff == tt);
+  }
+  SECTION("and(<p>tt) = <p>tt") {
+    auto p = prop_atom("p");
+    auto ptr_diam_p_tt = std::make_shared<LDLfDiamond>(std::make_shared<PropositionalRegExp>(p) , tt);
+    auto and_diam_p_tt = ldlf_logical_and({ptr_diam_p_tt});
+    REQUIRE(and_diam_p_tt == ptr_diam_p_tt);
+  }
+  SECTION("<p>tt & ~(<p>tt) = ff") {
+    auto p = prop_atom("p");
+    auto ptr_diam_p_tt = std::make_shared<LDLfDiamond>(std::make_shared<PropositionalRegExp>(p) , tt);
+    auto ptr_not_diam_p_tt = ptr_diam_p_tt->logical_not();
+    auto and_diam_p_tt = ldlf_logical_and({ptr_diam_p_tt, ptr_not_diam_p_tt});
+    REQUIRE(and_diam_p_tt == ff);
+  }
+
+//  SECTION("p | ~p = true") {
+//    auto p = prop_atom("p");
+//    auto not_p = p->logical_not();
+//    auto or_p = logical_or({p, not_p});
+//    REQUIRE(or_p == t);
+//  }
+//
+//  SECTION("~(p & q) = ~p | ~q") {
+//    auto p = prop_atom("p");
+//    auto q = prop_atom("q");
+//    auto not_p = p->logical_not();
+//    auto not_q = q->logical_not();
+//    auto and_pq = logical_and({p, q});
+//    auto expected = logical_or({not_p, not_q});
+//    REQUIRE(and_pq->logical_not()->is_equal(*expected));
+//  }
+}
+
+//TEST_CASE("Logical and", "[logic]") {
+//  auto ptr_a = std::make_shared<PropositionalAtom>("a");
+//  auto ptr_b = std::make_shared<PropositionalAtom>("b");
+//  auto ptr_c = std::make_shared<PropositionalAtom>("c");
+//  auto ptr_true = std::make_shared<PropositionalTrue>();
+//  auto ptr_false = std::make_shared<PropositionalFalse>();
+//
+//  set_prop_formulas a_b = set_prop_formulas({ptr_a, ptr_b});
+//  auto ptr_and_a_b = std::make_shared<PropositionalAnd>(a_b);
+//  set_prop_formulas b_c = set_prop_formulas({ptr_b, ptr_c});
+//  auto ptr_and_b_c = std::make_shared<PropositionalAnd>(b_c);
+//
+//  SECTION("(a & b) & c == a & b & c") {
+//    set_prop_formulas and_ab_c = set_prop_formulas({ptr_and_a_b, ptr_c});
+//    auto ptr_and_ab_c = std::make_shared<PropositionalAnd>(and_ab_c);
+//    set_prop_formulas exp_and = set_prop_formulas({ptr_a, ptr_b, ptr_c});
+//    auto exp_flat_and = std::make_shared<PropositionalAnd>(exp_and);
+//    auto flattened_and = logical_and(ptr_and_ab_c->get_container());
+//    REQUIRE(*flattened_and == *exp_flat_and);
+//  }
+//  SECTION("a & (b & c) == a & b & c") {
+//    set_prop_formulas and_a_bc = set_prop_formulas({ptr_a, ptr_and_b_c});
+//    auto ptr_and_a_bc = std::make_shared<PropositionalAnd>(and_a_bc);
+//    set_prop_formulas exp_and = set_prop_formulas({ptr_a, ptr_b, ptr_c});
+//    auto exp_flat_and = std::make_shared<PropositionalAnd>(exp_and);
+//    auto flattened_and = logical_and(ptr_and_a_bc->get_container());
+//    REQUIRE(*flattened_and == *exp_flat_and);
+//  }
+//  SECTION("a & b & false == false") {
+//    set_prop_formulas and_a_b_false =
+//        set_prop_formulas({ptr_a, ptr_b, ptr_false});
+//    auto ptr_and_a_b_false = std::make_shared<PropositionalAnd>(and_a_b_false);
+//    auto flattened_and = logical_and(ptr_and_a_b_false->get_container());
+//    REQUIRE(*flattened_and == *ptr_false);
+//  }
+//  SECTION("a & true & c == a & c") {
+//    set_prop_formulas and_a_true_c =
+//        set_prop_formulas({ptr_a, ptr_true, ptr_c});
+//    auto ptr_and_a_true_c = std::make_shared<PropositionalAnd>(and_a_true_c);
+//    set_prop_formulas exp_and = set_prop_formulas({ptr_a, ptr_c});
+//    auto exp_flat_and = std::make_shared<PropositionalAnd>(exp_and);
+//    auto flattened_and = logical_and(ptr_and_a_true_c->get_container());
+//    REQUIRE(*flattened_and == *exp_flat_and);
+//  }
+//}
+//
+//TEST_CASE("Logical or", "[logic]") {
+//  auto ptr_a = std::make_shared<PropositionalAtom>("a");
+//  auto ptr_b = std::make_shared<PropositionalAtom>("b");
+//  auto ptr_c = std::make_shared<PropositionalAtom>("c");
+//  auto ptr_true = std::make_shared<PropositionalTrue>();
+//  auto ptr_false = std::make_shared<PropositionalFalse>();
+//
+//  set_prop_formulas a_b = set_prop_formulas({ptr_a, ptr_b});
+//  auto ptr_or_a_b = std::make_shared<PropositionalOr>(a_b);
+//  set_prop_formulas b_c = set_prop_formulas({ptr_b, ptr_c});
+//  auto ptr_or_b_c = std::make_shared<PropositionalOr>(b_c);
+//
+//  SECTION("(a | b) | c == a | b | c") {
+//    set_prop_formulas or_ab_c = set_prop_formulas({ptr_or_a_b, ptr_c});
+//    auto ptr_or_ab_c = std::make_shared<PropositionalOr>(or_ab_c);
+//    set_prop_formulas exp_or = set_prop_formulas({ptr_a, ptr_b, ptr_c});
+//    auto exp_flat_or = std::make_shared<PropositionalOr>(exp_or);
+//    auto flattened_or = logical_or(ptr_or_ab_c->get_container());
+//    REQUIRE(*flattened_or == *exp_flat_or);
+//  }
+//  SECTION("a | (b | c) == a | b | c") {
+//    set_prop_formulas or_a_bc = set_prop_formulas({ptr_a, ptr_or_b_c});
+//    auto ptr_or_a_bc = std::make_shared<PropositionalOr>(or_a_bc);
+//    set_prop_formulas exp_or = set_prop_formulas({ptr_a, ptr_b, ptr_c});
+//    auto exp_flat_or = std::make_shared<PropositionalOr>(exp_or);
+//    auto flattened_or = logical_or(ptr_or_a_bc->get_container());
+//    REQUIRE(*flattened_or == *exp_flat_or);
+//  }
+//  SECTION("a | b | false == a | b") {
+//    set_prop_formulas or_a_b_false =
+//        set_prop_formulas({ptr_a, ptr_b, ptr_false});
+//    auto ptr_or_a_b_false = std::make_shared<PropositionalOr>(or_a_b_false);
+//    set_prop_formulas exp_or = set_prop_formulas({ptr_a, ptr_b});
+//    auto exp_flat_or = std::make_shared<PropositionalOr>(exp_or);
+//    auto flattened_or = logical_or(ptr_or_a_b_false->get_container());
+//    REQUIRE(*flattened_or == *exp_flat_or);
+//  }
+//  SECTION("a | true | c == true") {
+//    set_prop_formulas or_a_true_c = set_prop_formulas({ptr_a, ptr_true, ptr_c});
+//    auto ptr_or_a_true_c = std::make_shared<PropositionalOr>(or_a_true_c);
+//    auto flattened_or = logical_or(ptr_or_a_true_c->get_container());
+//    REQUIRE(*flattened_or == *ptr_true);
+//  }
+//}
 
 TEST_CASE("LDLfDiamond", "[logic]") {
   auto true_ = std::make_shared<const PropositionalTrue>();
