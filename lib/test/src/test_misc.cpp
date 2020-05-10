@@ -91,30 +91,4 @@ TEST_CASE("Test bdd2dot", "[dfa]") {
   dfa_to_bdds(my_dfa, output_dir_path);
 }
 
-struct cmp_set_of_ptr {
-  template <typename T, typename U>
-  bool operator()(const std::set<T, U> &a, const std::set<T, U> &b) const {
-    return unified_compare(a, b);
-  }
-};
-
-TEST_CASE("Test cppitertools", "[cppitertools]") {
-  using TP = std::tuple<char, char, char>;
-  using ResType = const std::vector<TP>;
-  std::vector<int> full_interpretation(3);
-  std::iota(full_interpretation.begin(), full_interpretation.end(), 0);
-  const auto &my_powerset = iter::powerset(full_interpretation);
-  std::vector<std::vector<int>> all_interpretations;
-  for (auto &&st : my_powerset) {
-    all_interpretations.emplace_back(std::begin(st), std::end(st));
-  }
-
-  for (const auto trace_ : iter::product<3>(all_interpretations)) {
-    std::vector<std::vector<int>> x = to_vector(trace_);
-    CHECK(true);
-  }
-
-  CHECK(true);
-}
-
 } // namespace whitemech::lydia::Test

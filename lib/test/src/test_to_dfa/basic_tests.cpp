@@ -512,7 +512,7 @@ TEST_CASE("Translate <a*, b>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, true));
 }
 
-TEST_CASE("Translate [a*, b]ff", "[translate]") {
+TEST_CASE("Translate {a*, b}ff", "[translate]") {
   std::string formula_name = "[a*; b]ff";
   auto mgr = CUDD::Cudd();
   auto automaton = to_dfa_from_formula_string(formula_name, mgr);
@@ -546,7 +546,7 @@ TEST_CASE("Translate [a*, b]ff", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, false));
 }
 
-TEST_CASE("Translate <a* + b>tt", "[translate]") {
+TEST_CASE("Translate <a* plus b>tt", "[translate]") {
   std::string formula_name = "<a* + b>tt";
   auto mgr = CUDD::Cudd();
   auto automaton = to_dfa_from_formula_string(formula_name, mgr);
@@ -580,7 +580,7 @@ TEST_CASE("Translate <a* + b>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, true));
 }
 
-TEST_CASE("Translate [a* + b]ff", "[translate]") {
+TEST_CASE("Translate {a* plus b}ff", "[translate]") {
   std::string formula_name = "[a* + b]ff";
   auto mgr = CUDD::Cudd();
   auto automaton = to_dfa_from_formula_string(formula_name, mgr);
