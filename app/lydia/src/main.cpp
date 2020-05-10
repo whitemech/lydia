@@ -21,6 +21,7 @@
 #include <lydia/parser/driver.cpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/utils/dfa_transform.hpp>
+#include <lydia/utils/print.hpp>
 
 std::string dump_formula(const std::string &filename) {
   std::ifstream f(filename);
@@ -35,6 +36,9 @@ std::string dump_formula(const std::string &filename) {
 }
 
 int main(int argc, char **argv) {
+  whitemech::lydia::Logger log("Main app");
+  whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::info);
+
   CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
 
   std::string ldlf_formula;
@@ -67,14 +71,20 @@ int main(int argc, char **argv) {
 
   if (!str_opt->empty()) {
     std::stringstream ldlf_formula_stream(ldlf_formula);
+    log.info("parsing: {}", ldlf_formula);
     driver.parse(ldlf_formula_stream);
+    log.info("parsed formula: {}", to_string(*driver.result));
   } else if (!file_opt->empty()) {
     std::string formula = dump_formula(filename);
     std::stringstream ldlf_formula_stream(formula);
+    log.info("parsing: {}", formula);
     driver.parse(ldlf_formula_stream);
+    log.info("parsed formula: {}", to_string(*driver.result));
   }
 
+  log.info("transforming to dfa...");
   auto my_dfa = to_dfa(*driver.result, mgr);
+  log.info("transforming to dfa...done!");
   if (!dot_option->empty())
     dfa_to_graphviz(*my_dfa, graphviz_path + "-lydia.svg", "svg");
 

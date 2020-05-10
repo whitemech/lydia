@@ -17,4 +17,8 @@
 
 #include "catch.hpp"
 
+namespace whitemech::lydia::Test {
+
 TEST_CASE("Test lydia main module", "[lydia-main]") { REQUIRE(true); }
+
+} // namespace whitemech::lydia::Test
