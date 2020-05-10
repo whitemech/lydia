@@ -38,18 +38,15 @@ int main(int argc, char **argv) {
   whitemech::lydia::Logger log("Main app");
   whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::info);
 
-  CLI::App app{
-      "A tool for LDLf automata translation and LDLf synthesis."};
+  CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
 
   std::string ldlf_formula;
   CLI::Option *str_opt =
-      app.add_option("-l,--ldlf", ldlf_formula,
-                     "An LDLf formula.");
+      app.add_option("-l,--ldlf", ldlf_formula, "An LDLf formula.");
 
   std::string filename;
   CLI::Option *file_opt = app.add_option(
-      "-f,--file", filename,
-      "A .ldlf file containing an LDLf formula.");
+      "-f,--file", filename, "A .ldlf file containing an LDLf formula.");
 
   // you can either enter the formula inline or within a file, not both.
   file_opt->excludes(str_opt);
@@ -75,23 +72,20 @@ int main(int argc, char **argv) {
     std::stringstream ldlf_formula_stream(ldlf_formula);
     log.info("parsing: {}", ldlf_formula);
     driver.parse(ldlf_formula_stream);
-    log.info("parsed formula: {}",
-             whitemech::lydia::to_string(*driver.result));
+    log.info("parsed formula: {}", whitemech::lydia::to_string(*driver.result));
   } else if (!file_opt->empty()) {
     std::string formula = dump_formula(filename);
     std::stringstream ldlf_formula_stream(formula);
     log.info("parsing: {}", formula);
     driver.parse(ldlf_formula_stream);
-    log.info("parsed formula: {}",
-             whitemech::lydia::to_string(*driver.result));
+    log.info("parsed formula: {}", whitemech::lydia::to_string(*driver.result));
   }
 
   log.info("transforming to dfa...");
   auto my_dfa = to_dfa(*driver.result, mgr);
   log.info("transforming to dfa...done!");
   if (!dot_option->empty())
-    dfa_to_graphviz(*my_dfa,
-                    graphviz_path + "-lydia.svg", "svg");
+    dfa_to_graphviz(*my_dfa, graphviz_path + "-lydia.svg", "svg");
 
   return 0;
 }
