@@ -66,9 +66,9 @@ For Ubuntu 19.10:
 ```
 wget https://github.com/google/or-tools/releases/download/v7.6/or-tools_ubuntu-19.10_v7.6.7691.tar.gz
 tar -xf or-tools_ubuntu-19.10_v7.6.7691.tar.gz
-cd or-tools_ubuntu-19.10_v7.6.7691/
-sudo cp ./include/* /usr/local/include/
-sudo cp ./lib/* /usr/local/lib/
+cd or-tools_Ubuntu-19.10-64bit_v7.6.7691/
+sudo cp -r ./include/* /usr/local/include/
+sudo cp -r ./lib/* /usr/local/lib/
 ```
 
 For details on how to install it please refer 
