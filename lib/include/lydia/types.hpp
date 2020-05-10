@@ -57,6 +57,7 @@ class PropositionalNot;
 class NFAState;
 class DFAState;
 class DFATransition;
+class dfa;
 
 struct SharedComparator {
   template <typename T>
@@ -105,7 +106,7 @@ typedef std::vector<CUDD::BDD> vec_bdd;
 typedef unsigned long int state_t;
 typedef unsigned long int variable_t;
 typedef bool bit;
-typedef std::vector<bool> bitvec;
+typedef std::shared_ptr<dfa> dfa_ptr;
 
 class not_implemented_error : public std::logic_error {
 public:
@@ -113,4 +114,4 @@ public:
 };
 
 } // namespace lydia
-}; // namespace whitemech
+} // namespace whitemech

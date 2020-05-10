@@ -42,27 +42,14 @@ static struct c_unique {
   std::string operator()() { return propositional(current++); }
 } UniquePropositionalSymbol;
 
-static std::shared_ptr<SequenceRegExp> intitialize_sequence_regex(const int N) {
-  auto vregex = vec_regex();
-  vregex.reserve(N);
-  for (int i = 0; i < N; i++) {
-    auto tmp =
-        std::make_shared<const PropositionalAtom>(UniquePropositionalSymbol());
-    auto tmp_ptr = std::make_shared<const PropositionalRegExp>(tmp);
-    vregex.push_back(tmp_ptr);
+static std::string sequence(const int N, const std::string &op,
+                            bool with_star = false) {
+  auto postfix = with_star ? "*" : "";
+  std::string result = UniquePropositionalSymbol() + postfix;
+  for (int i = 1; i < N; i++) {
+    result += " " + op + " " + UniquePropositionalSymbol() + postfix;
   }
-  return std::make_shared<SequenceRegExp>(vregex);
-}
-
-static std::shared_ptr<UnionRegExp> intitialize_union_regex(const int N) {
-  auto sregex = set_regex();
-  for (int i = 0; i < N; i++) {
-    auto tmp =
-        std::make_shared<const PropositionalAtom>(UniquePropositionalSymbol());
-    auto tmp_ptr = std::make_shared<const PropositionalRegExp>(tmp);
-    sregex.insert(tmp_ptr);
-  }
-  return std::make_shared<UnionRegExp>(sregex);
+  return result;
 }
 
 } // namespace whitemech::lydia
