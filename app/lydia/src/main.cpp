@@ -21,6 +21,7 @@
 #include <lydia/parser/driver.cpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/utils/dfa_transform.hpp>
+#include <lydia/utils/print.hpp>
 
 std::string dump_formula(const std::string &filename) {
   std::ifstream f(filename);
@@ -72,13 +73,13 @@ int main(int argc, char **argv) {
     std::stringstream ldlf_formula_stream(ldlf_formula);
     log.info("parsing: {}", ldlf_formula);
     driver.parse(ldlf_formula_stream);
-    log.info("parsed formula: {}", whitemech::lydia::to_string(*driver.result));
+    log.info("parsed formula: {}", to_string(*driver.result));
   } else if (!file_opt->empty()) {
     std::string formula = dump_formula(filename);
     std::stringstream ldlf_formula_stream(formula);
     log.info("parsing: {}", formula);
     driver.parse(ldlf_formula_stream);
-    log.info("parsed formula: {}", whitemech::lydia::to_string(*driver.result));
+    log.info("parsed formula: {}", to_string(*driver.result));
   }
 
   log.info("transforming to dfa...");
