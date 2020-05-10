@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "symbol.hpp"
+#include <lydia/symbol.hpp>
 
 #include <cassert>
 #include <utility>

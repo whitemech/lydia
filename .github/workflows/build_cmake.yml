@@ -24,10 +24,21 @@ jobs:
       - name: Install tools
         run: |
           sudo apt-get update
+          sudo apt-get install -f clang-format-9 clang-tidy-9
           sudo apt-get install -f flex bison
           sudo apt-get install -f libgraphviz-dev
-          sudo apt-get install -f clang-format-9 clang-tidy-9
           sudo python -m pip install gcovr
+      - name: Install Cryptominisat
+        run: |
+          wget https://github.com/msoos/cryptominisat/archive/5.7.1.tar.gz
+          tar -xzvf 5.7.1.tar.gz
+          cd cryptominisat-5.7.1
+          mkdir build
+          cd build
+          cmake ..
+          make
+          sudo make install
+          sudo ldconfig
       - name: Install CUDD
         run: |
           sudo apt-get install -f automake libtool

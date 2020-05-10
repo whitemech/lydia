@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "utils/print.hpp"
+#include <lydia/utils/print.hpp>
 #include <sstream>
 #include <stdexcept>
 

@@ -14,10 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "catch.hpp"
+#include "utils/to_dfa.hpp"
+#include <catch.hpp>
+#include <lydia/symbol.hpp>
+#include <lydia/types.hpp>
+#include <lydia/utils/compare.hpp>
+#include <lydia/utils/dfa_transform.hpp>
+#include <lydia/utils/misc.hpp>
+#include <powerset.hpp>
+#include <product.hpp>
 #include <set>
-#include <utils/dfa_transform.hpp>
-#include <utils/misc.hpp>
 
 namespace whitemech::lydia::Test {
 
@@ -62,7 +68,7 @@ TEST_CASE("binary vector/string to int", "[bin2state]") {
   REQUIRE(bin2state("00100") == 4);
 }
 
-TEST_CASE("DFA to Graphviz", "[dfa_transform]") {
+TEST_CASE("DFA to Graphviz", "[to_dfa]") {
   auto mgr = CUDD::Cudd();
   auto my_dfa = dfa(mgr, 1, 1);
 

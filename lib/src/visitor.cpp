@@ -15,10 +15,10 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "visitor.hpp"
-#include <delta.hpp>
-#include <logic.hpp>
-#include <propositional_logic.hpp>
+#include <lydia/logic.hpp>
+#include <lydia/pl/logic.hpp>
+#include <lydia/to_dfa/delta.hpp>
+#include <lydia/visitor.hpp>
 
 namespace whitemech {
 namespace lydia {
@@ -39,8 +39,10 @@ void StarRegExp::accept(Visitor &v) const { v.visit(*this); }
 // TODO add other accept methods
 
 void PropositionalTrue::accept(Visitor &v) const { v.visit(*this); }
+
 void PropositionalFalse::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalAtom::accept(Visitor &v) const { v.visit(*this); }
+
 void PropositionalAnd::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalOr::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalNot::accept(Visitor &v) const { v.visit(*this); }

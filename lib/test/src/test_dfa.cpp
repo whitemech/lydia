@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "catch.hpp"
-#include "dfa.hpp"
+#include <catch.hpp>
 #include <cuddObj.hh>
 #include <graphviz/gvc.h>
-#include <utils/dfa_transform.hpp>
+#include <lydia/dfa.hpp>
+#include <lydia/utils/dfa_transform.hpp>
 
 namespace whitemech::lydia::Test {
 

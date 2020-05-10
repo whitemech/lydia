@@ -15,9 +15,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "catch.hpp"
-#include "logger.hpp"
-#include "parser/driver.hpp"
+#include <catch.hpp>
+#include <lydia/logger.hpp>
+#include <lydia/parser/driver.hpp>
 #include <sstream>
 #include <string>
 

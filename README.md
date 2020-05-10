@@ -58,6 +58,18 @@ sudo make install
   3. Using a version of aclocal other than 1.14:
      modify the version 1.14 in configure accordingly.
 
+# CryptoMiniSat
+
+We use Cryptominisat as SAT solver library.
+
+For Ubuntu systems:
+```
+sudo apt-get install libcryptominisat5-dev
+```
+
+For other systems, please look at
+the [documentation](https://github.com/msoos/cryptominisat#compiling-in-linux).
+
 ## Graphviz
 
 This tool uses Graphviz to display automata.
