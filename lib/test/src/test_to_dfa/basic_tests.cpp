@@ -14,17 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "utils/acceptance_test.hpp"
-#include "utils/to_dfa.hpp"
+#include "test/src/utils/acceptance_test.hpp"
+#include "test/src/utils/to_dfa.hpp"
 #include <catch.hpp>
 #include <iostream>
 #include <lydia/nnf.hpp>
-#include <lydia/parser/driver.hpp>
-#include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/dfa_state.hpp>
-#include <lydia/utils/dfa_transform.hpp>
-#include <lydia/utils/print.hpp>
-#include <sstream>
 
 namespace whitemech::lydia::Test {
 
@@ -178,8 +173,8 @@ TEST_CASE("Translate {a}tt", "[translate]") {
   REQUIRE(verify(*automaton, {"1", "1"}, true));
 }
 
-TEST_CASE("Translate {a & b}tt", "[translate]") {
-  std::string formula_name = "[a & b]tt";
+TEST_CASE("Translate {a & b}ff", "[translate]") {
+  std::string formula_name = "[a & b]ff";
   auto mgr = CUDD::Cudd();
   auto automaton = to_dfa_from_formula_string(formula_name, mgr);
   print_dfa(*automaton, formula_name);
@@ -189,7 +184,7 @@ TEST_CASE("Translate {a & b}tt", "[translate]") {
   REQUIRE(verify(*automaton, {"00"}, true));
   REQUIRE(verify(*automaton, {"01"}, true));
   REQUIRE(verify(*automaton, {"10"}, true));
-  REQUIRE(verify(*automaton, {"11"}, true));
+  REQUIRE(verify(*automaton, {"11"}, false));
 
   REQUIRE(verify(*automaton, {"00", "00"}, true));
   REQUIRE(verify(*automaton, {"00", "01"}, true));
@@ -206,10 +201,44 @@ TEST_CASE("Translate {a & b}tt", "[translate]") {
   REQUIRE(verify(*automaton, {"10", "10"}, true));
   REQUIRE(verify(*automaton, {"10", "11"}, true));
 
-  REQUIRE(verify(*automaton, {"11", "00"}, true));
-  REQUIRE(verify(*automaton, {"11", "01"}, true));
-  REQUIRE(verify(*automaton, {"11", "10"}, true));
-  REQUIRE(verify(*automaton, {"11", "11"}, true));
+  REQUIRE(verify(*automaton, {"11", "00"}, false));
+  REQUIRE(verify(*automaton, {"11", "01"}, false));
+  REQUIRE(verify(*automaton, {"11", "10"}, false));
+  REQUIRE(verify(*automaton, {"11", "11"}, false));
+}
+
+TEST_CASE("Translate {a | b}ff", "[translate]") {
+  std::string formula_name = "[a | b]ff";
+  auto mgr = CUDD::Cudd();
+  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
+  print_dfa(*automaton, formula_name);
+
+  REQUIRE(verify(*automaton, {}, true));
+
+  REQUIRE(verify(*automaton, {"00"}, true));
+  REQUIRE(verify(*automaton, {"01"}, false));
+  REQUIRE(verify(*automaton, {"10"}, false));
+  REQUIRE(verify(*automaton, {"11"}, false));
+
+  REQUIRE(verify(*automaton, {"00", "00"}, true));
+  REQUIRE(verify(*automaton, {"00", "01"}, true));
+  REQUIRE(verify(*automaton, {"00", "10"}, true));
+  REQUIRE(verify(*automaton, {"00", "11"}, true));
+
+  REQUIRE(verify(*automaton, {"01", "00"}, false));
+  REQUIRE(verify(*automaton, {"01", "01"}, false));
+  REQUIRE(verify(*automaton, {"01", "10"}, false));
+  REQUIRE(verify(*automaton, {"01", "11"}, false));
+
+  REQUIRE(verify(*automaton, {"10", "00"}, false));
+  REQUIRE(verify(*automaton, {"10", "01"}, false));
+  REQUIRE(verify(*automaton, {"10", "10"}, false));
+  REQUIRE(verify(*automaton, {"10", "11"}, false));
+
+  REQUIRE(verify(*automaton, {"11", "00"}, false));
+  REQUIRE(verify(*automaton, {"11", "01"}, false));
+  REQUIRE(verify(*automaton, {"11", "10"}, false));
+  REQUIRE(verify(*automaton, {"11", "11"}, false));
 }
 
 TEST_CASE("Translate {a}ff", "[translate]") {
@@ -315,7 +344,7 @@ TEST_CASE("Translate {a plus b}ff", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, false));
 }
 
-TEST_CASE("Translate <a , b>tt", "[translate]") {
+TEST_CASE("Translate <a,b>tt", "[translate]") {
   std::string formula_name = "<a ; b>tt";
   auto mgr = CUDD::Cudd();
   auto automaton = to_dfa_from_formula_string(formula_name, mgr);
@@ -351,21 +380,9 @@ TEST_CASE("Translate <a , b>tt", "[translate]") {
 
 TEST_CASE("Translate {a,b}ff", "[translate]") {
   std::string formula_name = "[a ; b]ff";
-  auto a = std::make_shared<const PropositionalAtom>("a");
-  auto b = std::make_shared<const PropositionalAtom>("b");
-  auto regex_a = std::make_shared<const PropositionalRegExp>(a);
-  auto regex_b = std::make_shared<const PropositionalRegExp>(b);
-  auto ff = boolean(false);
-  auto regex_a_seq_b =
-      std::make_shared<const SequenceRegExp>(vec_regex{regex_a, regex_b});
-  auto box_formula_a_seq_b_ff = std::make_shared<LDLfBox>(regex_a_seq_b, ff);
-
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa(*box_formula_a_seq_b_ff, mgr);
-
-  // print the DFA
-  dfa_to_graphviz(*automaton, "translate_output_" + formula_name + ".svg",
-                  "svg");
+  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
+  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, true));
 
@@ -467,10 +484,6 @@ TEST_CASE("Translate <a*, b>tt", "[translate]") {
   auto mgr = CUDD::Cudd();
   auto automaton = to_dfa_from_formula_string(formula_name, mgr);
   print_dfa(*automaton, formula_name);
-
-  // print the DFA
-  dfa_to_graphviz(*automaton, "translate_output_" + formula_name + ".svg",
-                  "svg");
 
   REQUIRE(verify(*automaton, {}, false));
 

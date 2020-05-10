@@ -21,6 +21,7 @@
 #include <lydia/logic.hpp>
 #include <lydia/parser/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
+#include <lydia/utils/dfa_transform.hpp>
 #include <sstream>
 
 namespace whitemech {
