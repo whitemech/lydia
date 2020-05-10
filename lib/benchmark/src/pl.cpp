@@ -24,9 +24,9 @@
 namespace whitemech::lydia::Benchmark {
 
 static void BM_pl_models_cryptominisat_true(benchmark::State &state) {
-  auto solver = CMSat::SATSolver();
-  solver.set_num_threads(4);
   for (auto _ : state) {
+    auto solver = CMSat::SATSolver();
+    //    solver.set_num_threads(1);
     auto result = solver.solve();
     escape(&result);
     (void)result;

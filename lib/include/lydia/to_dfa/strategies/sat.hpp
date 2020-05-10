@@ -33,12 +33,13 @@ class SATStrategy : public Strategy {
 private:
   const CUDD::Cudd &mgr;
   const size_t max_nb_bits;
+  dfa_ptr automaton;
 
 public:
   explicit SATStrategy(const CUDD::Cudd &mgr, uint32_t max_nb_bits = 10)
       : mgr{mgr}, max_nb_bits{max_nb_bits} {};
 
-  std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula);
+  dfa_ptr to_dfa(const LDLfFormula &formula);
 
   std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>>
   next_transitions(const DFAState &state);

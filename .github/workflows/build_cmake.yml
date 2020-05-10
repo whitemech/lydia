@@ -39,6 +39,13 @@ jobs:
           make
           sudo make install
           sudo ldconfig
+      - name: Install OR-tools
+        run: |
+          wget https://github.com/google/or-tools/releases/download/v7.6/or-tools_ubuntu-19.10_v7.6.7691.tar.gz
+          tar -xf or-tools_ubuntu-19.10_v7.6.7691.tar.gz
+          cd or-tools_ubuntu-19.10_v7.6.7691/
+          sudo cp ./include/* /usr/local/include/
+          sudo cp ./lib/* /usr/local/lib/
       - name: Install CUDD
         run: |
           sudo apt-get install -f automake libtool

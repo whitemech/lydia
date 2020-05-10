@@ -29,7 +29,7 @@ struct cmp_set_of_ptr {
   }
 };
 
-std::shared_ptr<dfa> SATStrategy::to_dfa(const LDLfFormula &formula) {
+dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
   //  build initial state of the DFA.
   auto formula_nnf = to_nnf(formula);
   set_formulas initial_state_formulas{formula_nnf};
@@ -43,8 +43,7 @@ std::shared_ptr<dfa> SATStrategy::to_dfa(const LDLfFormula &formula) {
   for (const auto &atom : atoms)
     atom2index[atom] = index++;
 
-  std::shared_ptr<dfa> automaton =
-      std::make_shared<dfa>(mgr, max_nb_bits, atoms.size());
+  automaton = std::make_shared<dfa>(mgr, max_nb_bits, atoms.size());
   automaton->add_state();
   automaton->set_initial_state(1);
 

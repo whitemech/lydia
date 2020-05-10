@@ -58,17 +58,21 @@ sudo make install
   3. Using a version of aclocal other than 1.14:
      modify the version 1.14 in configure accordingly.
 
-# CryptoMiniSat
+# OR-Tools
 
-We use Cryptominisat as SAT solver library.
+We use the SAT solver provided by the library OR-Tools.
 
-For Ubuntu systems:
+For Ubuntu 19.10:
 ```
-sudo apt-get install libcryptominisat5-dev
+wget https://github.com/google/or-tools/releases/download/v7.6/or-tools_ubuntu-19.10_v7.6.7691.tar.gz
+tar -xf or-tools_ubuntu-19.10_v7.6.7691.tar.gz
+cd or-tools_ubuntu-19.10_v7.6.7691/
+sudo cp ./include/* /usr/local/include/
+sudo cp ./lib/* /usr/local/lib/
 ```
 
-For other systems, please look at
-the [documentation](https://github.com/msoos/cryptominisat#compiling-in-linux).
+For details on how to install it please refer 
+to the [official website](https://developers.google.com/optimization/install/cpp).
 
 ## Graphviz
 
