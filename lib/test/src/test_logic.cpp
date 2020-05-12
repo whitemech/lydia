@@ -241,50 +241,51 @@ TEST_CASE("LDLf logical and", "[logic]") {
   }
 }
 
-//TEST_CASE("LDLf logical or", "[logic]") {
-//  auto ptr_a = std::make_shared<PropositionalAtom>("a");
-//  auto ptr_b = std::make_shared<PropositionalAtom>("b");
-//  auto ptr_c = std::make_shared<PropositionalAtom>("c");
-//  auto ptr_true = std::make_shared<PropositionalTrue>();
-//  auto ptr_false = std::make_shared<PropositionalFalse>();
-//
-//  set_prop_formulas a_b = set_prop_formulas({ptr_a, ptr_b});
-//  auto ptr_or_a_b = std::make_shared<PropositionalOr>(a_b);
-//  set_prop_formulas b_c = set_prop_formulas({ptr_b, ptr_c});
-//  auto ptr_or_b_c = std::make_shared<PropositionalOr>(b_c);
-//
-//  SECTION("(a | b) | c == a | b | c") {
-//    set_prop_formulas or_ab_c = set_prop_formulas({ptr_or_a_b, ptr_c});
-//    auto ptr_or_ab_c = std::make_shared<PropositionalOr>(or_ab_c);
-//    set_prop_formulas exp_or = set_prop_formulas({ptr_a, ptr_b, ptr_c});
-//    auto exp_flat_or = std::make_shared<PropositionalOr>(exp_or);
-//    auto flattened_or = logical_or(ptr_or_ab_c->get_container());
-//    REQUIRE(*flattened_or == *exp_flat_or);
-//  }
-//  SECTION("a | (b | c) == a | b | c") {
-//    set_prop_formulas or_a_bc = set_prop_formulas({ptr_a, ptr_or_b_c});
-//    auto ptr_or_a_bc = std::make_shared<PropositionalOr>(or_a_bc);
-//    set_prop_formulas exp_or = set_prop_formulas({ptr_a, ptr_b, ptr_c});
-//    auto exp_flat_or = std::make_shared<PropositionalOr>(exp_or);
-//    auto flattened_or = logical_or(ptr_or_a_bc->get_container());
-//    REQUIRE(*flattened_or == *exp_flat_or);
-//  }
-//  SECTION("a | b | false == a | b") {
-//    set_prop_formulas or_a_b_false =
-//        set_prop_formulas({ptr_a, ptr_b, ptr_false});
-//    auto ptr_or_a_b_false = std::make_shared<PropositionalOr>(or_a_b_false);
-//    set_prop_formulas exp_or = set_prop_formulas({ptr_a, ptr_b});
-//    auto exp_flat_or = std::make_shared<PropositionalOr>(exp_or);
-//    auto flattened_or = logical_or(ptr_or_a_b_false->get_container());
-//    REQUIRE(*flattened_or == *exp_flat_or);
-//  }
-//  SECTION("a | true | c == true") {
-//    set_prop_formulas or_a_true_c = set_prop_formulas({ptr_a, ptr_true, ptr_c});
-//    auto ptr_or_a_true_c = std::make_shared<PropositionalOr>(or_a_true_c);
-//    auto flattened_or = logical_or(ptr_or_a_true_c->get_container());
-//    REQUIRE(*flattened_or == *ptr_true);
-//  }
-//}
+TEST_CASE("LDLf logical or", "[logic]") {
+  auto tt = boolean(true);
+  auto ff = boolean(false);
+  auto a = prop_atom("a");
+  auto b = prop_atom("b");
+  auto c = prop_atom("c");
+  auto ptr_a = std::make_shared<PropositionalRegExp>(a);
+  auto ptr_b = std::make_shared<PropositionalRegExp>(b);
+  auto ptr_c = std::make_shared<PropositionalRegExp>(c);
+
+  auto diam_a = std::make_shared<LDLfDiamond>(ptr_a, tt);
+  auto diam_b = std::make_shared<LDLfDiamond>(ptr_b, tt);
+  auto box_c = std::make_shared<LDLfBox>(ptr_c, tt);
+
+  SECTION("(<a>tt | <b>tt) | [c]tt == <a>tt | <b>tt | [c]tt") {
+    set_formulas ab = set_formulas({diam_a, diam_b});
+    auto ptr_or_ab = std::make_shared<LDLfOr>(ab);
+    auto ptr_or_ab_c = std::make_shared<LDLfOr>(set_formulas({ptr_or_ab, box_c}));
+    auto flattened_or = ldlf_logical_or(ptr_or_ab_c->get_container());
+    auto exp_flat_or = std::make_shared<LDLfOr>(set_formulas({diam_a, diam_b, box_c}));
+    REQUIRE(*flattened_or == *exp_flat_or);
+  }
+  SECTION("<a>tt | (<b>tt | [c]tt) == <a>tt | <b>tt | [c]tt") {
+    set_formulas bc = set_formulas({diam_b, box_c});
+    auto ptr_or_bc = std::make_shared<LDLfOr>(bc);
+    auto ptr_or_a_bc = std::make_shared<LDLfOr>(set_formulas({diam_a, ptr_or_bc}));
+    auto flattened_or = ldlf_logical_or(ptr_or_a_bc->get_container());
+    auto exp_flat_or = std::make_shared<LDLfOr>(set_formulas({diam_a, diam_b, box_c}));
+    REQUIRE(*flattened_or == *exp_flat_or);
+  }
+  SECTION("<a>tt | <b>tt | ff == <a>tt | <b>tt") {
+    set_formulas or_a_b_ff = set_formulas({diam_a, diam_b, ff});
+    auto ptr_or_a_b_ff = std::make_shared<LDLfOr>(or_a_b_ff);
+    set_formulas exp_or = set_formulas({diam_a, diam_b});
+    auto exp_flat_or = std::make_shared<LDLfOr>(exp_or);
+    auto flattened_or = ldlf_logical_or(exp_flat_or->get_container());
+    REQUIRE(*flattened_or == *exp_flat_or);
+  }
+  SECTION("<a>tt | tt | [c]tt == tt") {
+    set_formulas or_a_tt_c = set_formulas({diam_a, tt, box_c});
+    auto ptr_or_a_tt_c = std::make_shared<LDLfOr>(or_a_tt_c);
+    auto flattened_or = ldlf_logical_or(ptr_or_a_tt_c->get_container());
+    REQUIRE(*flattened_or == *tt);
+  }
+}
 
 TEST_CASE("LDLfDiamond", "[logic]") {
   auto true_ = std::make_shared<const PropositionalTrue>();
