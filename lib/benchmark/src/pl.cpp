@@ -19,7 +19,6 @@
 #include <lydia/pl/logic.hpp>
 #include <lydia/pl/models/naive.hpp>
 #include <lydia/pl/models/sat.hpp>
-#include <lydia/pl/models_sat.hpp>
 #include <lydia/utils/benchmark.hpp>
 #include <minisat/simp/SimpSolver.h>
 #include <random>
