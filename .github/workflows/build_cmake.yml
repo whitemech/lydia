@@ -28,24 +28,6 @@ jobs:
           sudo apt-get install -f flex bison
           sudo apt-get install -f libgraphviz-dev
           sudo python -m pip install gcovr
-      - name: Install Cryptominisat
-        run: |
-          wget https://github.com/msoos/cryptominisat/archive/5.7.1.tar.gz
-          tar -xzvf 5.7.1.tar.gz
-          cd cryptominisat-5.7.1
-          mkdir build
-          cd build
-          cmake ..
-          make
-          sudo make install
-          sudo ldconfig
-      - name: Install OR-tools
-        run: |
-          wget https://github.com/google/or-tools/releases/download/v7.6/or-tools_ubuntu-19.10_v7.6.7691.tar.gz
-          tar -xf or-tools_ubuntu-19.10_v7.6.7691.tar.gz
-          cd or-tools_Ubuntu-19.10-64bit_v7.6.7691/
-          sudo cp -r ./include/* /usr/local/include/
-          sudo cp -r ./lib/* /usr/local/lib/
       - name: Install CUDD
         run: |
           sudo apt-get install -f automake libtool

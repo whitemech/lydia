@@ -16,29 +16,38 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <cryptominisat5/cryptominisat.h>
 #include <lydia/atom_visitor.hpp>
+#include <lydia/pl/cnf.hpp>
 #include <lydia/pl/eval.hpp>
 #include <lydia/utils/misc.hpp>
+#include <minisat/core/Solver.h>
+#include <minisat/simp/SimpSolver.h>
 
 namespace whitemech {
 namespace lydia {
 
-/*!
- * Compute all the models of a propositional formula.
- *
- * @param f the propositional formula
- * @return the set of the models of a formula
+/*
+ * Functor to enumerate the models of a
+ * propositional formula.
  */
-std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f);
+class ModelEnumerationStrategy {
 
-/*!
- * Compute the minimal models of a propositional formula.
- *
- * @param f the propositional formula
- * @return the set of minimal models.
- */
-std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f);
+public:
+  /*!
+   * Compute all the models of a propositional formula.
+   *
+   * @param f the propositional formula
+   * @return the set of the models of a formula
+   */
+  virtual std::vector<set_atoms_ptr>
+  all_models(const PropositionalFormula &f) = 0;
+};
+
+template <class T>
+std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f) {
+  T s = T();
+  return s.all_models(f);
+}
 
 } // namespace lydia
 } // namespace whitemech

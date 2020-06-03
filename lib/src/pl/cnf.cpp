@@ -29,7 +29,8 @@ void CNFTransformer::visit(const PropositionalFalse &) {
 }
 
 void CNFTransformer::visit(const PropositionalAtom &f) {
-  result = std::make_shared<PropositionalAtom>(f.symbol);
+  result =
+      std::static_pointer_cast<const PropositionalAtom>(f.shared_from_this());
 }
 
 void CNFTransformer::visit(const PropositionalAnd &f) {
@@ -45,7 +46,7 @@ void CNFTransformer::visit(const PropositionalAnd &f) {
       args.insert(subformula_cnf);
     }
   }
-  result = std::make_shared<PropositionalAnd>(args);
+  result = logical_and(args);
 }
 
 void CNFTransformer::visit(const PropositionalOr &f) {

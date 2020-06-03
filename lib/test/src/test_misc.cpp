@@ -21,7 +21,6 @@
 #include <lydia/utils/compare.hpp>
 #include <lydia/utils/dfa_transform.hpp>
 #include <lydia/utils/misc.hpp>
-#include <ortools/sat/cp_model.h>
 #include <powerset.hpp>
 #include <product.hpp>
 #include <set>
@@ -92,37 +91,36 @@ TEST_CASE("Test bdd2dot", "[dfa]") {
   dfa_to_bdds(my_dfa, output_dir_path);
 }
 
-TEST_CASE("or-tools", "[or-tools]") {
-  operations_research::sat::CpModelBuilder cp_model;
-  // [END model]
-
-  // [START variables]
-  const operations_research::Domain domain(0, 2);
-  const operations_research::sat::IntVar x =
-      cp_model.NewIntVar(domain).WithName("x");
-  const operations_research::sat::IntVar y =
-      cp_model.NewIntVar(domain).WithName("y");
-  const operations_research::sat::IntVar z =
-      cp_model.NewIntVar(domain).WithName("z");
-  // [END variables]
-
-  // [START constraints]
-  cp_model.AddNotEqual(x, y);
-  // [END constraints]
-
-  // Solving part.
-  // [START solve]
-  const operations_research::sat::CpSolverResponse response =
-      Solve(cp_model.Build());
-  LOG(INFO) << CpSolverResponseStats(response);
-  // [END solve]
-
-  if (response.status() == operations_research::sat::CpSolverStatus::FEASIBLE) {
-    // Get the value of x in the solution.
-    LOG(INFO) << "x = " << SolutionIntegerValue(response, x);
-    LOG(INFO) << "y = " << SolutionIntegerValue(response, y);
-    LOG(INFO) << "z = " << SolutionIntegerValue(response, z);
-  }
-}
+// TEST_CASE("glucose", "[glucose]") {
+//    Glucose::SimpSolver solver;
+//    solver.verbosity = -1;
+//    solver.verbEveryConflicts = -1;
+//
+//    // Create variables
+//    auto A = solver.newVar();
+//    auto B = solver.newVar();
+//    auto C = solver.newVar();
+//
+//    // Create the clauses
+//    solver.addClause( Glucose::mkLit(A),  Glucose::mkLit(B),
+//    Glucose::mkLit(C)); solver.addClause(~Glucose::mkLit(A),
+//    Glucose::mkLit(B),  Glucose::mkLit(C)); solver.addClause(
+//    Glucose::mkLit(A), ~Glucose::mkLit(B),  Glucose::mkLit(C));
+//    solver.addClause( Glucose::mkLit(A),  Glucose::mkLit(B),
+//    ~Glucose::mkLit(C));
+//
+//    // Check for solution and retrieve model if found
+//    auto sat = solver.solve();
+//    if (sat) {
+//      std::clog << "SAT\n"
+//                << "Model found:\n";
+//      std::clog << "A := " << (solver.modelValue(A) == l_True) << '\n';
+//      std::clog << "B := " << (solver.modelValue(B) == l_True) << '\n';
+//      std::clog << "C := " << (solver.modelValue(C) == l_True) << '\n';
+//    } else {
+//      std::clog << "UNSAT\n";
+//    }
+//
+//}
 
 } // namespace whitemech::lydia::Test

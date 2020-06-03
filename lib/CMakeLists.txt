@@ -49,8 +49,7 @@ add_library (${LIB_NAME}
 target_link_libraries(${LIB_NAME}
         ${CUDD_LIBRARIES}
         ${GRAPHVIZ_LIBRARIES}
-        ${CRYPTOMINISAT5_LIBRARIES}
-        ${ORTOOLS_LIBRARIES})
+        ${MINISAT_LIBRARIES})
 
 #export vars
 set (LIBRARY_INCLUDE_PATH  ${LIBRARY_INCLUDE_PATH} PARENT_SCOPE)

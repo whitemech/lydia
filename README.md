@@ -58,21 +58,16 @@ sudo make install
   3. Using a version of aclocal other than 1.14:
      modify the version 1.14 in configure accordingly.
 
-# OR-Tools
+## ZLib
 
-We use the SAT solver provided by the library OR-Tools.
+The software depends on MiniSAT Solver, which in turn depends
+on [ZLib](https://www.zlib.net/).
 
-For Ubuntu 19.10:
+To install it, e.g. on Ubuntu:
+
+```bash
+sudo apt-get install zlib1g-dev
 ```
-wget https://github.com/google/or-tools/releases/download/v7.6/or-tools_ubuntu-19.10_v7.6.7691.tar.gz
-tar -xf or-tools_ubuntu-19.10_v7.6.7691.tar.gz
-cd or-tools_Ubuntu-19.10-64bit_v7.6.7691/
-sudo cp -r ./include/* /usr/local/include/
-sudo cp -r ./lib/* /usr/local/lib/
-```
-
-For details on how to install it please refer 
-to the [official website](https://developers.google.com/optimization/install/cpp).
 
 ## Graphviz
 
