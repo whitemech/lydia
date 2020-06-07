@@ -15,11 +15,12 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <catch.hpp>
-#include <cryptominisat5/cryptominisat.h>
 #include <lydia/pl/cnf.hpp>
 #include <lydia/pl/eval.hpp>
 #include <lydia/pl/logic.hpp>
-#include <lydia/pl/models_sat.hpp>
+#include <lydia/pl/models/base.hpp>
+#include <lydia/pl/models/naive.hpp>
+#include <lydia/pl/models/sat.hpp>
 
 namespace whitemech::lydia::Test {
 TEST_CASE("Propositional Logic", "[pl/logic]") {
@@ -267,78 +268,29 @@ TEST_CASE("to cnf", "[pl/cnf]") {
   }
 }
 
-TEST_CASE("Test Cryptominisat", "[cryptominisat]") {
-  CMSat::SATSolver solver;
-  std::vector<CMSat::Lit> clause;
+// TEST_CASE("is_sat", "[pl/models]") {
+//  auto t = boolean_prop(true);
+//  auto f = boolean_prop(false);
+//  auto p = prop_atom("p");
+//  auto q = prop_atom("q");
+//  REQUIRE(is_sat(*t));
+//  REQUIRE(!is_sat(*f));
+//  REQUIRE(is_sat(*p));
+//  REQUIRE(is_sat(*q));
+//  REQUIRE(is_sat(*logical_or({p, q})));
+//  REQUIRE(is_sat(*logical_and({p, q})));
+//
+//  auto non_sat =
+//      logical_and({logical_or({p, q}), p->logical_not(), q->logical_not()});
+//  REQUIRE(!is_sat(*non_sat));
+//}
 
-  // Let's use 4 threads
-  solver.set_num_threads(4);
-
-  // without literals
-  auto result = solver.solve();
-  REQUIRE(result == CMSat::l_True);
-
-  // We need 3 variables. They will be: 0,1,2
-  // Variable numbers are always trivially increasing
-  solver.new_vars(3);
-
-  // add "1 0"
-  clause.emplace_back(0, false);
-  solver.add_clause(clause);
-
-  // add "-2 0"
-  clause.clear();
-  clause.emplace_back(1, true);
-  solver.add_clause(clause);
-
-  // add "-1 2 3 0"
-  clause.clear();
-  clause.emplace_back(0, true);
-  clause.emplace_back(1, false);
-  clause.emplace_back(2, false);
-  solver.add_clause(clause);
-
-  CMSat::lbool ret = solver.solve();
-  REQUIRE(ret == CMSat::l_True);
-  std::cout << "Solution is: " << solver.get_model()[0] << ", "
-            << solver.get_model()[1] << ", " << solver.get_model()[2]
-            << std::endl;
-
-  // assumes 3 = FALSE, no solutions left
-  std::vector<CMSat::Lit> assumptions;
-  assumptions.emplace_back(2, true);
-  ret = solver.solve(&assumptions);
-  REQUIRE(ret == CMSat::l_False);
-
-  // without assumptions we still have a solution
-  ret = solver.solve();
-  REQUIRE(ret == CMSat::l_True);
-
-  // add "-3 0"
-  // No solutions left, UNSATISFIABLE returned
-  clause.clear();
-  clause.emplace_back(2, true);
-  solver.add_clause(clause);
-  ret = solver.solve();
-  REQUIRE(ret == CMSat::l_False);
-}
-
-TEST_CASE("is_sat", "[pl/models]") {
-  auto t = boolean_prop(true);
-  auto f = boolean_prop(false);
-  auto p = prop_atom("p");
-  auto q = prop_atom("q");
-  REQUIRE(is_sat(*t));
-  REQUIRE(!is_sat(*f));
-  REQUIRE(is_sat(*p));
-  REQUIRE(is_sat(*q));
-  REQUIRE(is_sat(*logical_or({p, q})));
-  REQUIRE(is_sat(*logical_and({p, q})));
-
-  auto non_sat =
-      logical_and({logical_or({p, q}), p->logical_not(), q->logical_not()});
-  REQUIRE(!is_sat(*non_sat));
-}
+struct SetComparator {
+  template <typename T, typename U>
+  bool operator()(const std::set<T, U> &lhs, const std::set<T, U> &rhs) const {
+    return unified_compare(lhs, rhs) == -1;
+  }
+};
 
 TEST_CASE("All models", "[pl/models]") {
   auto p = prop_atom("p");
@@ -347,111 +299,68 @@ TEST_CASE("All models", "[pl/models]") {
   auto true_ = boolean_prop(true);
   auto false_ = boolean_prop(false);
 
+  auto model_enumeration_function =
+      GENERATE(all_models<NaiveModelEnumerationStategy>,
+               all_models<SATModelEnumerationStategy>);
+
   SECTION("models of true") {
-    auto models = all_models_sat(*true_);
+    auto models = model_enumeration_function(*true_);
     REQUIRE(models.size() == 1);
     REQUIRE(models[0].empty());
   }
   SECTION("models of false") {
-    auto models = all_models_sat(*false_);
+    auto models = model_enumeration_function(*false_);
     REQUIRE(models.empty());
   }
 
   SECTION("models of p") {
-    auto models = all_models_sat(*p);
+    auto models = model_enumeration_function(*p);
     REQUIRE(models.size() == 1);
-    REQUIRE(models[0] == set_atoms_ptr{p});
+    auto expected_model = set_atoms_ptr({p});
+    auto actual_model = models[0];
+    REQUIRE(unified_eq(actual_model, expected_model));
   }
   SECTION("models of ~q") {
-    auto models = all_models_sat(*p->logical_not());
+    auto models = model_enumeration_function(*q->logical_not());
     REQUIRE(models.size() == 1);
     REQUIRE(models[0].empty());
   }
 
   SECTION("models of p | q") {
-    auto models = all_models_sat(*logical_or({p, q}));
+    auto models = model_enumeration_function(*logical_or({p, q}));
     REQUIRE(models.size() == 3);
-    auto expected_models = std::set<set_atoms_ptr>({
+    auto expected_models = std::set<set_atoms_ptr, SetComparator>({
         set_atoms_ptr({p, q}),
         set_atoms_ptr({p}),
         set_atoms_ptr({q}),
     });
-    auto actual_models = std::set<set_atoms_ptr>(models.begin(), models.end());
-    REQUIRE(expected_models == actual_models);
+    auto actual_models =
+        std::set<set_atoms_ptr, SetComparator>(models.begin(), models.end());
+    REQUIRE(unified_eq(expected_models, actual_models));
   }
   SECTION("models of p & q") {
-    auto models = all_models_sat(*logical_and({p, q}));
+    auto models = model_enumeration_function(*logical_and({p, q}));
     REQUIRE(models.size() == 1);
-    REQUIRE(models[0] == set_atoms_ptr({p, q}));
+    REQUIRE(unified_eq(models[0], set_atoms_ptr({p, q})));
   }
   SECTION("models of !(p | q)") {
-    auto models = all_models_sat(*logical_or({p, q})->logical_not());
+    auto models =
+        model_enumeration_function(*logical_or({p, q})->logical_not());
     REQUIRE(models.size() == 1);
-    REQUIRE(models[0] == set_atoms_ptr({}));
+    REQUIRE(unified_eq(models[0], set_atoms_ptr({})));
   }
   SECTION("models of r & (p | q)") {
     auto f = logical_and({r, logical_or({p, q})});
-    auto models = all_models_sat(*f);
+    auto models = model_enumeration_function(*f);
     REQUIRE(models.size() == 3);
-    auto expected_models = std::set<set_atoms_ptr>({
+    auto expected_models = std::set<set_atoms_ptr, SetComparator>({
         set_atoms_ptr({r, p}),
         set_atoms_ptr({r, q}),
         set_atoms_ptr({r, p, q}),
     });
-    auto actual_models = std::set<set_atoms_ptr>(models.begin(), models.end());
-    REQUIRE(actual_models == expected_models);
-  }
-}
-
-TEST_CASE("Minmal models", "[pl/models]") {
-  auto p = prop_atom("p");
-  auto q = prop_atom("q");
-  auto r = prop_atom("r");
-  auto true_ = boolean_prop(true);
-  auto false_ = boolean_prop(false);
-
-  SECTION("models of true") {
-    auto models = all_minimal_models_sat(*true_);
-    REQUIRE(models.size() == 1);
-    REQUIRE(models[0].empty());
-  }
-  SECTION("models of false") {
-    auto models = all_minimal_models_sat(*false_);
-    REQUIRE(models.empty());
-  }
-
-  SECTION("models of p") {
-    auto models = all_minimal_models_sat(*p);
-    REQUIRE(models.size() == 1);
-    REQUIRE(models[0] == set_atoms_ptr{p});
-  }
-  SECTION("models of ~q") {
-    auto models = all_minimal_models_sat(*p->logical_not());
-    REQUIRE(models.size() == 1);
-    REQUIRE(models[0].empty());
-  }
-
-  SECTION("models of p | q") {
-    auto models = all_minimal_models_sat(*logical_or({p, q}));
-    REQUIRE(models.size() == 2);
-    auto expected_models = std::set<set_atoms_ptr>({
-        set_atoms_ptr({p}),
-        set_atoms_ptr({q}),
-    });
-    auto actual_models = std::set<set_atoms_ptr>(models.begin(), models.end());
-    REQUIRE(expected_models == actual_models);
-  }
-
-  SECTION("models of r & (p | q)") {
-    auto f = logical_and({r, logical_or({p, q})});
-    auto models = all_minimal_models_sat(*f);
-    REQUIRE(models.size() == 2);
-    auto expected_models = std::set<set_atoms_ptr>({
-        set_atoms_ptr({r, p}),
-        set_atoms_ptr({r, q}),
-    });
-    auto actual_models = std::set<set_atoms_ptr>(models.begin(), models.end());
-    REQUIRE(expected_models == actual_models);
+    auto actual_models =
+        std::set<set_atoms_ptr, SetComparator>(models.begin(), models.end());
+    REQUIRE(unified_eq(actual_models, expected_models));
   }
 }
 

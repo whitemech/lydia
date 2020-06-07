@@ -39,8 +39,6 @@ set (GOOGLE_BENCHMARK_INCLUDE_PATH "${GOOGLE_BENCHMARK_MODULE_PATH}/include")
 set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
 add_subdirectory(${GOOGLE_BENCHMARK_MODULE_PATH})
 
-#include custom cmake function
-include ( "${CATCH_MODULE_PATH}/contrib/ParseAndAddCatchTests.cmake")
 
 # -------------------------------------------------------------------------
 # spdlog
@@ -86,11 +84,31 @@ set (CUDD_INCLUDE_PATH ${CUDD_INCLUDE_DIRS})
 
 # -------------------------------------------------------------------------
 
+# -------------------------------------------------------------------------
+# MiniSAT
+
+#configure directories
+set (MINISAT_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/minisat")
+set (MINISAT_INCLUDE_PATH "${MINISAT_MODULE_PATH}")
+add_subdirectory(${MINISAT_MODULE_PATH})
+set(MINISAT_LIBRARIES minisat-lib-static PARENT_SCOPE)
+
+# -------------------------------------------------------------------------
+
 #set variables
-set (THIRD_PARTY_INCLUDE_PATH  ${FMT_INCLUDE_PATH} ${SPDLOG_INCLUDE_PATH} ${CLI11_INCLUDE_PATH} ${CUDD_INCLUDE_PATH} ${GOOGLE_BENCHMARK_INCLUDE_PATH})
+set (THIRD_PARTY_INCLUDE_PATH
+        ${FMT_INCLUDE_PATH}
+        ${SPDLOG_INCLUDE_PATH}
+        ${CLI11_INCLUDE_PATH}
+        ${CUDD_INCLUDE_PATH}
+        ${GOOGLE_BENCHMARK_INCLUDE_PATH}
+        ${MINISAT_INCLUDE_PATH})
 
 #set variables for tests
-set (TEST_THIRD_PARTY_INCLUDE_PATH  ${CATCH_INCLUDE_PATH} ${CPPITERTOOLS_INCLUDE_PATH})
+set (TEST_THIRD_PARTY_INCLUDE_PATH
+        ${CATCH_INCLUDE_PATH}
+        ${CPPITERTOOLS_INCLUDE_PATH}
+        ${MINISAT_INCLUDE_PATH})
 
 #export vars
 set (THIRD_PARTY_INCLUDE_PATH  ${THIRD_PARTY_INCLUDE_PATH} PARENT_SCOPE)

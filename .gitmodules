@@ -19,3 +19,6 @@
 [submodule "third_party/cppitertools"]
 	path = third_party/cppitertools
 	url = https://github.com/ryanhaining/cppitertools.git
+[submodule "third_party/minisat"]
+	path = third_party/minisat
+	url = https://github.com/whitemech/minisat.git

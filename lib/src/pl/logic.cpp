@@ -15,7 +15,6 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <cassert>
-#include <cryptominisat5/cryptominisat.h>
 #include <lydia/atom_visitor.hpp>
 #include <lydia/pl/logic.hpp>
 #include <lydia/utils/compare.hpp>

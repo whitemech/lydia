@@ -1,3 +1,4 @@
+#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -15,30 +16,33 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <lydia/atom_visitor.hpp>
 #include <lydia/pl/cnf.hpp>
-#include <lydia/pl/models.hpp>
+#include <lydia/pl/eval.hpp>
+#include <lydia/pl/models/base.hpp>
+#include <lydia/utils/misc.hpp>
+#include <minisat/core/Solver.h>
+#include <minisat/simp/SimpSolver.h>
 
 namespace whitemech {
 namespace lydia {
 
-std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f) {
-  std::vector<set_atoms_ptr> models;
-  auto all_atoms = find_atoms(f);
-  std::vector<set_atoms_ptr> all_interpretations =
-      powerset<atom_ptr, SharedComparator>(all_atoms);
-  for (set_atoms_ptr &interpretation : all_interpretations) {
-    if (eval(f, interpretation)) {
-      models.emplace_back(interpretation);
-    }
-  }
-  return models;
-}
+class NaiveModelEnumerationStategy : public ModelEnumerationStrategy {
 
-std::vector<set_atoms_ptr> minimal_models(const PropositionalFormula &f) {
-  // TODO
-  auto models = all_models(f);
-  return models;
-}
+public:
+  std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f) {
+    std::vector<set_atoms_ptr> models;
+    auto all_atoms = find_atoms(f);
+    std::vector<set_atoms_ptr> all_interpretations =
+        powerset<atom_ptr, SharedComparator>(all_atoms);
+    for (set_atoms_ptr &interpretation : all_interpretations) {
+      if (eval(f, interpretation)) {
+        models.push_back(interpretation);
+      }
+    }
+    return models;
+  }
+};
 
 } // namespace lydia
 } // namespace whitemech

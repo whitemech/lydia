@@ -58,17 +58,16 @@ sudo make install
   3. Using a version of aclocal other than 1.14:
      modify the version 1.14 in configure accordingly.
 
-# CryptoMiniSat
+## ZLib
 
-We use Cryptominisat as SAT solver library.
+The software depends on MiniSAT Solver, which in turn depends
+on [ZLib](https://www.zlib.net/).
 
-For Ubuntu systems:
+To install it, e.g. on Ubuntu:
+
+```bash
+sudo apt-get install zlib1g-dev
 ```
-sudo apt-get install libcryptominisat5-dev
-```
-
-For other systems, please look at
-the [documentation](https://github.com/msoos/cryptominisat#compiling-in-linux).
 
 ## Graphviz
 

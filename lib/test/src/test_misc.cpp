@@ -91,4 +91,36 @@ TEST_CASE("Test bdd2dot", "[dfa]") {
   dfa_to_bdds(my_dfa, output_dir_path);
 }
 
+// TEST_CASE("glucose", "[glucose]") {
+//    Glucose::SimpSolver solver;
+//    solver.verbosity = -1;
+//    solver.verbEveryConflicts = -1;
+//
+//    // Create variables
+//    auto A = solver.newVar();
+//    auto B = solver.newVar();
+//    auto C = solver.newVar();
+//
+//    // Create the clauses
+//    solver.addClause( Glucose::mkLit(A),  Glucose::mkLit(B),
+//    Glucose::mkLit(C)); solver.addClause(~Glucose::mkLit(A),
+//    Glucose::mkLit(B),  Glucose::mkLit(C)); solver.addClause(
+//    Glucose::mkLit(A), ~Glucose::mkLit(B),  Glucose::mkLit(C));
+//    solver.addClause( Glucose::mkLit(A),  Glucose::mkLit(B),
+//    ~Glucose::mkLit(C));
+//
+//    // Check for solution and retrieve model if found
+//    auto sat = solver.solve();
+//    if (sat) {
+//      std::clog << "SAT\n"
+//                << "Model found:\n";
+//      std::clog << "A := " << (solver.modelValue(A) == l_True) << '\n';
+//      std::clog << "B := " << (solver.modelValue(B) == l_True) << '\n';
+//      std::clog << "C := " << (solver.modelValue(C) == l_True) << '\n';
+//    } else {
+//      std::clog << "UNSAT\n";
+//    }
+//
+//}
+
 } // namespace whitemech::lydia::Test

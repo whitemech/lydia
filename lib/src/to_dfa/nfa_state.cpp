@@ -16,7 +16,7 @@
  */
 
 #include <lydia/pl/cnf.hpp>
-#include <lydia/pl/models.hpp>
+#include <lydia/pl/models/base.hpp>
 #include <lydia/to_dfa/delta_symbolic.hpp>
 #include <lydia/to_dfa/nfa_state.hpp>
 

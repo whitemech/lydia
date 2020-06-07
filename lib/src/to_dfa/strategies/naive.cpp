@@ -15,7 +15,8 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/pl/models.hpp>
+#include <lydia/pl/models/base.hpp>
+#include <lydia/pl/models/naive.hpp>
 #include <lydia/to_dfa/strategies/naive.hpp>
 
 namespace whitemech {
@@ -110,7 +111,7 @@ set_nfa_states NaiveStrategy::next_states(const NFAState &state,
       PropositionalAnd(set_prop_formulas(args.begin(), args.end()));
 
   set_nfa_states result;
-  auto models = minimal_models(conjunction);
+  auto models = all_models<NaiveModelEnumerationStategy>(conjunction);
   for (const auto &model : models) {
     set_formulas tmp;
     for (const auto &atom : model) {
