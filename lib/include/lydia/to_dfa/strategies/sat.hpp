@@ -50,5 +50,20 @@ public:
   next_transitions_from_delta_formula(const PropositionalFormula &f);
 };
 
+class LiteralRenamingVisitor : public Visitor {
+private:
+  prop_ptr result;
+
+public:
+  virtual void visit(const LDLfBooleanAtom &);
+  virtual void visit(const LDLfAnd &);
+  virtual void visit(const LDLfOr &);
+  virtual void visit(const LDLfNot &);
+  virtual void visit(const LDLfDiamond &);
+  virtual void visit(const LDLfBox &);
+};
+
+std::vector<set_atoms_ptr> all_prime_implicants(const PropositionalFormula &f);
+
 } // namespace lydia
 } // namespace whitemech

@@ -124,7 +124,6 @@ SATStrategy::next_transitions(const DFAState &state) {
   return result;
 }
 
-
 std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
 SATStrategy::next_transitions(const NFAState &state) {
   set_prop_formulas setPropFormulas;
@@ -147,6 +146,16 @@ SATStrategy::next_transitions_from_delta_formula(
   return result;
 }
 
+void LiteralRenamingVisitor::visit(const LDLfBooleanAtom &f) {}
+void LiteralRenamingVisitor::visit(const LDLfAnd &f) {}
+void LiteralRenamingVisitor::visit(const LDLfOr &f) {}
+void LiteralRenamingVisitor::visit(const LDLfNot &f) {}
+void LiteralRenamingVisitor::visit(const LDLfDiamond &f) {}
+void LiteralRenamingVisitor::visit(const LDLfBox &f) {}
+
+std::vector<set_atoms_ptr> all_prime_implicants(const PropositionalFormula &f) {
+
+}
 
 } // namespace lydia
 } // namespace whitemech
