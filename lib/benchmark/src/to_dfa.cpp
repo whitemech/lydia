@@ -105,9 +105,9 @@ static void BM_translate_sequence_of_stars_of_atoms(benchmark::State &state) {
 // clang-format off
 BENCHMARK(BM_translate_sequence_of_stars_of_atoms)
   ->Arg(5)->Arg(10)->Arg(15)
-//  ->Arg(20)->Arg(25)->Arg(30)
-//  ->Arg(40)->Arg(80)->Arg(100)
-//  ->Arg(200)->Arg(500)->Arg(1000)
+  ->Arg(20)->Arg(25)->Arg(30)
+  ->Arg(40)->Arg(80)->Arg(100)
+  ->Arg(200)->Arg(500)->Arg(1000)
   ->Unit(benchmark::kMillisecond)
   ->Repetitions(5)
   ->DisplayAggregatesOnly(true);
@@ -134,9 +134,9 @@ static void BM_translate_union(benchmark::State &state) {
 // clang-format off
 BENCHMARK(BM_translate_union)
 ->Arg(5)->Arg(10)->Arg(15)
-//->Arg(20)->Arg(25)->Arg(30)
-//->Arg(40)->Arg(80)->Arg(100)
-//->Arg(200)->Arg(500)->Arg(1000)
+->Arg(20)->Arg(25)->Arg(30)
+->Arg(40)->Arg(80)->Arg(100)
+->Arg(200)->Arg(500)->Arg(1000)
 ->Unit(benchmark::kMillisecond)
 ->Repetitions(5)
 ->DisplayAggregatesOnly(true);
