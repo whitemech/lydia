@@ -50,19 +50,44 @@ public:
   next_transitions_from_delta_formula(const PropositionalFormula &f);
 };
 
-class LiteralRenamingVisitor : public Visitor {
+class DualRailEncodingVisitor : public Visitor {
 private:
   prop_ptr result;
 
 public:
-  virtual void visit(const LDLfBooleanAtom &);
-  virtual void visit(const LDLfAnd &);
-  virtual void visit(const LDLfOr &);
-  virtual void visit(const LDLfNot &);
-  virtual void visit(const LDLfDiamond &);
-  virtual void visit(const LDLfBox &);
+  void visit(const PropositionalTrue &);
+  void visit(const PropositionalFalse &);
+  void visit(const PropositionalAtom &);
+  void visit(const PropositionalAnd &);
+  void visit(const PropositionalOr &);
+  void visit(const PropositionalNot &);
+
+  prop_ptr apply(const PropositionalFormula &);
 };
 
+class ClauseExtractorVisitor : public Visitor {
+private:
+  bool in_or = false;
+  bool in_not = false;
+  set_atoms_ptr current_clause;
+
+public:
+  std::vector<set_atoms_ptr> result;
+
+  void visit(const PropositionalTrue &);
+  void visit(const PropositionalFalse &);
+  void visit(const PropositionalAtom &);
+  void visit(const PropositionalAnd &);
+  void visit(const PropositionalOr &);
+  void visit(const PropositionalNot &);
+
+  void apply(const PropositionalFormula &);
+};
+
+/*
+ * f must be a CNF formula.
+ * It returns all the models of the dual-rail encoding of the formula.
+ */
 std::vector<set_atoms_ptr> all_prime_implicants(const PropositionalFormula &f);
 
 } // namespace lydia
