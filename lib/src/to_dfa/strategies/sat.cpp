@@ -91,7 +91,7 @@ dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
       }
 
       interpretation_map x;
-      for (const atom_ptr &atom : all_symbols_current_transition) {
+      for (const atom_ptr &atom : symbol) {
         auto literal =
             std::static_pointer_cast<const QuotedFormula>(atom->symbol)
                 ->formula;
@@ -313,6 +313,7 @@ void ClauseExtractorVisitor::visit(const PropositionalOr &f) {
     subf->accept(*this);
   }
   result.push_back(current_clause);
+  current_clause.clear();
   in_or = false;
 }
 
@@ -324,8 +325,9 @@ void ClauseExtractorVisitor::apply(const PropositionalFormula &f) {
 
 std::vector<set_atoms_ptr> all_prime_implicants(const PropositionalFormula &f) {
   // compute the
+  auto cnf_f = to_cnf(f);
   auto visitor = DualRailEncodingVisitor();
-  prop_ptr renamed_f = visitor.apply(f);
+  prop_ptr renamed_f = visitor.apply(*cnf_f);
 
   // now we have a CNF formula whose atoms are positive literal
   //  std::vector<atom_ptr> varindex2atom;
@@ -408,7 +410,7 @@ std::vector<set_atoms_ptr> all_prime_implicants(const PropositionalFormula &f) {
 
   auto final_formula =
       logical_and(set_prop_formulas({renamed_f, dual_rail_formula, m_formula}));
-  //  return all_models<SATModelEnumerationStategy>(*final_formula);
+  //  auto models = all_models<SATModelEnumerationStategy>(*final_formula);
   auto models = all_models<NaiveModelEnumerationStategy>(*final_formula);
   return models;
   //  std::vector<set_atoms_ptr> result;

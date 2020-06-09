@@ -258,17 +258,31 @@ TEST_CASE("Incremental construction", "[dfa]") {
       REQUIRE(!my_dfa.accepts(t_a_a));
     }
   }
-
-  //  SECTION(""){
-  //    auto mgr = new CUDD::Cudd();
-  //    auto my_dfa = new dfa(mgr, 10, 1);
-  //
-  //    int new_state = my_dfa->add_state();
-  //    REQUIRE(new_state == 1);
-  //    my_dfa->set_initial_state(new_state);
-  //
-  //
-  //  }
 }
+
+// TEST_CASE("Incremental construction temp", "[dfa]") {
+//  interpretation a = {1};
+//  interpretation na = {0};
+//  auto t_ = trace{};
+//  auto t_a = trace{a};
+//  auto t_na = trace{na};
+//  auto t_na_na = trace{na, na};
+//  auto t_na_a = trace{na, a};
+//  auto t_a_na = trace{a, na};
+//  auto t_a_a = trace{a, a};
+//
+//  auto mgr = CUDD::Cudd();
+//  auto my_dfa = dfa(mgr, 10, 1);
+//  int new_state = my_dfa.add_state();
+//  new_state = my_dfa.add_state();
+//  my_dfa.set_final_state(new_state, true);
+//  my_dfa.set_initial_state(1);
+//  interpretation_map x;
+//  x[0] = false;
+//  my_dfa.add_transition(1, x, 2);
+//  REQUIRE(!my_dfa.accepts(t_));
+//  REQUIRE(!my_dfa.accepts(t_a));
+//  REQUIRE(my_dfa.accepts(t_na));
+//}
 
 } // namespace whitemech::lydia::Test

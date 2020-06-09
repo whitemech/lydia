@@ -64,6 +64,16 @@ TEST_CASE("prime implicants", "[prime_implicants]") {
     REQUIRE(prime_implicants[0].size() == 1);
     REQUIRE(prime_implicants[1].size() == 1);
   }
+  SECTION("c or (a and b)") {
+    auto a = prop_atom("a");
+    auto b = prop_atom("b");
+    auto c = prop_atom("c");
+    auto f = logical_or({c, logical_and({logical_not(a), logical_not(b)})});
+    auto prime_implicants = all_prime_implicants(*f);
+    REQUIRE(prime_implicants.size() == 2);
+    REQUIRE(prime_implicants[0].size() == 1);
+    REQUIRE(prime_implicants[1].size() == 2);
+  }
 }
 
 } // namespace whitemech::lydia::Test
