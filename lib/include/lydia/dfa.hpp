@@ -144,6 +144,8 @@ public:
   int get_successor(int state, const interpretation &symbol) const;
   int get_successor(int state, const interpretation_set &symbol) const;
 
+  CUDD::BDD get_symbol(const interpretation_map &) const;
+
   bool is_final(int state) const;
 
   /*!
@@ -236,7 +238,7 @@ private:
    * negative.
    * @return the BDD variable corresponding to the index and its
    */
-  CUDD::BDD var2bddvar(int index, bool v = true);
+  CUDD::BDD var2bddvar(int index, bool v = true) const;
 
   /*!
    * This method builds the Symbolic DFA from MONA BDD nodes.

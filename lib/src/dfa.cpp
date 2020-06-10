@@ -61,7 +61,7 @@ dfa::dfa(const CUDD::Cudd &mgr, int nb_bits, int nb_variables)
   }
 }
 
-CUDD::BDD dfa::var2bddvar(int index, bool v) {
+CUDD::BDD dfa::var2bddvar(int index, bool v) const {
   return v ? bddvars[index] : !bddvars[index];
 }
 
@@ -429,6 +429,14 @@ int dfa::get_successor(int state, const interpretation_set &symbol) const {
 bool dfa::is_final(int state) const {
   std::vector<int> state_as_binary_vect = state2binvec(state, nb_bits);
   return finalstatesBDD.Eval(state_as_binary_vect.data()).IsOne();
+}
+
+CUDD::BDD dfa::get_symbol(const interpretation_map &i) const {
+  CUDD::BDD tmp = mgr.bddOne();
+  for (const auto &pair : i) {
+    tmp = tmp * var2bddvar(nb_bits + pair.first, pair.second);
+  }
+  return tmp;
 }
 
 } // namespace lydia

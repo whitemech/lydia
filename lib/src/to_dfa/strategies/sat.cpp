@@ -66,6 +66,11 @@ dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
     vec_dfa_states next_states;
     std::vector<set_atoms_ptr> symbols;
 
+    // handle empty transitions separately
+    bool has_empty_guard = false;
+    int next_default_state_index;
+    CUDD::BDD tmp = mgr.bddOne();
+
     const auto &next_transitions = this->next_transitions(*current_state);
     // push this inside "next_transitions"
     set_atoms_ptr all_symbols_current_transition;
@@ -90,6 +95,13 @@ dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
         next_state_index = discovered[next_state];
       }
 
+      if (symbol.empty()) {
+        // add this later as complement of other transitions.
+        has_empty_guard = true;
+        next_default_state_index = next_state_index;
+        continue;
+      }
+
       interpretation_map x;
       for (const atom_ptr &atom : symbol) {
         auto literal =
@@ -107,10 +119,30 @@ dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
         x[atom2index[variable]] = not is_not;
       }
       automaton->add_transition(current_state_index, x, next_state_index);
+      tmp = tmp * !automaton->get_symbol(x);
+    }
+
+    // if we found a transition with empty guard
+    if (has_empty_guard) {
+      add_default_transition(current_state_index, tmp,
+                             next_default_state_index);
     }
   }
 
   return automaton;
+}
+
+void SATStrategy::add_default_transition(int from_index, CUDD::BDD guard,
+                                         int to_index) {
+  std::string to_binary = state2bin(to_index, automaton->nb_bits, true);
+  //  Update each root BDD.
+  guard = guard * automaton->state2bdd(from_index);
+  assert(automaton->nb_bits == to_binary.length());
+  for (int i = 0; i < automaton->nb_bits; i++) {
+    bool result = int(to_binary[i]) - '0';
+    if (result)
+      automaton->root_bdds[i] += guard;
+  }
 }
 
 std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>>

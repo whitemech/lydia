@@ -97,8 +97,7 @@ void DeltaSymbolicDiamondRegExpVisitor::visit(const TestRegExp &r) {
   auto d = DeltaSymbolicVisitor(epsilon);
   auto regex_delta = d.apply(*r.get_arg());
   auto ldlf_delta = d.apply(*formula.get_formula());
-  result = std::make_shared<PropositionalAnd>(
-      set_prop_formulas{regex_delta, ldlf_delta});
+  result = logical_and(set_prop_formulas{regex_delta, ldlf_delta});
 }
 
 void DeltaSymbolicDiamondRegExpVisitor::visit(const UnionRegExp &r) {
@@ -157,8 +156,7 @@ void DeltaSymbolicBoxRegExpVisitor::visit(const TestRegExp &r) {
   DeltaSymbolicVisitor d(epsilon);
   auto regex_delta = d.apply(*nnfTransformer.apply(LDLfNot(r.get_arg())));
   auto ldlf_delta = d.apply(*formula.get_formula());
-  result = std::make_shared<PropositionalOr>(
-      set_prop_formulas{regex_delta, ldlf_delta});
+  result = logical_or(set_prop_formulas{regex_delta, ldlf_delta});
 }
 
 void DeltaSymbolicBoxRegExpVisitor::visit(const UnionRegExp &r) {
