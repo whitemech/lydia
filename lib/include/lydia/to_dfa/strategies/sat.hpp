@@ -49,7 +49,11 @@ public:
   static std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
   next_transitions_from_delta_formula(const PropositionalFormula &f);
 
-  void add_default_transition(int from_index, CUDD::BDD guard, int to_index);
+  void add_transition(int from_index, CUDD::BDD guard, int to_index);
+
+  interpretation_map
+  get_interpretation_from_symbol(const set_atoms_ptr &symbol,
+                                 const map_atoms_ptr &atom2index);
 };
 
 class DualRailEncodingVisitor : public Visitor {

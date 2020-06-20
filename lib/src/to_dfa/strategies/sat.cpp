@@ -68,16 +68,12 @@ dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
 
     // handle empty transitions separately
     bool has_empty_guard = false;
-    int next_default_state_index;
-    CUDD::BDD tmp = mgr.bddOne();
+    int next_default_state_index = -1;
+    CUDD::BDD full = automaton->mgr.bddZero();
+    std::map<int, CUDD::BDD> m;
+    std::map<int, CUDD::BDD> guard_by_destination_state;
 
     const auto &next_transitions = this->next_transitions(*current_state);
-    // push this inside "next_transitions"
-    set_atoms_ptr all_symbols_current_transition;
-    for (const auto &symbol_state : next_transitions) {
-      all_symbols_current_transition.insert(symbol_state.first.begin(),
-                                            symbol_state.first.end());
-    }
 
     for (const auto &symbol_state : next_transitions) {
       const auto &symbol = symbol_state.first;
@@ -95,6 +91,11 @@ dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
         next_state_index = discovered[next_state];
       }
 
+      if (guard_by_destination_state.find(next_state_index) ==
+          guard_by_destination_state.end()) {
+        guard_by_destination_state[next_state_index] = automaton->mgr.bddZero();
+      }
+
       if (symbol.empty()) {
         // add this later as complement of other transitions.
         has_empty_guard = true;
@@ -103,37 +104,69 @@ dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
       }
 
       interpretation_map x;
-      for (const atom_ptr &atom : symbol) {
-        auto literal =
-            std::static_pointer_cast<const QuotedFormula>(atom->symbol)
-                ->formula;
-        bool is_not = false;
-        atom_ptr variable;
-        if (is_a<PropositionalNot>(*literal)) {
-          is_not = true;
-          variable = std::static_pointer_cast<const PropositionalAtom>(
-              dynamic_cast<const PropositionalNot &>(*literal).get_arg());
-        } else {
-          variable = std::static_pointer_cast<const PropositionalAtom>(literal);
-        }
-        x[atom2index[variable]] = not is_not;
+      x = get_interpretation_from_symbol(symbol, atom2index);
+      guard_by_destination_state[next_state_index] += automaton->get_symbol(x);
+    }
+
+    // process guards to make them mutually exclusive
+    for (const auto &guard_state : guard_by_destination_state) {
+      if (guard_state.first == next_default_state_index)
+        continue;
+      m[guard_state.first] = automaton->mgr.bddZero();
+    }
+    for (const auto &guard_state : guard_by_destination_state) {
+      if (guard_state.first == next_default_state_index)
+        continue;
+      full += guard_state.second;
+      for (const auto &m_pair : m) {
+        // exclude the guard of the same transition, because we are
+        // computing the complement
+        if (m_pair.first == guard_state.first)
+          continue;
+        m[m_pair.first] += guard_state.second;
       }
-      automaton->add_transition(current_state_index, x, next_state_index);
-      tmp = tmp * !automaton->get_symbol(x);
+    }
+
+    for (const auto &guard_state : guard_by_destination_state) {
+      if (guard_state.first == next_default_state_index)
+        continue;
+      add_transition(current_state_index,
+                     guard_state.second & !m[guard_state.first],
+                     guard_state.first);
     }
 
     // if we found a transition with empty guard
     if (has_empty_guard) {
-      add_default_transition(current_state_index, tmp,
-                             next_default_state_index);
+      add_transition(current_state_index, !full, next_default_state_index);
     }
   }
 
   return automaton;
 }
 
-void SATStrategy::add_default_transition(int from_index, CUDD::BDD guard,
-                                         int to_index) {
+interpretation_map
+SATStrategy::get_interpretation_from_symbol(const set_atoms_ptr &symbol,
+                                            const map_atoms_ptr &atom2index) {
+  interpretation_map x;
+  for (const atom_ptr &atom : symbol) {
+    auto literal =
+        std::static_pointer_cast<const QuotedFormula>(atom->symbol)->formula;
+    bool is_not = false;
+    atom_ptr variable;
+    if (is_a<PropositionalNot>(*literal)) {
+      is_not = true;
+      variable = std::static_pointer_cast<const PropositionalAtom>(
+          dynamic_cast<const PropositionalNot &>(*literal).get_arg());
+    } else {
+      variable = std::static_pointer_cast<const PropositionalAtom>(literal);
+    }
+    x[atom2index.at(variable)] = not is_not;
+  }
+  return x;
+}
+
+void SATStrategy::add_transition(int from_index, CUDD::BDD guard,
+                                 int to_index) {
   std::string to_binary = state2bin(to_index, automaton->nb_bits, true);
   //  Update each root BDD.
   guard = guard * automaton->state2bdd(from_index);
