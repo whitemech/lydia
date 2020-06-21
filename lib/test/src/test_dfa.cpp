@@ -94,6 +94,17 @@ TEST_CASE("Test Cudd", "[cudd]") {
     REQUIRE(!x_and_y.Eval(input0).IsOne());
     REQUIRE(!x_and_y.Eval(input1).IsOne());
   }
+
+  SECTION("Test when combination is true") {
+    REQUIRE((x & !x).IsZero());
+    REQUIRE(!(x & !x).IsOne());
+    REQUIRE((x | !x).IsOne());
+    REQUIRE(!(x | !x).IsZero());
+    REQUIRE(!(x.IsZero()));
+    REQUIRE(!(x.IsOne()));
+    REQUIRE(!((!x).IsZero()));
+    REQUIRE(!((!x).IsOne()));
+  }
 }
 
 TEST_CASE("Test DFA initialization", "[dfa]") {

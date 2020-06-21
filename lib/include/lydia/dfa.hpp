@@ -206,6 +206,8 @@ public:
   void add_transition(int from, const interpretation_set &symbol, int to,
                       bool dont_care = true);
 
+  CUDD::BDD prop2bddvar(int index, bool v) const;
+
 protected:
 private:
   void get_successor(const std::vector<int> &state,

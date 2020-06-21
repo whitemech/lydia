@@ -34,6 +34,7 @@ private:
   const CUDD::Cudd &mgr;
   const size_t max_nb_bits;
   dfa_ptr automaton;
+  map_atoms_ptr atom2index;
 
 public:
   explicit SATStrategy(const CUDD::Cudd &mgr, uint32_t max_nb_bits = 10)
@@ -41,12 +42,12 @@ public:
 
   dfa_ptr to_dfa(const LDLfFormula &formula);
 
-  std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>>
+  std::vector<std::pair<dfa_state_ptr, CUDD::BDD>>
   next_transitions(const DFAState &state);
-  std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
+  std::map<nfa_state_ptr, CUDD::BDD, SharedComparator>
   next_transitions(const NFAState &state);
 
-  static std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
+  static std::map<nfa_state_ptr, set_prop_formulas, SharedComparator>
   next_transitions_from_delta_formula(const PropositionalFormula &f);
 
   void add_transition(int from_index, CUDD::BDD guard, int to_index);
@@ -88,6 +89,27 @@ public:
   void visit(const PropositionalNot &);
 
   void apply(const PropositionalFormula &);
+};
+
+class BDDVisitor : public Visitor {
+private:
+  dfa_ptr automaton;
+  const map_atoms_ptr &atom2index;
+
+public:
+  CUDD::BDD result;
+
+  BDDVisitor(dfa_ptr automaton, const map_atoms_ptr &m)
+      : automaton{automaton}, atom2index{m} {}
+
+  void visit(const PropositionalTrue &);
+  void visit(const PropositionalFalse &);
+  void visit(const PropositionalAtom &);
+  void visit(const PropositionalAnd &);
+  void visit(const PropositionalOr &);
+  void visit(const PropositionalNot &);
+
+  CUDD::BDD apply(const PropositionalFormula &);
 };
 
 /*

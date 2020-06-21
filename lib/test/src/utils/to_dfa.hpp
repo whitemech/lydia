@@ -17,6 +17,8 @@
  */
 
 #include <bitset>
+#include <cppitertools/powerset.hpp>
+#include <cppitertools/product.hpp>
 #include <cuddObj.hh>
 #include <lydia/dfa.hpp>
 #include <lydia/logic.hpp>
@@ -24,8 +26,6 @@
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/utils/dfa_transform.hpp>
 #include <numeric>
-#include <powerset.hpp>
-#include <product.hpp>
 #include <sstream>
 #include <stack>
 

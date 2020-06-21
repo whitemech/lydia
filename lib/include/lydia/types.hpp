@@ -113,5 +113,12 @@ public:
   not_implemented_error() : std::logic_error("Function not yet implemented"){};
 };
 
+struct cmp_set_of_ptr {
+  template <typename T, typename U>
+  bool operator()(const std::set<T, U> &a, const std::set<T, U> &b) const {
+    return unified_compare(a, b) < 0;
+  }
+};
+
 } // namespace lydia
 } // namespace whitemech

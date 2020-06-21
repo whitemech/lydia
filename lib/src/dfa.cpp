@@ -65,6 +65,11 @@ CUDD::BDD dfa::var2bddvar(int index, bool v) const {
   return v ? bddvars[index] : !bddvars[index];
 }
 
+CUDD::BDD dfa::prop2bddvar(int index, bool v) const {
+  assert(index < nb_variables);
+  return var2bddvar(nb_bits + index, v);
+}
+
 void dfa::construct_bdd_from_mona(
     const std::vector<std::vector<int>> &mona_bdd_nodes,
     const std::vector<int> &behaviour, const std::vector<int> &final_states) {

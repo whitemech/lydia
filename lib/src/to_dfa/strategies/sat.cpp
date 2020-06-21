@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include <cppitertools/powerset.hpp>
 #include <lydia/pl/cnf.hpp>
 #include <lydia/pl/models/base.hpp>
 #include <lydia/pl/models/naive.hpp>
@@ -24,13 +25,6 @@
 namespace whitemech {
 namespace lydia {
 
-struct cmp_set_of_ptr {
-  template <typename T, typename U>
-  bool operator()(const std::set<T, U> &a, const std::set<T, U> &b) const {
-    return unified_compare(a, b) < 0;
-  }
-};
-
 dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
   //  build initial state of the DFA.
   auto formula_nnf = to_nnf(formula);
@@ -40,7 +34,6 @@ dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
 
   // find all atoms
   set_atoms_ptr atoms = find_atoms(*formula_nnf);
-  map_atoms_ptr atom2index;
   int index = 0;
   for (const auto &atom : atoms)
     atom2index[atom] = index++;
@@ -66,18 +59,11 @@ dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
     vec_dfa_states next_states;
     std::vector<set_atoms_ptr> symbols;
 
-    // handle empty transitions separately
-    bool has_empty_guard = false;
-    int next_default_state_index = -1;
-    CUDD::BDD full = automaton->mgr.bddZero();
-    std::map<int, CUDD::BDD> m;
-    std::map<int, CUDD::BDD> guard_by_destination_state;
-
     const auto &next_transitions = this->next_transitions(*current_state);
 
     for (const auto &symbol_state : next_transitions) {
-      const auto &symbol = symbol_state.first;
-      const auto &next_state = symbol_state.second;
+      const auto &next_state = symbol_state.first;
+      const auto &symbol = symbol_state.second;
       // update states/transitions
       int next_state_index = 0;
       if (discovered.find(next_state) == discovered.end()) {
@@ -91,56 +77,9 @@ dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
         next_state_index = discovered[next_state];
       }
 
-      if (guard_by_destination_state.find(next_state_index) ==
-          guard_by_destination_state.end()) {
-        guard_by_destination_state[next_state_index] = automaton->mgr.bddZero();
-      }
-
-      if (symbol.empty()) {
-        // add this later as complement of other transitions.
-        has_empty_guard = true;
-        next_default_state_index = next_state_index;
-        continue;
-      }
-
-      interpretation_map x;
-      x = get_interpretation_from_symbol(symbol, atom2index);
-      guard_by_destination_state[next_state_index] += automaton->get_symbol(x);
-    }
-
-    // process guards to make them mutually exclusive
-    for (const auto &guard_state : guard_by_destination_state) {
-      if (guard_state.first == next_default_state_index)
-        continue;
-      m[guard_state.first] = automaton->mgr.bddZero();
-    }
-    for (const auto &guard_state : guard_by_destination_state) {
-      if (guard_state.first == next_default_state_index)
-        continue;
-      full += guard_state.second;
-      for (const auto &m_pair : m) {
-        // exclude the guard of the same transition, because we are
-        // computing the complement
-        if (m_pair.first == guard_state.first)
-          continue;
-        m[m_pair.first] += guard_state.second;
-      }
-    }
-
-    for (const auto &guard_state : guard_by_destination_state) {
-      if (guard_state.first == next_default_state_index)
-        continue;
-      add_transition(current_state_index,
-                     guard_state.second & !m[guard_state.first],
-                     guard_state.first);
-    }
-
-    // if we found a transition with empty guard
-    if (has_empty_guard) {
-      add_transition(current_state_index, !full, next_default_state_index);
+      add_transition(current_state_index, symbol, next_state_index);
     }
   }
-
   return automaton;
 }
 
@@ -178,33 +117,51 @@ void SATStrategy::add_transition(int from_index, CUDD::BDD guard,
   }
 }
 
-std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>>
+std::vector<std::pair<dfa_state_ptr, CUDD::BDD>>
 SATStrategy::next_transitions(const DFAState &state) {
-  std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>> result;
+  std::vector<std::pair<dfa_state_ptr, CUDD::BDD>> result;
   std::map<set_atoms_ptr, set_nfa_states, cmp_set_of_ptr> symbol2nfastates;
   set_dfa_states discovered;
   set_nfa_states nfa_states;
   set_atoms_ptr symbol;
+  std::map<nfa_state_ptr, CUDD::BDD, SharedComparator> all_transitions;
   for (const auto &nfa_state : state.states) {
     const auto &next_transitions = this->next_transitions(*nfa_state);
-    for (const auto &symbol_states : next_transitions) {
-      symbol = symbol_states.first;
-      nfa_states = symbol_states.second;
-      if (symbol2nfastates.find(symbol) == symbol2nfastates.end()) {
-        symbol2nfastates[symbol] = set_nfa_states{};
+    for (const auto &pair : next_transitions) {
+      if (all_transitions.find(pair.first) == all_transitions.end()) {
+        all_transitions[pair.first] = automaton->mgr.bddZero();
       }
-      symbol2nfastates[symbol].insert(nfa_states.begin(), nfa_states.end());
+      all_transitions[pair.first] += pair.second;
     }
   }
 
-  result.reserve(symbol2nfastates.size());
-  for (const auto &pair : symbol2nfastates) {
-    result.emplace_back(pair.first, std::make_shared<DFAState>(pair.second));
+  std::vector<std::pair<nfa_state_ptr, CUDD::BDD>> all_transitions_vec(
+      all_transitions.begin(), all_transitions.end());
+  size_t N = all_transitions_vec.size();
+  if (N == 0)
+    return result;
+  size_t nb_combinations = pow(2, N);
+  for (size_t i = 0; i < nb_combinations; i++) {
+    const auto &combination = state2bin(i, N);
+    set_nfa_states current_state{};
+    CUDD::BDD current_label = automaton->mgr.bddOne();
+    for (size_t j = 0; j < combination.size(); j++) {
+      bool membership_bit = combination[j] == '1';
+      const auto &state_label = all_transitions_vec[j];
+      current_label *=
+          (membership_bit ? state_label.second : !state_label.second);
+      if (membership_bit)
+        current_state.insert(state_label.first);
+    }
+    if (current_label.IsZero())
+      continue;
+    dfa_state_ptr current_dfa_state = std::make_shared<DFAState>(current_state);
+    result.emplace_back(current_dfa_state, current_label);
   }
   return result;
 }
 
-std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
+std::map<nfa_state_ptr, CUDD::BDD, SharedComparator>
 SATStrategy::next_transitions(const NFAState &state) {
   set_prop_formulas setPropFormulas;
   for (const auto &f : state.formulas) {
@@ -212,25 +169,42 @@ SATStrategy::next_transitions(const NFAState &state) {
     setPropFormulas.insert(delta_formula);
   }
   auto and_ = logical_and(setPropFormulas);
-  return this->next_transitions_from_delta_formula(*and_);
+  auto transitions_by_state_map =
+      this->next_transitions_from_delta_formula(*and_);
+
+  std::map<nfa_state_ptr, CUDD::BDD, SharedComparator> result;
+
+  auto bdd_visitor = BDDVisitor(automaton, atom2index);
+  for (const auto &pair : transitions_by_state_map) {
+    CUDD::BDD tmp = bdd_visitor.apply(*logical_or(pair.second));
+    result[pair.first] = tmp;
+  }
+  return result;
 }
 
-std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
+std::map<nfa_state_ptr, set_prop_formulas, SharedComparator>
 SATStrategy::next_transitions_from_delta_formula(
     const PropositionalFormula &f) {
   std::vector<std::pair<set_atoms_ptr, set_nfa_states>> next_transitions;
 
   std::vector<set_atoms_ptr> prime_implicants = all_prime_implicants(f);
 
+  // group prime implicants per state
+  std::map<nfa_state_ptr, set_prop_formulas, SharedComparator>
+      transitions_by_state;
+
   // group prime implicants per label
-  std::map<set_atoms_ptr, set_nfa_states, cmp_set_of_ptr> transitions;
+  //  std::map<set_prop_formulas, set_nfa_states, cmp_set_of_ptr> transitions;
+
   for (const auto &prime_implicant : prime_implicants) {
-    set_atoms_ptr labels;
+    set_prop_formulas labels;
     set_formulas state;
     for (const auto &atom : prime_implicant) {
       auto literal = dynamic_cast<const QuotedFormula &>(*atom->symbol).formula;
       basic_ptr variable;
+      bool is_not = false;
       if (is_a<PropositionalNot>(*literal)) {
+        is_not = true;
         auto not_atom =
             std::static_pointer_cast<const PropositionalNot>(literal);
         variable = not_atom->get_arg();
@@ -241,26 +215,23 @@ SATStrategy::next_transitions_from_delta_formula(
 
       if (is_a<QuotedFormula>(*variable)) {
         // pick the LDLf formula
+        assert(!is_not);
         auto ldlf_formula = std::static_pointer_cast<const LDLfFormula>(
             dynamic_cast<const QuotedFormula &>(*variable).formula);
         state.insert(ldlf_formula);
       } else {
-        // propositional. We will distinguish later between positive and
-        // negatives
-        labels.insert(atom);
+        labels.insert(
+            std::static_pointer_cast<const PropositionalFormula>(literal));
       }
     }
-    if (transitions.find(labels) == transitions.end()) {
-      transitions[labels] = set_nfa_states{};
+    auto and_ = logical_and(labels);
+    auto nfa_state = std::make_shared<NFAState>(state);
+    if (transitions_by_state.find(nfa_state) == transitions_by_state.end()) {
+      transitions_by_state[nfa_state] = set_prop_formulas{};
     }
-    transitions[labels].insert(std::make_shared<NFAState>(state));
+    transitions_by_state[nfa_state].insert(and_);
   }
-
-  std::vector<std::pair<set_atoms_ptr, set_nfa_states>> result;
-  result.reserve(transitions.size());
-  for (const auto &pair : transitions)
-    result.emplace_back(pair);
-  return result;
+  return transitions_by_state;
 }
 
 void DualRailEncodingVisitor::visit(const PropositionalTrue &f) {
@@ -475,20 +446,43 @@ std::vector<set_atoms_ptr> all_prime_implicants(const PropositionalFormula &f) {
 
   auto final_formula =
       logical_and(set_prop_formulas({renamed_f, dual_rail_formula, m_formula}));
-  //  auto models = all_models<SATModelEnumerationStategy>(*final_formula);
+  //    auto models = all_models<SATModelEnumerationStategy>(*final_formula);
   auto models = all_models<NaiveModelEnumerationStategy>(*final_formula);
   return models;
-  //  std::vector<set_atoms_ptr> result;
-  //  result.reserve(all_dualrail_models.size());
-  //  for (const auto& model: all_dualrail_models){
-  //    auto new_model = set_prop_formulas{};
-  //    for (const auto& el : model){
-  //      new_model.insert(std::static_pointer_cast<PropositionalFormula>(dynamic_cast<const
-  //      QuotedFormula&>(*el->symbol).formula));
-  //    }
-  //    result.push_back(new_model);
-  //  }
-  //  return all_dualrail_models;
+}
+
+void BDDVisitor::visit(const PropositionalTrue &f) {
+  result = automaton->mgr.bddOne();
+}
+void BDDVisitor::visit(const PropositionalFalse &f) {
+  result = automaton->mgr.bddZero();
+}
+void BDDVisitor::visit(const PropositionalAtom &f) {
+  atom_ptr atom =
+      std::static_pointer_cast<const PropositionalAtom>(f.shared_from_this());
+  result = automaton->prop2bddvar(atom2index.at(atom), true);
+}
+void BDDVisitor::visit(const PropositionalAnd &f) {
+  CUDD::BDD res = automaton->mgr.bddOne();
+  for (const auto &subf : f.get_args()) {
+    res *= apply(*subf);
+  }
+  result = res;
+}
+void BDDVisitor::visit(const PropositionalOr &f) {
+  CUDD::BDD res = automaton->mgr.bddZero();
+  for (const auto &subf : f.get_args()) {
+    res += apply(*subf);
+  }
+  result = res;
+}
+void BDDVisitor::visit(const PropositionalNot &f) {
+  result = !apply(*f.get_arg());
+}
+
+CUDD::BDD BDDVisitor::apply(const PropositionalFormula &f) {
+  f.accept(*this);
+  return result;
 }
 
 } // namespace lydia
