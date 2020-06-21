@@ -446,7 +446,7 @@ std::vector<set_atoms_ptr> all_prime_implicants(const PropositionalFormula &f) {
 
   auto final_formula =
       logical_and(set_prop_formulas({renamed_f, dual_rail_formula, m_formula}));
-  //    auto models = all_models<SATModelEnumerationStategy>(*final_formula);
+//  auto models = all_models<SATModelEnumerationStategy>(*final_formula);
   auto models = all_models<NaiveModelEnumerationStategy>(*final_formula);
   return models;
 }
