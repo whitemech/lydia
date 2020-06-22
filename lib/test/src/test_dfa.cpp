@@ -270,47 +270,4 @@ TEST_CASE("Incremental construction", "[dfa]") {
   }
 }
 
-TEST_CASE("Incremental construction temp", "[dfa]") {
-  interpretation a = {1};
-  interpretation na = {0};
-  auto t_ = trace{};
-  auto t_a = trace{a};
-  auto t_na = trace{na};
-  auto t_na_na = trace{na, na};
-  auto t_na_a = trace{na, a};
-  auto t_a_na = trace{a, na};
-  auto t_a_a = trace{a, a};
-
-  auto mgr = CUDD::Cudd();
-  auto my_dfa = dfa(mgr, 3, 3);
-  auto s1 = my_dfa.add_state();
-  auto s2 = my_dfa.add_state();
-  auto s3 = my_dfa.add_state();
-  auto s4 = my_dfa.add_state();
-  interpretation_map x;
-  interpretation_map y;
-  interpretation_map z;
-  x[0] = false;
-  //    x[1] = true;
-  //    y[0] = true;
-  y[1] = false;
-  z[0] = false;
-  z[1] = false;
-  //    y[1] = true;
-  //  y[0] = false;
-  my_dfa.set_initial_state(s1);
-  my_dfa.add_transition(s1, x, s2);
-  my_dfa.add_transition(s1, y, s3);
-  my_dfa.add_transition(s1, z, s4);
-  //  my_dfa.set_final_state(s3, true);
-  //  my_dfa.add_transition(s1, z, s4);
-  //    my_dfa.add_transition(s1, y, s4);
-  //    my_dfa.add_transition(s1, x, s2);
-  //  my_dfa.add_transition(s4, x, s3);
-  //  my_dfa.add_transition(s4, y, s2);
-
-  print_dfa(my_dfa, "temp");
-  dfa_to_bdds(my_dfa, "temp_bdd");
-}
-
 } // namespace whitemech::lydia::Test
