@@ -254,7 +254,7 @@ void DualRailEncodingVisitor::visit(const PropositionalAnd &f) {
     auto new_operand = apply(*operand);
     new_container.insert(new_operand);
   }
-  result = std::make_shared<PropositionalAnd>(new_container);
+  result = logical_and(new_container);
 }
 void DualRailEncodingVisitor::visit(const PropositionalOr &f) {
   set_prop_formulas new_container;
@@ -262,7 +262,7 @@ void DualRailEncodingVisitor::visit(const PropositionalOr &f) {
     auto new_operand = apply(*operand);
     new_container.insert(new_operand);
   }
-  result = std::make_shared<PropositionalOr>(new_container);
+  result = logical_or(new_container);
 }
 
 prop_ptr DualRailEncodingVisitor::apply(const PropositionalFormula &b) {
@@ -446,8 +446,8 @@ std::vector<set_atoms_ptr> all_prime_implicants(const PropositionalFormula &f) {
 
   auto final_formula =
       logical_and(set_prop_formulas({renamed_f, dual_rail_formula, m_formula}));
-//  auto models = all_models<SATModelEnumerationStategy>(*final_formula);
-  auto models = all_models<NaiveModelEnumerationStategy>(*final_formula);
+  auto models = all_models<SATModelEnumerationStategy>(*final_formula);
+  //    auto models = all_models<NaiveModelEnumerationStategy>(*final_formula);
   return models;
 }
 

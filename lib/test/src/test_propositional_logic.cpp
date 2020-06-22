@@ -223,6 +223,22 @@ TEST_CASE("to cnf", "[pl/cnf]") {
     auto actual = to_cnf(expected);
     REQUIRE(*actual == expected);
   }
+  SECTION("Not of And") {
+    auto p = prop_atom("p");
+    auto q = prop_atom("q");
+    auto f = logical_not(logical_and({p, q}));
+    auto expected = PropositionalOr({logical_not(p), logical_not(q)});
+    auto actual = to_cnf(*f);
+    REQUIRE(*actual == expected);
+  }
+  SECTION("Not of Or") {
+    auto p = prop_atom("p");
+    auto q = prop_atom("q");
+    auto f = logical_not(logical_or({p, q}));
+    auto expected = PropositionalAnd({logical_not(p), logical_not(q)});
+    auto actual = to_cnf(*f);
+    REQUIRE(*actual == expected);
+  }
   SECTION("Or with one And") {
     auto p = prop_atom("p");
     auto q = prop_atom("q");
@@ -296,6 +312,7 @@ TEST_CASE("All models", "[pl/models]") {
   auto p = prop_atom("p");
   auto q = prop_atom("q");
   auto r = prop_atom("r");
+  auto s = prop_atom("s");
   auto true_ = boolean_prop(true);
   auto false_ = boolean_prop(false);
 
@@ -361,6 +378,15 @@ TEST_CASE("All models", "[pl/models]") {
     auto actual_models =
         std::set<set_atoms_ptr, SetComparator>(models.begin(), models.end());
     REQUIRE(unified_eq(actual_models, expected_models));
+  }
+
+  SECTION("models of (r | !s) & (!r | !q)") {
+    auto f = logical_and({
+        logical_or({r, logical_not(s)}),
+        logical_or({logical_not(q), logical_not(r)}),
+    });
+    auto models = model_enumeration_function(*f);
+    REQUIRE(models.size() == 4);
   }
 }
 
