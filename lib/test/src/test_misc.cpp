@@ -16,13 +16,13 @@
  */
 #include "utils/to_dfa.hpp"
 #include <catch.hpp>
+#include <cppitertools/powerset.hpp>
+#include <cppitertools/product.hpp>
 #include <lydia/symbol.hpp>
 #include <lydia/types.hpp>
 #include <lydia/utils/compare.hpp>
 #include <lydia/utils/dfa_transform.hpp>
 #include <lydia/utils/misc.hpp>
-#include <powerset.hpp>
-#include <product.hpp>
 #include <set>
 
 namespace whitemech::lydia::Test {

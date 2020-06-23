@@ -640,7 +640,7 @@ TEST_CASE("Translate <true*>(<a>tt & ~end)", "[translate]") {
   REQUIRE(verify(*automaton, {"1", "1", "1"}, true));
 }
 
-TEST_CASE("Translate [true*](<a>tt | end)", "[translate]") {
+TEST_CASE("Translate {true*}(<a>tt | end)", "[translate]") {
   std::string formula_name = "[true*](<a>tt | end)";
   auto mgr = CUDD::Cudd();
   auto automaton = to_dfa_from_formula_string(formula_name, mgr);

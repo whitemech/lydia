@@ -61,7 +61,7 @@ void CNFTransformer::visit(const PropositionalOr &f) {
   if (container.size() == 1)
     tail = apply(**container.begin());
   else
-    tail = apply(PropositionalOr(container));
+    tail = apply(*std::make_shared<PropositionalOr>(container));
 
   // both first and tail are now CNF formulas.
   auto is_first_and = is_a<PropositionalAnd>(*first);
@@ -78,11 +78,11 @@ void CNFTransformer::visit(const PropositionalOr &f) {
 
   for (const auto &x : first_container) {
     for (const auto &y : tail_container) {
-      args.insert(std::make_shared<PropositionalOr>(set_prop_formulas{x, y}));
+      args.insert(logical_or(set_prop_formulas{x, y}));
     }
   }
 
-  result = std::make_shared<PropositionalAnd>(args);
+  result = logical_and(args);
 }
 
 void CNFTransformer::visit(const PropositionalNot &f) {

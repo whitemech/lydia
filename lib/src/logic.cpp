@@ -458,7 +458,7 @@ int LDLfT::compare(const Basic &rhs) const {
   return arg_.compare_(dynamic_cast<const LDLfT &>(rhs).get_arg());
 }
 
-QuotedFormula::QuotedFormula(ldlf_ptr formula) : formula{std::move(formula)} {
+QuotedFormula::QuotedFormula(basic_ptr formula) : formula{std::move(formula)} {
   this->type_code_ = type_code_id;
 }
 
@@ -479,7 +479,7 @@ bool QuotedFormula::is_equal(const Basic &rhs) const {
          eq(*formula, *dynamic_cast<const QuotedFormula &>(rhs).formula);
 }
 
-std::shared_ptr<const QuotedFormula> quote(const ldlf_ptr &p) {
+std::shared_ptr<const QuotedFormula> quote(const basic_ptr &p) {
   return std::make_shared<QuotedFormula>(p);
 }
 

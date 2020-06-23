@@ -116,7 +116,9 @@ set_nfa_states NaiveStrategy::next_states(const NFAState &state,
     set_formulas tmp;
     for (const auto &atom : model) {
       assert(is_a<QuotedFormula>(*atom->symbol));
-      tmp.insert(dynamic_cast<const QuotedFormula &>(*atom->symbol).formula);
+      basic_ptr tmp_ptr =
+          dynamic_cast<const QuotedFormula &>(*atom->symbol).formula;
+      tmp.insert(std::static_pointer_cast<const LDLfFormula>(tmp_ptr));
     }
     result.emplace(std::make_shared<NFAState>(tmp));
   }

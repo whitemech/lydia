@@ -267,13 +267,13 @@ private:
 protected:
 public:
   const static TypeID type_code_id = TypeID::t_QuotedFormula;
-  const std::shared_ptr<const LDLfFormula> formula;
+  const std::shared_ptr<const Basic> formula;
 
   /*!
    * Quote an LDLf formula. We assume it is in NNF.
    * @param f: the LDLf formula.
    */
-  explicit QuotedFormula(ldlf_ptr formula);
+  explicit QuotedFormula(basic_ptr formula);
 
   void accept(Visitor &v) const override;
   hash_t compute_hash_() const override;
@@ -281,7 +281,7 @@ public:
   bool is_equal(const Basic &rhs) const override;
 };
 
-std::shared_ptr<const QuotedFormula> quote(const ldlf_ptr &p);
+std::shared_ptr<const QuotedFormula> quote(const basic_ptr &p);
 
 } // namespace lydia
 } // namespace whitemech

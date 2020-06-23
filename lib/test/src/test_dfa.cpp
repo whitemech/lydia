@@ -16,9 +16,8 @@
  */
 #include <catch.hpp>
 #include <cuddObj.hh>
-#include <graphviz/gvc.h>
 #include <lydia/dfa.hpp>
-#include <lydia/utils/dfa_transform.hpp>
+#include <test/src/utils/to_dfa.hpp>
 
 namespace whitemech::lydia::Test {
 
@@ -94,6 +93,17 @@ TEST_CASE("Test Cudd", "[cudd]") {
     REQUIRE(x_plus_y.Eval(input1).IsOne());
     REQUIRE(!x_and_y.Eval(input0).IsOne());
     REQUIRE(!x_and_y.Eval(input1).IsOne());
+  }
+
+  SECTION("Test when combination is true") {
+    REQUIRE((x & !x).IsZero());
+    REQUIRE(!(x & !x).IsOne());
+    REQUIRE((x | !x).IsOne());
+    REQUIRE(!(x | !x).IsZero());
+    REQUIRE(!(x.IsZero()));
+    REQUIRE(!(x.IsOne()));
+    REQUIRE(!((!x).IsZero()));
+    REQUIRE(!((!x).IsOne()));
   }
 }
 
@@ -258,17 +268,6 @@ TEST_CASE("Incremental construction", "[dfa]") {
       REQUIRE(!my_dfa.accepts(t_a_a));
     }
   }
-
-  //  SECTION(""){
-  //    auto mgr = new CUDD::Cudd();
-  //    auto my_dfa = new dfa(mgr, 10, 1);
-  //
-  //    int new_state = my_dfa->add_state();
-  //    REQUIRE(new_state == 1);
-  //    my_dfa->set_initial_state(new_state);
-  //
-  //
-  //  }
 }
 
 } // namespace whitemech::lydia::Test

@@ -77,11 +77,9 @@ public:
 
   void ban_solution(Minisat::Solver &solver) {
     Minisat::vec<Minisat::Lit> clause;
-    for (int i = 0; i < solver.model.size(); i++) {
-      auto literal = Minisat::mkLit(i);
-      if (solver.model[i] == Minisat::l_True)
-        literal = ~literal;
-      clause.push(literal);
+    clause.clear();
+    for (int i = 0; i < solver.nVars(); i++) {
+      clause.push(Minisat::mkLit(i, solver.modelValue(i) == Minisat::l_True));
     }
     solver.addClause(clause);
   }

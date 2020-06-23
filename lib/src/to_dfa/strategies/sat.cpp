@@ -14,20 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include <cppitertools/powerset.hpp>
 #include <lydia/pl/cnf.hpp>
 #include <lydia/pl/models/base.hpp>
+#include <lydia/pl/models/naive.hpp>
+#include <lydia/pl/models/sat.hpp>
 #include <lydia/to_dfa/delta_symbolic.hpp>
 #include <lydia/to_dfa/strategies/sat.hpp>
 
 namespace whitemech {
 namespace lydia {
-
-struct cmp_set_of_ptr {
-  template <typename T, typename U>
-  bool operator()(const std::set<T, U> &a, const std::set<T, U> &b) const {
-    return unified_compare(a, b) < 0;
-  }
-};
 
 dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
   //  build initial state of the DFA.
@@ -38,7 +34,6 @@ dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
 
   // find all atoms
   set_atoms_ptr atoms = find_atoms(*formula_nnf);
-  map_atoms_ptr atom2index;
   int index = 0;
   for (const auto &atom : atoms)
     atom2index[atom] = index++;
@@ -65,16 +60,10 @@ dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
     std::vector<set_atoms_ptr> symbols;
 
     const auto &next_transitions = this->next_transitions(*current_state);
-    // push this inside "next_transitions"
-    set_atoms_ptr all_symbols_current_transition;
-    for (const auto &symbol_state : next_transitions) {
-      all_symbols_current_transition.insert(symbol_state.first.begin(),
-                                            symbol_state.first.end());
-    }
 
     for (const auto &symbol_state : next_transitions) {
-      const auto &symbol = symbol_state.first;
-      const auto &next_state = symbol_state.second;
+      const auto &next_state = symbol_state.first;
+      const auto &symbol = symbol_state.second;
       // update states/transitions
       int next_state_index = 0;
       if (discovered.find(next_state) == discovered.end()) {
@@ -88,112 +77,91 @@ dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
         next_state_index = discovered[next_state];
       }
 
-      interpretation_map x;
-      for (const atom_ptr &atom : all_symbols_current_transition)
-        x[atom2index[atom]] = symbol.find(atom) != symbol.end();
-      automaton->add_transition(current_state_index, x, next_state_index);
+      add_transition(current_state_index, symbol, next_state_index);
     }
   }
-
   return automaton;
 }
 
-std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>>
+interpretation_map
+SATStrategy::get_interpretation_from_symbol(const set_atoms_ptr &symbol,
+                                            const map_atoms_ptr &atom2index) {
+  interpretation_map x;
+  for (const atom_ptr &atom : symbol) {
+    auto literal =
+        std::static_pointer_cast<const QuotedFormula>(atom->symbol)->formula;
+    bool is_not = false;
+    atom_ptr variable;
+    if (is_a<PropositionalNot>(*literal)) {
+      is_not = true;
+      variable = std::static_pointer_cast<const PropositionalAtom>(
+          dynamic_cast<const PropositionalNot &>(*literal).get_arg());
+    } else {
+      variable = std::static_pointer_cast<const PropositionalAtom>(literal);
+    }
+    x[atom2index.at(variable)] = not is_not;
+  }
+  return x;
+}
+
+void SATStrategy::add_transition(int from_index, CUDD::BDD guard,
+                                 int to_index) {
+  std::string to_binary = state2bin(to_index, automaton->nb_bits, true);
+  //  Update each root BDD.
+  guard = guard * automaton->state2bdd(from_index);
+  assert(automaton->nb_bits == to_binary.length());
+  for (int i = 0; i < automaton->nb_bits; i++) {
+    bool result = int(to_binary[i]) - '0';
+    if (result)
+      automaton->root_bdds[i] += guard;
+  }
+}
+
+std::vector<std::pair<dfa_state_ptr, CUDD::BDD>>
 SATStrategy::next_transitions(const DFAState &state) {
-  std::vector<std::pair<set_atoms_ptr, dfa_state_ptr>> result;
+  std::vector<std::pair<dfa_state_ptr, CUDD::BDD>> result;
   std::map<set_atoms_ptr, set_nfa_states, cmp_set_of_ptr> symbol2nfastates;
   set_dfa_states discovered;
   set_nfa_states nfa_states;
   set_atoms_ptr symbol;
+  std::map<nfa_state_ptr, CUDD::BDD, SharedComparator> all_transitions;
   for (const auto &nfa_state : state.states) {
     const auto &next_transitions = this->next_transitions(*nfa_state);
-    for (const auto &symbol_states : next_transitions) {
-      symbol = symbol_states.first;
-      nfa_states = symbol_states.second;
-      if (symbol2nfastates.find(symbol) == symbol2nfastates.end()) {
-        symbol2nfastates[symbol] = set_nfa_states{};
+    for (const auto &pair : next_transitions) {
+      if (all_transitions.find(pair.first) == all_transitions.end()) {
+        all_transitions[pair.first] = automaton->mgr.bddZero();
       }
-      symbol2nfastates[symbol].insert(nfa_states.begin(), nfa_states.end());
+      all_transitions[pair.first] += pair.second;
     }
   }
 
-  result.reserve(symbol2nfastates.size());
-  for (const auto &pair : symbol2nfastates) {
-    result.emplace_back(pair.first, std::make_shared<DFAState>(pair.second));
+  std::vector<std::pair<nfa_state_ptr, CUDD::BDD>> all_transitions_vec(
+      all_transitions.begin(), all_transitions.end());
+  size_t N = all_transitions_vec.size();
+  if (N == 0)
+    return result;
+  size_t nb_combinations = pow(2, N);
+  for (size_t i = 0; i < nb_combinations; i++) {
+    const auto &combination = state2bin(i, N);
+    set_nfa_states current_state{};
+    CUDD::BDD current_label = automaton->mgr.bddOne();
+    for (size_t j = 0; j < combination.size(); j++) {
+      bool membership_bit = combination[j] == '1';
+      const auto &state_label = all_transitions_vec[j];
+      current_label *=
+          (membership_bit ? state_label.second : !state_label.second);
+      if (membership_bit)
+        current_state.insert(state_label.first);
+    }
+    if (current_label.IsZero())
+      continue;
+    dfa_state_ptr current_dfa_state = std::make_shared<DFAState>(current_state);
+    result.emplace_back(current_dfa_state, current_label);
   }
   return result;
 }
 
-//// only works if formula is in CNF
-// void update_model(operations_research::sat::CpModelBuilder& cp_model,
-//    const PropositionalFormula& f,
-//    const std::map<prop_ptr, operations_research::sat::BoolVar,
-//    SharedComparator>& atom2var){
-//  if (is_a<PropositionalTrue>(f)){
-//    cp_model.AddBoolOr({cp_model.TrueVar()});
-//  }
-//  else if (is_a<PropositionalFalse>(f)){
-//    cp_model.AddBoolAnd({cp_model.FalseVar()});
-//  }
-//  else if (is_a<PropositionalAtom>(f)){
-//    auto casted_p = std::static_pointer_cast<const
-//    PropositionalAtom>(f.shared_from_this()); auto var =
-//    atom2var.at(casted_p); cp_model.AddBoolAnd({var});
-//  }
-//  else if (is_a<PropositionalNot>(f)){
-//    const auto& casted_p = dynamic_cast<const PropositionalNot&>(f);
-//    auto var = atom2var.at(casted_p.get_arg());
-//    cp_model.AddBoolAnd({Not(var)});
-//  }
-//  else if (is_a<PropositionalOr>(f)){
-//    const auto& or_ = dynamic_cast<const PropositionalOr&>(f);
-//    std::vector<operations_research::sat::BoolVar> or_of_vars;
-//    or_of_vars.reserve(or_.get_container().size());
-//    for (const auto& p :or_.get_container()){
-//      if (is_a<PropositionalTrue>(*p))
-//        or_of_vars.push_back({cp_model.TrueVar()});
-//      else if(is_a<PropositionalFalse>(*p))
-//        or_of_vars.push_back({cp_model.FalseVar()});
-//      else if(is_a<PropositionalNot>(*p)){
-//        const auto& casted_p = dynamic_cast<const PropositionalNot&>(*p);
-//        auto var = atom2var.at(casted_p.get_arg());
-//        or_of_vars.push_back({Not(var)});
-//      }
-//      else{
-//        auto casted_p = std::static_pointer_cast<const PropositionalAtom>(p);
-//        or_of_vars.push_back(atom2var.at(casted_p));
-//      }
-//    }
-//    cp_model.AddBoolOr(or_of_vars);
-//  }
-//  else if (is_a<PropositionalAnd>(f)){
-//    const auto& and_ = dynamic_cast<const PropositionalAnd&>(f);
-//    std::vector<operations_research::sat::BoolVar> and_of_vars;
-//    for (const auto& subf: and_.get_container()){
-//      if (is_a<PropositionalOr>(*subf)){
-//        update_model(cp_model, *subf, atom2var);
-//      }
-//      else if (is_a<PropositionalTrue>(*subf))
-//        and_of_vars.push_back({cp_model.TrueVar()});
-//      else if(is_a<PropositionalFalse>(*subf))
-//        and_of_vars.push_back({cp_model.FalseVar()});
-//      else if(is_a<PropositionalNot>(*subf)){
-//        const auto& casted_p = dynamic_cast<const PropositionalNot&>(*subf);
-//        auto var = atom2var.at(casted_p.get_arg());
-//        and_of_vars.push_back({Not(var)});
-//      }
-//      else{
-//        auto casted_p = std::static_pointer_cast<const
-//        PropositionalAtom>(subf);
-//        and_of_vars.push_back(atom2var.at(casted_p));
-//      }
-//    }
-//    cp_model.AddBoolAnd(and_of_vars);
-//  }
-//
-//}
-
-std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
+std::map<nfa_state_ptr, CUDD::BDD, SharedComparator>
 SATStrategy::next_transitions(const NFAState &state) {
   set_prop_formulas setPropFormulas;
   for (const auto &f : state.formulas) {
@@ -201,113 +169,321 @@ SATStrategy::next_transitions(const NFAState &state) {
     setPropFormulas.insert(delta_formula);
   }
   auto and_ = logical_and(setPropFormulas);
-  return this->next_transitions_from_delta_formula(*and_);
-}
+  auto transitions_by_state_map =
+      this->next_transitions_from_delta_formula(*and_);
 
-std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
-SATStrategy::next_transitions_from_delta_formula(
-    const PropositionalFormula &f) {
-  std::vector<std::pair<set_atoms_ptr, set_nfa_states>> result;
-  std::map<set_atoms_ptr, set_nfa_states, cmp_set_of_ptr> symbol2nfastates;
-  set_atoms_ptr quoted_formulas;
-  set_atoms_ptr propositionals;
-  auto atoms = find_atoms(f);
+  std::map<nfa_state_ptr, CUDD::BDD, SharedComparator> result;
+
+  auto bdd_visitor = BDDVisitor(automaton, atom2index);
+  for (const auto &pair : transitions_by_state_map) {
+    CUDD::BDD tmp = bdd_visitor.apply(*logical_or(pair.second));
+    result[pair.first] = tmp;
+  }
   return result;
 }
 
-//  std::vector<std::pair<set_atoms_ptr, set_nfa_states>>
-//  SATStrategy::next_transitions_from_delta_formula(
-//      const PropositionalFormula &f) {
-//    std::vector<std::pair<set_atoms_ptr, set_nfa_states>> result;
-//    std::map<set_atoms_ptr, set_nfa_states, cmp_set_of_ptr> symbol2nfastates;
-//
-//    set_atoms_ptr quoted_formulas;
-//    set_atoms_ptr propositionals;
-//    auto atoms = find_atoms(f);
-//    std::map<prop_ptr, operations_research::sat::BoolVar, SharedComparator>
-//    atom2var; std::vector<operations_research::sat::BoolVar> all_vars;
-//    std::vector<prop_ptr> idx2atom;
-//    idx2atom.reserve(atoms.size());
-//    all_vars.reserve(atoms.size());
-//
-//    //build SAT problem
-//    operations_research::sat::CpModelBuilder cp_model;
-//    for (const atom_ptr &ptr : atoms) {
-//      std::string name;
-//      if (is_a<QuotedFormula>(*ptr->symbol)) {
-//        quoted_formulas.insert(ptr);
-//        name = "q_" + std::to_string(quoted_formulas.size());
-//      }
-//      else {
-//        propositionals.insert(ptr);
-//        name = "p_" + std::to_string(propositionals.size());
-//      }
-//      auto var = cp_model.NewBoolVar().WithName(name);
-//      atom2var[ptr] = var;
-//      idx2atom.push_back(ptr);
-//      all_vars.push_back(var);
-//    }
-//    update_model(cp_model, f, atom2var);
-//    operations_research::sat::Model model;
-//    int num_solutions = 0;
-//    model.Add(operations_research::sat::NewFeasibleSolutionObserver
-//                  ([&](const operations_research::sat::CpSolverResponse&
-//                  response) {
-//                    LOG(INFO) << "Solution " << num_solutions;
-//                    num_solutions++;
-//                  }));
-//    operations_research::sat::SatParameters parameters;
-//    parameters.set_enumerate_all_solutions(true);
-//    model.Add(NewSatParameters(parameters));
-//    operations_research::sat::TableConstraint t =
-//        cp_model.AddForbiddenAssignments(all_vars);
-//
-//    std::vector<std::vector<int64_t>> solutions;
-//    operations_research::sat::CpSolverResponse response =
-//    Solve(cp_model.Build()); while (response.status() ==
-//    operations_research::sat::CpSolverStatus::FEASIBLE){
-//      std::vector<int64_t> solution;
-//      solution.reserve(atom2var.size());
-//      for (const auto& atom_var_pair : atom2var){
-//        solution.push_back(SolutionIntegerValue(response,
-//        atom_var_pair.second));
-//      }
-//      solutions.push_back(solution);
-//    }
-//    const operations_research::sat::CpSolverResponse response =
-//    SolveCpModel(cp_model.Build(), &model); LOG(INFO) << "Number of solutions
-//    found: " << num_solutions; std::cout<< "hello"<<std::endl;
-//
-//    auto symbols = powerset(propositionals);
-//    for (const auto &symbol : symbols) {
-//      std::map<prop_ptr, prop_ptr, SharedComparator> replacements;
-//      for (const auto &x : propositionals) {
-//        replacements[x] = boolean_prop(!(symbol.end() == symbol.find(x)));
-//      }
-//      set_nfa_states nfa_states;
-//      symbol2nfastates[symbol] = set_nfa_states();
-//
-//      auto replaced_delta = replace(replacements, f);
-//      const auto &all_minimal_models = all_models(*replaced_delta);
-//      for (const auto &model : all_minimal_models) {
-//        set_formulas current_formulas;
-//        for (const auto &current_quoted_formula : model) {
-//          current_formulas.insert(
-//              dynamic_cast<const QuotedFormula
-//              &>(*current_quoted_formula->symbol)
-//                  .formula);
-//        }
-//        symbol2nfastates[symbol].insert(
-//            std::make_shared<NFAState>(current_formulas));
-//      }
-//    }
-//
-//    result.reserve(symbol2nfastates.size());
-//    for (const auto &pair : symbol2nfastates) {
-//      result.emplace_back(pair);
-//    }
-//    return result;
-//  }
+std::map<nfa_state_ptr, set_prop_formulas, SharedComparator>
+SATStrategy::next_transitions_from_delta_formula(
+    const PropositionalFormula &f) {
+  std::vector<std::pair<set_atoms_ptr, set_nfa_states>> next_transitions;
+
+  std::vector<set_atoms_ptr> prime_implicants = all_prime_implicants(f);
+
+  // group prime implicants per state
+  std::map<nfa_state_ptr, set_prop_formulas, SharedComparator>
+      transitions_by_state;
+
+  // group prime implicants per label
+  //  std::map<set_prop_formulas, set_nfa_states, cmp_set_of_ptr> transitions;
+
+  for (const auto &prime_implicant : prime_implicants) {
+    set_prop_formulas labels;
+    set_formulas state;
+    for (const auto &atom : prime_implicant) {
+      auto literal = dynamic_cast<const QuotedFormula &>(*atom->symbol).formula;
+      basic_ptr variable;
+      bool is_not = false;
+      if (is_a<PropositionalNot>(*literal)) {
+        is_not = true;
+        auto not_atom =
+            std::static_pointer_cast<const PropositionalNot>(literal);
+        variable = not_atom->get_arg();
+      } else {
+        variable =
+            std::static_pointer_cast<const PropositionalAtom>(literal)->symbol;
+      }
+
+      if (is_a<QuotedFormula>(*variable)) {
+        // pick the LDLf formula
+        assert(!is_not);
+        auto ldlf_formula = std::static_pointer_cast<const LDLfFormula>(
+            dynamic_cast<const QuotedFormula &>(*variable).formula);
+        state.insert(ldlf_formula);
+      } else {
+        labels.insert(
+            std::static_pointer_cast<const PropositionalFormula>(literal));
+      }
+    }
+    auto and_ = logical_and(labels);
+    auto nfa_state = std::make_shared<NFAState>(state);
+    if (transitions_by_state.find(nfa_state) == transitions_by_state.end()) {
+      transitions_by_state[nfa_state] = set_prop_formulas{};
+    }
+    transitions_by_state[nfa_state].insert(and_);
+  }
+  return transitions_by_state;
+}
+
+void DualRailEncodingVisitor::visit(const PropositionalTrue &f) {
+  result =
+      std::static_pointer_cast<const PropositionalTrue>(f.shared_from_this());
+}
+void DualRailEncodingVisitor::visit(const PropositionalFalse &f) {
+  result =
+      std::static_pointer_cast<const PropositionalFalse>(f.shared_from_this());
+}
+void DualRailEncodingVisitor::visit(const PropositionalAtom &f) {
+  result = prop_atom(quote(f.shared_from_this()));
+}
+void DualRailEncodingVisitor::visit(const PropositionalNot &f) {
+  result = prop_atom(quote(f.shared_from_this()));
+}
+void DualRailEncodingVisitor::visit(const PropositionalAnd &f) {
+  set_prop_formulas new_container;
+  for (const auto &operand : f.get_container()) {
+    auto new_operand = apply(*operand);
+    new_container.insert(new_operand);
+  }
+  result = logical_and(new_container);
+}
+void DualRailEncodingVisitor::visit(const PropositionalOr &f) {
+  set_prop_formulas new_container;
+  for (const auto &operand : f.get_container()) {
+    auto new_operand = apply(*operand);
+    new_container.insert(new_operand);
+  }
+  result = logical_or(new_container);
+}
+
+prop_ptr DualRailEncodingVisitor::apply(const PropositionalFormula &b) {
+  b.accept(*this);
+  return result;
+}
+
+// TODO refactor
+std::vector<set_atoms_ptr> get_clauses(const PropositionalFormula &f) {
+  if (is_a<PropositionalAnd>(f)) {
+    std::vector<set_atoms_ptr> result;
+    set_prop_formulas set =
+        dynamic_cast<const PropositionalAnd &>(f).get_container();
+    result.reserve(set.size());
+    for (const auto &subf : set) {
+      if (is_a<PropositionalOr>(*subf)) {
+        auto literals =
+            dynamic_cast<const PropositionalOr &>(*subf).get_container();
+        auto clause = set_atoms_ptr{};
+        bool seen_true = false;
+        for (const auto &literal : literals) {
+          if (is_a<PropositionalFalse>(*literal))
+            continue;
+          else if (is_a<PropositionalTrue>(*literal)) {
+            seen_true = true;
+            break;
+          } else
+            clause.insert(
+                std::static_pointer_cast<const PropositionalAtom>(literal));
+        }
+        if (not seen_true)
+          result.push_back(clause);
+      } else {
+        result.push_back(set_atoms_ptr(
+            {std::static_pointer_cast<const PropositionalAtom>(subf)}));
+      }
+    }
+    return result;
+  } else if (is_a<PropositionalOr>(f)) {
+    auto literals = dynamic_cast<const PropositionalOr &>(f).get_container();
+    auto clause = set_atoms_ptr{};
+    for (const auto &literal : literals)
+      clause.insert(std::static_pointer_cast<const PropositionalAtom>(literal));
+    return std::vector<set_atoms_ptr>({clause});
+  } else {
+    return std::vector<set_atoms_ptr>(
+        {set_atoms_ptr({std::static_pointer_cast<const PropositionalAtom>(
+            f.shared_from_this())})});
+  }
+}
+
+void ClauseExtractorVisitor::visit(const PropositionalTrue &f) {}
+
+void ClauseExtractorVisitor::visit(const PropositionalFalse &f) {}
+
+void ClauseExtractorVisitor::visit(const PropositionalAtom &f) {
+  auto ptr =
+      std::static_pointer_cast<const PropositionalAtom>(f.shared_from_this());
+  if (in_or) {
+    current_clause.insert(ptr);
+  } else {
+    result.push_back(set_atoms_ptr({ptr}));
+  }
+}
+
+void ClauseExtractorVisitor::visit(const PropositionalAnd &f) {
+  for (const auto &subf : f.get_container()) {
+    if (is_a<PropositionalFalse>(*subf)) {
+      result.clear();
+      return;
+    }
+    subf->accept(*this);
+  }
+}
+
+void ClauseExtractorVisitor::visit(const PropositionalOr &f) {
+  in_or = true;
+  for (const auto &subf : f.get_container()) {
+    if (is_a<PropositionalTrue>(*subf)) {
+      current_clause.clear();
+      in_or = false;
+      return;
+    }
+    subf->accept(*this);
+  }
+  result.push_back(current_clause);
+  current_clause.clear();
+  in_or = false;
+}
+
+void ClauseExtractorVisitor::visit(const PropositionalNot &f) { assert(false); }
+
+void ClauseExtractorVisitor::apply(const PropositionalFormula &f) {
+  f.accept(*this);
+}
+
+std::vector<set_atoms_ptr> all_prime_implicants(const PropositionalFormula &f) {
+  // compute the
+  auto cnf_f = to_cnf(f);
+  auto visitor = DualRailEncodingVisitor();
+  prop_ptr renamed_f = visitor.apply(*cnf_f);
+
+  // now we have a CNF formula whose atoms are positive literal
+  //  std::vector<atom_ptr> varindex2atom;
+  std::map<atom_ptr, int, SharedComparator> literal2litindex;
+  std::vector<atom_ptr> literals;
+  set_prop_formulas vars;
+  std::vector<std::set<int>> litindex2clauses;
+
+  auto clause_extractor = ClauseExtractorVisitor();
+  clause_extractor.apply(*renamed_f);
+  std::vector<set_atoms_ptr> clauses = clause_extractor.result;
+
+  // populate indexes
+  for (std::size_t clause_index = 0; clause_index < clauses.size();
+       ++clause_index) {
+    const auto &clause = clauses[clause_index];
+    for (const auto &literal : clause) {
+      auto it = literal2litindex.find(literal);
+      size_t litindex;
+      if (it == literal2litindex.end()) {
+        litindex = literal2litindex.size();
+        literal2litindex[literal] = litindex;
+        litindex2clauses.emplace_back();
+        literals.push_back(literal);
+      } else {
+        litindex = literal2litindex[literal];
+      }
+      litindex2clauses[litindex].insert(clause_index);
+      auto var = std::static_pointer_cast<const PropositionalFormula>(
+          dynamic_cast<const QuotedFormula &>(*literal->symbol).formula);
+      if (is_a<PropositionalNot>(*var)) {
+        var = dynamic_cast<const PropositionalNot &>(*var).get_arg();
+      }
+      vars.insert(var);
+    }
+  }
+
+  // build dual rail formula
+  set_prop_formulas dual_rail;
+  for (const auto &var : vars) {
+    auto positive_literal = prop_atom(quote(var));
+    auto negative_literal = prop_atom(quote(logical_not(var)));
+    auto or_ = logical_or(
+        {logical_not(positive_literal), logical_not(negative_literal)});
+    dual_rail.insert(or_);
+
+    if (literal2litindex.find(positive_literal) == literal2litindex.end()) {
+      size_t litindex = literal2litindex.size();
+      literal2litindex[positive_literal] = litindex;
+      litindex2clauses.emplace_back();
+      literals.push_back(positive_literal);
+    }
+    if (literal2litindex.find(negative_literal) == literal2litindex.end()) {
+      size_t litindex = literal2litindex.size();
+      literal2litindex[negative_literal] = litindex;
+      litindex2clauses.emplace_back();
+      literals.push_back(negative_literal);
+    }
+  }
+  auto dual_rail_formula = logical_and(dual_rail);
+
+  // build M(phi_R) formula
+  set_prop_formulas and_formulas;
+  for (size_t litindex = 0; litindex < literals.size(); ++litindex) {
+    set_prop_formulas clause_formulas;
+    const auto &literal = literals[litindex];
+    const auto &clause_indexes = litindex2clauses[litindex];
+    for (const auto &clause_index : clause_indexes) {
+      const auto &clause = clauses[clause_index];
+      auto reduced_clause = set_prop_formulas(clause.begin(), clause.end());
+      reduced_clause.erase(literal);
+      clause_formulas.insert(logical_or(reduced_clause));
+    }
+    // check Jabbour et al. 2014
+    auto not_cl = logical_not(logical_and(clause_formulas));
+    auto impl = logical_or({logical_not(literal), not_cl});
+    and_formulas.insert(impl);
+  }
+  auto m_formula = logical_and(and_formulas);
+
+  auto final_formula =
+      logical_and(set_prop_formulas({renamed_f, dual_rail_formula, m_formula}));
+  auto models = all_models<SATModelEnumerationStategy>(*final_formula);
+  //    auto models = all_models<NaiveModelEnumerationStategy>(*final_formula);
+  return models;
+}
+
+void BDDVisitor::visit(const PropositionalTrue &f) {
+  result = automaton->mgr.bddOne();
+}
+void BDDVisitor::visit(const PropositionalFalse &f) {
+  result = automaton->mgr.bddZero();
+}
+void BDDVisitor::visit(const PropositionalAtom &f) {
+  atom_ptr atom =
+      std::static_pointer_cast<const PropositionalAtom>(f.shared_from_this());
+  result = automaton->prop2bddvar(atom2index.at(atom), true);
+}
+void BDDVisitor::visit(const PropositionalAnd &f) {
+  CUDD::BDD res = automaton->mgr.bddOne();
+  for (const auto &subf : f.get_args()) {
+    res *= apply(*subf);
+  }
+  result = res;
+}
+void BDDVisitor::visit(const PropositionalOr &f) {
+  CUDD::BDD res = automaton->mgr.bddZero();
+  for (const auto &subf : f.get_args()) {
+    res += apply(*subf);
+  }
+  result = res;
+}
+void BDDVisitor::visit(const PropositionalNot &f) {
+  result = !apply(*f.get_arg());
+}
+
+CUDD::BDD BDDVisitor::apply(const PropositionalFormula &f) {
+  f.accept(*this);
+  return result;
+}
 
 } // namespace lydia
 } // namespace whitemech

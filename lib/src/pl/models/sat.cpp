@@ -25,7 +25,7 @@ namespace lydia {
 void PopulateSolverVisitor::visit(const PropositionalTrue &) {
   if (in_or) {
     // TODO the true helps only if in the or. We should simplify the clause in
-    // this case.
+    //  this case.
   }
 }
 void PopulateSolverVisitor::visit(const PropositionalFalse &) {
@@ -38,29 +38,33 @@ void PopulateSolverVisitor::visit(const PropositionalAtom &f) {
   atom_ptr f_ptr =
       std::static_pointer_cast<const PropositionalAtom>(f.shared_from_this());
   auto var_index = atom2idx.find(f_ptr);
-  int index = 0;
+  int index = -1;
   if (var_index == atom2idx.end()) {
     auto new_var = s.newVar();
     index = idx2var.size();
     idx2var.push_back(new_var);
     idx2atom.push_back(f_ptr);
+    atom2idx[f_ptr] = index;
   } else {
     index = var_index->second;
   }
-  Minisat::Lit literal = Minisat::mkLit(idx2var[index]);
-  if (in_not)
-    literal = ~literal;
+  Minisat::Lit literal = Minisat::mkLit(idx2var[index], in_not);
   if (in_or)
     current_clause.push(literal);
   else
     s.addClause(literal);
 }
 void PopulateSolverVisitor::visit(const PropositionalAnd &f) {
-  for (const auto &subf : f.get_container())
+  for (const auto &subf : f.get_container()) {
     subf->accept(*this);
+  }
 }
 void PopulateSolverVisitor::visit(const PropositionalOr &f) {
+  // formula must be in CNF
+  assert(!in_or);
+  assert(!in_not);
   in_or = true;
+  current_clause.clear();
   for (const auto &subf : f.get_container())
     subf->accept(*this);
   s.addClause(current_clause);

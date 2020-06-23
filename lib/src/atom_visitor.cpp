@@ -88,15 +88,17 @@ void AtomsVisitor::visit(const LDLfOr &x) {
 void AtomsVisitor::visit(const LDLfNot &x) { result = apply(*x.get_arg()); }
 
 void AtomsVisitor::visit(const LDLfDiamond &x) {
-  result = apply(*x.get_regex());
+  auto tmp = apply(*x.get_regex());
   auto y = apply(*x.get_formula());
-  result.insert(y.begin(), y.end());
+  tmp.insert(y.begin(), y.end());
+  result = tmp;
 }
 
 void AtomsVisitor::visit(const LDLfBox &x) {
-  result = apply(*x.get_regex());
+  auto tmp = apply(*x.get_regex());
   auto y = apply(*x.get_formula());
-  result.insert(y.begin(), y.end());
+  tmp.insert(y.begin(), y.end());
+  result = tmp;
 }
 
 void AtomsVisitor::visit(const UnionRegExp &x) {

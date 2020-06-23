@@ -71,8 +71,8 @@ set (CLI11_INCLUDE_PATH "${CLI11_MODULE_PATH}/include")
 # cppitertools
 
 #configure directories
-set (CPPITERTOOLS_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/cppitertools")
-set (CPPITERTOOLS_INCLUDE_PATH "${CPPITERTOOLS_MODULE_PATH}")
+set (CPPITERTOOLS_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/cppitertools/cppitertools")
+set (CPPITERTOOLS_INCLUDE_PATH "${THIRD_PARTY_MODULE_PATH}/cppitertools")
 
 # -------------------------------------------------------------------------
 
@@ -102,6 +102,7 @@ set (THIRD_PARTY_INCLUDE_PATH
         ${CLI11_INCLUDE_PATH}
         ${CUDD_INCLUDE_PATH}
         ${GOOGLE_BENCHMARK_INCLUDE_PATH}
+        ${CPPITERTOOLS_INCLUDE_PATH}
         ${MINISAT_INCLUDE_PATH})
 
 #set variables for tests
