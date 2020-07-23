@@ -19,6 +19,7 @@
 #include <lydia/logic.hpp>
 #include <lydia/parser/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
+#include <lydia/to_dfa/strategies/naive.hpp>
 #include <lydia/to_dfa/strategies/sat.hpp>
 #include <lydia/utils/benchmark.hpp>
 #include <random>
@@ -73,14 +74,41 @@ static void BM_translate_sequence_of_atoms(benchmark::State &state) {
   }
 }
 // clang-format off
-BENCHMARK(BM_translate_sequence_of_atoms)
-  ->Arg(5)->Arg(10)->Arg(15)
-  ->Arg(20)->Arg(25)->Arg(30)
-  ->Arg(40)->Arg(80)->Arg(100)
-  ->Arg(200)->Arg(500)->Arg(1000)
-  ->Unit(benchmark::kMillisecond)
-  ->Repetitions(5)
-  ->DisplayAggregatesOnly(true);
+  BENCHMARK(BM_translate_sequence_of_atoms)
+      ->Arg(5)->Arg(10)->Arg(15)
+      ->Arg(20)->Arg(25)->Arg(30)
+      ->Arg(40)->Arg(80)->Arg(100)
+      ->Arg(200)->Arg(500)->Arg(1000)
+      ->Unit(benchmark::kMillisecond)
+      ->Repetitions(5)
+      ->DisplayAggregatesOnly(true);
+
+  static void BM_translate_sequence_of_atoms_naive(benchmark::State &state) {
+    auto mgr =
+        CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
+    auto strategy = NaiveStrategy(mgr, 20);
+    auto translator = Translator(strategy);
+    auto driver = Driver();
+    for (auto _ : state) {
+      auto N = state.range(0);
+      auto regex = sequence(N, ";");
+      auto formula_string = "<" + regex + ">tt";
+      auto sstream = std::stringstream(formula_string);
+      driver.parse(sstream);
+      auto formula = driver.result;
+      auto automaton = translator.to_dfa(*formula);
+      escape(&automaton);
+      (void)automaton;
+    }
+  }
+// clang-format off
+  BENCHMARK(BM_translate_sequence_of_atoms_naive)
+      ->Arg(1)->Arg(2)->Arg(3)->Arg(4)->Arg(5)
+      ->Arg(6)->Arg(7)->Arg(8)->Arg(9)->Arg(10)
+      ->Arg(11)->Arg(12)
+      ->Unit(benchmark::kMillisecond)
+      ->Repetitions(5)
+      ->DisplayAggregatesOnly(true);
 
 // clang-format on
 
@@ -103,20 +131,49 @@ static void BM_translate_sequence_of_stars_of_atoms(benchmark::State &state) {
   }
 }
 // clang-format off
-BENCHMARK(BM_translate_sequence_of_stars_of_atoms)
-  ->Arg(5)->Arg(10)->Arg(15)
-  ->Arg(20)->Arg(25)->Arg(30)
-  ->Arg(40)->Arg(80)->Arg(100)
-  ->Arg(200)->Arg(500)->Arg(1000)
-  ->Unit(benchmark::kMillisecond)
-  ->Repetitions(5)
-  ->DisplayAggregatesOnly(true);
+  BENCHMARK(BM_translate_sequence_of_stars_of_atoms)
+      ->Arg(5)->Arg(10)->Arg(15)
+      ->Arg(20)->Arg(25)->Arg(30)
+      ->Arg(40)->Arg(80)->Arg(100)
+      ->Arg(200)->Arg(500)->Arg(1000)
+      ->Unit(benchmark::kMillisecond)
+      ->Repetitions(5)
+      ->DisplayAggregatesOnly(true);
+// clang-format on
+
+static void
+BM_translate_sequence_of_stars_of_atoms_naive(benchmark::State &state) {
+  auto mgr =
+      CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
+  auto sat_strategy = NaiveStrategy(mgr, 20);
+  auto translator = Translator(sat_strategy);
+  auto driver = Driver();
+  for (auto _ : state) {
+    auto N = state.range(0);
+    auto regex = sequence(N, ";", true);
+    auto formula_string = "<" + regex + ">tt";
+    auto sstream = std::stringstream(formula_string);
+    driver.parse(sstream);
+    auto formula = driver.result;
+    auto automaton = translator.to_dfa(*formula);
+    escape(&automaton);
+    (void)automaton;
+  }
+}
+// clang-format off
+  BENCHMARK(BM_translate_sequence_of_stars_of_atoms_naive)
+      ->Arg(1)->Arg(2)->Arg(3)->Arg(4)->Arg(5)
+      ->Arg(6)
+      ->Unit(benchmark::kMillisecond)
+      ->Repetitions(5)
+      ->DisplayAggregatesOnly(true);
+
 // clang-format on
 
 static void BM_translate_union(benchmark::State &state) {
   auto mgr =
       CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-  auto sat_strategy = SATStrategy(mgr, 20);
+  auto sat_strategy = SATStrategy(mgr, 30);
   auto translator = Translator(sat_strategy);
   auto driver = Driver();
   for (auto _ : state) {
@@ -132,14 +189,43 @@ static void BM_translate_union(benchmark::State &state) {
   }
 }
 // clang-format off
-BENCHMARK(BM_translate_union)
-->Arg(5)->Arg(10)->Arg(15)
-->Arg(20)->Arg(25)->Arg(30)
-->Arg(40)->Arg(80)->Arg(100)
-->Arg(200)->Arg(500)->Arg(1000)
-->Unit(benchmark::kMillisecond)
-->Repetitions(5)
-->DisplayAggregatesOnly(true);
+  BENCHMARK(BM_translate_union)
+      ->Arg(1)->Arg(2)->Arg(3)
+      ->Arg(4)->Arg(5)->Arg(6)
+      ->Arg(7)->Arg(8)
+      ->Unit(benchmark::kMillisecond)
+      ->Repetitions(5)
+      ->DisplayAggregatesOnly(true);
+// clang-format on
+
+static void BM_translate_union_naive(benchmark::State &state) {
+  auto mgr =
+      CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
+  auto sat_strategy = NaiveStrategy(mgr, 30);
+  auto translator = Translator(sat_strategy);
+  auto driver = Driver();
+  for (auto _ : state) {
+    auto N = state.range(0);
+    auto regex = sequence(N, "+", false);
+    auto formula_string = "<" + regex + ">tt";
+    auto sstream = std::stringstream(formula_string);
+    driver.parse(sstream);
+    auto formula = driver.result;
+    auto automaton = translator.to_dfa(*formula);
+    escape(&automaton);
+    (void)automaton;
+  }
+}
+// clang-format off
+  BENCHMARK(BM_translate_union_naive)
+      ->Arg(1)->Arg(2)->Arg(3)
+      ->Arg(4)->Arg(5)->Arg(6)
+      ->Arg(7)->Arg(8)->Arg(9)
+      ->Arg(10)->Arg(11)->Arg(12)
+      ->Arg(13)
+      ->Unit(benchmark::kMillisecond)
+      ->Repetitions(5)
+      ->DisplayAggregatesOnly(true);
 // clang-format on
 
 } // namespace whitemech::lydia::Benchmark
