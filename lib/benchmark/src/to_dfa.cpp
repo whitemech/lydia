@@ -19,6 +19,7 @@
 #include <lydia/logic.hpp>
 #include <lydia/parser/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
+#include <lydia/to_dfa/strategies/bdd/base.hpp>
 #include <lydia/to_dfa/strategies/naive.hpp>
 #include <lydia/to_dfa/strategies/sat.hpp>
 #include <lydia/utils/benchmark.hpp>
@@ -26,20 +27,24 @@
 
 namespace whitemech::lydia::Benchmark {
 
-static void BM_translate_boolean(benchmark::State &state) {
+template <class S> static void BM_translate_boolean(benchmark::State &state) {
   // we keep this outside since it's the operation that takes more time
   auto mgr =
       CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
   auto x = LDLfBooleanAtom(true);
   for (auto _ : state) {
-    auto automaton = to_dfa(x, mgr);
+    auto s = S(mgr);
+    auto t = Translator(s);
+    auto automaton = t.to_dfa(x);
     escape(&automaton);
     (void)automaton;
   }
 }
-BENCHMARK(BM_translate_boolean);
+BENCHMARK_TEMPLATE(BM_translate_boolean, NaiveStrategy);
+BENCHMARK_TEMPLATE(BM_translate_boolean, SATStrategy);
+BENCHMARK_TEMPLATE(BM_translate_boolean, BDDStrategy);
 
-static void BM_translate_diamond(benchmark::State &state) {
+template <class S> static void BM_translate_diamond(benchmark::State &state) {
   // we keep this outside since it's the operation that takes more time
   auto mgr =
       CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
@@ -48,12 +53,16 @@ static void BM_translate_diamond(benchmark::State &state) {
   auto regex_true_ = std::make_shared<const PropositionalRegExp>(true_);
   auto diamond = LDLfDiamond(regex_true_, tt);
   for (auto _ : state) {
-    auto automaton = to_dfa(diamond, mgr);
+    auto s = S(mgr);
+    auto t = Translator(s);
+    auto automaton = t.to_dfa(diamond);
     escape(&automaton);
     (void)automaton;
   }
 }
-BENCHMARK(BM_translate_diamond);
+BENCHMARK_TEMPLATE(BM_translate_diamond, NaiveStrategy);
+BENCHMARK_TEMPLATE(BM_translate_diamond, SATStrategy);
+BENCHMARK_TEMPLATE(BM_translate_diamond, BDDStrategy);
 
 static void BM_translate_sequence_of_atoms(benchmark::State &state) {
   auto mgr =
@@ -85,8 +94,8 @@ static void BM_translate_sequence_of_atoms(benchmark::State &state) {
 
   static void BM_translate_sequence_of_atoms_naive(benchmark::State &state) {
     auto mgr =
-        CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-    auto strategy = NaiveStrategy(mgr, 20);
+        CUDD::Cudd();
+    auto strategy = BDDStrategy(mgr, 10);
     auto translator = Translator(strategy);
     auto driver = Driver();
     for (auto _ : state) {
@@ -103,7 +112,8 @@ static void BM_translate_sequence_of_atoms(benchmark::State &state) {
   }
 // clang-format off
   BENCHMARK(BM_translate_sequence_of_atoms_naive)
-      ->Arg(1)->Arg(2)->Arg(3)->Arg(4)->Arg(5)
+      ->Arg(1)
+      ->Arg(2)->Arg(3)->Arg(4)->Arg(5)
       ->Arg(6)->Arg(7)->Arg(8)->Arg(9)->Arg(10)
       ->Arg(11)->Arg(12)
       ->Unit(benchmark::kMillisecond)
@@ -145,7 +155,7 @@ static void
 BM_translate_sequence_of_stars_of_atoms_naive(benchmark::State &state) {
   auto mgr =
       CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-  auto sat_strategy = NaiveStrategy(mgr, 20);
+  auto sat_strategy = BDDStrategy(mgr, 20);
   auto translator = Translator(sat_strategy);
   auto driver = Driver();
   for (auto _ : state) {
@@ -162,8 +172,10 @@ BM_translate_sequence_of_stars_of_atoms_naive(benchmark::State &state) {
 }
 // clang-format off
   BENCHMARK(BM_translate_sequence_of_stars_of_atoms_naive)
-      ->Arg(1)->Arg(2)->Arg(3)->Arg(4)->Arg(5)
-      ->Arg(6)
+      ->Arg(5)->Arg(10)->Arg(15)
+      ->Arg(20)->Arg(25)->Arg(30)
+      ->Arg(40)->Arg(80)->Arg(100)
+      ->Arg(200)->Arg(500)->Arg(1000)
       ->Unit(benchmark::kMillisecond)
       ->Repetitions(5)
       ->DisplayAggregatesOnly(true);
@@ -201,7 +213,7 @@ static void BM_translate_union(benchmark::State &state) {
 static void BM_translate_union_naive(benchmark::State &state) {
   auto mgr =
       CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-  auto sat_strategy = NaiveStrategy(mgr, 30);
+  auto sat_strategy = BDDStrategy(mgr, 30);
   auto translator = Translator(sat_strategy);
   auto driver = Driver();
   for (auto _ : state) {

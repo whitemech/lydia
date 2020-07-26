@@ -17,6 +17,7 @@
 
 #include <lydia/dfa.hpp>
 #include <lydia/to_dfa/core.hpp>
+#include <lydia/to_dfa/strategies/bdd/base.hpp>
 #include <lydia/to_dfa/strategies/naive.hpp>
 #include <lydia/to_dfa/strategies/sat.hpp>
 #include <memory>
@@ -26,7 +27,8 @@ namespace lydia {
 
 std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula, const CUDD::Cudd &mgr) {
   //    auto s = NaiveStrategy(mgr);
-  auto s = SATStrategy(mgr);
+  //  auto s = SATStrategy(mgr);
+  auto s = BDDStrategy(mgr);
   auto t = Translator(s);
   return t.to_dfa(formula);
 }

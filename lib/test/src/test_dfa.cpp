@@ -25,6 +25,7 @@ TEST_CASE("Test Cudd", "[cudd]") {
   CUDD::Cudd mgr(0, 0);
   CUDD::BDD x = mgr.bddVar();
   CUDD::BDD y = mgr.bddVar();
+  CUDD::BDD z = mgr.bddVar();
   CUDD::BDD not_x = !x;
   CUDD::BDD x_and_y = x & y;
   CUDD::BDD x_or_y = x | y;
@@ -104,6 +105,24 @@ TEST_CASE("Test Cudd", "[cudd]") {
     REQUIRE(!(x.IsOne()));
     REQUIRE(!((!x).IsZero()));
     REQUIRE(!((!x).IsOne()));
+  }
+
+  SECTION("Test Print Minterms") {
+    auto tmp = ((x | y) & !z);
+    std::vector<std::vector<int>> primes;
+    int *cube = nullptr;
+    DdGen *g =
+        Cudd_FirstPrime(mgr.getManager(), tmp.getNode(), tmp.getNode(), &cube);
+    if (g != nullptr) {
+      do {
+        primes.push_back(std::vector<int>(cube, cube + 3));
+
+      } while (Cudd_NextPrime(g, &cube));
+    }
+
+    REQUIRE(primes.size() == 2);
+    REQUIRE(primes[0] == std::vector<int>{1, 2, 0});
+    REQUIRE(primes[1] == std::vector<int>{2, 1, 0});
   }
 }
 
