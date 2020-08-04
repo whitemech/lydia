@@ -71,9 +71,10 @@ set(CMAKE_MODULE_PATH
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 
+
 set (THREADS_PREFER_PTHREAD_FLAG ON)
 find_package (Threads REQUIRED)
-find_package(cudd REQUIRED)
+find_package(CUDD REQUIRED)
 find_package(Graphviz REQUIRED)
 find_package(BISON 3.0 REQUIRED)
 find_package(FLEX 2.6 REQUIRED)

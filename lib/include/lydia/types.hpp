@@ -58,6 +58,7 @@ class NFAState;
 class DFAState;
 class DFATransition;
 class dfa;
+class BDDStrategy;
 
 struct SharedComparator {
   template <typename T>

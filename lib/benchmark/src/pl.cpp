@@ -81,7 +81,7 @@ static void BM_pl_models_naive_all_models_or(benchmark::State &state) {
     }
     auto f = logical_or(set_prop_formulas(operands.begin(), operands.end()));
     auto m = all_models<NaiveModelEnumerationStategy>(*f);
-    assert(m.size() == 2 << N);
+    assert(m.size() == ((2 << N) - 1));
     escape(&m);
     (void)m;
   }

@@ -18,7 +18,6 @@
 #include <cassert>
 #include <lydia/logger.hpp>
 #include <lydia/nnf.hpp>
-#include <lydia/pl/eval.hpp>
 #include <lydia/pl/logic.hpp>
 #include <lydia/to_dfa/delta_symbolic.hpp>
 
