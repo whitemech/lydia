@@ -58,6 +58,7 @@ class NFAState;
 class DFAState;
 class DFATransition;
 class dfa;
+class abstract_dfa;
 class BDDStrategy;
 
 struct SharedComparator {
@@ -108,6 +109,7 @@ typedef unsigned long int state_t;
 typedef unsigned long int variable_t;
 typedef bool bit;
 typedef std::shared_ptr<dfa> dfa_ptr;
+typedef std::shared_ptr<abstract_dfa> adfa_ptr;
 
 class not_implemented_error : public std::logic_error {
 public:

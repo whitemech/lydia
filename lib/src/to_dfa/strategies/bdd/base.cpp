@@ -16,7 +16,7 @@
  */
 
 #include <lydia/atom_visitor.hpp>
-#include <lydia/dfa.hpp>
+#include <lydia/dfa/dfa.hpp>
 #include <lydia/nnf.hpp>
 #include <lydia/to_dfa/delta_symbolic.hpp>
 #include <lydia/to_dfa/dfa_state.hpp>

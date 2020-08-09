@@ -16,7 +16,7 @@
  */
 
 #include <cuddObj.hh>
-#include <lydia/dfa.hpp>
+#include <lydia/dfa/dfa.hpp>
 #include <lydia/utils/misc.hpp>
 #include <lydia/utils/strings.hpp>
 #include <numeric>
@@ -27,8 +27,7 @@ namespace lydia {
 Logger dfa::logger = Logger("dfa");
 
 dfa::dfa(const CUDD::Cudd &mgr, int nb_bits, int nb_variables)
-    : mgr{mgr}, nb_bits{nb_bits}, nb_variables{nb_variables}, nb_states{1},
-      initial_state{0} {
+    : abstract_dfa(nb_variables), mgr{mgr}, nb_bits{nb_bits} {
 
   bddvars.reserve(nb_variables);
   root_bdds.reserve(nb_bits + nb_variables);
@@ -281,7 +280,7 @@ dfa dfa::read_from_file(const std::string &filename, const CUDD::Cudd &mgr) {
 dfa::dfa(const CUDD::Cudd &mgr, const std::vector<std::string> &variables,
          int nb_states, int initial_state, const std::vector<int> &final_states,
          const std::vector<int> &behaviour, std::vector<item> &mona_bdd_nodes)
-    : mgr{mgr} {
+    : abstract_dfa(variables.size()), mgr{mgr} {
   this->nb_variables = variables.size();
   this->nb_states = nb_states;
   this->nb_bits = state2bin(nb_states - 1).length();

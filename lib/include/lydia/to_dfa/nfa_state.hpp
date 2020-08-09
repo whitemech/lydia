@@ -16,7 +16,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/dfa.hpp>
+#include <lydia/dfa/dfa.hpp>
 #include <lydia/logic.hpp>
 #include <lydia/types.hpp>
 #include <lydia/utils/compare.hpp>

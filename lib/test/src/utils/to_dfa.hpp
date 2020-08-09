@@ -20,7 +20,7 @@
 #include <cppitertools/powerset.hpp>
 #include <cppitertools/product.hpp>
 #include <cuddObj.hh>
-#include <lydia/dfa.hpp>
+#include <lydia/dfa/dfa.hpp>
 #include <lydia/logic.hpp>
 #include <lydia/parser/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
@@ -58,8 +58,8 @@ static trace to_trace(const std::vector<std::string> &trace_) {
   return t;
 }
 
-static bool verify(const dfa &automaton, const std::vector<std::string> &trace_,
-                   bool expected) {
+static bool verify(const abstract_dfa &automaton,
+                   const std::vector<std::string> &trace_, bool expected) {
   return automaton.accepts(to_trace(trace_)) == expected;
 }
 
@@ -92,8 +92,8 @@ from_trace_set(std::vector<interpretation_set> vector, int prop);
 
 template <int length>
 static bool compare(
-    const dfa &automaton_1, const dfa &automaton_2, int nb_prop,
-    boolean_condition bc = [](bool a, bool b) { return a == b; }) {
+    const abstract_dfa &automaton_1, const abstract_dfa &automaton_2,
+    int nb_prop, boolean_condition bc = [](bool a, bool b) { return a == b; }) {
   if (automaton_1.nb_variables != automaton_2.nb_variables)
     return false;
 
@@ -128,8 +128,8 @@ from_trace_set(std::vector<interpretation_set> vector, int prop) {
   return result;
 }
 
-static dfa_ptr to_dfa_from_formula_string(const std::string &f,
-                                          const CUDD::Cudd &mgr) {
+static adfa_ptr to_dfa_from_formula_string(const std::string &f,
+                                           const CUDD::Cudd &mgr) {
   auto driver = Driver();
   std::stringstream ldlf_formula_stream(f);
   driver.parse(ldlf_formula_stream);
@@ -137,7 +137,7 @@ static dfa_ptr to_dfa_from_formula_string(const std::string &f,
   return to_dfa(formula, mgr);
 }
 
-static void print_dfa(const dfa &automaton, const std::string &name,
+static void print_dfa(const abstract_dfa &automaton, const std::string &name,
                       const std::string &format = "svg") {
   dfa_to_graphviz(automaton, name + "." + format, format);
 }

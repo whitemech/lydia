@@ -16,12 +16,13 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/dfa.hpp>
+#include <lydia/dfa/dfa.hpp>
 
 namespace whitemech {
 namespace lydia {
 
-void dfa_to_graphviz(const dfa &automaton, const std::string &output_filename,
+void dfa_to_graphviz(const abstract_dfa &automaton,
+                     const std::string &output_filename,
                      const std::string &format = "svg");
 
 void dfa_to_bdds(const dfa &automaton, const std::string &directory = "./");

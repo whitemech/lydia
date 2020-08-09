@@ -35,7 +35,8 @@ void interpretation_set_to_vect(const interpretation_set &src,
   }
 }
 
-void dfa_to_graphviz(const dfa &automaton, const std::string &output_filename,
+void dfa_to_graphviz(const abstract_dfa &automaton,
+                     const std::string &output_filename,
                      const std::string &format) {
   Agraph_t *g;
   GVC_t *gvc;

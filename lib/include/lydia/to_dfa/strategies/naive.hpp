@@ -17,7 +17,7 @@
  */
 
 #include <lydia/atom_visitor.hpp>
-#include <lydia/dfa.hpp>
+#include <lydia/dfa/dfa.hpp>
 #include <lydia/nnf.hpp>
 #include <lydia/pl/logic.hpp>
 #include <lydia/to_dfa/core.hpp>

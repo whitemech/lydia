@@ -17,6 +17,7 @@
  */
 
 // TODO require CUDD headers are installed in cudd/
+#include "abstract_dfa.hpp"
 #include <algorithm>
 #include <cassert>
 #include <cuddObj.hh>
@@ -32,12 +33,10 @@
 namespace whitemech {
 namespace lydia {
 
-class dfa {
+class dfa : public abstract_dfa {
 public:
   int nb_bits{};
-  int initial_state{};
-  int nb_states{};
-  int nb_variables{};
+
   std::vector<std::string> variables;
 
   CUDD::BDD finalstatesBDD;
@@ -139,28 +138,28 @@ public:
    *
    * @return true if the word is accepted, false otherwise.
    */
-  bool accepts(const trace &word) const;
+  bool accepts(const trace &word) const override;
 
-  int get_successor(int state, const interpretation &symbol) const;
-  int get_successor(int state, const interpretation_set &symbol) const;
+  int get_successor(int state, const interpretation &symbol) const override;
+  int get_successor(int state, const interpretation_set &symbol) const override;
 
   CUDD::BDD get_symbol(const interpretation_map &) const;
 
-  bool is_final(int state) const;
+  bool is_final(int state) const override;
 
   /*!
    * Add a new state.
    *
    * @return the index of the next state.
    */
-  int add_state();
+  int add_state() override;
 
   /*!
    * Set the initial state.
    *
    * @param state the initial state.
    */
-  void set_initial_state(int state);
+  void set_initial_state(int state) override;
 
   /*!
    * Set a state to be final (or not final)
@@ -168,7 +167,7 @@ public:
    * @param state the initial state.
    * @param is_final whether the state should be final or not..
    */
-  void set_final_state(int state, bool is_final = true);
+  void set_final_state(int state, bool is_final = true) override;
 
   /*!
    * Add a transition to the DFA.
@@ -184,7 +183,8 @@ public:
    *    greater or equal than nb_variables, are interpreted as "don't care".
    * @param to the ending DFA state
    */
-  void add_transition(int from, const interpretation_map &symbol, int to);
+  void add_transition(int from, const interpretation_map &symbol,
+                      int to) override;
 
   /*!
    * The same the above, but with @symbol as a vector of indexes whose
@@ -194,7 +194,7 @@ public:
    * "don't care" variables. Otherwise, they are considered explicitly false.
    */
   void add_transition(int from, const interpretation &symbol, int to,
-                      bool dont_care = true);
+                      bool dont_care = true) override;
 
   /*!
    * The same the above, but with @symbol as a set of indexes whose
@@ -204,7 +204,7 @@ public:
    * "don't care" variables. Otherwise, they are considered explicitly false.
    */
   void add_transition(int from, const interpretation_set &symbol, int to,
-                      bool dont_care = true);
+                      bool dont_care = true) override;
 
   CUDD::BDD prop2bddvar(int index, bool v) const;
 
