@@ -34,6 +34,11 @@ namespace whitemech {
 namespace lydia {
 
 class dfa : public abstract_dfa {
+private:
+  int initial_state{};
+  int nb_variables{};
+  int nb_states{};
+
 public:
   int nb_bits{};
 
@@ -140,6 +145,9 @@ public:
    */
   bool accepts(const trace &word) const override;
 
+  int get_initial_state() const override { return initial_state; };
+  int get_nb_states() const override { return nb_states; };
+  int get_nb_variables() const override { return nb_variables; };
   int get_successor(int state, const interpretation &symbol) const override;
   int get_successor(int state, const interpretation_set &symbol) const override;
 

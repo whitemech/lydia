@@ -17,7 +17,6 @@
 #include <catch.hpp>
 #include <cuddObj.hh>
 #include <lydia/dfa/dfa.hpp>
-#include <test/src/utils/to_dfa.hpp>
 
 namespace whitemech::lydia::Test {
 

@@ -14,23 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "../data/formulas.hpp"
-#include "../utils/to_dfa.hpp"
+
 #include <catch.hpp>
+#include <lydia/dfa/mona_dfa.hpp>
 
 namespace whitemech::lydia::Test {
 
-TEST_CASE("Duality", "[to_dfa]") {
-  CUDD::Cudd mgr1;
-  CUDD::Cudd mgr2;
-  for (const auto &formula : FORMULAS) {
-    SECTION("Test duality of " + formula) {
-      adfa_ptr automaton_1 = to_dfa_from_formula_string(formula, mgr1);
-      adfa_ptr automaton_2 =
-          to_dfa_from_formula_string("!(" + formula + ")", mgr2);
-      REQUIRE(compare<5>(*automaton_1, *automaton_2,
-                         automaton_1->get_nb_variables(), not_equal));
-    }
-  }
-}
+TEST_CASE("Test MONA DFA", "[dfa/mona_dfa]") {
+  bdd_init();
+  dfaSetup(2, 0, nullptr);
+  /* boolvar */
+  dfaAllocExceptions(0);
+  dfaStoreState(1);
+
+  /* state 1 */
+  dfaAllocExceptions(0);
+  dfaStoreState(1);
+
+  DFA *a = dfaBuild("0+");
+  dfaPrintGraphviz(a, 2, {});
+};
 } // namespace whitemech::lydia::Test

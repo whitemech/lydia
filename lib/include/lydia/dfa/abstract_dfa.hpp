@@ -30,12 +30,9 @@ namespace lydia {
 
 class abstract_dfa {
 public:
-  int initial_state{};
-  int nb_variables{};
-  int nb_states{};
-
-  abstract_dfa(int nb_variables)
-      : initial_state{0}, nb_variables{nb_variables}, nb_states{1} {}
+  virtual int get_initial_state() const = 0;
+  virtual int get_nb_states() const = 0;
+  virtual int get_nb_variables() const = 0;
 
   /*!
    * Check whether a word of propositional interpretations

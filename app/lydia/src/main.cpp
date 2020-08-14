@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
   log.info("transforming to dfa...done!");
   if (summary) {
     // TODO add more details
-    log.info("Number of states " + std::to_string(my_dfa->nb_states));
+    log.info("Number of states " + std::to_string(my_dfa->get_nb_states()));
   }
   if (!dot_option->empty())
     dfa_to_graphviz(*my_dfa, graphviz_path + "-lydia.svg", "svg");

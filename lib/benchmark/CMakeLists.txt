@@ -36,7 +36,7 @@ file (GLOB BENCHMARK_SOURCE_FILES "${BENCHMARK_SRC_PATH}/*.cpp")
 add_executable (${BENCHMARK_APP_NAME} ${BENCHMARK_SOURCE_FILES})
 
 #add the library
-target_link_libraries (${BENCHMARK_APP_NAME} ${LIB_NAME} Threads::Threads benchmark::benchmark ${CUDD_LIBRARIES})
+target_link_libraries (${BENCHMARK_APP_NAME} ${LIB_NAME} Threads::Threads benchmark::benchmark ${CUDD_LIBRARIES} ${MONA_LIBRARIES})
 
 add_custom_target(lydia-benchmark
         COMMAND ${CMAKE_BINARY_DIR}/bin/${BENCHMARK_APP_NAME}

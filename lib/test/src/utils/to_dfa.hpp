@@ -94,7 +94,7 @@ template <int length>
 static bool compare(
     const abstract_dfa &automaton_1, const abstract_dfa &automaton_2,
     int nb_prop, boolean_condition bc = [](bool a, bool b) { return a == b; }) {
-  if (automaton_1.nb_variables != automaton_2.nb_variables)
+  if (automaton_1.get_nb_variables() != automaton_2.get_nb_variables())
     return false;
 
   std::vector<int> full_interpretation;

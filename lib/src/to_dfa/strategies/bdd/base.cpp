@@ -148,8 +148,9 @@ BDDStrategy::next_transitions(const NFAState &state) {
   DdGen *g = Cudd_FirstPrime(mgr.getManager(), successor_fun.getNode(),
                              successor_fun.getNode(), &cube);
   size_t nb_all_variables =
-      automaton->nb_bits + automaton->nb_variables + id2subformula.size();
-  size_t nb_automaton_variables = automaton->nb_bits + automaton->nb_variables;
+      automaton->nb_bits + automaton->get_nb_variables() + id2subformula.size();
+  size_t nb_automaton_variables =
+      automaton->nb_bits + automaton->get_nb_variables();
   if (g != nullptr) {
     do {
       CUDD::BDD symbol = mgr.bddOne();
