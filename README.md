@@ -58,7 +58,21 @@ sudo make install
   3. Using a version of aclocal other than 1.14:
      modify the version 1.14 in configure accordingly.
 
-## ZLib
+### MONA
+
+- Download the source code and extract it:
+```
+wget https://github.com/cs-au-dk/MONA/archive/1.4-18.tar.gz
+tar -xf 1.4-18.tar.gz
+cd MONA-1.4-18
+```
+
+- Build the library
+```
+./configure && make && sudo make install-strip
+```
+
+### ZLib
 
 The software depends on MiniSAT Solver, which in turn depends
 on [ZLib](https://www.zlib.net/).
@@ -69,7 +83,7 @@ To install it, e.g. on Ubuntu:
 sudo apt-get install zlib1g-dev
 ```
 
-## Graphviz
+### Graphviz
 
 This tool uses Graphviz to display automata.
 Please follow the install instructions on the official website:
