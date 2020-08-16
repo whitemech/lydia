@@ -38,6 +38,8 @@
 if(NOT CUDD_ROOT AND DEFINED ENV{CUDD_ROOT})
 	set(CUDD_ROOT "$ENV{CUDD_ROOT}" CACHE PATH "CUDD base directory location (optional, used for nonstandard installation paths)")
 	mark_as_advanced(CUDD_ROOT)
+else()
+	set(CUDD_ROOT "/usr/local")
 endif()
 
 #set(CUDD_ROOT "$ENV{HOME}/install")

@@ -22,83 +22,44 @@ set (THIRD_PARTY_MODULE_PATH "${PROJECT_SOURCE_DIR}/third_party")
 
 # -------------------------------------------------------------------------
 # catch
-
-#configure directories
 set (CATCH_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/Catch2")
 set (CATCH_INCLUDE_PATH "${CATCH_MODULE_PATH}/single_include/catch2")
-
-#include custom cmake function
 include ( "${CATCH_MODULE_PATH}/contrib/ParseAndAddCatchTests.cmake")
-
 # -------------------------------------------------------------------------
 # google/benchmark
-
-#configure directories
 set (GOOGLE_BENCHMARK_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/google/benchmark")
 set (GOOGLE_BENCHMARK_INCLUDE_PATH "${GOOGLE_BENCHMARK_MODULE_PATH}/include")
 set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
 add_subdirectory(${GOOGLE_BENCHMARK_MODULE_PATH})
-
-
 # -------------------------------------------------------------------------
 # spdlog
-
-#configure directories
 set (SPDLOG_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/spdlog")
 set (SPDLOG_INCLUDE_PATH "${SPDLOG_MODULE_PATH}/include")
-
-# -------------------------------------------------------------------------
-
 # -------------------------------------------------------------------------
 # fmt
-
-#configure directories
 set (FMT_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/fmt")
 set (FMT_INCLUDE_PATH "${FMT_MODULE_PATH}/include")
-
-# -------------------------------------------------------------------------
-
 # -------------------------------------------------------------------------
 # CLI11
-
-#configure directories
 set (CLI11_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/CLI11")
 set (CLI11_INCLUDE_PATH "${CLI11_MODULE_PATH}/include")
-
-# -------------------------------------------------------------------------
-
 # -------------------------------------------------------------------------
 # cppitertools
-
-#configure directories
 set (CPPITERTOOLS_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/cppitertools/cppitertools")
 set (CPPITERTOOLS_INCLUDE_PATH "${THIRD_PARTY_MODULE_PATH}/cppitertools")
-
-# -------------------------------------------------------------------------
-
 # -------------------------------------------------------------------------
 # CUDD
-
-#configure directories
 set (CUDD_INCLUDE_PATH ${CUDD_INCLUDE_DIRS})
-
 # -------------------------------------------------------------------------
 # MONA
-
-#configure directories
 set (MONA_INCLUDE_PATH ${MONA_INCLUDE_DIRS})
-
 # -------------------------------------------------------------------------
-
 # -------------------------------------------------------------------------
 # MiniSAT
-
-#configure directories
 set (MINISAT_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/minisat")
 set (MINISAT_INCLUDE_PATH "${MINISAT_MODULE_PATH}")
 add_subdirectory(${MINISAT_MODULE_PATH})
 set(MINISAT_LIBRARIES minisat-lib-static PARENT_SCOPE)
-
 # -------------------------------------------------------------------------
 
 #set variables

@@ -69,7 +69,7 @@ cd MONA-1.4-18
 
 - Build the library
 ```
-./configure && make && sudo make install-strip
+./configure && make && sudo make install
 ```
 
 ### ZLib

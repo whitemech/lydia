@@ -38,6 +38,8 @@
 if(NOT MONA_ROOT AND DEFINED ENV{MONA_ROOT})
 	set(MONA_ROOT "$ENV{MONA_ROOT}" CACHE PATH "MONA base directory location (optional, used for nonstandard installation paths)")
 	mark_as_advanced(MONA_ROOT)
+else()
+	set(MONA_ROOT "/usr/local")
 endif()
 
 # Search path for nonstandard locations

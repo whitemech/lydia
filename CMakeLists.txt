@@ -35,7 +35,7 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # TODO introduce '-Werror', eventually
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
+#set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
 
 # these cannot be added due to Flex/Bison
 #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -fno-exceptions")

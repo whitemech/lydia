@@ -19,7 +19,9 @@
 #include <lydia/dfa/abstract_dfa.hpp>
 
 extern "C" {
+#include <mona/bdd.h>
 #include <mona/dfa.h>
+#include <mona/mem.h>
 }
 
 namespace whitemech {
@@ -36,18 +38,27 @@ public:
   std::vector<int> indices;
 
   mona_dfa(DFA *dfa);
+  ~mona_dfa();
+
+  DFA *get_dfa() { return dfa_; }
 
   int get_initial_state() const override;
   int get_nb_states() const override;
   int get_nb_variables() const override;
 
-  bool accepts(const trace &word) const override{};
+  bool accepts(const trace &word) const override {
+    int current_state = get_initial_state();
+    for (const auto &symbol : word) {
+      current_state = get_successor(current_state, symbol);
+    }
+    return is_final(current_state);
+  };
 
-  int get_successor(int state, const interpretation &symbol) const override{};
+  int get_successor(int state, const interpretation &symbol) const override;
   int get_successor(int state,
                     const interpretation_set &symbol) const override{};
 
-  virtual bool is_final(int state) const {};
+  bool is_final(int state) const override;
 
   virtual int add_state(){};
 
@@ -64,6 +75,14 @@ public:
   void add_transition(int from, const interpretation_set &symbol, int to,
                       bool dont_care = true) override{};
 };
+
+DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices);
+std::string get_path_guard(int n, trace_descr tp);
+
+mona_dfa dfaLDLfTrue();
+mona_dfa dfaLDLfFalse();
+mona_dfa dfaNext(int a);
+mona_dfa dfaLDLfDiamondProp(int b, DFA *body, int var, int *indices);
 
 } // namespace lydia
 } // namespace whitemech
