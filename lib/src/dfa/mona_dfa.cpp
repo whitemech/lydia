@@ -21,13 +21,11 @@
 namespace whitemech {
 namespace lydia {
 
-mona_dfa::mona_dfa(DFA *dfa) : dfa_{dfa} {}
-
 int mona_dfa::get_nb_states() const { return dfa_->ns; }
 
 int mona_dfa::get_initial_state() const { return dfa_->s; }
 
-int mona_dfa::get_nb_variables() const { return dfa_->s; }
+int mona_dfa::get_nb_variables() const { return nb_variables_; }
 
 mona_dfa::~mona_dfa() { dfaFree(this->dfa_); }
 
@@ -197,10 +195,27 @@ DFA *dfaNext(int a) {
   return dfaBuild("-+-");
 }
 
-DFA *dfaLDLfDiamondProp(int b, DFA *body, int var, int *indices) {
-  DFA *next = dfaNext(b);
-  DFA *diamond = dfa_concatenate(next, body, var, indices);
+DFA *dfaLDLfDiamondProp(DFA *prop_regex, DFA *body, int var, int *indices) {
+  DFA *diamond = dfa_concatenate(prop_regex, body, var, indices);
   return diamond;
+}
+
+DFA *dfaPropositionalTrue() {
+  dfaSetup(3, 0, nullptr);
+
+  /* boolvar */
+  dfaAllocExceptions(0);
+  dfaStoreState(1);
+
+  /* state 1 */
+  dfaAllocExceptions(0);
+  dfaStoreState(2);
+
+  /* state 2 */
+  dfaAllocExceptions(0);
+  dfaStoreState(2);
+
+  return dfaBuild("-+-");
 }
 
 } // namespace lydia

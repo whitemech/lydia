@@ -28,10 +28,15 @@ class CompositionalStrategy : public Strategy {
 public:
   std::vector<atom_ptr> id2atoms;
   std::map<atom_ptr, size_t, SharedComparator> atom2ids;
+  std::vector<int> indices;
   std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &f) override;
 };
 
 class ComposeDFAVisitor : public Visitor {
+private:
+  DFA *current_formula_ = nullptr;
+  bool is_diamond;
+
 public:
   CompositionalStrategy &cs;
   DFA *result;
@@ -39,27 +44,27 @@ public:
   explicit ComposeDFAVisitor(CompositionalStrategy &cs) : cs{cs} {}
 
   // callbacks for LDLf
-  void visit(const LDLfBooleanAtom &) override{};
-  void visit(const LDLfAnd &) override{};
-  void visit(const LDLfOr &) override{};
-  void visit(const LDLfNot &) override{};
-  void visit(const LDLfDiamond &) override{};
-  void visit(const LDLfBox &) override{};
+  void visit(const LDLfBooleanAtom &f) override;
+  void visit(const LDLfAnd &f) override;
+  void visit(const LDLfOr &) override;
+  void visit(const LDLfNot &f) override;
+  void visit(const LDLfDiamond &) override;
+  void visit(const LDLfBox &) override;
 
   // callbacks for regular expressions
-  void visit(const PropositionalRegExp &) override{};
-  void visit(const TestRegExp &) override{};
-  void visit(const UnionRegExp &) override{};
-  void visit(const SequenceRegExp &) override{};
-  void visit(const StarRegExp &) override{};
+  void visit(const PropositionalRegExp &) override;
+  void visit(const TestRegExp &) override { assert(false); };
+  void visit(const UnionRegExp &) override;
+  void visit(const SequenceRegExp &) override;
+  void visit(const StarRegExp &) override { assert(false); };
 
   // callbacks for propositional logic
-  void visit(const PropositionalTrue &) override{};
-  void visit(const PropositionalFalse &) override{};
-  void visit(const PropositionalAtom &) override{};
-  void visit(const PropositionalAnd &) override{};
-  void visit(const PropositionalOr &) override{};
-  void visit(const PropositionalNot &) override{};
+  void visit(const PropositionalTrue &) override;
+  void visit(const PropositionalFalse &) override;
+  void visit(const PropositionalAtom &) override;
+  void visit(const PropositionalAnd &) override;
+  void visit(const PropositionalOr &) override;
+  void visit(const PropositionalNot &) override;
 
   void visit(const Symbol &) override{};
   void visit(const QuotedFormula &) override{};
@@ -67,6 +72,14 @@ public:
   void visit(const LDLfT &) override{};
 
   DFA *apply(const LDLfFormula &f) {
+    f.accept(*this);
+    return result;
+  }
+  DFA *apply(const RegExp &f) {
+    f.accept(*this);
+    return result;
+  }
+  DFA *apply(const PropositionalFormula &f) {
     f.accept(*this);
     return result;
   }

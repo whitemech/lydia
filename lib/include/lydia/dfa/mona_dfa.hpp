@@ -33,11 +33,13 @@ namespace lydia {
 class mona_dfa : public abstract_dfa {
 private:
   DFA *dfa_;
+  int nb_variables_;
 
 public:
   std::vector<int> indices;
 
-  mona_dfa(DFA *dfa);
+  mona_dfa(DFA *dfa, int nb_variables)
+      : dfa_{dfa}, nb_variables_{nb_variables} {}
   ~mona_dfa();
 
   DFA *get_dfa() { return dfa_; }
@@ -82,7 +84,8 @@ std::string get_path_guard(int n, trace_descr tp);
 DFA *dfaLDLfTrue();
 DFA *dfaLDLfFalse();
 DFA *dfaNext(int a);
-DFA *dfaLDLfDiamondProp(int b, DFA *body, int var, int *indices);
+DFA *dfaLDLfDiamondProp(DFA *prop_regex, DFA *body, int var, int *indices);
+DFA *dfaPropositionalTrue();
 
 } // namespace lydia
 } // namespace whitemech

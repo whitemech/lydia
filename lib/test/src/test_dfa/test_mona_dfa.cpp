@@ -35,7 +35,7 @@ void _print_mona_dfa(DFA *a, const std::string &name, int num = 1) {
 
 TEST_CASE("Test MONA dfaLDLfTrue", "[dfa/mona_dfa/true]") {
   bdd_init();
-  auto automaton = mona_dfa(dfaLDLfTrue());
+  auto automaton = mona_dfa(dfaLDLfTrue(), 0);
   REQUIRE(automaton.get_nb_states() == 1);
   REQUIRE(automaton.get_nb_variables() == 0);
   REQUIRE(verify(automaton, {}, true));
@@ -45,7 +45,7 @@ TEST_CASE("Test MONA dfaLDLfTrue", "[dfa/mona_dfa/true]") {
 
 TEST_CASE("Test MONA dfaLDLfFalse", "[dfa/mona_dfa/true]") {
   bdd_init();
-  auto automaton = mona_dfa(dfaLDLfFalse());
+  auto automaton = mona_dfa(dfaLDLfFalse(), 0);
   REQUIRE(automaton.get_nb_states() == 1);
   REQUIRE(automaton.get_nb_variables() == 0);
   REQUIRE(verify(automaton, {}, false));
@@ -55,7 +55,7 @@ TEST_CASE("Test MONA dfaLDLfFalse", "[dfa/mona_dfa/true]") {
 
 TEST_CASE("Test MONA dfaNext", "[dfa/mona_dfa/next]") {
   bdd_init();
-  auto a = mona_dfa(dfaNext(0));
+  auto a = mona_dfa(dfaNext(0), 1);
   _print_mona_dfa(a.get_dfa(), "next", 1);
 }
 
@@ -64,8 +64,9 @@ TEST_CASE("Test MONA dfaLDLfProp", "[dfa/mona_dfa/prop]") {
   int var = 1;
   auto l = std::vector<int>(var);
   std::iota(l.begin(), l.end(), 0);
-  auto ttrue = mona_dfa(dfaLDLfTrue());
-  auto result = mona_dfa(dfaLDLfDiamondProp(0, ttrue.get_dfa(), var, l.data()));
+  auto ttrue = dfaLDLfTrue();
+  auto a = dfaNext(0);
+  auto result = mona_dfa(dfaLDLfDiamondProp(a, ttrue, var, l.data()), 1);
   _print_mona_dfa(result.get_dfa(), "dfaLDLfProp", 4);
   REQUIRE(verify(result, {}, false));
   REQUIRE(verify(result, {"0"}, false));

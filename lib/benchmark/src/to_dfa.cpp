@@ -20,6 +20,7 @@
 #include <lydia/parser/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/strategies/bdd/base.hpp>
+#include <lydia/to_dfa/strategies/compositional/base.hpp>
 #include <lydia/to_dfa/strategies/naive.hpp>
 #include <lydia/to_dfa/strategies/sat.hpp>
 #include <lydia/utils/benchmark.hpp>
@@ -27,127 +28,169 @@
 
 namespace whitemech::lydia::Benchmark {
 
+// Boolean atom
+inline void translate_boolean(Strategy &s) {
+  auto x = LDLfBooleanAtom(true);
+  auto t = Translator(s);
+  auto automaton = t.to_dfa(x);
+  escape(&automaton);
+  (void)automaton;
+}
+
 template <class S> static void BM_translate_boolean(benchmark::State &state) {
   // we keep this outside since it's the operation that takes more time
   for (auto _ : state) {
     auto mgr =
         CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-    auto x = LDLfBooleanAtom(true);
     auto s = S(mgr);
-    auto t = Translator(s);
-    auto automaton = t.to_dfa(x);
-    escape(&automaton);
-    (void)automaton;
+    translate_boolean(s);
   }
 }
 BENCHMARK_TEMPLATE(BM_translate_boolean, NaiveStrategy);
 BENCHMARK_TEMPLATE(BM_translate_boolean, SATStrategy);
 BENCHMARK_TEMPLATE(BM_translate_boolean, BDDStrategy);
 
+static void BM_translate_boolean_compositional(benchmark::State &state) {
+  for (auto _ : state) {
+    auto s = CompositionalStrategy();
+    translate_boolean(s);
+  }
+}
+BENCHMARK(BM_translate_boolean_compositional);
+
+// Diamond
+inline void translate_diamond(Strategy &s) {
+  auto tt = std::make_shared<const LDLfBooleanAtom>(true);
+  auto true_ = std::make_shared<const PropositionalTrue>();
+  auto regex_true_ = std::make_shared<const PropositionalRegExp>(true_);
+  auto diamond = LDLfDiamond(regex_true_, tt);
+  auto t = Translator(s);
+  auto automaton = t.to_dfa(diamond);
+  escape(&automaton);
+  (void)automaton;
+}
+
 template <class S> static void BM_translate_diamond(benchmark::State &state) {
   // we keep this outside since it's the operation that takes more time
   for (auto _ : state) {
     auto mgr =
         CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-    auto tt = std::make_shared<const LDLfBooleanAtom>(true);
-    auto true_ = std::make_shared<const PropositionalTrue>();
-    auto regex_true_ = std::make_shared<const PropositionalRegExp>(true_);
-    auto diamond = LDLfDiamond(regex_true_, tt);
     auto s = S(mgr);
-    auto t = Translator(s);
-    auto automaton = t.to_dfa(diamond);
-    escape(&automaton);
-    (void)automaton;
+    translate_diamond(s);
   }
 }
 BENCHMARK_TEMPLATE(BM_translate_diamond, NaiveStrategy);
 BENCHMARK_TEMPLATE(BM_translate_diamond, SATStrategy);
 BENCHMARK_TEMPLATE(BM_translate_diamond, BDDStrategy);
 
+static void BM_translate_diamond_compositional(benchmark::State &state) {
+  for (auto _ : state) {
+    auto s = CompositionalStrategy();
+    translate_diamond(s);
+  }
+}
+BENCHMARK(BM_translate_diamond_compositional);
+
+// Sequence of atoms
+inline void translate_sequence_of_atoms(int N, Strategy &s) {
+  auto regex = sequence(N, ";");
+  auto formula_string = "<" + regex + ">tt";
+  auto sstream = std::stringstream(formula_string);
+  auto driver = Driver();
+  driver.parse(sstream);
+  auto formula = driver.result;
+  auto translator = Translator(s);
+  auto automaton = translator.to_dfa(*formula);
+  escape(&automaton);
+  (void)automaton;
+}
+
 static void BM_translate_sequence_of_atoms(benchmark::State &state) {
   auto mgr =
       CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-  auto sat_strategy = SATStrategy(mgr, 20);
-  auto translator = Translator(sat_strategy);
-  auto driver = Driver();
+  auto s = SATStrategy(mgr, 20);
   for (auto _ : state) {
     auto N = state.range(0);
-    auto regex = sequence(N, ";");
-    auto formula_string = "<" + regex + ">tt";
-    auto sstream = std::stringstream(formula_string);
-    driver.parse(sstream);
-    auto formula = driver.result;
-    auto automaton = translator.to_dfa(*formula);
-    escape(&automaton);
-    (void)automaton;
+    translate_sequence_of_atoms(N, s);
   }
 }
 // clang-format off
-  BENCHMARK(BM_translate_sequence_of_atoms)
-      ->Arg(5)->Arg(10)->Arg(15)
-      ->Arg(20)->Arg(25)->Arg(30)
-      ->Arg(40)->Arg(80)->Arg(100)
-      ->Arg(200)->Arg(500)->Arg(1000)
-      ->Unit(benchmark::kMillisecond)
-      ->Repetitions(5)
-      ->DisplayAggregatesOnly(true);
+BENCHMARK(BM_translate_sequence_of_atoms)
+  ->Arg(5)->Arg(10)->Arg(15)
+  ->Arg(20)->Arg(25)->Arg(30)
+  ->Arg(40)->Arg(80)->Arg(100)
+  ->Arg(200)->Arg(500)->Arg(1000)
+  ->Unit(benchmark::kMillisecond)
+  ->Repetitions(5)
+  ->DisplayAggregatesOnly(true);
 
-  static void BM_translate_sequence_of_atoms_bdd(benchmark::State &state) {
-    for (auto _ : state) {
-      auto mgr = CUDD::Cudd();
-      auto strategy = BDDStrategy(mgr, 20);
-      auto translator = Translator(strategy);
-      auto driver = Driver();
-      auto N = state.range(0);
-      auto regex = sequence(N, ";");
-      auto formula_string = "<" + regex + ">tt";
-      auto sstream = std::stringstream(formula_string);
-      driver.parse(sstream);
-      auto formula = driver.result;
-      auto automaton = translator.to_dfa(*formula);
-      escape(&automaton);
-      (void)automaton;
-    }
+static void BM_translate_sequence_of_atoms_bdd(benchmark::State &state) {
+  for (auto _ : state) {
+    auto mgr = CUDD::Cudd();
+    auto s = BDDStrategy(mgr, 20);
+    auto N = state.range(0);
+    translate_sequence_of_atoms(N, s);
   }
+}
 // clang-format off
-  BENCHMARK(BM_translate_sequence_of_atoms_bdd)
-      ->Arg(5)->Arg(10)->Arg(15)
-      ->Arg(20)->Arg(25)->Arg(30)
-      ->Arg(40)->Arg(80)->Arg(100)
-      ->Arg(200)->Arg(500)->Arg(1000)
-      ->Unit(benchmark::kMillisecond)
-      ->Repetitions(5)
-      ->DisplayAggregatesOnly(true);
+BENCHMARK(BM_translate_sequence_of_atoms_bdd)
+  ->Arg(5)->Arg(10)->Arg(15)
+  ->Arg(20)->Arg(25)->Arg(30)
+  ->Arg(40)->Arg(80)->Arg(100)
+  ->Arg(200)->Arg(500)
+  ->Unit(benchmark::kMillisecond)
+  ->Repetitions(5)
+  ->DisplayAggregatesOnly(true);
 
+static void BM_translate_sequence_of_atoms_compositional(benchmark::State &state) {
+  for (auto _ : state) {
+    auto s = CompositionalStrategy();
+    auto N = state.range(0);
+    translate_sequence_of_atoms(N, s);
+  }
+}
+// clang-format off
+BENCHMARK(BM_translate_sequence_of_atoms_compositional)
+  ->Arg(5)->Arg(10)->Arg(15)
+  ->Arg(20)->Arg(25)->Arg(30)
+  ->Arg(40)
+  ->Unit(benchmark::kMillisecond)
+  ->Repetitions(5)
+  ->DisplayAggregatesOnly(true);
 // clang-format on
+
+// Sequence of stars of atoms
+inline void translate_sequence_of_stars_of_atoms(int N, Strategy &s) {
+  auto regex = sequence(N, ";", true);
+  auto formula_string = "<" + regex + ">tt";
+  auto sstream = std::stringstream(formula_string);
+  auto driver = Driver();
+  driver.parse(sstream);
+  auto formula = driver.result;
+  auto translator = Translator(s);
+  auto automaton = translator.to_dfa(*formula);
+  escape(&automaton);
+  (void)automaton;
+}
 
 static void BM_translate_sequence_of_stars_of_atoms(benchmark::State &state) {
   for (auto _ : state) {
     auto mgr =
         CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-    auto sat_strategy = SATStrategy(mgr, 20);
-    auto translator = Translator(sat_strategy);
-    auto driver = Driver();
+    auto s = SATStrategy(mgr, 20);
     auto N = state.range(0);
-    auto regex = sequence(N, ";", true);
-    auto formula_string = "<" + regex + ">tt";
-    auto sstream = std::stringstream(formula_string);
-    driver.parse(sstream);
-    auto formula = driver.result;
-    auto automaton = translator.to_dfa(*formula);
-    escape(&automaton);
-    (void)automaton;
+    translate_sequence_of_stars_of_atoms(N, s);
   }
 }
 // clang-format off
-  BENCHMARK(BM_translate_sequence_of_stars_of_atoms)
-      ->Arg(5)->Arg(10)->Arg(15)
-      ->Arg(20)->Arg(25)->Arg(30)
-      ->Arg(40)->Arg(80)->Arg(100)
-      ->Arg(200)->Arg(500)->Arg(1000)
-      ->Unit(benchmark::kMillisecond)
-      ->Repetitions(5)
-      ->DisplayAggregatesOnly(true);
+BENCHMARK(BM_translate_sequence_of_stars_of_atoms)
+  ->Arg(5)->Arg(10)->Arg(15)
+  ->Arg(20)->Arg(25)->Arg(30)
+  ->Arg(40)->Arg(80)->Arg(100)
+  ->Arg(200)->Arg(500)->Arg(1000)
+  ->Unit(benchmark::kMillisecond)
+  ->Repetitions(5)
+  ->DisplayAggregatesOnly(true);
 // clang-format on
 
 static void
@@ -155,48 +198,62 @@ BM_translate_sequence_of_stars_of_atoms_bdd(benchmark::State &state) {
   for (auto _ : state) {
     auto mgr =
         CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-    auto sat_strategy = BDDStrategy(mgr, 20);
-    auto translator = Translator(sat_strategy);
-    auto driver = Driver();
+    auto s = BDDStrategy(mgr, 20);
     auto N = state.range(0);
-    auto regex = sequence(N, ";", true);
-    auto formula_string = "<" + regex + ">tt";
-    auto sstream = std::stringstream(formula_string);
-    driver.parse(sstream);
-    auto formula = driver.result;
-    auto automaton = translator.to_dfa(*formula);
-    escape(&automaton);
-    (void)automaton;
+    translate_sequence_of_stars_of_atoms(N, s);
   }
 }
 // clang-format off
-  BENCHMARK(BM_translate_sequence_of_stars_of_atoms_bdd)
-      ->Arg(5)->Arg(10)->Arg(15)
-      ->Arg(20)->Arg(25)->Arg(30)
-      ->Arg(40)->Arg(80)->Arg(100)
-      ->Arg(200)->Arg(500)->Arg(1000)
-      ->Unit(benchmark::kMillisecond)
-      ->Repetitions(5)
-      ->DisplayAggregatesOnly(true);
+BENCHMARK(BM_translate_sequence_of_stars_of_atoms_bdd)
+  ->Arg(5)->Arg(10)->Arg(15)
+  ->Arg(20)->Arg(25)->Arg(30)
+  ->Arg(40)->Arg(80)->Arg(100)
+  ->Arg(200)->Arg(500)->Arg(1000)
+  ->Unit(benchmark::kMillisecond)
+  ->Repetitions(5)
+  ->DisplayAggregatesOnly(true);
 
 // clang-format on
+
+static void
+BM_translate_sequence_of_stars_of_atoms_compositional(benchmark::State &state) {
+  for (auto _ : state) {
+    auto s = CompositionalStrategy();
+    auto N = state.range(0);
+    translate_sequence_of_stars_of_atoms(N, s);
+  }
+}
+// clang-format off
+BENCHMARK(BM_translate_sequence_of_stars_of_atoms_compositional)
+    ->Arg(5)->Arg(10)->Arg(15)
+    ->Arg(20)->Arg(25)->Arg(30)
+    ->Arg(40)
+    ->Unit(benchmark::kMillisecond)
+    ->Repetitions(5)
+    ->DisplayAggregatesOnly(true);
+// clang-format on
+
+// Union
+inline void translate_union(int N, Strategy &s) {
+  auto regex = sequence(N, "+", false);
+  auto formula_string = "<" + regex + ">tt";
+  auto sstream = std::stringstream(formula_string);
+  auto driver = Driver();
+  driver.parse(sstream);
+  auto formula = driver.result;
+  auto translator = Translator(s);
+  auto automaton = translator.to_dfa(*formula);
+  escape(&automaton);
+  (void)automaton;
+}
 
 static void BM_translate_union(benchmark::State &state) {
   for (auto _ : state) {
     auto mgr =
         CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-    auto sat_strategy = SATStrategy(mgr, 20);
-    auto translator = Translator(sat_strategy);
-    auto driver = Driver();
+    auto s = SATStrategy(mgr, 20);
     auto N = state.range(0);
-    auto regex = sequence(N, "+", false);
-    auto formula_string = "<" + regex + ">tt";
-    auto sstream = std::stringstream(formula_string);
-    driver.parse(sstream);
-    auto formula = driver.result;
-    auto automaton = translator.to_dfa(*formula);
-    escape(&automaton);
-    (void)automaton;
+    translate_union(N, s);
   }
 }
 // clang-format off
@@ -213,18 +270,9 @@ static void BM_translate_union_bdd(benchmark::State &state) {
   for (auto _ : state) {
     auto mgr =
         CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-    auto sat_strategy = BDDStrategy(mgr, 20);
-    auto translator = Translator(sat_strategy);
-    auto driver = Driver();
+    auto s = BDDStrategy(mgr, 20);
     auto N = state.range(0);
-    auto regex = sequence(N, "+", false);
-    auto formula_string = "<" + regex + ">tt";
-    auto sstream = std::stringstream(formula_string);
-    driver.parse(sstream);
-    auto formula = driver.result;
-    auto automaton = translator.to_dfa(*formula);
-    escape(&automaton);
-    (void)automaton;
+    translate_union(N, s);
   }
 }
 // clang-format off
@@ -236,6 +284,23 @@ static void BM_translate_union_bdd(benchmark::State &state) {
       ->Unit(benchmark::kMillisecond)
       ->Repetitions(5)
       ->DisplayAggregatesOnly(true);
+// clang-format on
+
+static void BM_translate_union_compositional(benchmark::State &state) {
+  for (auto _ : state) {
+    auto s = CompositionalStrategy();
+    auto N = state.range(0);
+    translate_union(N, s);
+  }
+}
+// clang-format off
+BENCHMARK(BM_translate_union_compositional)
+    ->Arg(5)->Arg(10)->Arg(15)
+    ->Arg(20)->Arg(25)->Arg(30)
+    ->Arg(40)
+    ->Unit(benchmark::kMillisecond)
+    ->Repetitions(5)
+    ->DisplayAggregatesOnly(true);
 // clang-format on
 
 } // namespace whitemech::lydia::Benchmark
