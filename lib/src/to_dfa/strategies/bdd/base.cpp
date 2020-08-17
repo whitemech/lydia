@@ -28,7 +28,7 @@
 namespace whitemech {
 namespace lydia {
 
-std::shared_ptr<dfa> BDDStrategy::to_dfa(const LDLfFormula &formula) {
+std::shared_ptr<abstract_dfa> BDDStrategy::to_dfa(const LDLfFormula &formula) {
   auto formula_nnf = to_nnf(formula);
   set_formulas initial_state_formulas{formula_nnf};
   dfa_state_ptr initial_state =

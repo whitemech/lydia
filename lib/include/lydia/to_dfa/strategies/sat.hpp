@@ -40,7 +40,7 @@ public:
   explicit SATStrategy(const CUDD::Cudd &mgr, uint32_t max_nb_bits = 10)
       : mgr{mgr}, max_nb_bits{max_nb_bits} {};
 
-  dfa_ptr to_dfa(const LDLfFormula &formula);
+  adfa_ptr to_dfa(const LDLfFormula &formula);
 
   std::vector<std::pair<dfa_state_ptr, CUDD::BDD>>
   next_transitions(const DFAState &state);

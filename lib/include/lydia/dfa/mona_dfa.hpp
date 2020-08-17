@@ -79,10 +79,10 @@ public:
 DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices);
 std::string get_path_guard(int n, trace_descr tp);
 
-mona_dfa dfaLDLfTrue();
-mona_dfa dfaLDLfFalse();
-mona_dfa dfaNext(int a);
-mona_dfa dfaLDLfDiamondProp(int b, DFA *body, int var, int *indices);
+DFA *dfaLDLfTrue();
+DFA *dfaLDLfFalse();
+DFA *dfaNext(int a);
+DFA *dfaLDLfDiamondProp(int b, DFA *body, int var, int *indices);
 
 } // namespace lydia
 } // namespace whitemech

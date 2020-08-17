@@ -159,23 +159,23 @@ DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices) {
   return tmp;
 }
 
-mona_dfa dfaLDLfTrue() {
+DFA *dfaLDLfTrue() {
   dfaSetup(1, 0, nullptr);
 
   dfaAllocExceptions(0);
   dfaStoreState(0);
-  return mona_dfa(dfaBuild("+"));
+  return dfaBuild("+");
 }
 
-mona_dfa dfaLDLfFalse() {
+DFA *dfaLDLfFalse() {
   dfaSetup(1, 0, nullptr);
 
   dfaAllocExceptions(0);
   dfaStoreState(0);
-  return mona_dfa(dfaBuild("-"));
+  return dfaBuild("-");
 }
 
-mona_dfa dfaNext(int a) {
+DFA *dfaNext(int a) {
   int var_index[1];
   var_index[0] = a;
 
@@ -194,14 +194,13 @@ mona_dfa dfaNext(int a) {
   dfaAllocExceptions(0);
   dfaStoreState(2);
 
-  return mona_dfa(dfaBuild("-+-"));
+  return dfaBuild("-+-");
 }
 
-mona_dfa dfaLDLfDiamondProp(int b, DFA *body, int var, int *indices) {
-  auto next = dfaNext(b);
-  DFA *dfa_next = next.get_dfa();
-  DFA *diamond = dfa_concatenate(dfa_next, body, var, indices);
-  return mona_dfa(diamond);
+DFA *dfaLDLfDiamondProp(int b, DFA *body, int var, int *indices) {
+  DFA *next = dfaNext(b);
+  DFA *diamond = dfa_concatenate(next, body, var, indices);
+  return diamond;
 }
 
 } // namespace lydia

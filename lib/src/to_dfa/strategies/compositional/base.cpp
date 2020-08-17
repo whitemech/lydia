@@ -1,4 +1,3 @@
-#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -16,41 +15,29 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/dfa/dfa.hpp>
-#include <memory>
+#include <lydia/atom_visitor.hpp>
+#include <lydia/nnf.hpp>
+#include <lydia/to_dfa/strategies/compositional/base.hpp>
 
 namespace whitemech {
 namespace lydia {
 
-class Strategy {
-public:
-  virtual std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &f) = 0;
-};
-
-class Translator {
-private:
-  Strategy &strategy;
-
-public:
-  explicit Translator(Strategy &strategy) : strategy{strategy} {}
-
-  std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &f) const {
-    return strategy.to_dfa(f);
+std::shared_ptr<abstract_dfa>
+CompositionalStrategy::to_dfa(const LDLfFormula &formula) {
+  auto formula_nnf = to_nnf(formula);
+  set_atoms_ptr atoms = find_atoms(*formula_nnf);
+  int index = 0;
+  for (const auto &atom : atoms) {
+    atom2ids[atom] = index;
+    id2atoms.push_back(atom);
+    index++;
   }
-};
 
-/*!
- *
- * Translate an LDLf formula into an DFA.
- *
- * TODO legacy function, please use Translator + Strategy in
- * lydia/to_dfa/core.hpp
- *
- * @param formula the LDLf formula.
- * @return the equivalent DFA.
- */
-std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula,
-                                     const CUDD::Cudd &mgr);
+  auto visitor = ComposeDFAVisitor(*this);
+  auto result = visitor.apply(formula);
+  result = dfaLDLfTrue();
+  return std::make_shared<mona_dfa>(result);
+}
 
 } // namespace lydia
 } // namespace whitemech

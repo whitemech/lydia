@@ -38,7 +38,7 @@ public:
   explicit NaiveStrategy(const CUDD::Cudd &mgr, uint32_t max_nb_bits = 10)
       : mgr{mgr}, max_nb_bits{max_nb_bits} {};
 
-  std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula);
+  std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula);
 
   /*!
    * Compute the next state, given a propositional interpretation.
