@@ -17,6 +17,7 @@
 #include <catch.hpp>
 #include <iostream>
 #include <lydia/ldlf/logic.hpp>
+#include <lydia/ldlf/only_test.hpp>
 #include <lydia/logger.hpp>
 #include <lydia/utils/compare.hpp>
 
@@ -209,6 +210,42 @@ TEST_CASE("Set of formulas", "[logic]") {
   REQUIRE(result[1]->is_equal(*tt));
   REQUIRE(result[2]->is_equal(*and_));
   REQUIRE(result[3]->is_equal(*or_));
+}
+
+TEST_CASE("Test 'only test'", "[ldlf/only_test]") {
+  auto a = prop_atom("a");
+  SECTION("Test propositional regex") {
+    auto r = PropositionalRegExp(a);
+    REQUIRE(is_test_only(r) == false);
+  }
+  SECTION("Test test regex") {
+    auto r = TestRegExp(boolTrue);
+    REQUIRE(is_test_only(r) == true);
+  }
+  SECTION("Test seq regex positive") {
+    auto r1 = std::make_shared<TestRegExp>(boolTrue);
+    auto r2 = std::make_shared<TestRegExp>(boolFalse);
+    auto seq = SequenceRegExp({r1, r2});
+    REQUIRE(is_test_only(seq) == true);
+  }
+  SECTION("Test seq regex negative") {
+    auto r1 = std::make_shared<TestRegExp>(boolTrue);
+    auto r2 = std::make_shared<PropositionalRegExp>(a);
+    auto seq = SequenceRegExp({r1, r2});
+    REQUIRE(is_test_only(seq) == false);
+  }
+  SECTION("Test union regex positive") {
+    auto r1 = std::make_shared<TestRegExp>(boolTrue);
+    auto r2 = std::make_shared<TestRegExp>(boolFalse);
+    auto u = UnionRegExp({r1, r2});
+    REQUIRE(is_test_only(u) == true);
+  }
+  SECTION("Test union regex negative") {
+    auto r1 = std::make_shared<TestRegExp>(boolTrue);
+    auto r2 = std::make_shared<PropositionalRegExp>(a);
+    auto u = UnionRegExp({r1, r2});
+    REQUIRE(is_test_only(u) == false);
+  }
 }
 
 } // namespace whitemech::lydia::Test

@@ -12,7 +12,7 @@
 %define parser_class_name {Parser}
 
 %code requires{
-   #include "lydia/logic.hpp"
+   #include "lydia/ldlf/logic.hpp"
    #include "lydia/parser/parser_stype.h"
    namespace whitemech {
    namespace lydia {
