@@ -55,6 +55,7 @@ std::string get_path_guard(int n, trace_descr tp) {
 
 DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices) {
   DFA *result;
+  DFA *tmp;
   paths state_paths, pp;
   std::string statuses;
 
@@ -90,9 +91,9 @@ DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices) {
   for (int i = 0; i < a->ns; i++) {
     int next_state;
     std::string next_guard;
-    state_paths = pp = make_paths(a->bddm, a->q[i]);
     bool is_current_state_final = a->f[i] == 1;
     auto transitions = std::vector<std::pair<int, std::string>>();
+    state_paths = pp = make_paths(a->bddm, a->q[i]);
     while (pp) {
       auto guard = get_path_guard(n, pp->trace) + "0";
       transitions.emplace_back(pp->to, guard);
@@ -149,13 +150,89 @@ DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices) {
   dfaStoreState(new_sink);
   statuses += "-";
 
-  DFA *tmp = dfaBuild(statuses.data());
-  result = dfaProject(tmp, new_var);
-  dfaFree(tmp);
-  tmp = dfaMinimize(result);
+  result = dfaBuild(statuses.data());
+  tmp = dfaProject(result, new_var);
   dfaFree(result);
-  return tmp;
+  result = dfaMinimize(tmp);
+  dfaFree(tmp);
+  return result;
 }
+
+DFA *dfa_closure(DFA *a, int n, int *indices) {
+  DFA *result;
+  DFA *tmp;
+  paths state_paths, pp;
+  std::string statuses;
+
+  const int new_len = n + 1; // add temporary extra bit, will be projected later
+  const int new_var = new_len - 1;
+  auto new_indices = std::vector<int>(indices, indices + n);
+  new_indices.push_back(new_var);
+
+  int new_ns = a->ns + +1; // we add a new sink state
+  int new_sink = a->ns;
+  dfaSetup(new_ns, new_len, new_indices.data());
+
+  // construct the added paths
+  auto initial_state_ougoing_transitions =
+      std::vector<std::pair<int, std::string>>();
+  const int initial_state = a->s;
+  state_paths = pp = make_paths(a->bddm, a->q[initial_state]);
+
+  while (pp) {
+    auto guard = get_path_guard(n, pp->trace) + "1";
+    initial_state_ougoing_transitions.emplace_back(pp->to, guard);
+    pp = pp->next;
+  }
+  kill_paths(state_paths);
+
+  for (int i = 0; i < a->ns; i++) {
+    int next_state;
+    std::string next_guard;
+    bool is_current_state_final = a->f[i] == 1;
+    auto transitions = std::vector<std::pair<int, std::string>>();
+    state_paths = pp = make_paths(a->bddm, a->q[i]);
+    while (pp) {
+      auto guard = get_path_guard(n, pp->trace) + "0";
+      transitions.emplace_back(pp->to, guard);
+      pp = pp->next;
+    }
+    int nb_transitions =
+        is_current_state_final
+            ? transitions.size() + initial_state_ougoing_transitions.size()
+            : transitions.size();
+    statuses += is_current_state_final ? "+" : "-";
+
+    dfaAllocExceptions(nb_transitions);
+    for (const auto &p : transitions) {
+      std::tie(next_state, next_guard) = p;
+      dfaStoreException(next_state, next_guard.data());
+    }
+    // if the current state of automaton a is final, add the new transitions.
+    if (is_current_state_final) {
+      for (const auto &p : initial_state_ougoing_transitions) {
+        std::tie(next_state, next_guard) = p;
+        dfaStoreException(next_state, next_guard.data());
+      }
+    }
+    dfaStoreState(new_sink);
+    kill_paths(state_paths);
+  }
+
+  // store new sink state.
+  dfaAllocExceptions(0);
+  dfaStoreState(new_sink);
+  statuses += "-";
+
+  result = dfaBuild(statuses.data());
+  tmp = dfaProject(result, new_var);
+  dfaFree(result);
+  result = dfaMinimize(tmp);
+  dfaFree(tmp);
+  return result;
+}
+
+void *dfa_accept_empty(DFA *x) { x->f[x->s] = 1; }
 
 DFA *dfaLDLfTrue() {
   dfaSetup(1, 0, nullptr);

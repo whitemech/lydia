@@ -79,6 +79,8 @@ public:
 };
 
 DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices);
+DFA *dfa_closure(DFA *a, int n, int *indices);
+void *dfa_accept_empty(DFA *x);
 std::string get_path_guard(int n, trace_descr tp);
 
 DFA *dfaLDLfTrue();

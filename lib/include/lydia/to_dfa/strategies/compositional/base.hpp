@@ -16,10 +16,14 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <lydia/atom_visitor.hpp>
 #include <lydia/dfa/abstract_dfa.hpp>
 #include <lydia/dfa/mona_dfa.hpp>
+#include <lydia/ldlf/only_test.hpp>
+#include <lydia/nnf.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/strategies/bdd/delta_bdd.hpp>
+#include <numeric>
 
 namespace whitemech {
 namespace lydia {
@@ -53,10 +57,10 @@ public:
 
   // callbacks for regular expressions
   void visit(const PropositionalRegExp &) override;
-  void visit(const TestRegExp &) override { assert(false); };
+  void visit(const TestRegExp &) override;
   void visit(const UnionRegExp &) override;
   void visit(const SequenceRegExp &) override;
-  void visit(const StarRegExp &) override { assert(false); };
+  void visit(const StarRegExp &) override;
 
   // callbacks for propositional logic
   void visit(const PropositionalTrue &) override;
@@ -72,14 +76,17 @@ public:
   void visit(const LDLfT &) override{};
 
   DFA *apply(const LDLfFormula &f) {
+    result = nullptr;
     f.accept(*this);
     return result;
   }
   DFA *apply(const RegExp &f) {
+    result = nullptr;
     f.accept(*this);
     return result;
   }
   DFA *apply(const PropositionalFormula &f) {
+    result = nullptr;
     f.accept(*this);
     return result;
   }

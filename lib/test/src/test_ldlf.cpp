@@ -246,6 +246,16 @@ TEST_CASE("Test 'only test'", "[ldlf/only_test]") {
     auto u = UnionRegExp({r1, r2});
     REQUIRE(is_test_only(u) == false);
   }
+  SECTION("Test star regex negative") {
+    auto r = std::make_shared<TestRegExp>(boolTrue);
+    auto star = StarRegExp(r);
+    REQUIRE(is_test_only(star) == true);
+  }
+  SECTION("Test star regex negative") {
+    auto r = std::make_shared<PropositionalRegExp>(a);
+    auto star = StarRegExp(r);
+    REQUIRE(is_test_only(star) == false);
+  }
 }
 
 } // namespace whitemech::lydia::Test

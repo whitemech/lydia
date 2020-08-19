@@ -33,6 +33,76 @@ void _print_mona_dfa(DFA *a, const std::string &name, int num = 1) {
       std::string("dot -Tsvg " + name + ".dot > " + name + ".svg").c_str());
 }
 
+TEST_CASE("Test MONA dfa_concatenate", "[dfa/mona_dfa/concatenation]") {
+  bdd_init();
+  int var = 2;
+  auto indices = std::vector<int>(var);
+  std::iota(indices.begin(), indices.end(), 0);
+  auto a = dfaNext(0);
+  auto b = dfaNext(1);
+  auto automaton = mona_dfa(dfa_concatenate(a, b, var, indices.data()), var);
+  _print_mona_dfa(automaton.get_dfa(), "concatenate_a_b", 4);
+  REQUIRE(automaton.get_nb_states() == 4);
+  REQUIRE(automaton.get_nb_variables() == 2);
+  REQUIRE(verify(automaton, {}, false));
+  REQUIRE(verify(automaton, {"00"}, false));
+  REQUIRE(verify(automaton, {"10"}, false));
+  REQUIRE(verify(automaton, {"01"}, false));
+  REQUIRE(verify(automaton, {"11"}, false));
+  REQUIRE(verify(automaton, {"00", "00"}, false));
+  REQUIRE(verify(automaton, {"00", "01"}, false));
+  REQUIRE(verify(automaton, {"00", "10"}, false));
+  REQUIRE(verify(automaton, {"00", "11"}, false));
+  REQUIRE(verify(automaton, {"01", "00"}, false));
+  REQUIRE(verify(automaton, {"01", "01"}, false));
+  REQUIRE(verify(automaton, {"01", "10"}, true));
+  REQUIRE(verify(automaton, {"01", "11"}, true));
+  REQUIRE(verify(automaton, {"10", "00"}, false));
+  REQUIRE(verify(automaton, {"10", "01"}, false));
+  REQUIRE(verify(automaton, {"10", "10"}, false));
+  REQUIRE(verify(automaton, {"10", "11"}, false));
+  REQUIRE(verify(automaton, {"11", "00"}, false));
+  REQUIRE(verify(automaton, {"11", "01"}, false));
+  REQUIRE(verify(automaton, {"11", "10"}, true));
+  REQUIRE(verify(automaton, {"11", "11"}, true));
+  REQUIRE(verify(automaton, {"11", "11", "11"}, false));
+}
+
+TEST_CASE("Test MONA dfa_closure a", "[dfa/mona_dfa/closure]") {
+  bdd_init();
+  int var = 1;
+  auto indices = std::vector<int>(var);
+  std::iota(indices.begin(), indices.end(), 0);
+  auto a = dfaNext(0);
+  auto automaton = mona_dfa(dfa_closure(a, var, indices.data()), var);
+  _print_mona_dfa(automaton.get_dfa(), "closure_a", 4);
+  REQUIRE(automaton.get_nb_states() == 3);
+  REQUIRE(automaton.get_nb_variables() == 1);
+}
+
+TEST_CASE("Test MONA dfa_closure a,b and allow empty",
+          "[dfa/mona_dfa/closure]") {
+  bdd_init();
+  int var = 2;
+  auto indices = std::vector<int>(var);
+  std::iota(indices.begin(), indices.end(), 0);
+  auto a = dfaNext(0);
+  auto b = dfaNext(1);
+  auto ab = dfa_concatenate(a, b, var, indices.data());
+  dfa_accept_empty(ab);
+  auto tmp = dfa_closure(ab, var, indices.data());
+  auto automaton = mona_dfa(tmp, var);
+  _print_mona_dfa(automaton.get_dfa(), "closure_ab_accept_empty", 4);
+  REQUIRE(automaton.get_nb_states() == 3);
+  REQUIRE(automaton.get_nb_variables() == 2);
+  REQUIRE(verify(automaton, {}, true));
+  REQUIRE(verify(automaton, {"00"}, false));
+  REQUIRE(verify(automaton, {"01", "01"}, false));
+  REQUIRE(verify(automaton, {"01", "10"}, true));
+  REQUIRE(verify(automaton, {"01", "10", "01"}, false));
+  REQUIRE(verify(automaton, {"01", "10", "01", "10"}, true));
+}
+
 TEST_CASE("Test MONA dfaLDLfTrue", "[dfa/mona_dfa/true]") {
   bdd_init();
   auto automaton = mona_dfa(dfaLDLfTrue(), 0);

@@ -15,10 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/atom_visitor.hpp>
-#include <lydia/nnf.hpp>
 #include <lydia/to_dfa/strategies/compositional/base.hpp>
-#include <numeric>
 
 namespace whitemech {
 namespace lydia {
@@ -108,7 +105,6 @@ void ComposeDFAVisitor::visit(const UnionRegExp &r) {
   DFA *tmp1;
   DFA *tmp2;
   DFA *final = is_diamond ? dfaLDLfFalse() : dfaLDLfTrue();
-  ;
   auto op = is_diamond ? dfaOR : dfaAND;
   for (const auto &x : r.get_container()) {
     tmp1 = final;
@@ -128,11 +124,41 @@ void ComposeDFAVisitor::visit(const SequenceRegExp &r) {
 
   for (auto it = subregexes.rbegin(); it != subregexes.rend(); it++) {
     final = apply(**it);
-    dfaFree(current_formula_);
     current_formula_ = final;
   }
   result = final;
   current_formula_ = old_formula;
+}
+
+void ComposeDFAVisitor::visit(const StarRegExp &r) {
+  bool test_only = is_test_only(r);
+  if (test_only and is_diamond or (not test_only and not is_diamond)) {
+    result = current_formula_;
+    return;
+  }
+
+  DFA *regex = apply(*r.get_arg());
+  dfa_accept_empty(regex);
+  DFA *star = dfa_closure(regex, cs.indices.size(), cs.indices.data());
+  if (not is_diamond) {
+    dfaNegation(current_formula_);
+  }
+  result = dfa_concatenate(star, current_formula_, cs.indices.size(),
+                           cs.indices.data());
+  if (not is_diamond) {
+    dfaNegation(result);
+  }
+  dfaFree(regex);
+  dfaFree(star);
+  dfaFree(current_formula_);
+}
+
+void ComposeDFAVisitor::visit(const TestRegExp &r) {
+  auto op = is_diamond ? dfaAND : dfaIMPL;
+  DFA *regex_dfa = apply(*r.get_arg());
+  result = dfaProduct(regex_dfa, current_formula_, op);
+  dfaFree(regex_dfa);
+  dfaFree(current_formula_);
 }
 
 void ComposeDFAVisitor::visit(const PropositionalRegExp &r) {
@@ -148,7 +174,9 @@ void ComposeDFAVisitor::visit(const PropositionalRegExp &r) {
     result =
         dfaLDLfDiamondProp(regex, tmp, cs.indices.size(), cs.indices.data());
     dfaNegation(result);
+    dfaFree(tmp);
   }
+  dfaFree(regex);
 }
 
 void ComposeDFAVisitor::visit(const PropositionalTrue &f) {
