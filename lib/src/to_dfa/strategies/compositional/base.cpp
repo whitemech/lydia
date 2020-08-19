@@ -132,12 +132,12 @@ void ComposeDFAVisitor::visit(const SequenceRegExp &r) {
 
 void ComposeDFAVisitor::visit(const StarRegExp &r) {
   bool test_only = is_test_only(r);
-  if (test_only and is_diamond or (not test_only and not is_diamond)) {
+  if (test_only) {
     result = current_formula_;
     return;
   }
 
-  DFA *regex = apply(*r.get_arg());
+  DFA *regex = apply(*std::make_shared<LDLfDiamond>(r.get_arg(), boolTrue));
   dfa_accept_empty(regex);
   DFA *star = dfa_closure(regex, cs.indices.size(), cs.indices.data());
   if (not is_diamond) {

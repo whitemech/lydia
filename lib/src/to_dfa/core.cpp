@@ -30,8 +30,8 @@ std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula,
                                      const CUDD::Cudd &mgr) {
   //    auto s = NaiveStrategy(mgr);
   //  auto s = SATStrategy(mgr);
-  auto s = BDDStrategy(mgr);
-  //  auto s = CompositionalStrategy();
+  //  auto s = BDDStrategy(mgr);
+  auto s = CompositionalStrategy();
   auto t = Translator(s);
   return t.to_dfa(formula);
 }

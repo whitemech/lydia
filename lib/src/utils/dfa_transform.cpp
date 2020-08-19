@@ -69,6 +69,7 @@ void dfa_to_graphviz(const abstract_dfa &automaton,
   std::set<int> discovered;
   std::queue<int> to_be_visited;
   to_be_visited.push(automaton.get_initial_state());
+  discovered.insert(automaton.get_initial_state());
   while (!to_be_visited.empty()) {
     auto state = to_be_visited.front();
     to_be_visited.pop();
