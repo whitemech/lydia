@@ -16,8 +16,8 @@
  */
 #include <catch.hpp>
 #include <iostream>
+#include <lydia/ldlf/logic.hpp>
 #include <lydia/logger.hpp>
-#include <lydia/logic.hpp>
 #include <lydia/utils/compare.hpp>
 
 namespace whitemech::lydia::Test {

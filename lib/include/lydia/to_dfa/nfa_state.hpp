@@ -17,7 +17,7 @@
  */
 
 #include <lydia/dfa/dfa.hpp>
-#include <lydia/logic.hpp>
+#include <lydia/ldlf/logic.hpp>
 #include <lydia/types.hpp>
 #include <lydia/utils/compare.hpp>
 #include <memory>

@@ -16,7 +16,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/logic.hpp>
+#include <lydia/ldlf/logic.hpp>
 
 namespace whitemech {
 namespace lydia {

@@ -16,7 +16,7 @@
  */
 
 #include <benchmark/benchmark.h>
-#include <lydia/logic.hpp>
+#include <lydia/ldlf/logic.hpp>
 #include <lydia/parser/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/strategies/bdd/base.hpp>

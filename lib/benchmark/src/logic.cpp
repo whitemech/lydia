@@ -16,7 +16,7 @@
  */
 
 #include <benchmark/benchmark.h>
-#include <lydia/logic.hpp>
+#include <lydia/ldlf/logic.hpp>
 #include <lydia/utils/benchmark.hpp>
 #include <random>
 

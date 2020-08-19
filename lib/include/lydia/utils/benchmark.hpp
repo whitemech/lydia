@@ -19,7 +19,7 @@
 #include <memory>
 #include <type_traits>
 
-#include <lydia/logic.hpp>
+#include <lydia/ldlf/logic.hpp>
 #include <lydia/pl/logic.hpp>
 #include <lydia/types.hpp>
 

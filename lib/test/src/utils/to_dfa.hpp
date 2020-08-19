@@ -22,7 +22,7 @@
 #include <cuddObj.hh>
 #include <lydia/dfa/dfa.hpp>
 #include <lydia/dfa/mona_dfa.hpp>
-#include <lydia/logic.hpp>
+#include <lydia/ldlf/logic.hpp>
 #include <lydia/parser/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/utils/dfa_transform.hpp>

@@ -17,8 +17,8 @@
  */
 
 #include <cuddObj.hh>
+#include <lydia/ldlf/logic.hpp>
 #include <lydia/logger.hpp>
-#include <lydia/logic.hpp>
 #include <lydia/pl/logic.hpp>
 #include <lydia/to_dfa/delta.hpp>
 #include <lydia/visitor.hpp>
