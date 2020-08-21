@@ -23,8 +23,10 @@ project (Lydia
          LANGUAGES CXX
          #HOMEPAGE_URL https://github.com/whitemech/lydia.git
          DESCRIPTION "Lydia is a tool for LDLf translation to DFA and for LDLf synthesis.")
-set(PROJECT_VERSION 0.1.0-rc.1)
+set(PROJECT_VERSION "0.1.0-rc.1")
 set(${PROJECT_NAME}_VERSION ${PROJECT_VERSION})
+
+add_definitions( -DLYDIA_VERSION="${PROJECT_VERSION}" )
 
 set_property (GLOBAL PROPERTY USE_FOLDERS ON)
 

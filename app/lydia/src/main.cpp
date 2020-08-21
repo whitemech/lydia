@@ -21,7 +21,7 @@
 #include <lydia/dfa/mona_dfa.hpp>
 #include <lydia/parser/driver.cpp>
 #include <lydia/to_dfa/core.hpp>
-#include <lydia/utils/dfa_transform.hpp>
+#include <lydia/to_dfa/strategies/compositional/base.hpp>
 #include <lydia/utils/print.hpp>
 
 std::string dump_formula(const std::string &filename) {
@@ -37,7 +37,7 @@ std::string dump_formula(const std::string &filename) {
 }
 
 int main(int argc, char **argv) {
-  whitemech::lydia::Logger log("Main app");
+  whitemech::lydia::Logger logger("lydia");
   whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::info);
 
   CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
@@ -45,6 +45,12 @@ int main(int argc, char **argv) {
   std::string ldlf_formula;
   CLI::Option *str_opt =
       app.add_option("-l,--ldlf", ldlf_formula, "An LDLf formula.");
+
+  bool verbose;
+  app.add_flag("--verbose", verbose, "Set verbose mode.");
+
+  bool version;
+  app.add_flag("--version", version, "Print the version and exit.");
 
   std::string filename;
   CLI::Option *file_opt = app.add_option(
@@ -70,32 +76,54 @@ int main(int argc, char **argv) {
 
   CLI11_PARSE(app, argc, argv)
 
+  if (version) {
+    std::cout << LYDIA_VERSION << std::endl;
+    return 0;
+  }
+
+  if (verbose) {
+    whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::debug);
+  }
+
   auto driver = whitemech::lydia::Driver();
-  auto mgr = CUDD::Cudd();
+  // TODO make it configurable
+  auto strategy = whitemech::lydia::CompositionalStrategy();
+  auto translator = whitemech::lydia::Translator(strategy);
 
   if (!str_opt->empty()) {
     std::stringstream ldlf_formula_stream(ldlf_formula);
-    log.info("parsing: {}", ldlf_formula);
+    logger.info("parsing: {}", ldlf_formula);
     driver.parse(ldlf_formula_stream);
-    log.info("parsed formula: {}", to_string(*driver.result));
+    logger.info("parsed formula: {}", to_string(*driver.result));
   } else if (!file_opt->empty()) {
     std::string formula = dump_formula(filename);
     std::stringstream ldlf_formula_stream(formula);
-    log.info("parsing: {}", formula);
+    logger.info("parsing: {}", formula);
     driver.parse(ldlf_formula_stream);
-    log.info("parsed formula: {}", to_string(*driver.result));
+    logger.info("parsed formula: {}", to_string(*driver.result));
+  } else {
+    logger.error("Please specify either -l or -f. Aborting...");
+    return 2;
   }
 
-  log.info("transforming to dfa...");
-  auto my_dfa = to_dfa(*driver.result, mgr);
-  log.info("transforming to dfa...done!");
+  logger.info("transforming to dfa...");
+  auto my_dfa = translator.to_dfa(*driver.result);
+  logger.info("transforming to dfa...done!");
   if (summary) {
     // TODO add more details
-    log.info("Number of states " + std::to_string(my_dfa->get_nb_states()));
+    logger.info("Number of states " + std::to_string(my_dfa->get_nb_states()));
   }
   if (!dot_option->empty()) {
-    log.info("Printing the automaton...");
-    dfa_to_graphviz(*my_dfa, graphviz_path + "-lydia.svg", "svg");
+    logger.info("Printing the automaton...");
+    // workaround to use MONA printer if possible
+    auto my_mona_dfa =
+        std::dynamic_pointer_cast<whitemech::lydia::mona_dfa>(my_dfa);
+    if (my_mona_dfa) {
+      whitemech::lydia::print_mona_dfa(my_mona_dfa->get_dfa(), graphviz_path,
+                                       my_mona_dfa->get_nb_variables());
+    } else {
+      logger.error("Failed.");
+    }
   }
 
   return 0;

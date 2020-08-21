@@ -16,7 +16,14 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cstdio>
+#include <graphviz/gvc.h>
 #include <lydia/dfa/dfa.hpp>
+#include <lydia/utils/misc.hpp>
+#include <lydia/utils/print.hpp>
+#include <lydia/utils/strings.hpp>
+#include <numeric>
+#include <queue>
 
 namespace whitemech {
 namespace lydia {

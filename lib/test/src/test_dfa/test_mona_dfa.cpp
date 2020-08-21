@@ -22,17 +22,6 @@
 
 namespace whitemech::lydia::Test {
 
-void _print_mona_dfa(DFA *a, const std::string &name, int num = 1) {
-  std::vector<unsigned> x(num);
-  std::iota(std::begin(x), std::end(x), 0);
-  std::ofstream out;
-  out.open(name + ".dot", std::ofstream::out);
-  dfaPrintGraphvizToFile(a, num, x.data(), out);
-  out.close();
-  std::system(
-      std::string("dot -Tsvg " + name + ".dot > " + name + ".svg").c_str());
-}
-
 TEST_CASE("Test MONA dfa_concatenate", "[dfa/mona_dfa/concatenation]") {
   bdd_init();
   int var = 2;
@@ -41,7 +30,7 @@ TEST_CASE("Test MONA dfa_concatenate", "[dfa/mona_dfa/concatenation]") {
   auto a = dfaNext(0);
   auto b = dfaNext(1);
   auto automaton = mona_dfa(dfa_concatenate(a, b, var, indices.data()), var);
-  _print_mona_dfa(automaton.get_dfa(), "concatenate_a_b", 4);
+  print_mona_dfa(automaton.get_dfa(), "concatenate_a_b", 4);
   REQUIRE(automaton.get_nb_states() == 4);
   REQUIRE(automaton.get_nb_variables() == 2);
   REQUIRE(verify(automaton, {}, false));
@@ -75,7 +64,7 @@ TEST_CASE("Test MONA dfa_closure a", "[dfa/mona_dfa/closure]") {
   std::iota(indices.begin(), indices.end(), 0);
   auto a = dfaNext(0);
   auto automaton = mona_dfa(dfa_closure(a, var, indices.data()), var);
-  _print_mona_dfa(automaton.get_dfa(), "closure_a", 4);
+  print_mona_dfa(automaton.get_dfa(), "closure_a", 4);
   REQUIRE(automaton.get_nb_states() == 3);
   REQUIRE(automaton.get_nb_variables() == 1);
 }
@@ -92,7 +81,7 @@ TEST_CASE("Test MONA dfa_closure a,b and allow empty",
   dfa_accept_empty(ab);
   auto tmp = dfa_closure(ab, var, indices.data());
   auto automaton = mona_dfa(tmp, var);
-  _print_mona_dfa(automaton.get_dfa(), "closure_ab_accept_empty", 4);
+  print_mona_dfa(automaton.get_dfa(), "closure_ab_accept_empty", 4);
   REQUIRE(automaton.get_nb_states() == 3);
   REQUIRE(automaton.get_nb_variables() == 2);
   REQUIRE(verify(automaton, {}, true));
@@ -126,7 +115,7 @@ TEST_CASE("Test MONA dfaLDLfFalse", "[dfa/mona_dfa/true]") {
 TEST_CASE("Test MONA dfaNext", "[dfa/mona_dfa/next]") {
   bdd_init();
   auto a = mona_dfa(dfaNext(0), 1);
-  _print_mona_dfa(a.get_dfa(), "next", 1);
+  print_mona_dfa(a.get_dfa(), "next", 1);
 }
 
 TEST_CASE("Test MONA dfaLDLfProp", "[dfa/mona_dfa/prop]") {
@@ -137,7 +126,7 @@ TEST_CASE("Test MONA dfaLDLfProp", "[dfa/mona_dfa/prop]") {
   auto ttrue = dfaLDLfTrue();
   auto a = dfaNext(0);
   auto result = mona_dfa(dfaLDLfDiamondProp(a, ttrue, var, l.data()), 1);
-  _print_mona_dfa(result.get_dfa(), "dfaLDLfProp", 4);
+  print_mona_dfa(result.get_dfa(), "dfaLDLfProp", 4);
   REQUIRE(verify(result, {}, false));
   REQUIRE(verify(result, {"0"}, false));
   REQUIRE(verify(result, {"1"}, true));

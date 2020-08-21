@@ -26,8 +26,7 @@
 namespace whitemech {
 namespace lydia {
 
-std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula,
-                                     const CUDD::Cudd &mgr) {
+std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula) {
   //    auto s = NaiveStrategy(mgr);
   //  auto s = SATStrategy(mgr);
   //  auto s = BDDStrategy(mgr);

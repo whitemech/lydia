@@ -15,7 +15,6 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
 #include <lydia/dfa/mona_dfa.hpp>
 
 namespace whitemech {
@@ -293,6 +292,115 @@ DFA *dfaPropositionalTrue() {
   dfaStoreState(2);
 
   return dfaBuild("-+-");
+}
+
+void print_mona_dfa(DFA *a, const std::string &name, int num) {
+  std::vector<unsigned> x(num);
+  std::iota(std::begin(x), std::end(x), 0);
+  std::ofstream out;
+  out.open(name + ".dot", std::ofstream::out);
+  dfaPrintGraphvizToFile(a, num, x.data(), out);
+  out.close();
+  std::system(
+      std::string("dot -Tsvg " + name + ".dot > " + name + ".svg").c_str());
+}
+
+void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
+                            std::ostream &o) {
+  paths state_paths, pp;
+  trace_descr tp;
+  int i, j, k, l;
+  char **buffer;
+  int *used, *allocated;
+
+  o << "digraph MONA_DFA {\n"
+       " rankdir = LR;\n"
+       " center = true;\n"
+       " size = \"7.5,10.5\";\n"
+       " edge [fontname = Courier];\n"
+       " node [height = .5, width = .5];\n"
+       " node [shape = doublecircle];";
+  for (i = 0; i < a->ns; i++)
+    if (a->f[i] == 1)
+      o << " " << i;
+  o << "\n node [shape = circle];";
+  for (i = 0; i < a->ns; i++)
+    if (a->f[i] == -1)
+      o << " " << i;
+  o << "\n node [shape = box];";
+  for (i = 0; i < a->ns; i++)
+    if (a->f[i] == 0)
+      o << " " << i;
+  o << "\n init [shape = plaintext, label = \"\"];\n"
+       " init -> "
+    << a->s << ";\n";
+
+  buffer = (char **)mem_alloc(sizeof(char *) * a->ns);
+  used = (int *)mem_alloc(sizeof(int) * a->ns);
+  allocated = (int *)mem_alloc(sizeof(int) * a->ns);
+
+  for (i = 0; i < a->ns; i++) {
+    state_paths = pp = make_paths(a->bddm, a->q[i]);
+
+    for (j = 0; j < a->ns; j++) {
+      buffer[j] = 0;
+      used[j] = allocated[j] = 0;
+    }
+
+    while (pp) {
+      if (used[pp->to] >= allocated[pp->to]) {
+        allocated[pp->to] = allocated[pp->to] * 2 + 2;
+        buffer[pp->to] = (char *)mem_resize(
+            buffer[pp->to], sizeof(char) * allocated[pp->to] * no_free_vars);
+      }
+
+      for (j = 0; j < no_free_vars; j++) {
+        char c;
+        for (tp = pp->trace; tp && (tp->index != offsets[j]); tp = tp->next)
+          ;
+
+        if (tp) {
+          if (tp->value)
+            c = '1';
+          else
+            c = '0';
+        } else
+          c = 'X';
+
+        buffer[pp->to][no_free_vars * used[pp->to] + j] = c;
+      }
+      used[pp->to]++;
+      pp = pp->next;
+    }
+
+    for (j = 0; j < a->ns; j++)
+      if (buffer[j]) {
+        o << " " << i << " -> " << j << " [label=\"";
+        for (k = 0; k < no_free_vars; k++) {
+          for (l = 0; l < used[j]; l++) {
+            o << (buffer[j][no_free_vars * l + k]);
+            if (l + 1 < used[j]) {
+              if (k + 1 == no_free_vars)
+                o << (',');
+              else
+                o << (' ');
+            }
+          }
+          if (k + 1 < no_free_vars)
+            o << "\\n";
+        }
+        o << "\"];\n";
+        mem_free(buffer[j]);
+      }
+
+    kill_paths(state_paths);
+  }
+
+  mem_free(allocated);
+  mem_free(used);
+  mem_free(buffer);
+
+  o << "}\n";
 }
 
 } // namespace lydia

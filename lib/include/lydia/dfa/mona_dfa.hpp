@@ -16,7 +16,10 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <fstream>
+#include <iostream>
 #include <lydia/dfa/abstract_dfa.hpp>
+#include <numeric>
 
 extern "C" {
 #include <mona/bdd.h>
@@ -34,12 +37,15 @@ class mona_dfa : public abstract_dfa {
 private:
   DFA *dfa_;
   int nb_variables_;
+  std::vector<std::string> names;
 
 public:
   std::vector<int> indices;
 
   mona_dfa(DFA *dfa, int nb_variables)
       : dfa_{dfa}, nb_variables_{nb_variables} {}
+  mona_dfa(DFA *dfa, const std::vector<std::string> &names)
+      : dfa_{dfa}, nb_variables_{(int)names.size()}, names{names} {}
   ~mona_dfa();
 
   DFA *get_dfa() { return dfa_; }
@@ -88,6 +94,10 @@ DFA *dfaLDLfFalse();
 DFA *dfaNext(int a);
 DFA *dfaLDLfDiamondProp(DFA *prop_regex, DFA *body, int var, int *indices);
 DFA *dfaPropositionalTrue();
+
+void print_mona_dfa(DFA *a, const std::string &name, int num = 1);
+void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
+                            std::ostream &o = std::cout);
 
 } // namespace lydia
 } // namespace whitemech
