@@ -18,6 +18,7 @@
 #include "CLI/CLI.hpp"
 #include <iostream>
 #include <istream>
+#include <lydia/dfa/mona_dfa.hpp>
 #include <lydia/parser/driver.cpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/utils/dfa_transform.hpp>
@@ -92,8 +93,10 @@ int main(int argc, char **argv) {
     // TODO add more details
     log.info("Number of states " + std::to_string(my_dfa->get_nb_states()));
   }
-  if (!dot_option->empty())
+  if (!dot_option->empty()) {
+    log.info("Printing the automaton...");
     dfa_to_graphviz(*my_dfa, graphviz_path + "-lydia.svg", "svg");
+  }
 
   return 0;
 }

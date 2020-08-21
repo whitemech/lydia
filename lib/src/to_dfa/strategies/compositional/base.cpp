@@ -50,6 +50,7 @@ void ComposeDFAVisitor::visit(const LDLfAnd &f) {
     tmp1 = final;
     tmp2 = apply(*subf);
     final = dfaProduct(tmp1, tmp2, dfaAND);
+    final = dfaMinimize(final);
     dfaFree(tmp1);
     dfaFree(tmp2);
   }
@@ -74,7 +75,8 @@ void ComposeDFAVisitor::visit(const LDLfOr &f) {
 void ComposeDFAVisitor::visit(const LDLfNot &f) {
   DFA *tmp = apply(*f.get_arg());
   dfaNegation(tmp);
-  result = tmp;
+  result = dfaMinimize(tmp);
+  dfaFree(tmp);
 }
 
 void ComposeDFAVisitor::visit(const LDLfDiamond &f) {
@@ -104,15 +106,17 @@ void ComposeDFAVisitor::visit(const LDLfBox &f) {
 void ComposeDFAVisitor::visit(const UnionRegExp &r) {
   DFA *tmp1;
   DFA *tmp2;
+  DFA *tmp3;
   DFA *final = is_diamond ? dfaLDLfFalse() : dfaLDLfTrue();
   auto op = is_diamond ? dfaOR : dfaAND;
   for (const auto &x : r.get_container()) {
     tmp1 = final;
     tmp2 = apply(*x);
-    final = dfaProduct(tmp1, tmp2, op);
-    final = dfaMinimize(final);
+    tmp3 = dfaProduct(tmp1, tmp2, op);
+    final = dfaMinimize(tmp3);
     dfaFree(tmp1);
     dfaFree(tmp2);
+    dfaFree(tmp3);
   }
   result = final;
 }
@@ -121,10 +125,13 @@ void ComposeDFAVisitor::visit(const SequenceRegExp &r) {
   DFA *old_formula = current_formula_;
   auto subregexes = r.get_container();
   DFA *final;
+  DFA *tmp;
 
   for (auto it = subregexes.rbegin(); it != subregexes.rend(); it++) {
-    final = apply(**it);
+    tmp = apply(**it);
+    final = dfaMinimize(tmp);
     current_formula_ = final;
+    dfaFree(tmp);
   }
   result = final;
   current_formula_ = old_formula;
@@ -155,9 +162,12 @@ void ComposeDFAVisitor::visit(const StarRegExp &r) {
 
 void ComposeDFAVisitor::visit(const TestRegExp &r) {
   auto op = is_diamond ? dfaAND : dfaIMPL;
+  DFA *tmp;
   DFA *regex_dfa = apply(*r.get_arg());
-  result = dfaProduct(regex_dfa, current_formula_, op);
+  tmp = dfaProduct(regex_dfa, current_formula_, op);
+  result = dfaMinimize(tmp);
   dfaFree(regex_dfa);
+  dfaFree(tmp);
   dfaFree(current_formula_);
 }
 
@@ -196,13 +206,16 @@ void ComposeDFAVisitor::visit(const PropositionalAtom &f) {
 void ComposeDFAVisitor::visit(const PropositionalAnd &f) {
   DFA *tmp1 = dfaLDLfTrue();
   DFA *tmp2;
+  DFA *tmp3;
   DFA *dfa_and = tmp1;
   for (const auto &subf : f.get_container()) {
     tmp1 = dfa_and;
     tmp2 = apply(*subf);
-    dfa_and = dfaProduct(tmp1, tmp2, dfaAND);
+    tmp3 = dfaProduct(tmp1, tmp2, dfaAND);
+    dfa_and = dfaMinimize(tmp3);
     dfaFree(tmp1);
     dfaFree(tmp2);
+    dfaFree(tmp3);
   }
   result = dfa_and;
 }
@@ -210,13 +223,16 @@ void ComposeDFAVisitor::visit(const PropositionalAnd &f) {
 void ComposeDFAVisitor::visit(const PropositionalOr &f) {
   DFA *tmp1 = dfaLDLfFalse();
   DFA *tmp2;
+  DFA *tmp3;
   DFA *dfa_and = tmp1;
   for (const auto &subf : f.get_container()) {
     tmp1 = dfa_and;
     tmp2 = apply(*subf);
-    dfa_and = dfaProduct(tmp1, tmp2, dfaOR);
+    tmp3 = dfaProduct(tmp1, tmp2, dfaOR);
+    dfa_and = dfaMinimize(tmp3);
     dfaFree(tmp1);
     dfaFree(tmp2);
+    dfaFree(tmp3);
   }
   result = dfa_and;
 }
@@ -224,7 +240,8 @@ void ComposeDFAVisitor::visit(const PropositionalOr &f) {
 void ComposeDFAVisitor::visit(const PropositionalNot &f) {
   DFA *tmp = apply(*f.get_arg());
   dfaNegation(tmp);
-  result = tmp;
+  result = dfaMinimize(tmp);
+  dfaFree(tmp);
 }
 
 } // namespace lydia

@@ -232,7 +232,7 @@ DFA *dfa_closure(DFA *a, int n, int *indices) {
   return result;
 }
 
-void *dfa_accept_empty(DFA *x) { x->f[x->s] = 1; }
+void dfa_accept_empty(DFA *x) { x->f[x->s] = 1; }
 
 DFA *dfaLDLfTrue() {
   dfaSetup(1, 0, nullptr);
