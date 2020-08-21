@@ -25,11 +25,11 @@ TEST_CASE("Duality", "[to_dfa]") {
   CUDD::Cudd mgr2;
   for (const auto &formula : FORMULAS) {
     SECTION("Test duality of " + formula) {
-      dfa_ptr automaton_1 = to_dfa_from_formula_string(formula, mgr1);
-      dfa_ptr automaton_2 =
+      adfa_ptr automaton_1 = to_dfa_from_formula_string(formula, mgr1);
+      adfa_ptr automaton_2 =
           to_dfa_from_formula_string("!(" + formula + ")", mgr2);
-      REQUIRE(compare<5>(*automaton_1, *automaton_2, automaton_1->nb_variables,
-                         not_equal));
+      REQUIRE(compare<5>(*automaton_1, *automaton_2,
+                         automaton_1->get_nb_variables(), not_equal));
     }
   }
 }

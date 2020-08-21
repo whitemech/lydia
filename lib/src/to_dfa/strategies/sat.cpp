@@ -25,7 +25,7 @@
 namespace whitemech {
 namespace lydia {
 
-dfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
+adfa_ptr SATStrategy::to_dfa(const LDLfFormula &formula) {
   //  build initial state of the DFA.
   auto formula_nnf = to_nnf(formula);
   set_formulas initial_state_formulas{formula_nnf};

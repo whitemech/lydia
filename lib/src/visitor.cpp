@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/logic.hpp>
+#include <lydia/ldlf/logic.hpp>
 #include <lydia/pl/logic.hpp>
 #include <lydia/to_dfa/delta.hpp>
 #include <lydia/visitor.hpp>

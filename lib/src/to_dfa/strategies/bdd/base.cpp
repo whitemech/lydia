@@ -16,7 +16,7 @@
  */
 
 #include <lydia/atom_visitor.hpp>
-#include <lydia/dfa.hpp>
+#include <lydia/dfa/dfa.hpp>
 #include <lydia/nnf.hpp>
 #include <lydia/to_dfa/delta_symbolic.hpp>
 #include <lydia/to_dfa/dfa_state.hpp>
@@ -28,7 +28,7 @@
 namespace whitemech {
 namespace lydia {
 
-std::shared_ptr<dfa> BDDStrategy::to_dfa(const LDLfFormula &formula) {
+std::shared_ptr<abstract_dfa> BDDStrategy::to_dfa(const LDLfFormula &formula) {
   auto formula_nnf = to_nnf(formula);
   set_formulas initial_state_formulas{formula_nnf};
   dfa_state_ptr initial_state =
@@ -148,8 +148,9 @@ BDDStrategy::next_transitions(const NFAState &state) {
   DdGen *g = Cudd_FirstPrime(mgr.getManager(), successor_fun.getNode(),
                              successor_fun.getNode(), &cube);
   size_t nb_all_variables =
-      automaton->nb_bits + automaton->nb_variables + id2subformula.size();
-  size_t nb_automaton_variables = automaton->nb_bits + automaton->nb_variables;
+      automaton->nb_bits + automaton->get_nb_variables() + id2subformula.size();
+  size_t nb_automaton_variables =
+      automaton->nb_bits + automaton->get_nb_variables();
   if (g != nullptr) {
     do {
       CUDD::BDD symbol = mgr.bddOne();

@@ -16,7 +16,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/dfa.hpp>
+#include <lydia/dfa/dfa.hpp>
 #include <memory>
 
 namespace whitemech {
@@ -24,7 +24,7 @@ namespace lydia {
 
 class Strategy {
 public:
-  virtual std::shared_ptr<dfa> to_dfa(const LDLfFormula &f) = 0;
+  virtual std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &f) = 0;
 };
 
 class Translator {
@@ -34,7 +34,7 @@ private:
 public:
   explicit Translator(Strategy &strategy) : strategy{strategy} {}
 
-  std::shared_ptr<dfa> to_dfa(const LDLfFormula &f) const {
+  std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &f) const {
     return strategy.to_dfa(f);
   }
 };
@@ -49,7 +49,8 @@ public:
  * @param formula the LDLf formula.
  * @return the equivalent DFA.
  */
-std::shared_ptr<dfa> to_dfa(const LDLfFormula &formula, const CUDD::Cudd &mgr);
+std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula,
+                                     const CUDD::Cudd &mgr);
 
 } // namespace lydia
 } // namespace whitemech

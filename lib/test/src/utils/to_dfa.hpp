@@ -20,8 +20,9 @@
 #include <cppitertools/powerset.hpp>
 #include <cppitertools/product.hpp>
 #include <cuddObj.hh>
-#include <lydia/dfa.hpp>
-#include <lydia/logic.hpp>
+#include <lydia/dfa/dfa.hpp>
+#include <lydia/dfa/mona_dfa.hpp>
+#include <lydia/ldlf/logic.hpp>
 #include <lydia/parser/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/utils/dfa_transform.hpp>
@@ -58,8 +59,8 @@ static trace to_trace(const std::vector<std::string> &trace_) {
   return t;
 }
 
-static bool verify(const dfa &automaton, const std::vector<std::string> &trace_,
-                   bool expected) {
+static bool verify(const abstract_dfa &automaton,
+                   const std::vector<std::string> &trace_, bool expected) {
   return automaton.accepts(to_trace(trace_)) == expected;
 }
 
@@ -92,9 +93,9 @@ from_trace_set(std::vector<interpretation_set> vector, int prop);
 
 template <int length>
 static bool compare(
-    const dfa &automaton_1, const dfa &automaton_2, int nb_prop,
-    boolean_condition bc = [](bool a, bool b) { return a == b; }) {
-  if (automaton_1.nb_variables != automaton_2.nb_variables)
+    const abstract_dfa &automaton_1, const abstract_dfa &automaton_2,
+    int nb_prop, boolean_condition bc = [](bool a, bool b) { return a == b; }) {
+  if (automaton_1.get_nb_variables() != automaton_2.get_nb_variables())
     return false;
 
   std::vector<int> full_interpretation;
@@ -128,8 +129,8 @@ from_trace_set(std::vector<interpretation_set> vector, int prop) {
   return result;
 }
 
-static dfa_ptr to_dfa_from_formula_string(const std::string &f,
-                                          const CUDD::Cudd &mgr) {
+static adfa_ptr to_dfa_from_formula_string(const std::string &f,
+                                           const CUDD::Cudd &mgr) {
   auto driver = Driver();
   std::stringstream ldlf_formula_stream(f);
   driver.parse(ldlf_formula_stream);
@@ -137,9 +138,107 @@ static dfa_ptr to_dfa_from_formula_string(const std::string &f,
   return to_dfa(formula, mgr);
 }
 
-static void print_dfa(const dfa &automaton, const std::string &name,
+static void print_dfa(const abstract_dfa &automaton, const std::string &name,
                       const std::string &format = "svg") {
   dfa_to_graphviz(automaton, name + "." + format, format);
+}
+
+static void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
+                                   std::ostream &o = std::cout) {
+  paths state_paths, pp;
+  trace_descr tp;
+  int i, j, k, l;
+  char **buffer;
+  int *used, *allocated;
+
+  o << "digraph MONA_DFA {\n"
+       " rankdir = LR;\n"
+       " center = true;\n"
+       " size = \"7.5,10.5\";\n"
+       " edge [fontname = Courier];\n"
+       " node [height = .5, width = .5];\n"
+       " node [shape = doublecircle];";
+  for (i = 0; i < a->ns; i++)
+    if (a->f[i] == 1)
+      o << " " << i;
+  o << "\n node [shape = circle];";
+  for (i = 0; i < a->ns; i++)
+    if (a->f[i] == -1)
+      o << " " << i;
+  o << "\n node [shape = box];";
+  for (i = 0; i < a->ns; i++)
+    if (a->f[i] == 0)
+      o << " " << i;
+  o << "\n init [shape = plaintext, label = \"\"];\n"
+       " init -> "
+    << a->s << ";\n";
+
+  buffer = (char **)mem_alloc(sizeof(char *) * a->ns);
+  used = (int *)mem_alloc(sizeof(int) * a->ns);
+  allocated = (int *)mem_alloc(sizeof(int) * a->ns);
+
+  for (i = 0; i < a->ns; i++) {
+    state_paths = pp = make_paths(a->bddm, a->q[i]);
+
+    for (j = 0; j < a->ns; j++) {
+      buffer[j] = 0;
+      used[j] = allocated[j] = 0;
+    }
+
+    while (pp) {
+      if (used[pp->to] >= allocated[pp->to]) {
+        allocated[pp->to] = allocated[pp->to] * 2 + 2;
+        buffer[pp->to] = (char *)mem_resize(
+            buffer[pp->to], sizeof(char) * allocated[pp->to] * no_free_vars);
+      }
+
+      for (j = 0; j < no_free_vars; j++) {
+        char c;
+        for (tp = pp->trace; tp && (tp->index != offsets[j]); tp = tp->next)
+          ;
+
+        if (tp) {
+          if (tp->value)
+            c = '1';
+          else
+            c = '0';
+        } else
+          c = 'X';
+
+        buffer[pp->to][no_free_vars * used[pp->to] + j] = c;
+      }
+      used[pp->to]++;
+      pp = pp->next;
+    }
+
+    for (j = 0; j < a->ns; j++)
+      if (buffer[j]) {
+        o << " " << i << " -> " << j << " [label=\"";
+        for (k = 0; k < no_free_vars; k++) {
+          for (l = 0; l < used[j]; l++) {
+            o << (buffer[j][no_free_vars * l + k]);
+            if (l + 1 < used[j]) {
+              if (k + 1 == no_free_vars)
+                o << (',');
+              else
+                o << (' ');
+            }
+          }
+          if (k + 1 < no_free_vars)
+            o << "\\n";
+        }
+        o << "\"];\n";
+        mem_free(buffer[j]);
+      }
+
+    kill_paths(state_paths);
+  }
+
+  mem_free(allocated);
+  mem_free(used);
+  mem_free(buffer);
+
+  o << "}\n";
 }
 
 } // namespace lydia

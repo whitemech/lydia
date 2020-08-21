@@ -12,7 +12,7 @@
 %define parser_class_name {Parser}
 
 %code requires{
-   #include "lydia/logic.hpp"
+   #include "lydia/ldlf/logic.hpp"
    #include "lydia/parser/parser_stype.h"
    namespace whitemech {
    namespace lydia {
@@ -62,8 +62,8 @@
 %token                  FF
 %token                  END
 %token                  LAST
-%token                  TRUE
-%token                  FALSE
+%token                  TRUE_
+%token                  FALSE_
 %token                  SYMBOL
 %token                  NEWLINE
 %token                  END_OF_FILE    0
@@ -117,8 +117,8 @@ propositional_formula: propositional_formula EQUIVALENCE propositional_formula  
                      | propositional_formula OR propositional_formula                   { $$ = d.add_PropositionalOr($1, $3); }
                      | propositional_formula AND propositional_formula                  { $$ = d.add_PropositionalAnd($1, $3); }
                      | NOT propositional_formula                                        { $$ = d.add_PropositionalNot($2); }
-                     | FALSE                                                            { $$ = d.add_PropositionalBooleanAtom(false); }
-                     | TRUE                                                             { $$ = d.add_PropositionalBooleanAtom(true); }
+                     | FALSE_                                                           { $$ = d.add_PropositionalBooleanAtom(false); }
+                     | TRUE_                                                            { $$ = d.add_PropositionalBooleanAtom(true); }
                      | SYMBOL                                                           { $$ = d.add_PropositionalAtom($1); }
                      ;
 

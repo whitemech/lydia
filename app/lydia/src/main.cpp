@@ -18,6 +18,7 @@
 #include "CLI/CLI.hpp"
 #include <iostream>
 #include <istream>
+#include <lydia/dfa/mona_dfa.hpp>
 #include <lydia/parser/driver.cpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/utils/dfa_transform.hpp>
@@ -59,12 +60,15 @@ int main(int argc, char **argv) {
                      "Output the automaton in Graphviz format.")
           ->check(CLI::NonexistentPath);
 
+  bool summary = false;
+  app.add_flag("-s", summary, "Print the summary.");
+
   // TODO add possibility to print in HOA format in future work
   //  bool hoa_flag = false;
   //  app.add_option("-a, --hoa", hoa_flag, "Output the
   //  automaton in HOA format.");
 
-  CLI11_PARSE(app, argc, argv);
+  CLI11_PARSE(app, argc, argv)
 
   auto driver = whitemech::lydia::Driver();
   auto mgr = CUDD::Cudd();
@@ -85,8 +89,14 @@ int main(int argc, char **argv) {
   log.info("transforming to dfa...");
   auto my_dfa = to_dfa(*driver.result, mgr);
   log.info("transforming to dfa...done!");
-  if (!dot_option->empty())
+  if (summary) {
+    // TODO add more details
+    log.info("Number of states " + std::to_string(my_dfa->get_nb_states()));
+  }
+  if (!dot_option->empty()) {
+    log.info("Printing the automaton...");
     dfa_to_graphviz(*my_dfa, graphviz_path + "-lydia.svg", "svg");
+  }
 
   return 0;
 }

@@ -57,8 +57,8 @@ using token = whitemech::lydia::Parser::token;
 (?i:tt)                     { return token::TT; }
 (?i:ff)                     { return token::FF; }
 
-(?i:true)                   { return token::TRUE; }
-(?i:false)                  { return token::FALSE; }
+(?i:true)                   { return token::TRUE_; }
+(?i:false)                  { return token::FALSE_; }
 
 (?i:end)                    { return token::END; }
 (?i:last)                   { return token::LAST; }

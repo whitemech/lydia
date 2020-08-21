@@ -16,7 +16,7 @@
  */
 
 #include <cassert>
-#include <lydia/logic.hpp>
+#include <lydia/ldlf/logic.hpp>
 #include <lydia/utils/compare.hpp>
 #include <utility>
 

@@ -41,6 +41,7 @@ target_link_libraries (${TEST_APP_NAME}
         ${LIB_NAME}
         Threads::Threads
         ${CUDD_LIBRARIES}
+        ${MONA_LIBRARIES}
         ${MINISAT_LIBRARIES})
 
 # Turn on CMake testing capabilities

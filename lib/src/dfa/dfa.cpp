@@ -16,7 +16,7 @@
  */
 
 #include <cuddObj.hh>
-#include <lydia/dfa.hpp>
+#include <lydia/dfa/dfa.hpp>
 #include <lydia/utils/misc.hpp>
 #include <lydia/utils/strings.hpp>
 #include <numeric>
@@ -27,8 +27,8 @@ namespace lydia {
 Logger dfa::logger = Logger("dfa");
 
 dfa::dfa(const CUDD::Cudd &mgr, int nb_bits, int nb_variables)
-    : mgr{mgr}, nb_bits{nb_bits}, nb_variables{nb_variables}, nb_states{1},
-      initial_state{0} {
+    : mgr{mgr}, nb_bits{nb_bits}, nb_states{1}, initial_state{0},
+      nb_variables{nb_variables} {
 
   bddvars.reserve(nb_variables);
   root_bdds.reserve(nb_bits + nb_variables);

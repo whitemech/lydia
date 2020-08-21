@@ -16,28 +16,42 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/ldlf/logic.hpp>
+#include <lydia/atom_visitor.hpp>
+#include <lydia/dfa/abstract_dfa.hpp>
+#include <lydia/dfa/mona_dfa.hpp>
+#include <lydia/ldlf/only_test.hpp>
 #include <lydia/nnf.hpp>
-#include <lydia/pl/logic.hpp>
-#include <lydia/visitor.hpp>
+#include <lydia/to_dfa/core.hpp>
+#include <lydia/to_dfa/strategies/bdd/delta_bdd.hpp>
+#include <numeric>
 
 namespace whitemech {
 namespace lydia {
 
-class StrPrinter : public Visitor {
-private:
-  static const std::vector<std::string> names_;
+class CompositionalStrategy : public Strategy {
+public:
+  std::vector<atom_ptr> id2atoms;
+  std::map<atom_ptr, size_t, SharedComparator> atom2ids;
+  std::vector<int> indices;
+  std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &f) override;
+};
 
-protected:
-  std::string result;
+class ComposeDFAVisitor : public Visitor {
+private:
+  DFA *current_formula_ = nullptr;
+  bool is_diamond;
 
 public:
+  CompositionalStrategy &cs;
+  DFA *result;
+
+  explicit ComposeDFAVisitor(CompositionalStrategy &cs) : cs{cs} {}
+
   // callbacks for LDLf
-  void visit(const Symbol &) override;
-  void visit(const LDLfBooleanAtom &) override;
-  void visit(const LDLfAnd &) override;
+  void visit(const LDLfBooleanAtom &f) override;
+  void visit(const LDLfAnd &f) override;
   void visit(const LDLfOr &) override;
-  void visit(const LDLfNot &) override;
+  void visit(const LDLfNot &f) override;
   void visit(const LDLfDiamond &) override;
   void visit(const LDLfBox &) override;
 
@@ -56,14 +70,27 @@ public:
   void visit(const PropositionalOr &) override;
   void visit(const PropositionalNot &) override;
 
+  void visit(const Symbol &) override{};
   void visit(const QuotedFormula &) override{};
+  void visit(const LDLfF &) override{};
+  void visit(const LDLfT &) override{};
 
-  std::string apply(const vec_basic &v);
-  std::string apply(const set_formulas &v);
-  std::string apply(const Basic &b);
+  DFA *apply(const LDLfFormula &f) {
+    result = nullptr;
+    f.accept(*this);
+    return result;
+  }
+  DFA *apply(const RegExp &f) {
+    result = nullptr;
+    f.accept(*this);
+    return result;
+  }
+  DFA *apply(const PropositionalFormula &f) {
+    result = nullptr;
+    f.accept(*this);
+    return result;
+  }
 };
-
-std::string to_string(const Basic &);
 
 } // namespace lydia
 } // namespace whitemech

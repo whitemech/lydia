@@ -1,3 +1,4 @@
+#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -15,25 +16,28 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/dfa/dfa.hpp>
-#include <lydia/to_dfa/core.hpp>
-#include <lydia/to_dfa/strategies/bdd/base.hpp>
-#include <lydia/to_dfa/strategies/compositional/base.hpp>
-#include <lydia/to_dfa/strategies/naive.hpp>
-#include <lydia/to_dfa/strategies/sat.hpp>
-#include <memory>
+#include <lydia/basic.hpp>
+#include <lydia/ldlf/logic.hpp>
+#include <lydia/visitor.hpp>
 
 namespace whitemech {
 namespace lydia {
 
-std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula,
-                                     const CUDD::Cudd &mgr) {
-  //    auto s = NaiveStrategy(mgr);
-  //  auto s = SATStrategy(mgr);
-  //  auto s = BDDStrategy(mgr);
-  auto s = CompositionalStrategy();
-  auto t = Translator(s);
-  return t.to_dfa(formula);
-}
+class OnlyTestVisitor : public Visitor {
+private:
+  bool result = false;
+
+public:
+  void visit(const PropositionalRegExp &) override;
+  void visit(const TestRegExp &) override;
+  void visit(const UnionRegExp &) override;
+  void visit(const SequenceRegExp &) override;
+  void visit(const StarRegExp &) override;
+
+  bool apply(const RegExp &r);
+};
+
+bool is_test_only(const RegExp &r);
+
 } // namespace lydia
 } // namespace whitemech
