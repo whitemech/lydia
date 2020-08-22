@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include "../utils/print_dfa.hpp"
 #include "../utils/to_dfa.hpp"
 #include <catch.hpp>
 #include <iostream>

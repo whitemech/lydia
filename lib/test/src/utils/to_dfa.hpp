@@ -21,11 +21,9 @@
 #include <cppitertools/product.hpp>
 #include <cuddObj.hh>
 #include <lydia/dfa/dfa.hpp>
-#include <lydia/dfa/mona_dfa.hpp>
 #include <lydia/ldlf/logic.hpp>
 #include <lydia/parser/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
-#include <lydia/utils/dfa_transform.hpp>
 #include <numeric>
 #include <sstream>
 #include <stack>
@@ -136,11 +134,6 @@ static adfa_ptr to_dfa_from_formula_string(const std::string &f,
   driver.parse(ldlf_formula_stream);
   const auto &formula = *driver.result;
   return to_dfa(formula, mgr);
-}
-
-static void print_dfa(const abstract_dfa &automaton, const std::string &name,
-                      const std::string &format = "svg") {
-  dfa_to_graphviz(automaton, name + "." + format, format);
 }
 
 } // namespace lydia
