@@ -47,7 +47,7 @@ jobs:
           wget https://github.com/cs-au-dk/MONA/archive/1.4-18.tar.gz
           tar -xf 1.4-18.tar.gz
           cd MONA-1.4-18
-          ./configure && make && sudo make install-strip
+          ./configure && make && sudo make install
       - name: Check File Headers
         run: python3 ./scripts/check_copyright_notice.py
       - name: Check clang-format
