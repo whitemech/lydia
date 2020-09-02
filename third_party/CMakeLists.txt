@@ -56,10 +56,7 @@ set (MONA_INCLUDE_PATH ${MONA_INCLUDE_DIRS})
 # -------------------------------------------------------------------------
 # -------------------------------------------------------------------------
 # MiniSAT
-set (MINISAT_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/minisat")
-set (MINISAT_INCLUDE_PATH "${MINISAT_MODULE_PATH}")
-add_subdirectory(${MINISAT_MODULE_PATH})
-set(MINISAT_LIBRARIES minisat-lib-static PARENT_SCOPE)
+set (MINISAT_INCLUDE_PATH ${MINISAT_INCLUDE_DIRS})
 # -------------------------------------------------------------------------
 
 #set variables

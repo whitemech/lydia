@@ -37,17 +37,25 @@ jobs:
           sudo python -m pip install gcovr
       - name: Install CUDD
         run: |
-          sudo apt-get install -f automake libtool
-          cd third_party/cudd
-          autoreconf -i
-          ./configure --enable-silent-rules --enable-obj --enable-dddmp
-          sudo make install
+          wget https://github.com/whitemech/cudd/releases/download/v3.0.0/cudd_3.0.0_linux-amd64.tar.gz
+          tar -xf cudd_3.0.0_linux-amd64.tar.gz
+          cd cudd_3.0.0_linux-amd64
+          sudo cp -P lib/* /usr/local/lib/
+          sudo cp -Pr include/* /usr/local/include
       - name: Install MONA
         run: |
-          wget https://github.com/cs-au-dk/MONA/archive/1.4-18.tar.gz
-          tar -xf 1.4-18.tar.gz
-          cd MONA-1.4-18
-          ./configure && make && sudo make install
+          wget https://github.com/whitemech/MONA/releases/download/v1.4-18.dev0/mona_1.4-18.dev0_linux-amd64.tar.gz
+          tar -xf mona_1.4-18.dev0_linux-amd64.tar.gz
+          cd mona_1.4-18.dev0_linux-amd64
+          sudo cp -P lib/* /usr/local/lib/
+          sudo cp -Pr include/* /usr/local/include
+      - name: Install MiniSAT
+        run: |
+          wget https://github.com/whitemech/minisat/releases/download/v2.1.0/minisat_2.1.0_linux-amd64.tar.gz
+          tar -xf minisat_2.1.0_linux-amd64.tar.gz
+          cd minisat_2.1.0_linux-amd64
+          sudo cp -P lib/* /usr/local/lib/
+          sudo cp -Pr include/* /usr/local/include
       - name: Check File Headers
         run: python3 ./scripts/check_copyright_notice.py
       - name: Check clang-format
