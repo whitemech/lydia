@@ -54,6 +54,6 @@ set(MINISAT_LIBRARIES  ${MINISAT_LIBRARY})
 
 include(FindPackageHandleStandardArgs)
 
-find_package_handle_standard_args(MINISAT DEFAULT_MSG MINISAT_LIBRARIES MINISAT_INCLUDE_DIRS)
+find_package_handle_standard_args(minisat DEFAULT_MSG MINISAT_LIBRARIES MINISAT_INCLUDE_DIRS)
 
 mark_as_advanced(MINISAT_ROOT MINISAT_LIBRARIES MINISAT_INCLUDE_DIRS)
