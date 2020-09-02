@@ -19,7 +19,7 @@
 #include <bitset>
 #include <cppitertools/powerset.hpp>
 #include <cppitertools/product.hpp>
-#include <cuddObj.hh>
+#include <cudd/cuddObj.hh>
 #include <lydia/dfa/dfa.hpp>
 #include <lydia/ldlf/logic.hpp>
 #include <lydia/parser/driver.hpp>
