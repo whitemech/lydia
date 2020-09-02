@@ -23,7 +23,7 @@ jobs:
     - name: Check clang-format
       run: ./scripts/check-clang-format.sh
 
-  run:
+  test:
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -43,8 +43,10 @@ jobs:
           sudo apt-get install -y wget
 
           # install flex/bison
-          sudo apt-get install -y flex
-          sudo apt-get install -y bison
+          sudo apt-get purge -y flex
+          sudo apt-get purge -y bison
+          sudo apt-get install -y flex bison
+          sudo apt-get autoremove
 
           sudo apt-get install -y libgraphviz-dev
           sudo python -m pip install gcovr
@@ -55,7 +57,7 @@ jobs:
       - name: Configure CMake
         run: ./scripts/_ci-configure.sh
       - name: Build
-        run: cd build && make test -j
+        run: cd build && make lydiaTest -j
       - name: Test
         run: ./scripts/_ci-test.sh
       - name: Upload coverage to Codecov
