@@ -48,8 +48,8 @@ jobs:
           sudo apt-get install -y flex bison
           sudo apt-get autoremove
 
-          sudo apt-get install -y libgraphviz-dev
-          sudo python -m pip install gcovr
+          sudo apt-get install -y graphviz libgraphviz-dev
+          sudo python3 -m pip install gcovr
       - name: Install dependencies
         run: ./scripts/_ci-install-dependencies-ubuntu.sh
       - name: Check clang-tidy
@@ -57,10 +57,7 @@ jobs:
       - name: Configure CMake
         run: ./scripts/_ci-configure.sh
       - name: Build
-        run: |
-          cd build
-          cat compile_commands.json
-          VERBOSE=1 make lydiaTest -j
+        run: cd build && make -j
       - name: Test
         run: ./scripts/_ci-test.sh
       - name: Upload coverage to Codecov

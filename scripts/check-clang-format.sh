@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-python ./scripts/run-clang-format.py -r app lib
+python3 ./scripts/run-clang-format.py -r app lib
 
