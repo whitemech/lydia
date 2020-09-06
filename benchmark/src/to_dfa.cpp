@@ -22,7 +22,6 @@
 #include <lydia/to_dfa/strategies/bdd/base.hpp>
 #include <lydia/to_dfa/strategies/compositional/base.hpp>
 #include <lydia/to_dfa/strategies/naive.hpp>
-#include <lydia/to_dfa/strategies/sat.hpp>
 #include <lydia/utils/benchmark.hpp>
 #include <random>
 
@@ -47,7 +46,6 @@ template <class S> static void BM_translate_boolean(benchmark::State &state) {
   }
 }
 BENCHMARK_TEMPLATE(BM_translate_boolean, NaiveStrategy);
-BENCHMARK_TEMPLATE(BM_translate_boolean, SATStrategy);
 BENCHMARK_TEMPLATE(BM_translate_boolean, BDDStrategy);
 
 static void BM_translate_boolean_compositional(benchmark::State &state) {
@@ -80,7 +78,6 @@ template <class S> static void BM_translate_diamond(benchmark::State &state) {
   }
 }
 BENCHMARK_TEMPLATE(BM_translate_diamond, NaiveStrategy);
-BENCHMARK_TEMPLATE(BM_translate_diamond, SATStrategy);
 BENCHMARK_TEMPLATE(BM_translate_diamond, BDDStrategy);
 
 static void BM_translate_diamond_compositional(benchmark::State &state) {
@@ -104,25 +101,6 @@ inline void translate_sequence_of_atoms(int N, Strategy &s) {
   escape(&automaton);
   (void)automaton;
 }
-
-static void BM_translate_sequence_of_atoms(benchmark::State &state) {
-  auto mgr =
-      CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-  auto s = SATStrategy(mgr, 20);
-  for (auto _ : state) {
-    auto N = state.range(0);
-    translate_sequence_of_atoms(N, s);
-  }
-}
-// clang-format off
-BENCHMARK(BM_translate_sequence_of_atoms)
-  ->Arg(5)->Arg(10)->Arg(15)
-  ->Arg(20)->Arg(25)->Arg(30)
-  ->Arg(40)->Arg(80)->Arg(100)
-  ->Arg(200)->Arg(500)->Arg(1000)
-  ->Unit(benchmark::kMillisecond)
-  ->Repetitions(5)
-  ->DisplayAggregatesOnly(true);
 
 static void BM_translate_sequence_of_atoms_bdd(benchmark::State &state) {
   for (auto _ : state) {
@@ -172,26 +150,6 @@ inline void translate_sequence_of_stars_of_atoms(int N, Strategy &s) {
   escape(&automaton);
   (void)automaton;
 }
-
-static void BM_translate_sequence_of_stars_of_atoms(benchmark::State &state) {
-  for (auto _ : state) {
-    auto mgr =
-        CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-    auto s = SATStrategy(mgr, 20);
-    auto N = state.range(0);
-    translate_sequence_of_stars_of_atoms(N, s);
-  }
-}
-// clang-format off
-BENCHMARK(BM_translate_sequence_of_stars_of_atoms)
-  ->Arg(5)->Arg(10)->Arg(15)
-  ->Arg(20)->Arg(25)->Arg(30)
-  ->Arg(40)->Arg(80)->Arg(100)
-  ->Arg(200)->Arg(500)->Arg(1000)
-  ->Unit(benchmark::kMillisecond)
-  ->Repetitions(5)
-  ->DisplayAggregatesOnly(true);
-// clang-format on
 
 static void
 BM_translate_sequence_of_stars_of_atoms_bdd(benchmark::State &state) {
@@ -246,25 +204,6 @@ inline void translate_union(int N, Strategy &s) {
   escape(&automaton);
   (void)automaton;
 }
-
-static void BM_translate_union(benchmark::State &state) {
-  for (auto _ : state) {
-    auto mgr =
-        CUDD::Cudd(0, 0, BENCH_CUDD_UNIQUE_SLOTS, BENCH_CUDD_CACHE_SLOTS, 0);
-    auto s = SATStrategy(mgr, 20);
-    auto N = state.range(0);
-    translate_union(N, s);
-  }
-}
-// clang-format off
-  BENCHMARK(BM_translate_union)
-      ->Arg(1)->Arg(2)->Arg(3)
-      ->Arg(4)->Arg(5)->Arg(6)
-      ->Arg(7)
-      ->Unit(benchmark::kMillisecond)
-      ->Repetitions(5)
-      ->DisplayAggregatesOnly(true);
-// clang-format on
 
 static void BM_translate_union_bdd(benchmark::State &state) {
   for (auto _ : state) {

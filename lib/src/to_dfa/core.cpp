@@ -20,7 +20,6 @@
 #include <lydia/to_dfa/strategies/bdd/base.hpp>
 #include <lydia/to_dfa/strategies/compositional/base.hpp>
 #include <lydia/to_dfa/strategies/naive.hpp>
-#include <lydia/to_dfa/strategies/sat.hpp>
 #include <memory>
 
 namespace whitemech {
@@ -28,8 +27,7 @@ namespace lydia {
 
 std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula,
                                      const CUDD::Cudd &mgr) {
-  //    auto s = NaiveStrategy(mgr);
-  //  auto s = SATStrategy(mgr);
+  //  auto s = NaiveStrategy(mgr);
   //  auto s = BDDStrategy(mgr);
   auto s = CompositionalStrategy();
   auto t = Translator(s);
