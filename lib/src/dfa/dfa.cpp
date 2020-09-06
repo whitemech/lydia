@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <cuddObj.hh>
+#include <cudd/cuddObj.hh>
 #include <lydia/dfa/dfa.hpp>
 #include <lydia/utils/misc.hpp>
 #include <lydia/utils/strings.hpp>

@@ -21,13 +21,17 @@
 set (BENCHMARK_APP_NAME "${LIB_NAME}Bench")
 
 #configure directories
-set (BENCHMARK_MODULE_PATH "${LIBRARY_MODULE_PATH}/benchmark")
+set (LIBRARY_MODULE_PATH "${PROJECT_SOURCE_DIR}/lib")
+set (LIBRARY_SRC_PATH  "${LIBRARY_MODULE_PATH}/src" )
+set (LIBRARY_INCLUDE_PATH  "${LIBRARY_MODULE_PATH}/include")
+set (BENCHMARK_MODULE_PATH "${PROJECT_SOURCE_DIR}/benchmark")
 
 #configure benchmark directories
 set (BENCHMARK_SRC_PATH  "${BENCHMARK_MODULE_PATH}/src" )
 
 #set includes
-include_directories (${LIBRARY_INCLUDE_PATH} ${TEST_THIRD_PARTY_INCLUDE_PATH})
+include_directories (${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories (${BENCHMARK_SRC_PATH} ${LIBRARY_INCLUDE_PATH} ${THIRD_PARTY_INCLUDE_PATH} ${TEST_THIRD_PARTY_INCLUDE_PATH})
 
 #set test sources
 file (GLOB BENCHMARK_SOURCE_FILES "${BENCHMARK_SRC_PATH}/*.cpp")
@@ -36,7 +40,13 @@ file (GLOB BENCHMARK_SOURCE_FILES "${BENCHMARK_SRC_PATH}/*.cpp")
 add_executable (${BENCHMARK_APP_NAME} ${BENCHMARK_SOURCE_FILES})
 
 #add the library
-target_link_libraries (${BENCHMARK_APP_NAME} ${LIB_NAME} Threads::Threads benchmark::benchmark ${CUDD_LIBRARIES} ${MONA_LIBRARIES})
+target_link_libraries (${BENCHMARK_APP_NAME}
+        ${LIB_NAME}
+        ${CUDD_LIBRARIES}
+        ${MONA_LIBRARIES}
+        ${MINISAT_LIBRARIES}
+        benchmark::benchmark
+        Threads::Threads)
 
 add_custom_target(lydia-benchmark
         COMMAND ${CMAKE_BINARY_DIR}/bin/${BENCHMARK_APP_NAME}

@@ -33,23 +33,25 @@ If no item occurs, then you have to install them:
 
 ### CUDD
 
-The project depends on the CUDD library.
+The project depends on the CUDD library (version 3.0.0).
 
-Firse check that you have it:
-```whereis libcudd```
+To install the CUDD library, run the following commands:
 
-If no item occurs, then you have to install it.
-Follow the instructions:
-
-- enter `third_party/cudd`:
+```shell script
+wget https://github.com/whitemech/cudd/releases/download/v3.0.0/cudd_3.0.0_linux-amd64.tar.gz
+tar -xf cudd_3.0.0_linux-amd64.tar.gz
+cd cudd_3.0.0_linux-amd64
+sudo cp -P lib/* /usr/local/lib/
+sudo cp -Pr include/* /usr/local/include
 ```
-cd third_party/cudd
-``` 
-- Install CUDD:
+
+Otherwise, build from source (customize `--prefix` flag as you see fit):
 ```
-./configure --enable-silent-rules --enable-obj --enable-dddmp --prefix=[install location]
+git clone https://github.com/whitemech/cudd && cd cudd
+./configure --enable-silent-rules --enable-obj --enable-dddmp --prefix=/usr/local
 sudo make install
 ```
+
   If you get an error about aclocal, this might be due to either
   1. Not having automake: 
 ```sudo apt-get install automake```
@@ -60,15 +62,24 @@ sudo make install
 
 ### MONA
 
-- Download the source code and extract it:
-```
-wget https://github.com/cs-au-dk/MONA/archive/1.4-18.tar.gz
-tar -xf 1.4-18.tar.gz
-cd MONA-1.4-18
+The projects depends on the MONA library, version v1.4 (patch 18).
+We require that the library is compiled with different values for 
+parameters such as `MAX_VARIABLES`, and `BDD_MAX_TOTAL_TABLE_SIZE`
+(you can have a look at the details [here](https://github.com/whitemech/MONA/releases/tag/v1.4-18.dev0)).
+
+To install the MONA library, run the following commands:
+
+```shell script
+wget https://github.com/whitemech/MONA/releases/download/v1.4-18.dev0/mona_1.4-18.dev0_linux-amd64.tar.gz
+tar -xf mona_1.4-18.dev0_linux-amd64
+cd mona_1.4-18.dev0_linux-amd64
+sudo cp -P lib/* /usr/local/lib/
+sudo cp -Pr include/* /usr/local/include
 ```
 
-- Build the library
+Otherwise, download the source code and build the library:
 ```
+git clone https://github.com/whitemech/MONA.git && cd MONA
 ./configure && make && sudo make install
 ```
 
@@ -81,6 +92,24 @@ To install it, e.g. on Ubuntu:
 
 ```bash
 sudo apt-get install zlib1g-dev
+```
+
+### MiniSAT
+
+Install the pre-built library:
+```
+wget https://github.com/whitemech/minisat/releases/download/v2.1.0/minisat_2.1.0_linux-amd64.tar.gz
+tar -xf minisat_2.1.0_linux-amd64
+cd minisat_2.1.0_linux-amd64
+sudo cp -P lib/* /usr/local/lib/
+sudo cp -Pr include/* /usr/local/include
+```
+
+Or, build from source:
+```
+git clone https://github.com/whitemech/minisat.git && cd minisat
+mkdir build && cd build && cmake ..
+make -j4 && sudo make install 
 ```
 
 ### Graphviz

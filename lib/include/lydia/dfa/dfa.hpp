@@ -20,7 +20,7 @@
 #include "abstract_dfa.hpp"
 #include <algorithm>
 #include <cassert>
-#include <cuddObj.hh>
+#include <cudd/cuddObj.hh>
 #include <fstream>
 #include <iostream>
 #include <lydia/logger.hpp>

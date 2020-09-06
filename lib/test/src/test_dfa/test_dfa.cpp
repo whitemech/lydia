@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <catch.hpp>
-#include <cuddObj.hh>
+#include <cudd/cuddObj.hh>
 #include <lydia/dfa/dfa.hpp>
 
 namespace whitemech::lydia::Test {
