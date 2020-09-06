@@ -2,8 +2,7 @@
 
 set -e
 
-#cd build && make test
-cd build/lib/test && ../../bin/lydiaTest
+cd build && make test
 
 cd ..
 
