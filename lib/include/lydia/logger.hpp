@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#define SPDLOG_FMT_EXTERNAL
-#define FMT_HEADER_ONLY
-#include <spdlog/fmt/ostr.h>
+
+// clang-format off
 #include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
+// clang-format on
 #include <string>
 
 namespace whitemech::lydia {

@@ -36,9 +36,6 @@ add_subdirectory(${GOOGLE_BENCHMARK_MODULE_PATH})
 set (SPDLOG_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/spdlog")
 set (SPDLOG_INCLUDE_PATH "${SPDLOG_MODULE_PATH}/include")
 # -------------------------------------------------------------------------
-# fmt
-set (FMT_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/fmt")
-set (FMT_INCLUDE_PATH "${FMT_MODULE_PATH}/include")
 # -------------------------------------------------------------------------
 # CLI11
 set (CLI11_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/CLI11")
@@ -61,7 +58,6 @@ set (MINISAT_INCLUDE_PATH ${MINISAT_INCLUDE_DIRS})
 
 #set variables
 set (THIRD_PARTY_INCLUDE_PATH
-        ${FMT_INCLUDE_PATH}
         ${SPDLOG_INCLUDE_PATH}
         ${CLI11_INCLUDE_PATH}
         ${CUDD_INCLUDE_PATH}
