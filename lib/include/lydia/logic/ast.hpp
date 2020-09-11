@@ -21,4 +21,3 @@ namespace whitemech::lydia {
 class BooleanOperator {};
 
 } // namespace whitemech::lydia
-}
