@@ -15,10 +15,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/ldlf/only_test.hpp>
+#include <lydia/logic/ldlf/only_test.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 void OnlyTestVisitor::visit(const PropositionalRegExp &r) { result = false; }
 void OnlyTestVisitor::visit(const TestRegExp &r) { result = true; }
@@ -44,5 +43,4 @@ bool is_test_only(const RegExp &r) {
   return v.apply(r);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

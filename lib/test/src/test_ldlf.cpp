@@ -16,9 +16,9 @@
  */
 #include <catch.hpp>
 #include <iostream>
-#include <lydia/ldlf/logic.hpp>
-#include <lydia/ldlf/only_test.hpp>
 #include <lydia/logger.hpp>
+#include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/ldlf/only_test.hpp>
 #include <lydia/utils/compare.hpp>
 
 namespace whitemech::lydia::Test {
@@ -26,8 +26,8 @@ namespace whitemech::lydia::Test {
 TEST_CASE("Boolean atoms", "[logic]") {
   Logger log("test_logic");
 
-  auto newBoolTrue = LDLfBooleanAtom(true);
-  auto newBoolFalse = LDLfBooleanAtom(false);
+  auto newBoolTrue = LDLfTrue();
+  auto newBoolFalse = LDLfFalse();
 
   SECTION("tt == tt") { REQUIRE(*boolTrue == *boolTrue); }
   SECTION("ff == ff") { REQUIRE(*boolFalse == *boolFalse); }
@@ -37,9 +37,9 @@ TEST_CASE("Boolean atoms", "[logic]") {
   SECTION("ff == new_ff") { REQUIRE(*boolFalse == newBoolFalse); }
 
   SECTION("tt > tt == 0") { REQUIRE(boolTrue->compare(*boolTrue) == 0); }
-  SECTION("tt > ff == 1") { REQUIRE(boolTrue->compare(*boolFalse) == 1); }
-  SECTION("ff < tt == -1") { REQUIRE(boolFalse->compare(*boolTrue) == -1); }
-  SECTION("ff < ff == 0") { REQUIRE(boolFalse->compare(*boolFalse) == 0); }
+  SECTION("tt > ff == -1") { REQUIRE(boolTrue->compare(*boolFalse) == -1); }
+  SECTION("ff > tt == 1") { REQUIRE(boolFalse->compare(*boolTrue) == 1); }
+  SECTION("ff > ff == 0") { REQUIRE(boolFalse->compare(*boolFalse) == 0); }
 
   SECTION("tt.hash() == tt.hash()") {
     REQUIRE(boolTrue->hash() == boolTrue->hash());
@@ -60,9 +60,9 @@ TEST_CASE("Boolean atoms", "[logic]") {
 
 TEST_CASE("LDLfNot", "[logic]") {
 
-  auto ptr_true = std::make_shared<LDLfBooleanAtom>(true);
+  auto ptr_true = std::make_shared<LDLfTrue>();
   auto not_true = LDLfNot(ptr_true);
-  auto ptr_false = std::make_shared<LDLfBooleanAtom>(false);
+  auto ptr_false = std::make_shared<LDLfFalse>();
   auto not_false = LDLfNot(ptr_false);
 
   SECTION("test canonical exception") {
@@ -79,15 +79,15 @@ TEST_CASE("LDLfNot", "[logic]") {
   SECTION("test compare") {
     REQUIRE(not_true.compare(not_true) == 0);
     REQUIRE(not_false.compare(not_false) == 0);
-    REQUIRE(not_true.compare(not_false) == 1);
-    REQUIRE(not_false.compare(not_true) == -1);
+    REQUIRE(not_true.compare(not_false) == -1);
+    REQUIRE(not_false.compare(not_true) == 1);
   }
 }
 
 TEST_CASE("And", "[logic]") {
   set_formulas and_1_args = {};
   set_formulas and_2_args = set_formulas();
-  set_formulas and_3_args = {boolean(true), boolean(true), boolean(false)};
+  set_formulas and_3_args = {boolTrue, boolTrue, boolFalse};
 
   SECTION("test exception for number of args") {
     REQUIRE_THROWS(LDLfAnd(and_1_args));
@@ -112,7 +112,7 @@ TEST_CASE("And", "[logic]") {
 TEST_CASE("LDLfOr", "[logic]") {
   set_formulas or_1_args = {};
   set_formulas or_2_args = set_formulas();
-  set_formulas or_3_args = {boolean(true), boolean(true), boolean(false)};
+  set_formulas or_3_args = {boolTrue, boolTrue, boolFalse};
 
   SECTION("test exception for number of args") {
     REQUIRE_THROWS(LDLfOr(or_1_args));
@@ -130,8 +130,8 @@ TEST_CASE("LDLfOr", "[logic]") {
 }
 
 TEST_CASE("Logical not", "[logic]") {
-  auto tt = std::make_shared<LDLfBooleanAtom>(true);
-  auto ff = std::make_shared<LDLfBooleanAtom>(false);
+  auto tt = std::make_shared<LDLfTrue>();
+  auto ff = std::make_shared<LDLfFalse>();
 
   REQUIRE(tt->logical_not()->is_equal(*ff));
   REQUIRE(ff->logical_not()->is_equal(*tt));
@@ -157,9 +157,9 @@ TEST_CASE("Logical not", "[logic]") {
 
 TEST_CASE("LDLfDiamond", "[logic]") {
   auto true_ = std::make_shared<const PropositionalTrue>();
-  auto tt = boolean(true);
+  auto tt = boolTrue;
   auto false_ = std::make_shared<const PropositionalFalse>();
-  auto ff = boolean(false);
+  auto ff = boolFalse;
   auto a = std::make_shared<const PropositionalAtom>("a");
   auto b = std::make_shared<const PropositionalAtom>("b");
   auto a_and_b =
@@ -190,14 +190,14 @@ TEST_CASE("LDLfDiamond", "[logic]") {
 }
 
 TEST_CASE("Set of formulas", "[logic]") {
-  auto tt = std::make_shared<const LDLfBooleanAtom>(true);
-  auto ff = std::make_shared<const LDLfBooleanAtom>(false);
-  set_formulas args = {boolean(true), boolean(false)};
+  auto tt = boolTrue;
+  auto ff = boolFalse;
+  set_formulas args = {boolTrue, boolFalse};
   auto and_ = std::make_shared<const LDLfAnd>(args);
   auto or_ = std::make_shared<const LDLfOr>(args);
 
-  REQUIRE(*ff < *tt);
-  REQUIRE(*tt < *and_);
+  REQUIRE(*tt < *ff);
+  REQUIRE(*ff < *and_);
   REQUIRE(*and_ < *or_);
   REQUIRE(!(*or_ < *and_));
 
@@ -206,8 +206,8 @@ TEST_CASE("Set of formulas", "[logic]") {
   // check order. Vectorize first
   vec_formulas result(formulas.begin(), formulas.end());
 
-  REQUIRE(result[0]->is_equal(*ff));
-  REQUIRE(result[1]->is_equal(*tt));
+  REQUIRE(result[0]->is_equal(*tt));
+  REQUIRE(result[1]->is_equal(*ff));
   REQUIRE(result[2]->is_equal(*and_));
   REQUIRE(result[3]->is_equal(*or_));
 }

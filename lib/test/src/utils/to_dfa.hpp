@@ -21,15 +21,14 @@
 #include <cppitertools/product.hpp>
 #include <cudd/cuddObj.hh>
 #include <lydia/dfa/dfa.hpp>
-#include <lydia/ldlf/logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
 #include <lydia/parser/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <numeric>
 #include <sstream>
 #include <stack>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 template <class Tuple,
           class T = std::decay_t<std::tuple_element_t<0, std::decay_t<Tuple>>>>
@@ -136,5 +135,4 @@ static adfa_ptr to_dfa_from_formula_string(const std::string &f,
   return to_dfa(formula, mgr);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

@@ -16,13 +16,12 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/ldlf/logic.hpp>
-#include <lydia/nnf.hpp>
-#include <lydia/pl/logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/nnf.hpp>
+#include <lydia/logic/pl/base.hpp>
 #include <lydia/visitor.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class StrPrinter : public Visitor {
 private:
@@ -34,7 +33,8 @@ protected:
 public:
   // callbacks for LDLf
   void visit(const Symbol &) override;
-  void visit(const LDLfBooleanAtom &) override;
+  void visit(const LDLfTrue &) override;
+  void visit(const LDLfFalse &) override;
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
@@ -65,5 +65,4 @@ public:
 
 std::string to_string(const Basic &);
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

@@ -16,15 +16,14 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/ldlf/logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
 #include <lydia/to_dfa/nfa_state.hpp>
 #include <lydia/types.hpp>
 #include <lydia/utils/compare.hpp>
 #include <memory>
 #include <utility>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 /*!
  * This class represents a DFA state in
@@ -47,7 +46,7 @@ public:
 
   void accept(Visitor &v) const override{};
   hash_t compute_hash_() const override;
-  int compare(const Basic &rhs) const override;
+  int compare_(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
 
   /*!
@@ -63,5 +62,4 @@ public:
   bool is_final() const;
 };
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

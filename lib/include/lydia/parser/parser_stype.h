@@ -16,12 +16,11 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "lydia/ldlf/logic.hpp"
-#include "lydia/pl/logic.hpp"
+#include "lydia/logic/ldlf/base.hpp"
+#include "lydia/logic/pl/base.hpp"
 #include <string>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 struct YYSTYPE {
   std::shared_ptr<const LDLfFormula> formula;
@@ -41,5 +40,4 @@ struct YYSTYPE {
   YYSTYPE &operator=(YYSTYPE &&) = default;
 };
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

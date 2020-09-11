@@ -18,14 +18,14 @@
 #include "../utils/to_dfa.hpp"
 #include <catch.hpp>
 #include <iostream>
-#include <lydia/nnf.hpp>
+#include <lydia/logic/nnf.hpp>
 #include <lydia/to_dfa/dfa_state.hpp>
 
 namespace whitemech::lydia::Test {
 
 TEST_CASE("Set of DFA states", "[translate]") {
   auto a = DFAState(set_nfa_states{});
-  auto b = DFAState(set_formulas{std::make_shared<LDLfBooleanAtom>(true)});
+  auto b = DFAState(set_formulas{std::make_shared<LDLfTrue>()});
   auto c = DFAState(set_nfa_states{});
 
   REQUIRE(a == c);

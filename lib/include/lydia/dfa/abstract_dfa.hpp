@@ -25,8 +25,7 @@
 #include <utility>
 #include <vector>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class abstract_dfa {
 public:
@@ -109,5 +108,4 @@ public:
   virtual void add_transition(int from, const interpretation_set &symbol,
                               int to, bool dont_care = true) = 0;
 };
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

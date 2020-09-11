@@ -18,7 +18,7 @@
 #include <catch.hpp>
 #include <cppitertools/powerset.hpp>
 #include <cppitertools/product.hpp>
-#include <lydia/symbol.hpp>
+#include <lydia/logic/symbol.hpp>
 #include <lydia/to_dfa/strategies/bdd/base.hpp>
 #include <lydia/types.hpp>
 #include <lydia/utils/compare.hpp>

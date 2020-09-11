@@ -16,7 +16,7 @@
  */
 #include <catch.hpp>
 #include <lydia/logger.hpp>
-#include <lydia/symbol.hpp>
+#include <lydia/logic/symbol.hpp>
 
 namespace whitemech::lydia::Test {
 
@@ -46,8 +46,8 @@ TEST_CASE("Symbol", "[symbol]") {
   SECTION("x.hash() == newX.hash()") { REQUIRE(x.hash() == newX.hash()); }
   SECTION("y.hash() == newY.hash()") { REQUIRE(y.hash() == newY.hash()); }
 
-  SECTION("x < y") { REQUIRE(x.compare(y) == -1); }
-  SECTION("y > x") { REQUIRE(y.compare(x) == 1); }
+  SECTION("x < y") { REQUIRE(x.compare_(y) == -1); }
+  SECTION("y > x") { REQUIRE(y.compare_(x) == 1); }
 }
 
 } // namespace whitemech::lydia::Test

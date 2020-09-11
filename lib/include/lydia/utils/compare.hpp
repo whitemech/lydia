@@ -25,8 +25,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class Basic;
 class LDLfFormula;
@@ -154,7 +153,7 @@ inline int unified_compare(const std::shared_ptr<T> &a,
 //                                 std::is_base_of<Basic, U>::value>>
 template <typename T, typename U>
 inline int unified_compare(const T &a, const U &b) {
-  return a->compare_(*b);
+  return a->compare(*b);
 }
 
 template <typename T>
@@ -238,5 +237,4 @@ inline int unordered_compare(const M &a, const M &b) {
   return 0;
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

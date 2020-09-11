@@ -24,13 +24,13 @@
 #include <set>
 #include <vector>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class Basic;
 class Symbol;
 class LDLfFormula;
-class LDLfBooleanAtom;
+class LDLfTrue;
+class LDLfFalse;
 class LDLfAnd;
 class LDLfOr;
 class LDLfNot;
@@ -123,5 +123,4 @@ struct cmp_set_of_ptr {
   }
 };
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

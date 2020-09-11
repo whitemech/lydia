@@ -25,8 +25,7 @@
 #include <numeric>
 #include <queue>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 void dfa_to_graphviz(const abstract_dfa &automaton,
                      const std::string &output_filename,
@@ -54,5 +53,4 @@ void dumpdot(const CUDD::Cudd &mgr, const CUDD::BDD &b,
              const std::vector<const char *> &inames,
              const std::string &filename);
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

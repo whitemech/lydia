@@ -18,16 +18,16 @@
 
 #include <lydia/types.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
-//  Type ID for all the concrete classes
-//  that inherit from Basic.
+// Type ID for all the concrete classes
+// that inherit from Basic.
+// Alternative: use 'typeid'. However, the order was not deterministic,
+// and that might have an impact with different compilers.
 enum TypeID {
   t_Symbol,
-  t_LDLfBooleanAtom,
-  t_LDLfBooleanTrue,
-  t_LDLfBooleanFalse,
+  t_LDLfTrue,
+  t_LDLfFalse,
   t_LDLfAnd,
   t_LDLfOr,
   t_LDLfNot,
@@ -88,7 +88,7 @@ public:
   bool operator!=(const Basic &o) const { return !(*this == o); };
 
   //! Comparator operator
-  bool operator<(const Basic &rhs) const { return this->compare_(rhs) == -1; };
+  bool operator<(const Basic &rhs) const { return this->compare(rhs) == -1; };
   bool operator>(const Basic &rhs) const { return rhs < *this; }
   bool operator<=(const Basic &rhs) const { return !(*this > rhs); }
   bool operator>=(const Basic &rhs) const { return !(*this < rhs); }
@@ -118,16 +118,11 @@ public:
    This function assumes that `o` is the same type as `this`. Use ` compare_`
    if you want general comparison.
    */
-  virtual int compare(const Basic &o) const = 0;
-  int compare_(const Basic &o) const;
+  virtual int compare_(const Basic &o) const = 0;
+  int compare(const Basic &o) const;
   virtual void accept(Visitor &v) const = 0;
   std::string str() const;
 };
-
-// TODO decide what to do with this:
-//    std::ostream &operator<<(std::ostream &strm, const Basic &b) {
-//        return strm << b.str();
-//    }
 
 template <class T> void hash_combine(hash_t &seed, const T &v);
 
@@ -197,8 +192,7 @@ template <class T> inline void hash_combine(hash_t &seed, const T &v) {
   hash_combine_impl(seed, v);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia
 
 // std namespace functions
 namespace std {

@@ -15,12 +15,11 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/pl/models/base.hpp>
-#include <lydia/pl/models/naive.hpp>
+#include <lydia/logic/pl/models/base.hpp>
+#include <lydia/logic/pl/models/naive.hpp>
 #include <lydia/to_dfa/strategies/naive.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 std::shared_ptr<abstract_dfa>
 NaiveStrategy::to_dfa(const LDLfFormula &formula) {
@@ -127,5 +126,4 @@ set_nfa_states NaiveStrategy::next_states(const NFAState &state,
   return result;
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

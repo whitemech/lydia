@@ -20,8 +20,7 @@
 
 #include <lydia/parser/driver.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 Driver::~Driver() {
   delete (scanner);
@@ -70,9 +69,12 @@ void Driver::parse_helper(std::istream &stream) {
   }
 }
 
-std::shared_ptr<const LDLfFormula>
-Driver::add_LDLfBooleanAtom(const bool &flag) const {
-  return std::make_shared<LDLfBooleanAtom>(flag);
+std::shared_ptr<const LDLfFormula> Driver::add_LDLfTrue() const {
+  return boolTrue;
+}
+
+std::shared_ptr<const LDLfFormula> Driver::add_LDLfFalse() const {
+  return boolFalse;
 }
 
 std::shared_ptr<const LDLfFormula>
@@ -129,7 +131,7 @@ Driver::add_LDLfEquivalence(std::shared_ptr<const LDLfFormula> &lhs,
 std::shared_ptr<const LDLfFormula> Driver::add_LDLfEnd() const {
   auto ptr_true = std::make_shared<PropositionalRegExp>(
       std::make_shared<PropositionalTrue>());
-  auto ptr_ff = std::make_shared<LDLfBooleanAtom>(false);
+  auto ptr_ff = std::make_shared<LDLfFalse>();
   return this->add_LDLfBox((std::shared_ptr<const RegExp> &)ptr_true,
                            (std::shared_ptr<const LDLfFormula> &)ptr_ff);
 }
@@ -137,7 +139,7 @@ std::shared_ptr<const LDLfFormula> Driver::add_LDLfEnd() const {
 std::shared_ptr<const LDLfFormula> Driver::add_LDLfLast() const {
   auto ptr_true = std::make_shared<PropositionalRegExp>(
       std::make_shared<PropositionalTrue>());
-  auto ptr_ff = std::make_shared<LDLfBooleanAtom>(false);
+  auto ptr_ff = std::make_shared<LDLfFalse>();
   auto formula = std::make_shared<LDLfBox>(ptr_true, ptr_ff);
   return this->add_LDLfDiamond((std::shared_ptr<const RegExp> &)ptr_true,
                                (std::shared_ptr<const LDLfFormula> &)formula);
@@ -231,5 +233,4 @@ std::ostream &Driver::print(std::ostream &stream) const {
   return (stream);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

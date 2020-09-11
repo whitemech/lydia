@@ -16,11 +16,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/utils/dfa_transform.hpp>
 namespace whitemech::lydia {
 
-static void print_dfa(const abstract_dfa &automaton, const std::string &name,
-                      const std::string &format = "svg") {
-  dfa_to_graphviz(automaton, name + "." + format, format);
-}
+class BooleanOperator {};
+
 } // namespace whitemech::lydia
+}

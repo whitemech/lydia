@@ -21,13 +21,12 @@
 #include <string>
 
 #include "parser.tab.hh"
-#include <lydia/ldlf/logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/pl/base.hpp>
+#include <lydia/logic/symbol.hpp>
 #include <lydia/parser/scanner.hpp>
-#include <lydia/pl/logic.hpp>
-#include <lydia/symbol.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class Driver {
 private:
@@ -53,8 +52,8 @@ public:
    */
   void parse(std::istream &iss);
 
-  std::shared_ptr<const LDLfFormula>
-  add_LDLfBooleanAtom(const bool &flag) const;
+  std::shared_ptr<const LDLfFormula> add_LDLfTrue() const;
+  std::shared_ptr<const LDLfFormula> add_LDLfFalse() const;
   std::shared_ptr<const LDLfFormula>
   add_LDLfAnd(std::shared_ptr<const LDLfFormula> &lhs,
               std::shared_ptr<const LDLfFormula> &rhs) const;
@@ -114,5 +113,4 @@ public:
   std::ostream &print(std::ostream &stream) const;
 };
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

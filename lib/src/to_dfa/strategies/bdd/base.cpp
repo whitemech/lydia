@@ -15,9 +15,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/atom_visitor.hpp>
 #include <lydia/dfa/dfa.hpp>
-#include <lydia/nnf.hpp>
+#include <lydia/logic/atom_visitor.hpp>
+#include <lydia/logic/nnf.hpp>
 #include <lydia/to_dfa/delta_symbolic.hpp>
 #include <lydia/to_dfa/dfa_state.hpp>
 #include <lydia/to_dfa/strategies/bdd/base.hpp>
@@ -25,8 +25,7 @@
 #include <memory>
 #include <queue>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 std::shared_ptr<abstract_dfa> BDDStrategy::to_dfa(const LDLfFormula &formula) {
   auto formula_nnf = to_nnf(formula);
@@ -195,5 +194,4 @@ void BDDStrategy::add_transition(int from_index, CUDD::BDD guard,
   }
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

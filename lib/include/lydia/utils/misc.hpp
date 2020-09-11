@@ -21,8 +21,7 @@
 #include <lydia/utils/strings.hpp>
 #include <set>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 template <typename T, typename U = std::less<T>>
 std::vector<std::set<T, U>> powerset(std::set<T, U> &s) {
@@ -107,5 +106,4 @@ inline std::vector<T> set_union(const std::vector<T> &a,
   return a_union_b;
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

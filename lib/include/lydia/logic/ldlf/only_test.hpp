@@ -17,11 +17,10 @@
  */
 
 #include <lydia/basic.hpp>
-#include <lydia/ldlf/logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
 #include <lydia/visitor.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class OnlyTestVisitor : public Visitor {
 private:
@@ -39,5 +38,4 @@ public:
 
 bool is_test_only(const RegExp &r);
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

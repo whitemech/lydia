@@ -47,7 +47,7 @@ public:
    * \param o - Object to be compared with
    * \return `0` if equal, `-1` , `1` according to string compare
    * */
-  int compare(const Basic &o) const override;
+  int compare_(const Basic &o) const override;
 };
 
 //! inline version to return `Symbol`

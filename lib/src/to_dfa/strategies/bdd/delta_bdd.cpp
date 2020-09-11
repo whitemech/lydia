@@ -18,8 +18,7 @@
 #include <lydia/to_dfa/strategies/bdd/base.hpp>
 #include <lydia/to_dfa/strategies/bdd/delta_bdd.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 void BDDDeltaSymbolicVisitor::visit(const PropositionalTrue &f) {
   result = this->s.mgr.bddOne();
@@ -76,5 +75,4 @@ CUDD::BDD bdd_delta_symbolic(BDDStrategy &s, const PropositionalFormula &f,
   return visitor.apply(f);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

@@ -15,13 +15,12 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <cassert>
-#include <lydia/atom_visitor.hpp>
-#include <lydia/pl/logic.hpp>
+#include <lydia/logic/atom_visitor.hpp>
+#include <lydia/logic/pl/base.hpp>
 #include <lydia/utils/compare.hpp>
 #include <lydia/utils/misc.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 prop_ptr prop_true = std::make_shared<PropositionalTrue>();
 prop_ptr prop_false = std::make_shared<PropositionalFalse>();
@@ -31,7 +30,7 @@ hash_t PropositionalTrue::compute_hash_() const {
   return seed;
 }
 
-int PropositionalTrue::compare(const Basic &rhs) const {
+int PropositionalTrue::compare_(const Basic &rhs) const {
   assert(is_a<PropositionalTrue>(rhs));
   return 0;
 }
@@ -47,7 +46,7 @@ hash_t PropositionalFalse::compute_hash_() const {
   return seed;
 }
 
-int PropositionalFalse::compare(const Basic &rhs) const {
+int PropositionalFalse::compare_(const Basic &rhs) const {
   assert(is_a<PropositionalFalse>(rhs));
   return 0;
 }
@@ -77,9 +76,9 @@ hash_t PropositionalAtom::compute_hash_() const {
   return this->symbol->compute_hash_();
 }
 
-int PropositionalAtom::compare(const Basic &rhs) const {
+int PropositionalAtom::compare_(const Basic &rhs) const {
   assert(is_a<PropositionalAtom>(rhs));
-  return this->symbol->compare_(
+  return this->symbol->compare(
       *dynamic_cast<const PropositionalAtom &>(rhs).symbol);
 }
 
@@ -117,7 +116,7 @@ bool PropositionalAnd::is_equal(const Basic &o) const {
                     dynamic_cast<const PropositionalAnd &>(o).get_container());
 }
 
-int PropositionalAnd::compare(const Basic &o) const {
+int PropositionalAnd::compare_(const Basic &o) const {
   assert(is_a<PropositionalAnd>(o));
   return unified_compare(
       container_, dynamic_cast<const PropositionalAnd &>(o).get_container());
@@ -158,7 +157,7 @@ bool PropositionalOr::is_equal(const Basic &o) const {
                     dynamic_cast<const PropositionalOr &>(o).get_container());
 }
 
-int PropositionalOr::compare(const Basic &o) const {
+int PropositionalOr::compare_(const Basic &o) const {
   assert(is_a<PropositionalOr>(o));
   return unified_compare(
       container_, dynamic_cast<const PropositionalOr &>(o).get_container());
@@ -206,9 +205,9 @@ bool PropositionalNot::is_equal(const Basic &o) const {
          eq(*arg_, *dynamic_cast<const PropositionalNot &>(o).get_arg());
 }
 
-int PropositionalNot::compare(const Basic &o) const {
+int PropositionalNot::compare_(const Basic &o) const {
   assert(is_a<PropositionalNot>(o));
-  return arg_->compare_(*dynamic_cast<const PropositionalNot &>(o).get_arg());
+  return arg_->compare(*dynamic_cast<const PropositionalNot &>(o).get_arg());
 }
 
 std::shared_ptr<const PropositionalFormula> PropositionalNot::get_arg() const {
@@ -280,5 +279,4 @@ prop_ptr logical_or(const set_prop_formulas &s) {
 
 prop_ptr logical_not(const prop_ptr &f) { return f->logical_not(); }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

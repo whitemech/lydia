@@ -17,20 +17,19 @@
 
 #include <cassert>
 #include <lydia/logger.hpp>
-#include <lydia/nnf.hpp>
-#include <lydia/pl/logic.hpp>
+#include <lydia/logic/nnf.hpp>
+#include <lydia/logic/pl/base.hpp>
 #include <lydia/to_dfa/delta_symbolic.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 Logger DeltaSymbolicVisitor::logger = Logger("delta");
 
-void DeltaSymbolicVisitor::visit(const LDLfBooleanAtom &x) {
-  if (x.get_value())
-    result = std::make_shared<PropositionalTrue>();
-  else
-    result = std::make_shared<PropositionalFalse>();
+void DeltaSymbolicVisitor::visit(const LDLfTrue &x) {
+  result = std::make_shared<PropositionalTrue>();
+}
+void DeltaSymbolicVisitor::visit(const LDLfFalse &x) {
+  result = std::make_shared<PropositionalFalse>();
 }
 
 void DeltaSymbolicVisitor::visit(const LDLfNot &b) {
@@ -203,5 +202,4 @@ DeltaSymbolicBoxRegExpVisitor::apply(const RegExp &b) {
   return result;
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

@@ -24,8 +24,7 @@
 #include "parser.tab.hh"
 #include <lydia/parser/parser_stype.h>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class Scanner : public yyFlexLexer {
 private:
@@ -45,5 +44,4 @@ public:
   // Method body created by flex in lexer.yy.cc
 };
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

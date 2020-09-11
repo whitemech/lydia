@@ -15,10 +15,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/pl/cnf.hpp>
+#include <lydia/logic/pl/cnf.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 void CNFTransformer::visit(const PropositionalTrue &) {
   result = boolean_prop(true);
@@ -113,5 +112,4 @@ prop_ptr to_cnf(const PropositionalFormula &f) {
   return visitor.apply(f);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

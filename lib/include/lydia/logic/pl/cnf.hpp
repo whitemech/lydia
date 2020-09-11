@@ -16,22 +16,17 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/pl/logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
 #include <lydia/visitor.hpp>
-#include <utility>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
-class ReplaceVisitor : public Visitor {
+class CNFTransformer : public Visitor {
 private:
-  prop_ptr result;
-  std::map<prop_ptr, prop_ptr, SharedComparator> replacements;
+protected:
+  std::shared_ptr<const PropositionalFormula> result;
 
 public:
-  explicit ReplaceVisitor(
-      std::map<prop_ptr, prop_ptr, SharedComparator> replacements)
-      : replacements{std::move(replacements)} {}
   // callbacks for propositional logic
   void visit(const PropositionalTrue &) override;
   void visit(const PropositionalFalse &) override;
@@ -40,11 +35,17 @@ public:
   void visit(const PropositionalOr &) override;
   void visit(const PropositionalNot &) override;
 
+  void visit(const QuotedFormula &) override{};
+  void visit(const LDLfF &) override{};
+  void visit(const LDLfT &) override{};
+
   prop_ptr apply(const PropositionalFormula &b);
 };
 
-prop_ptr replace(std::map<prop_ptr, prop_ptr, SharedComparator> replacements,
-                 const PropositionalFormula &formula);
+set_prop_formulas to_container(prop_ptr p);
+prop_ptr to_cnf(const PropositionalFormula &);
 
-} // namespace lydia
-} // namespace whitemech
+std::vector<std::vector<PropositionalAtom>>
+to_clauses(const PropositionalFormula &cnf_f);
+
+} // namespace whitemech::lydia

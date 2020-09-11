@@ -16,18 +16,17 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/atom_visitor.hpp>
 #include <lydia/dfa/dfa.hpp>
-#include <lydia/nnf.hpp>
-#include <lydia/pl/logic.hpp>
+#include <lydia/logic/atom_visitor.hpp>
+#include <lydia/logic/nnf.hpp>
+#include <lydia/logic/pl/base.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/dfa_state.hpp>
 #include <lydia/utils/misc.hpp>
 #include <queue>
 #include <utility>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class NaiveStrategy : public Strategy {
 private:
@@ -65,5 +64,4 @@ public:
                                     const set_atoms_ptr &i);
 };
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

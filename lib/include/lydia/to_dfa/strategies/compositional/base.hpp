@@ -16,17 +16,16 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/atom_visitor.hpp>
 #include <lydia/dfa/abstract_dfa.hpp>
 #include <lydia/dfa/mona_dfa.hpp>
-#include <lydia/ldlf/only_test.hpp>
-#include <lydia/nnf.hpp>
+#include <lydia/logic/atom_visitor.hpp>
+#include <lydia/logic/ldlf/only_test.hpp>
+#include <lydia/logic/nnf.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/strategies/bdd/delta_bdd.hpp>
 #include <numeric>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class CompositionalStrategy : public Strategy {
 public:
@@ -48,7 +47,8 @@ public:
   explicit ComposeDFAVisitor(CompositionalStrategy &cs) : cs{cs} {}
 
   // callbacks for LDLf
-  void visit(const LDLfBooleanAtom &f) override;
+  void visit(const LDLfTrue &f) override;
+  void visit(const LDLfFalse &f) override;
   void visit(const LDLfAnd &f) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &f) override;
@@ -92,5 +92,4 @@ public:
   }
 };
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

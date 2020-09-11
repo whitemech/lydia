@@ -15,14 +15,12 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/nnf.hpp>
+#include <lydia/logic/nnf.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
-void NNFTransformer::visit(const LDLfBooleanAtom &x) {
-  result = std::make_shared<LDLfBooleanAtom>(x.get_value());
-}
+void NNFTransformer::visit(const LDLfTrue &x) { result = boolTrue; }
+void NNFTransformer::visit(const LDLfFalse &x) { result = boolFalse; }
 
 void NNFTransformer::visit(const LDLfAnd &x) {
   auto container = x.get_container();
@@ -106,5 +104,4 @@ std::shared_ptr<const LDLfFormula> to_nnf(const LDLfFormula &x) {
   return nnfTransformer.apply(x);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

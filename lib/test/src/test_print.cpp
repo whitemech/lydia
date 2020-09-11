@@ -23,26 +23,26 @@ TEST_CASE("LDLf string printer", "[string_printer]") {
 
   SECTION("test tt.str()") {
     StrPrinter strPrinter;
-    auto f = LDLfBooleanAtom(true);
+    auto f = LDLfTrue();
     auto expected = "tt";
     auto actual = strPrinter.apply(f);
     REQUIRE(actual == expected);
   }
   SECTION("test ff.str()") {
-    auto f = LDLfBooleanAtom(false);
+    auto f = LDLfFalse();
     auto expected = "ff";
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
   SECTION("to string tt & ff") {
-    auto f = LDLfAnd({boolean(true), boolean(false)});
-    auto expected = "(ff & tt)";
+    auto f = LDLfAnd({boolTrue, boolFalse});
+    auto expected = "(tt & ff)";
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
   SECTION("to string tt | ff") {
-    auto f = LDLfOr({boolean(true), boolean(false)});
-    auto expected = "(ff | tt)";
+    auto f = LDLfOr({boolTrue, boolFalse});
+    auto expected = "(tt | ff)";
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
@@ -55,7 +55,7 @@ TEST_CASE("LDLf string printer", "[string_printer]") {
   SECTION("to string <a>tt") {
     auto ptr_re = std::make_shared<PropositionalRegExp>(
         std::make_shared<PropositionalAtom>("a"));
-    auto ptr_tt = std::make_shared<LDLfBooleanAtom>(true);
+    auto ptr_tt = std::make_shared<LDLfTrue>();
     auto f = LDLfDiamond(ptr_re, ptr_tt);
     auto expected = "<a>(tt)";
     auto actual = to_string(f);
@@ -64,7 +64,7 @@ TEST_CASE("LDLf string printer", "[string_printer]") {
   SECTION("to string [a]tt") {
     auto ptr_re = std::make_shared<PropositionalRegExp>(
         std::make_shared<PropositionalAtom>("a"));
-    auto ptr_tt = std::make_shared<LDLfBooleanAtom>(true);
+    auto ptr_tt = std::make_shared<LDLfTrue>();
     auto f = LDLfBox(ptr_re, ptr_tt);
     auto expected = "[a](tt)";
     auto actual = to_string(f);
@@ -96,21 +96,20 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
   SECTION("to string ?(tt)") {
-    auto ptr_ldlf_formula = std::make_shared<LDLfBooleanAtom>(true);
+    auto ptr_ldlf_formula = std::make_shared<LDLfTrue>();
     auto f = TestRegExp(ptr_ldlf_formula);
     auto expected = "(tt)?";
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
   SECTION("to string (tt & ff)?") {
-    auto tt = std::make_shared<LDLfBooleanAtom>(true);
-    auto ff = std::make_shared<LDLfBooleanAtom>(false);
+    auto tt = std::make_shared<LDLfTrue>();
+    auto ff = std::make_shared<LDLfFalse>();
     auto ptr_ldlf_formula = std::make_shared<LDLfAnd>(set_formulas({tt, ff}));
     auto f = TestRegExp(ptr_ldlf_formula);
-    //    auto expected_1 = "Test(And(tt, ff))";
-    auto expected_2 = "((ff & tt))?";
+    auto expected = "((tt & ff))?";
     auto actual = to_string(f);
-    REQUIRE(actual == expected_2);
+    REQUIRE(actual == expected);
   }
   SECTION("to string a+b") {
     auto a = std::make_shared<PropositionalRegExp>(

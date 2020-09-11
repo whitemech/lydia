@@ -17,8 +17,7 @@
 
 #include <lydia/to_dfa/strategies/compositional/base.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 std::shared_ptr<abstract_dfa>
 CompositionalStrategy::to_dfa(const LDLfFormula &formula) {
@@ -38,9 +37,8 @@ CompositionalStrategy::to_dfa(const LDLfFormula &formula) {
   return std::make_shared<mona_dfa>(result, index);
 }
 
-void ComposeDFAVisitor::visit(const LDLfBooleanAtom &f) {
-  result = f.get_value() ? dfaLDLfTrue() : dfaLDLfFalse();
-}
+void ComposeDFAVisitor::visit(const LDLfTrue &f) { result = dfaLDLfTrue(); }
+void ComposeDFAVisitor::visit(const LDLfFalse &f) { result = dfaLDLfFalse(); }
 
 void ComposeDFAVisitor::visit(const LDLfAnd &f) {
   DFA *tmp1;
@@ -244,5 +242,4 @@ void ComposeDFAVisitor::visit(const PropositionalNot &f) {
   dfaFree(tmp);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

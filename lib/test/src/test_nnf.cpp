@@ -16,7 +16,7 @@
  */
 #include <catch.hpp>
 #include <iostream>
-#include <lydia/nnf.hpp>
+#include <lydia/logic/nnf.hpp>
 #include <lydia/utils/compare.hpp>
 
 namespace whitemech::lydia::Test {
@@ -24,26 +24,26 @@ namespace whitemech::lydia::Test {
 TEST_CASE("Negative normal form", "[nnf]") {
 
   SECTION("tt") {
-    auto tt = LDLfBooleanAtom(true);
+    auto tt = LDLfTrue();
     REQUIRE(tt == *to_nnf(tt));
   }
 
   SECTION("ff") {
-    auto ff = LDLfBooleanAtom(false);
+    auto ff = LDLfFalse();
     REQUIRE(ff == *to_nnf(ff));
   }
 
   SECTION("!tt") {
-    auto not_ff = LDLfNot(std::make_shared<LDLfBooleanAtom>(false));
-    REQUIRE(LDLfBooleanAtom(true) == *to_nnf(not_ff));
+    auto not_ff = LDLfNot(std::make_shared<LDLfFalse>());
+    REQUIRE(LDLfTrue() == *to_nnf(not_ff));
   }
 
   SECTION("!(ff & tt)") {
-    auto ff = boolean(false);
-    auto tt = boolean(true);
+    auto ff = boolFalse;
+    auto tt = boolTrue;
     auto not_and = LDLfNot(std::make_shared<LDLfAnd>(set_formulas({ff, tt})));
-    auto tt_or = boolean(true);
-    auto ff_or = boolean(false);
+    auto tt_or = boolTrue;
+    auto ff_or = boolFalse;
     auto expected_nnf = LDLfOr(set_formulas({tt_or, ff_or}));
     auto actual_nnf = to_nnf(not_and);
     bool res = expected_nnf.is_equal(*actual_nnf);

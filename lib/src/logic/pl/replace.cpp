@@ -15,11 +15,10 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/pl/replace.hpp>
+#include <lydia/logic/pl/replace.hpp>
 #include <utility>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 void ReplaceVisitor::visit(const PropositionalAtom &f) {
   basic_ptr basic = f.shared_from_this();
@@ -69,5 +68,4 @@ prop_ptr replace(std::map<prop_ptr, prop_ptr, SharedComparator> replacements,
   return visitor.apply(formula);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

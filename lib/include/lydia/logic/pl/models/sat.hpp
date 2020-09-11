@@ -17,16 +17,15 @@
  */
 
 #include <iostream>
-#include <lydia/atom_visitor.hpp>
-#include <lydia/pl/cnf.hpp>
-#include <lydia/pl/eval.hpp>
-#include <lydia/pl/models/base.hpp>
+#include <lydia/logic/atom_visitor.hpp>
+#include <lydia/logic/pl/cnf.hpp>
+#include <lydia/logic/pl/eval.hpp>
+#include <lydia/logic/pl/models/base.hpp>
 #include <lydia/utils/misc.hpp>
 #include <minisat/core/Solver.h>
 #include <minisat/simp/SimpSolver.h>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class PopulateSolverVisitor : Visitor {
 
@@ -98,5 +97,4 @@ public:
   }
 };
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

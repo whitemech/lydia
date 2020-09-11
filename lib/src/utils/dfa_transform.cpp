@@ -17,8 +17,7 @@
 
 #include <lydia/utils/dfa_transform.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 void interpretation_set_to_vect(const interpretation_set &src,
                                 interpretation &dest) {
@@ -135,5 +134,4 @@ void dfa_to_bdds(const dfa &automaton, const std::string &directory_path) {
   bdd2dot(automaton, names, directory_path);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

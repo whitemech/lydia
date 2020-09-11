@@ -19,8 +19,7 @@
 #include <lydia/dfa/dfa.hpp>
 #include <memory>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class Strategy {
 public:
@@ -52,5 +51,4 @@ public:
 std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula,
                                      const CUDD::Cudd &mgr);
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

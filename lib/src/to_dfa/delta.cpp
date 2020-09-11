@@ -17,21 +17,20 @@
 
 #include <cassert>
 #include <lydia/logger.hpp>
-#include <lydia/nnf.hpp>
-#include <lydia/pl/eval.hpp>
-#include <lydia/pl/logic.hpp>
+#include <lydia/logic/nnf.hpp>
+#include <lydia/logic/pl/base.hpp>
+#include <lydia/logic/pl/eval.hpp>
 #include <lydia/to_dfa/delta.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 Logger DeltaVisitor::logger = Logger("delta");
 
-void DeltaVisitor::visit(const LDLfBooleanAtom &x) {
-  if (x.get_value())
-    result = std::make_shared<PropositionalTrue>();
-  else
-    result = std::make_shared<PropositionalFalse>();
+void DeltaVisitor::visit(const LDLfTrue &x) {
+  result = std::make_shared<PropositionalTrue>();
+}
+void DeltaVisitor::visit(const LDLfFalse &x) {
+  result = std::make_shared<PropositionalFalse>();
 }
 
 void DeltaVisitor::visit(const LDLfNot &b) {
@@ -219,8 +218,11 @@ DeltaBoxRegExpVisitor::apply(const RegExp &b) {
   return result;
 }
 
-void ExpandVisitor::visit(const LDLfBooleanAtom &f) {
-  result = std::make_shared<LDLfBooleanAtom>(f.get_value());
+void ExpandVisitor::visit(const LDLfTrue &f) {
+  result = std::make_shared<LDLfTrue>();
+}
+void ExpandVisitor::visit(const LDLfFalse &f) {
+  result = std::make_shared<LDLfFalse>();
 }
 
 void ExpandVisitor::visit(const LDLfF &x) { result = apply(x.get_arg()); }
@@ -293,5 +295,4 @@ std::shared_ptr<const RegExp> ExpandVisitor::apply(const RegExp &f) {
   return regex_result;
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

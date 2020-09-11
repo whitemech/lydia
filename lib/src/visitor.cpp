@@ -15,15 +15,15 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/ldlf/logic.hpp>
-#include <lydia/pl/logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/pl/base.hpp>
 #include <lydia/to_dfa/delta.hpp>
 #include <lydia/visitor.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 void Symbol::accept(Visitor &v) const { v.visit(*this); }
-void LDLfBooleanAtom::accept(Visitor &v) const { v.visit(*this); }
+void LDLfTrue::accept(Visitor &v) const { v.visit(*this); }
+void LDLfFalse::accept(Visitor &v) const { v.visit(*this); }
 void LDLfOr::accept(Visitor &v) const { v.visit(*this); }
 void LDLfAnd::accept(Visitor &v) const { v.visit(*this); }
 void LDLfNot::accept(Visitor &v) const { v.visit(*this); }
@@ -51,5 +51,4 @@ void LDLfF::accept(Visitor &v) const { v.visit(*this); }
 void LDLfT::accept(Visitor &v) const { v.visit(*this); }
 void QuotedFormula::accept(Visitor &v) const { v.visit(*this); }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

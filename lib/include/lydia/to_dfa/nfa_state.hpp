@@ -17,14 +17,13 @@
  */
 
 #include <lydia/dfa/dfa.hpp>
-#include <lydia/ldlf/logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
 #include <lydia/types.hpp>
 #include <lydia/utils/compare.hpp>
 #include <memory>
 #include <utility>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 /*!
  * This class represents an NFA state in
@@ -43,10 +42,12 @@ class NFAState : public Basic {
 public:
   const static TypeID type_code_id = TypeID::t_NFAState;
   const set_formulas formulas;
-  explicit NFAState(set_formulas formulas);
+  explicit NFAState(set_formulas formulas) : formulas{formulas} {
+    type_code_ = type_code_id;
+  };
   void accept(Visitor &v) const override{};
   hash_t compute_hash_() const override;
-  int compare(const Basic &rhs) const override;
+  int compare_(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
 
   /*!
@@ -62,5 +63,4 @@ public:
   bool is_final() const;
 };
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

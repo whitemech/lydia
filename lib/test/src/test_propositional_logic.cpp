@@ -15,12 +15,12 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <catch.hpp>
-#include <lydia/pl/cnf.hpp>
-#include <lydia/pl/eval.hpp>
-#include <lydia/pl/logic.hpp>
-#include <lydia/pl/models/base.hpp>
-#include <lydia/pl/models/naive.hpp>
-#include <lydia/pl/models/sat.hpp>
+#include <lydia/logic/pl/base.hpp>
+#include <lydia/logic/pl/cnf.hpp>
+#include <lydia/logic/pl/eval.hpp>
+#include <lydia/logic/pl/models/base.hpp>
+#include <lydia/logic/pl/models/naive.hpp>
+#include <lydia/logic/pl/models/sat.hpp>
 
 namespace whitemech::lydia::Test {
 TEST_CASE("Propositional Logic", "[pl/logic]") {
