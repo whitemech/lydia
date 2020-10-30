@@ -15,10 +15,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/atom_visitor.hpp>
+#include <lydia/logic/atom_visitor.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 Logger AtomsVisitor::logger = Logger("atom_visitor");
 
@@ -27,13 +26,11 @@ void AtomsVisitor::visit(const PropositionalFalse &) {}
 
 void AtomsVisitor::visit(const PropositionalAtom &x) {
   set_atoms_ptr atoms_result;
-  if (x.symbol->get_type_code() == TypeID::t_Symbol) {
-    atoms_result.insert(std::make_shared<const PropositionalAtom>(
-        dynamic_cast<const Symbol &>(*x.symbol)));
-  } else if (x.symbol->get_type_code() == TypeID::t_QuotedFormula) {
-    basic_ptr ptr = std::make_shared<const QuotedFormula>(
-        dynamic_cast<const QuotedFormula &>(*x.symbol).formula);
-    atoms_result.insert(std::make_shared<const PropositionalAtom>(ptr));
+  if (auto s = std::dynamic_pointer_cast<const Symbol>(x.symbol)) {
+    atoms_result.insert(prop_atom(symbol(s->get_name())));
+  } else if (auto q =
+                 std::dynamic_pointer_cast<const QuotedFormula>(x.symbol)) {
+    atoms_result.insert(prop_atom(quote(q->formula)));
   } else {
     logger.error("Should not be here...");
     assert(false);
@@ -65,7 +62,8 @@ void AtomsVisitor::visit(const PropositionalNot &x) {
 
 // LDLf
 
-void AtomsVisitor::visit(const LDLfBooleanAtom &) {}
+void AtomsVisitor::visit(const LDLfTrue &) {}
+void AtomsVisitor::visit(const LDLfFalse &) {}
 
 void AtomsVisitor::visit(const LDLfAnd &x) {
   set_atoms_ptr atoms_result, tmp;
@@ -151,5 +149,4 @@ set_atoms_ptr find_atoms(const LDLfFormula &f) {
   return atomsVisitor.apply(f);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

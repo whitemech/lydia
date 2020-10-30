@@ -16,28 +16,8 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/basic.hpp>
-#include <lydia/ldlf/logic.hpp>
-#include <lydia/visitor.hpp>
+namespace whitemech::lydia {
 
-namespace whitemech {
-namespace lydia {
+class BooleanOperator {};
 
-class OnlyTestVisitor : public Visitor {
-private:
-  bool result = false;
-
-public:
-  void visit(const PropositionalRegExp &) override;
-  void visit(const TestRegExp &) override;
-  void visit(const UnionRegExp &) override;
-  void visit(const SequenceRegExp &) override;
-  void visit(const StarRegExp &) override;
-
-  bool apply(const RegExp &r);
-};
-
-bool is_test_only(const RegExp &r);
-
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

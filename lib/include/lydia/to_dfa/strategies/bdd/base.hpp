@@ -19,8 +19,7 @@
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/strategies/bdd/delta_bdd.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class BDDStrategy : public Strategy {
 public:
@@ -47,5 +46,4 @@ public:
   void add_transition(int from_index, CUDD::BDD guard, int to_index);
 };
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

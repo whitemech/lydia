@@ -25,8 +25,7 @@
 #include <string>
 #include <vector>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 std::vector<std::string> split(const std::string &input,
                                const std::string &regex);
@@ -63,5 +62,4 @@ std::string state2bin(int n, int nb_fill_bits = -1, bool increasing = false);
  */
 std::string interpretation2string(const interpretation &);
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

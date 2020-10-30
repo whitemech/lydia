@@ -17,8 +17,7 @@
 
 #include <lydia/dfa/mona_dfa.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 int mona_dfa::get_nb_states() const { return dfa_->ns; }
 
@@ -403,5 +402,4 @@ void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
   o << "}\n";
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

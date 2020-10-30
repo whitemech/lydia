@@ -15,17 +15,12 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/pl/cnf.hpp>
-#include <lydia/pl/models/base.hpp>
+#include <lydia/logic/pl/cnf.hpp>
+#include <lydia/logic/pl/models/base.hpp>
 #include <lydia/to_dfa/delta_symbolic.hpp>
 #include <lydia/to_dfa/nfa_state.hpp>
 
-namespace whitemech {
-namespace lydia {
-
-NFAState::NFAState(set_formulas formulas) : formulas{std::move(formulas)} {
-  this->type_code_ = type_code_id;
-};
+namespace whitemech::lydia {
 
 bool NFAState::is_equal(const Basic &rhs) const {
   return is_a<NFAState>(rhs) and
@@ -33,7 +28,7 @@ bool NFAState::is_equal(const Basic &rhs) const {
                     dynamic_cast<const NFAState &>(rhs).formulas);
 }
 
-int NFAState::compare(const Basic &rhs) const {
+int NFAState::compare_(const Basic &rhs) const {
   assert(is_a<NFAState>(rhs));
   return unified_compare(this->formulas,
                          dynamic_cast<const NFAState &>(rhs).formulas);
@@ -62,5 +57,4 @@ bool NFAState::is_final() const {
   return eval(conjunction, empty);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

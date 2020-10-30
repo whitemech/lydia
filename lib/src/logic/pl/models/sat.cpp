@@ -15,12 +15,11 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/pl/cnf.hpp>
-#include <lydia/pl/models/base.hpp>
-#include <lydia/pl/models/sat.hpp>
+#include <lydia/logic/pl/cnf.hpp>
+#include <lydia/logic/pl/models/base.hpp>
+#include <lydia/logic/pl/models/sat.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 void PopulateSolverVisitor::visit(const PropositionalTrue &) {
   if (in_or) {
@@ -80,5 +79,4 @@ void PopulateSolverVisitor::apply(const PropositionalFormula &b) {
   b.accept(*this);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

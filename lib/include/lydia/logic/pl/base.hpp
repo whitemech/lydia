@@ -17,11 +17,10 @@
  */
 
 #include <lydia/basic.hpp>
-#include <lydia/symbol.hpp>
+#include <lydia/logic/symbol.hpp>
 #include <lydia/visitor.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class PropositionalFormula : public Basic {
 public:
@@ -32,10 +31,9 @@ class PropositionalTrue : public PropositionalFormula {
 public:
   const static TypeID type_code_id = TypeID::t_PropositionalTrue;
   PropositionalTrue() { this->type_code_ = type_code_id; }
-
   void accept(Visitor &v) const override;
   hash_t compute_hash_() const override;
-  int compare(const Basic &rhs) const override;
+  int compare_(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
   prop_ptr logical_not() const override;
 };
@@ -44,10 +42,9 @@ class PropositionalFalse : public PropositionalFormula {
 public:
   const static TypeID type_code_id = TypeID::t_PropositionalFalse;
   PropositionalFalse() { this->type_code_ = type_code_id; }
-
   void accept(Visitor &v) const override;
   hash_t compute_hash_() const override;
-  int compare(const Basic &rhs) const override;
+  int compare_(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
   prop_ptr logical_not() const override;
 };
@@ -58,20 +55,15 @@ public:
 class PropositionalAtom : public PropositionalFormula {
 public:
   const static TypeID type_code_id = TypeID::t_PropositionalAtom;
-  // notice, this may require downcasting when need to access to the content of
-  // the symbol. we do this because PropositionalAtom can contain both Symbol
-  // and QuotedFormula.
-  // TODO refactor? maybe we are making complex without not good reasons.
-  // an alternative: const std::variant<symbol_ptr, quoted_ptr> symbol;
-  // however, the fact that we need to import from LDLF logic (for the quoted
-  // formula) to implement propositional logic sounds awkward.
+  // We do this because PropositionalAtom can contain both Symbol and
+  // QuotedFormula.
   const basic_ptr symbol;
   explicit PropositionalAtom(const Symbol &);
   explicit PropositionalAtom(const std::string &);
   explicit PropositionalAtom(const basic_ptr &p);
   void accept(Visitor &v) const override;
   hash_t compute_hash_() const override;
-  int compare(const Basic &rhs) const override;
+  int compare_(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
   prop_ptr logical_not() const override;
 };
@@ -88,7 +80,7 @@ public:
   hash_t compute_hash_() const override;
   virtual vec_prop_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
-  int compare(const Basic &o) const override;
+  int compare_(const Basic &o) const override;
   const set_prop_formulas &get_container() const;
   prop_ptr logical_not() const override;
 };
@@ -105,7 +97,7 @@ public:
   hash_t compute_hash_() const override;
   virtual vec_prop_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
-  int compare(const Basic &o) const override;
+  int compare_(const Basic &o) const override;
   const set_prop_formulas &get_container() const;
   prop_ptr logical_not() const override;
 };
@@ -122,7 +114,7 @@ public:
   hash_t compute_hash_() const override;
   virtual vec_basic get_args() const;
   bool is_equal(const Basic &o) const override;
-  int compare(const Basic &o) const override;
+  int compare_(const Basic &o) const override;
   std::shared_ptr<const PropositionalFormula> get_arg() const;
   prop_ptr logical_not() const override;
 };
@@ -138,5 +130,4 @@ prop_ptr logical_and(const set_prop_formulas &s);
 prop_ptr logical_or(const set_prop_formulas &s);
 prop_ptr logical_not(const prop_ptr &s);
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

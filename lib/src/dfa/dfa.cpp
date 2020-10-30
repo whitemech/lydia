@@ -21,8 +21,7 @@
 #include <lydia/utils/strings.hpp>
 #include <numeric>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 Logger dfa::logger = Logger("dfa");
 
@@ -444,5 +443,4 @@ CUDD::BDD dfa::get_symbol(const interpretation_map &i) const {
   return tmp;
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

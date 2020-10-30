@@ -17,15 +17,14 @@
  */
 
 #include <cudd/cuddObj.hh>
-#include <lydia/ldlf/logic.hpp>
 #include <lydia/logger.hpp>
-#include <lydia/pl/logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/pl/base.hpp>
 #include <lydia/to_dfa/delta.hpp>
 #include <lydia/visitor.hpp>
 #include <utility>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class DeltaSymbolicVisitor : public Visitor {
 private:
@@ -40,7 +39,8 @@ public:
 
   // callbacks for LDLf
   void visit(const Symbol &) override{};
-  void visit(const LDLfBooleanAtom &) override;
+  void visit(const LDLfTrue &) override;
+  void visit(const LDLfFalse &) override;
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
@@ -113,5 +113,4 @@ public:
 std::shared_ptr<const PropositionalFormula>
 delta_symbolic(const LDLfFormula &, bool epsilon = false);
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

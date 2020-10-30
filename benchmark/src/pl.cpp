@@ -16,9 +16,9 @@
  */
 
 #include <benchmark/benchmark.h>
-#include <lydia/pl/logic.hpp>
-#include <lydia/pl/models/naive.hpp>
-#include <lydia/pl/models/sat.hpp>
+#include <lydia/logic/pl/base.hpp>
+#include <lydia/logic/pl/models/naive.hpp>
+#include <lydia/logic/pl/models/sat.hpp>
 #include <lydia/utils/benchmark.hpp>
 #include <minisat/simp/SimpSolver.h>
 #include <random>
@@ -81,7 +81,7 @@ static void BM_pl_models_naive_all_models_or(benchmark::State &state) {
     }
     auto f = logical_or(set_prop_formulas(operands.begin(), operands.end()));
     auto m = all_models<NaiveModelEnumerationStategy>(*f);
-    assert(m.size() == ((2 << N) - 1));
+    assert(m.size() == ((1 << N) - 1));
     escape(&m);
     (void)m;
   }
@@ -99,7 +99,7 @@ static void BM_pl_models_sat_all_models_or(benchmark::State &state) {
     }
     auto f = logical_or(set_prop_formulas(operands.begin(), operands.end()));
     auto m = all_models<SATModelEnumerationStategy>(*t);
-    assert(m.size() == 2 << N);
+    assert(m.size() == ((1 << N) - 1));
     escape(&m);
     (void)m;
   }

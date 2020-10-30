@@ -16,7 +16,7 @@
  */
 
 #include <benchmark/benchmark.h>
-#include <lydia/ldlf/logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
 #include <lydia/utils/benchmark.hpp>
 #include <random>
 
@@ -24,7 +24,7 @@ namespace whitemech::lydia::Benchmark {
 
 static void BM_boolean_from_constructor(benchmark::State &state) {
   for (auto _ : state) {
-    auto x = LDLfBooleanAtom(true);
+    auto x = LDLfTrue();
     escape(&x);
     (void)x;
   }
@@ -33,7 +33,7 @@ BENCHMARK(BM_boolean_from_constructor);
 
 static void BM_shared_boolean_from_constructor(benchmark::State &state) {
   for (auto _ : state) {
-    auto x = std::make_shared<LDLfBooleanAtom>(true);
+    auto x = std::make_shared<LDLfTrue>();
     escape(&x);
     (void)x;
   }
@@ -42,7 +42,7 @@ BENCHMARK(BM_shared_boolean_from_constructor);
 
 static void BM_boolean_from_static_pointer(benchmark::State &state) {
   for (auto _ : state) {
-    std::shared_ptr<const LDLfBooleanAtom> x = boolean(true);
+    std::shared_ptr<const LDLfTrue> x = boolTrue;
     escape(&x);
     (void)x;
   }
@@ -51,8 +51,8 @@ BENCHMARK(BM_boolean_from_static_pointer);
 
 static void BM_set_of_booleans_from_pointers(benchmark::State &state) {
   for (auto _ : state) {
-    auto true_ = boolean(true);
-    auto false_ = boolean(false);
+    auto true_ = boolTrue;
+    auto false_ = boolFalse;
     auto s = set_formulas{true_, false_};
     escape(&s);
     (void)s;
@@ -62,8 +62,8 @@ BENCHMARK(BM_set_of_booleans_from_pointers);
 
 static void BM_set_of_booleans_from_shared_pointers(benchmark::State &state) {
   for (auto _ : state) {
-    auto true_ = std::make_shared<const LDLfBooleanAtom>(true);
-    auto false_ = std::make_shared<const LDLfBooleanAtom>(false);
+    auto true_ = boolTrue;
+    auto false_ = boolFalse;
     auto s = set_formulas{true_, false_};
     escape(&s);
     (void)s;
@@ -73,8 +73,8 @@ BENCHMARK(BM_set_of_booleans_from_shared_pointers);
 
 static void BM_and_true_false(benchmark::State &state) {
   for (auto _ : state) {
-    std::shared_ptr<const LDLfBooleanAtom> true_ = boolean(true);
-    std::shared_ptr<const LDLfBooleanAtom> false_ = boolean(false);
+    std::shared_ptr<const LDLfTrue> true_ = boolTrue;
+    std::shared_ptr<const LDLfFalse> false_ = boolFalse;
     auto and_ = LDLfAnd(set_formulas{true_, false_});
     escape(&and_);
     (void)and_;
@@ -84,8 +84,8 @@ BENCHMARK(BM_and_true_false);
 
 static void BM_shared_and_true_false(benchmark::State &state) {
   for (auto _ : state) {
-    std::shared_ptr<const LDLfBooleanAtom> true_ = boolean(true);
-    std::shared_ptr<const LDLfBooleanAtom> false_ = boolean(false);
+    std::shared_ptr<const LDLfTrue> true_ = boolTrue;
+    std::shared_ptr<const LDLfFalse> false_ = boolFalse;
     auto and_ = std::make_shared<LDLfAnd>(set_formulas{true_, false_});
     escape(&and_);
     (void)and_;

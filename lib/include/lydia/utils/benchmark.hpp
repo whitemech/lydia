@@ -19,8 +19,8 @@
 #include <memory>
 #include <type_traits>
 
-#include <lydia/ldlf/logic.hpp>
-#include <lydia/pl/logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/pl/base.hpp>
 #include <lydia/types.hpp>
 
 static void escape(void *p) { asm volatile("" : : "g"(p) : "memory"); }

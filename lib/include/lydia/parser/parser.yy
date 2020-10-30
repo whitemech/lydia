@@ -12,14 +12,12 @@
 %define parser_class_name {Parser}
 
 %code requires{
-   #include "lydia/ldlf/logic.hpp"
+   #include "lydia/logic/ldlf/base.hpp"
    #include "lydia/parser/parser_stype.h"
-   namespace whitemech {
-   namespace lydia {
+namespace whitemech::lydia {
       class Driver;
       class Scanner;
-   }
-   }
+}
 
 // The following definitions is missing when %locations isn't used
 # ifndef YY_NULLPTR
@@ -99,8 +97,8 @@ ldlf_formula: ldlf_formula EQUIVALENCE ldlf_formula                             
             | BOX_LPAR regular_expression BOX_RPAR ldlf_formula                         { $$ = d.add_LDLfBox($2, $4); };
             | DIAMOND_LPAR regular_expression DIAMOND_RPAR ldlf_formula                 { $$ = d.add_LDLfDiamond($2, $4); }
             | NOT ldlf_formula                                                          { $$ = d.add_LDLfNot($2); }
-            | TT                                                                        { $$ = d.add_LDLfBooleanAtom(true); }
-            | FF                                                                        { $$ = d.add_LDLfBooleanAtom(false); }
+            | TT                                                                        { $$ = d.add_LDLfTrue(); }
+            | FF                                                                        { $$ = d.add_LDLfFalse(); }
             | END                                                                       { $$ = d.add_LDLfEnd(); }
             | LAST                                                                      { $$ = d.add_LDLfLast(); }
             ;

@@ -19,13 +19,13 @@
 #include <lydia/basic.hpp>
 #include <lydia/types.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class Visitor {
 public:
   // callbacks for LDLf
-  virtual void visit(const LDLfBooleanAtom &){};
+  virtual void visit(const LDLfTrue &){};
+  virtual void visit(const LDLfFalse &){};
   virtual void visit(const LDLfAnd &){};
   virtual void visit(const LDLfOr &){};
   virtual void visit(const LDLfNot &){};
@@ -53,5 +53,4 @@ public:
   virtual void visit(const LDLfT &){};
 };
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

@@ -30,8 +30,7 @@
 #include <utility>
 #include <vector>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 class dfa : public abstract_dfa {
 private:
@@ -269,5 +268,4 @@ private:
                           const std::vector<int> &behaviour,
                           const std::vector<int> &final_states);
 };
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

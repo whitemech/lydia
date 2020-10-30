@@ -27,8 +27,7 @@ extern "C" {
 #include <mona/mem.h>
 }
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 /*
  * Wrapper to MONA DFA.
@@ -99,5 +98,4 @@ void print_mona_dfa(DFA *a, const std::string &name, int num = 1);
 void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
                             std::ostream &o = std::cout);
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

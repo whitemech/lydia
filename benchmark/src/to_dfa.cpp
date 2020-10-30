@@ -16,7 +16,7 @@
  */
 
 #include <benchmark/benchmark.h>
-#include <lydia/ldlf/logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
 #include <lydia/parser/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/strategies/bdd/base.hpp>
@@ -29,7 +29,7 @@ namespace whitemech::lydia::Benchmark {
 
 // Boolean atom
 inline void translate_boolean(Strategy &s) {
-  auto x = LDLfBooleanAtom(true);
+  auto x = LDLfTrue();
   auto t = Translator(s);
   auto automaton = t.to_dfa(x);
   escape(&automaton);
@@ -58,7 +58,7 @@ BENCHMARK(BM_translate_boolean_compositional);
 
 // Diamond
 inline void translate_diamond(Strategy &s) {
-  auto tt = std::make_shared<const LDLfBooleanAtom>(true);
+  auto tt = boolTrue;
   auto true_ = std::make_shared<const PropositionalTrue>();
   auto regex_true_ = std::make_shared<const PropositionalRegExp>(true_);
   auto diamond = LDLfDiamond(regex_true_, tt);

@@ -22,8 +22,7 @@
 #include <lydia/to_dfa/strategies/naive.hpp>
 #include <memory>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula,
                                      const CUDD::Cudd &mgr) {
@@ -33,5 +32,4 @@ std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula,
   auto t = Translator(s);
   return t.to_dfa(formula);
 }
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

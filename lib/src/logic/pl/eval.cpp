@@ -14,14 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include <lydia/atom_visitor.hpp>
-#include <lydia/pl/eval.hpp>
-#include <lydia/pl/logic.hpp>
-#include <lydia/pl/models/base.hpp>
+#include <lydia/logic/atom_visitor.hpp>
+#include <lydia/logic/pl/base.hpp>
+#include <lydia/logic/pl/eval.hpp>
+#include <lydia/logic/pl/models/base.hpp>
 #include <lydia/utils/misc.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 void EvalVisitor::visit(const PropositionalTrue &) { result = true; }
 void EvalVisitor::visit(const PropositionalFalse &) { result = false; }
@@ -70,5 +69,4 @@ bool eval(const PropositionalFormula &f, const set_atoms_ptr &interpretation) {
   return evalVisitor.apply(f);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

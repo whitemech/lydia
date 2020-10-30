@@ -27,8 +27,8 @@ TEST_CASE("Driver LDLf Boolean Atoms", "[parser]") {
   Logger log("test_parser");
   auto driver = Driver();
 
-  auto actualBoolTrue = std::make_shared<LDLfBooleanAtom>(true);
-  auto actualBoolFalse = std::make_shared<LDLfBooleanAtom>(false);
+  auto actualBoolTrue = std::make_shared<LDLfTrue>();
+  auto actualBoolFalse = std::make_shared<LDLfFalse>();
 
   SECTION("test parsing tt") {
     std::istringstream tt("tt");
@@ -59,9 +59,9 @@ TEST_CASE("Driver LDLf Boolean Atoms", "[parser]") {
 TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser]") {
   auto driver = Driver();
   auto actualAnd_true_false =
-      std::make_shared<LDLfAnd>(set_formulas({boolean(true), boolean(false)}));
+      std::make_shared<LDLfAnd>(set_formulas({boolTrue, boolFalse}));
   auto actualAnd_false_true =
-      std::make_shared<LDLfAnd>(set_formulas({boolean(false), boolean(true)}));
+      std::make_shared<LDLfAnd>(set_formulas({boolFalse, boolTrue}));
 
   SECTION("test parsing tt && ff") {
     std::istringstream tt_and_ff("tt && ff");
@@ -88,30 +88,30 @@ TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser]") {
     REQUIRE(*parsedAnd == *actualAnd_false_true);
   }
   SECTION("test parsing tt & ff & tt") {
-    auto and_ff_tt = std::make_shared<LDLfAnd>(
-        set_formulas({boolean(false), boolean(true)}));
+    auto and_ff_tt =
+        std::make_shared<LDLfAnd>(set_formulas({boolFalse, boolTrue}));
     auto actualAnd_tt_ff_tt =
-        std::make_shared<LDLfAnd>(set_formulas({and_ff_tt, boolean(true)}));
+        std::make_shared<LDLfAnd>(set_formulas({and_ff_tt, boolTrue}));
     std::istringstream tt_and_ff_and_tt("tt & ff & tt");
     driver.parse(tt_and_ff_and_tt);
     auto parsedAnd = driver.result;
     REQUIRE(*parsedAnd == *actualAnd_tt_ff_tt);
   }
   SECTION("test parsing (tt & ff) & tt") {
-    auto and_tt_ff = std::make_shared<LDLfAnd>(
-        set_formulas({boolean(true), boolean(false)}));
+    auto and_tt_ff =
+        std::make_shared<LDLfAnd>(set_formulas({boolTrue, boolFalse}));
     auto actualAnd_tt_ff_tt =
-        std::make_shared<LDLfAnd>(set_formulas({and_tt_ff, boolean(true)}));
+        std::make_shared<LDLfAnd>(set_formulas({and_tt_ff, boolTrue}));
     std::istringstream tt_and_ff_and_tt("(tt & ff) & tt");
     driver.parse(tt_and_ff_and_tt);
     auto parsedAnd = driver.result;
     REQUIRE(*parsedAnd == *actualAnd_tt_ff_tt);
   }
   SECTION("test parsing tt & (ff & tt)") {
-    auto and_ff_tt = std::make_shared<LDLfAnd>(
-        set_formulas({boolean(false), boolean(true)}));
+    auto and_ff_tt =
+        std::make_shared<LDLfAnd>(set_formulas({boolFalse, boolTrue}));
     auto actualAnd_tt_ff_tt =
-        std::make_shared<LDLfAnd>(set_formulas({boolean(true), and_ff_tt}));
+        std::make_shared<LDLfAnd>(set_formulas({boolTrue, and_ff_tt}));
     std::istringstream tt_and_ff_and_tt("tt & (ff & tt)");
     driver.parse(tt_and_ff_and_tt);
     auto parsedAnd = driver.result;
@@ -122,9 +122,9 @@ TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser]") {
 TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser]") {
   auto driver = Driver();
   auto actualOr_true_false =
-      std::make_shared<LDLfOr>(set_formulas({boolean(true), boolean(false)}));
+      std::make_shared<LDLfOr>(set_formulas({boolTrue, boolFalse}));
   auto actualOr_false_true =
-      std::make_shared<LDLfOr>(set_formulas({boolean(false), boolean(true)}));
+      std::make_shared<LDLfOr>(set_formulas({boolFalse, boolTrue}));
 
   SECTION("test parsing tt || ff") {
     std::istringstream tt_or_ff("tt || ff");
@@ -152,9 +152,9 @@ TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser]") {
   }
   SECTION("test parsing tt | ff | tt") {
     auto or_ff_tt =
-        std::make_shared<LDLfOr>(set_formulas({boolean(false), boolean(true)}));
+        std::make_shared<LDLfOr>(set_formulas({boolFalse, boolTrue}));
     auto actualOr_tt_ff_tt =
-        std::make_shared<LDLfOr>(set_formulas({or_ff_tt, boolean(true)}));
+        std::make_shared<LDLfOr>(set_formulas({or_ff_tt, boolTrue}));
     std::istringstream tt_or_ff_or_tt("tt | ff | tt");
     driver.parse(tt_or_ff_or_tt);
     auto parsedAnd = driver.result;
@@ -164,15 +164,15 @@ TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser]") {
 
 TEST_CASE("Driver LDLfNot", "[parser]") {
   auto driver = Driver();
-  auto actualNot_true = std::make_shared<LDLfNot>(boolean(true));
-  auto actualNot_false = std::make_shared<LDLfNot>(boolean(false));
+  auto actualNot_true = std::make_shared<LDLfNot>(boolTrue);
+  auto actualNot_false = std::make_shared<LDLfNot>(boolFalse);
 
   auto actualAnd_true_false =
-      std::make_shared<LDLfAnd>(set_formulas({boolean(true), boolean(false)}));
+      std::make_shared<LDLfAnd>(set_formulas({boolTrue, boolFalse}));
   auto actualNot_and = std::make_shared<LDLfNot>(actualAnd_true_false);
 
   auto actualOr_true_false =
-      std::make_shared<LDLfOr>(set_formulas({boolean(true), boolean(false)}));
+      std::make_shared<LDLfOr>(set_formulas({boolTrue, boolFalse}));
   auto actualNot_or = std::make_shared<LDLfNot>(actualOr_true_false);
 
   SECTION("test parsing ~tt") {
@@ -233,10 +233,10 @@ TEST_CASE("Driver LDLfTemporal", "[parser]") {
       std::make_shared<UnionRegExp>(set_regex({ptr_prop_re_a, ptr_prop_re_b}));
   auto ptr_star_re = std::make_shared<StarRegExp>(ptr_prop_re_c);
   auto ptr_test_re =
-      std::make_shared<TestRegExp>(std::make_shared<LDLfBooleanAtom>(false));
+      std::make_shared<TestRegExp>(std::make_shared<LDLfFalse>());
 
-  auto ptr_tt = std::make_shared<LDLfBooleanAtom>(true);
-  auto ptr_ff = std::make_shared<LDLfBooleanAtom>(false);
+  auto ptr_tt = std::make_shared<LDLfTrue>();
+  auto ptr_ff = std::make_shared<LDLfFalse>();
   auto ptr_end = std::make_shared<LDLfBox>(ptr_prop_re_true, ptr_ff);
   auto ptr_last = std::make_shared<LDLfDiamond>(ptr_prop_re_true, ptr_end);
 

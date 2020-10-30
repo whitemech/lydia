@@ -19,8 +19,7 @@
 #include <string>
 #include <vector>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 // incomplete list of LDLf formulas for testing purposes.
 static const std::vector<std::string> FORMULAS{
@@ -94,5 +93,4 @@ static const std::vector<std::string> FORMULAS{
     "[a*; b*; c*]ff",
 };
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

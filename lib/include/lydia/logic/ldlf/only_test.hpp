@@ -16,11 +16,26 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/utils/dfa_transform.hpp>
+#include <lydia/basic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
+#include <lydia/visitor.hpp>
+
 namespace whitemech::lydia {
 
-static void print_dfa(const abstract_dfa &automaton, const std::string &name,
-                      const std::string &format = "svg") {
-  dfa_to_graphviz(automaton, name + "." + format, format);
-}
+class OnlyTestVisitor : public Visitor {
+private:
+  bool result = false;
+
+public:
+  void visit(const PropositionalRegExp &) override;
+  void visit(const TestRegExp &) override;
+  void visit(const UnionRegExp &) override;
+  void visit(const SequenceRegExp &) override;
+  void visit(const StarRegExp &) override;
+
+  bool apply(const RegExp &r);
+};
+
+bool is_test_only(const RegExp &r);
+
 } // namespace whitemech::lydia

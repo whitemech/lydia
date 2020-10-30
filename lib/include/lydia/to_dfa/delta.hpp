@@ -17,14 +17,13 @@
  */
 
 #include <cudd/cuddObj.hh>
-#include <lydia/ldlf/logic.hpp>
 #include <lydia/logger.hpp>
-#include <lydia/pl/logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/pl/base.hpp>
 #include <lydia/visitor.hpp>
 #include <utility>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 /*!
  * This visitor implements the 'delta' function of [1].
@@ -50,7 +49,8 @@ public:
 
   // callbacks for LDLf
   void visit(const Symbol &) override{};
-  void visit(const LDLfBooleanAtom &) override;
+  void visit(const LDLfTrue &) override;
+  void visit(const LDLfFalse &) override;
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
@@ -139,7 +139,8 @@ protected:
   std::shared_ptr<const RegExp> regex_result;
 
 public:
-  void visit(const LDLfBooleanAtom &) override;
+  void visit(const LDLfTrue &) override;
+  void visit(const LDLfFalse &) override;
   void visit(const LDLfAnd &) override;
   void visit(const LDLfOr &) override;
   void visit(const LDLfNot &) override;
@@ -177,5 +178,4 @@ std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &);
 std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &,
                                                   const set_atoms_ptr &);
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

@@ -19,14 +19,12 @@
 #include <sstream>
 #include <stdexcept>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 void StrPrinter::visit(const Symbol &x) { result = x.get_name(); }
 
-void StrPrinter::visit(const LDLfBooleanAtom &x) {
-  result = x.get_value() ? "tt" : "ff";
-}
+void StrPrinter::visit(const LDLfTrue &x) { result = "tt"; }
+void StrPrinter::visit(const LDLfFalse &x) { result = "ff"; }
 
 void StrPrinter::visit(const LDLfAnd &x) {
   std::ostringstream s;
@@ -168,5 +166,4 @@ std::string to_string(const Basic &x) {
   return strPrinter.apply(x);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

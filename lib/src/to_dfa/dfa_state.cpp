@@ -17,15 +17,14 @@
 
 #include <lydia/to_dfa/dfa_state.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 DFAState::DFAState(set_nfa_states states) : states{std::move(states)} {
-  this->type_code_ = type_code_id;
+  type_code_ = type_code_id;
 }
 DFAState::DFAState(const set_formulas &formulas)
     : states{set_nfa_states{std::make_shared<NFAState>(formulas)}} {
-  this->type_code_ = type_code_id;
+  type_code_ = type_code_id;
 }
 
 hash_t DFAState::compute_hash_() const {
@@ -35,7 +34,7 @@ hash_t DFAState::compute_hash_() const {
   return seed;
 }
 
-int DFAState::compare(const Basic &rhs) const {
+int DFAState::compare_(const Basic &rhs) const {
   assert(is_a<DFAState>(rhs));
   return unified_compare(this->states,
                          dynamic_cast<const DFAState &>(rhs).states);
@@ -54,5 +53,4 @@ bool DFAState::is_final() const {
   return false;
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia
