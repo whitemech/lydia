@@ -59,7 +59,7 @@ BENCHMARK(BM_translate_boolean_compositional);
 // Diamond
 inline void translate_diamond(Strategy &s) {
   auto tt = boolTrue;
-  auto true_ = std::make_shared<const PropositionalTrue>();
+  auto true_ = context.makeTrue();
   auto regex_true_ = std::make_shared<const PropositionalRegExp>(true_);
   auto diamond = LDLfDiamond(regex_true_, tt);
   auto t = Translator(s);

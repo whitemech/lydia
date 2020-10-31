@@ -129,16 +129,14 @@ Driver::add_LDLfEquivalence(std::shared_ptr<const LDLfFormula> &lhs,
 }
 
 std::shared_ptr<const LDLfFormula> Driver::add_LDLfEnd() const {
-  auto ptr_true = std::make_shared<PropositionalRegExp>(
-      std::make_shared<PropositionalTrue>());
+  auto ptr_true = std::make_shared<PropositionalRegExp>(context->makeTrue());
   auto ptr_ff = std::make_shared<LDLfFalse>();
   return this->add_LDLfBox((std::shared_ptr<const RegExp> &)ptr_true,
                            (std::shared_ptr<const LDLfFormula> &)ptr_ff);
 }
 
 std::shared_ptr<const LDLfFormula> Driver::add_LDLfLast() const {
-  auto ptr_true = std::make_shared<PropositionalRegExp>(
-      std::make_shared<PropositionalTrue>());
+  auto ptr_true = std::make_shared<PropositionalRegExp>(context->makeTrue());
   auto ptr_ff = std::make_shared<LDLfFalse>();
   auto formula = std::make_shared<LDLfBox>(ptr_true, ptr_ff);
   return this->add_LDLfDiamond((std::shared_ptr<const RegExp> &)ptr_true,
@@ -177,33 +175,33 @@ Driver::add_UnionRegExp(std::shared_ptr<const RegExp> &regex_lhs,
 std::shared_ptr<const PropositionalFormula>
 Driver::add_PropositionalBooleanAtom(const bool &flag) const {
   if (flag) {
-    return std::make_shared<PropositionalTrue>();
+    return context->makeTrue();
   }
-  return std::make_shared<PropositionalFalse>();
+  return context->makeFalse();
 }
 
 std::shared_ptr<const PropositionalFormula>
 Driver::add_PropositionalAtom(std::string &symbol_name) const {
-  return std::make_shared<PropositionalAtom>(symbol_name);
+  return context->makePropAtom(symbol_name);
 }
 
 std::shared_ptr<const PropositionalFormula> Driver::add_PropositionalAnd(
     std::shared_ptr<const PropositionalFormula> &lhs,
     std::shared_ptr<const PropositionalFormula> &rhs) const {
   set_prop_formulas children = set_prop_formulas({lhs, rhs});
-  return std::make_shared<PropositionalAnd>(children);
+  return context->makePropAnd(children);
 }
 
 std::shared_ptr<const PropositionalFormula> Driver::add_PropositionalOr(
     std::shared_ptr<const PropositionalFormula> &lhs,
     std::shared_ptr<const PropositionalFormula> &rhs) const {
   set_prop_formulas children = set_prop_formulas({lhs, rhs});
-  return std::make_shared<PropositionalOr>(children);
+  return context->makePropOr(children);
 }
 
 std::shared_ptr<const PropositionalFormula> Driver::add_PropositionalNot(
     std::shared_ptr<const PropositionalFormula> &prop_formula) const {
-  return std::make_shared<PropositionalNot>(prop_formula);
+  return context->makePropNot(prop_formula);
 }
 
 std::shared_ptr<const PropositionalFormula>
@@ -211,9 +209,9 @@ Driver::add_PropositionalImplication(
     std::shared_ptr<const PropositionalFormula> &lhs,
     std::shared_ptr<const PropositionalFormula> &rhs) const {
   // (not lhs) OR rhs
-  auto ptr_not_lhs = std::make_shared<PropositionalNot>(lhs);
+  auto ptr_not_lhs = context->makePropNot(lhs);
   set_prop_formulas children = set_prop_formulas({ptr_not_lhs, rhs});
-  return std::make_shared<PropositionalOr>(children);
+  return context->makePropOr(children);
 }
 
 std::shared_ptr<const PropositionalFormula>
@@ -225,7 +223,7 @@ Driver::add_PropositionalEquivalence(
   auto ptr_right_implication = this->add_PropositionalImplication(rhs, lhs);
   set_prop_formulas children =
       set_prop_formulas({ptr_left_implication, ptr_right_implication});
-  return std::make_shared<PropositionalAnd>(children);
+  return context->makePropAnd(children);
 }
 
 std::ostream &Driver::print(std::ostream &stream) const {

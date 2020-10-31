@@ -216,14 +216,14 @@ TEST_CASE("Driver LDLfNot", "[parser]") {
 TEST_CASE("Driver LDLfTemporal", "[parser]") {
   auto driver = Driver();
 
-  auto ptr_prop_re_true = std::make_shared<PropositionalRegExp>(
-      std::make_shared<PropositionalTrue>());
-  auto ptr_prop_re_a = std::make_shared<PropositionalRegExp>(
-      std::make_shared<PropositionalAtom>("a"));
-  auto ptr_prop_re_b = std::make_shared<PropositionalRegExp>(
-      std::make_shared<PropositionalAtom>("b"));
-  auto ptr_prop_re_c = std::make_shared<PropositionalRegExp>(
-      std::make_shared<PropositionalAtom>("c"));
+  auto ptr_prop_re_true =
+      std::make_shared<PropositionalRegExp>(context.makeTrue());
+  auto ptr_prop_re_a =
+      std::make_shared<PropositionalRegExp>(context.makePropAtom("a"));
+  auto ptr_prop_re_b =
+      std::make_shared<PropositionalRegExp>(context.makePropAtom("b"));
+  auto ptr_prop_re_c =
+      std::make_shared<PropositionalRegExp>(context.makePropAtom("c"));
 
   auto ptr_seq_re_ab = std::make_shared<SequenceRegExp>(
       vec_regex({ptr_prop_re_a, ptr_prop_re_b}));

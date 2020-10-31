@@ -21,6 +21,7 @@
 #include <string>
 
 #include "parser.tab.hh"
+#include <lydia/ast/base.hpp>
 #include <lydia/logic/ldlf/base.hpp>
 #include <lydia/logic/pl/base.hpp>
 #include <lydia/logic/symbol.hpp>
@@ -34,11 +35,12 @@ private:
 
   Parser *parser = nullptr;
   Scanner *scanner = nullptr;
+  std::shared_ptr<AstManager> context = nullptr;
 
 public:
   std::shared_ptr<const LDLfFormula> result;
 
-  Driver() = default;
+  Driver() { context = std::make_shared<AstManager>(); }
   virtual ~Driver();
 
   /**

@@ -16,6 +16,7 @@
  */
 
 #include <cassert>
+#include <lydia/ast/base.hpp>
 #include <lydia/logger.hpp>
 #include <lydia/logic/nnf.hpp>
 #include <lydia/logic/pl/base.hpp>
@@ -27,10 +28,12 @@ namespace whitemech::lydia {
 Logger DeltaVisitor::logger = Logger("delta");
 
 void DeltaVisitor::visit(const LDLfTrue &x) {
-  result = std::make_shared<PropositionalTrue>();
+  // TODO fix
+  result = context.makeTrue();
 }
 void DeltaVisitor::visit(const LDLfFalse &x) {
-  result = std::make_shared<PropositionalFalse>();
+  // TODO fix
+  result = context.makeFalse();
 }
 
 void DeltaVisitor::visit(const LDLfNot &b) {
@@ -44,7 +47,7 @@ void DeltaVisitor::visit(const LDLfAnd &x) {
   for (auto &a : container) {
     new_container.insert(apply(*a));
   }
-  result = std::make_shared<PropositionalAnd>(new_container);
+  result = context.makePropAnd(new_container);
 }
 
 void DeltaVisitor::visit(const LDLfOr &x) {
@@ -53,7 +56,7 @@ void DeltaVisitor::visit(const LDLfOr &x) {
   for (auto &a : container) {
     new_container.insert(apply(*a));
   }
-  result = std::make_shared<PropositionalOr>(new_container);
+  result = context.makePropOr(new_container);
 }
 
 void DeltaVisitor::visit(const LDLfDiamond &f) {
@@ -86,17 +89,16 @@ std::shared_ptr<const PropositionalFormula> delta(const LDLfFormula &x,
 
 void DeltaDiamondRegExpVisitor::visit(const PropositionalRegExp &r) {
   if (epsilon) {
-    result = std::make_shared<PropositionalFalse>();
+    result = context.makeFalse();
     return;
   }
   auto prop = r.get_arg();
 
   if (eval(*prop, this->prop_interpretation)) {
     ExpandVisitor e;
-    result = std::make_shared<PropositionalAtom>(
-        quote(e.apply(*formula.get_formula())));
+    result = context.makePropAtom(quote(e.apply(*formula.get_formula())));
   } else {
-    result = std::make_shared<PropositionalFalse>();
+    result = context.makeFalse();
   }
 }
 
@@ -104,8 +106,7 @@ void DeltaDiamondRegExpVisitor::visit(const TestRegExp &r) {
   auto d = DeltaVisitor(prop_interpretation, epsilon);
   auto regex_delta = d.apply(*r.get_arg());
   auto ldlf_delta = d.apply(*formula.get_formula());
-  result = std::make_shared<PropositionalAnd>(
-      set_prop_formulas{regex_delta, ldlf_delta});
+  result = context.makePropAnd(set_prop_formulas{regex_delta, ldlf_delta});
 }
 
 void DeltaDiamondRegExpVisitor::visit(const UnionRegExp &r) {
@@ -115,7 +116,7 @@ void DeltaDiamondRegExpVisitor::visit(const UnionRegExp &r) {
     auto tmp = DeltaVisitor(prop_interpretation, epsilon).apply(new_f);
     args.insert(tmp);
   }
-  result = std::make_shared<PropositionalOr>(args);
+  result = context.makePropOr(args);
 }
 
 void DeltaDiamondRegExpVisitor::visit(const SequenceRegExp &r) {
@@ -138,7 +139,7 @@ void DeltaDiamondRegExpVisitor::visit(const StarRegExp &r) {
   auto phi = d.apply(*formula.get_formula());
   auto f = std::make_shared<LDLfF>(formula);
   auto phi2 = d.apply(LDLfDiamond(r.get_arg(), f));
-  result = std::make_shared<PropositionalOr>(set_prop_formulas{phi, phi2});
+  result = context.makePropOr(set_prop_formulas{phi, phi2});
 }
 
 std::shared_ptr<const PropositionalFormula>
@@ -149,17 +150,16 @@ DeltaDiamondRegExpVisitor::apply(const RegExp &b) {
 
 void DeltaBoxRegExpVisitor::visit(const PropositionalRegExp &r) {
   if (epsilon) {
-    result = std::make_shared<PropositionalTrue>();
+    result = context.makeTrue();
     return;
   }
   auto prop = r.get_arg();
 
   if (eval(*prop, this->prop_interpretation)) {
     ExpandVisitor e;
-    result = std::make_shared<PropositionalAtom>(
-        quote(e.apply(*formula.get_formula())));
+    result = context.makePropAtom(quote(e.apply(*formula.get_formula())));
   } else {
-    result = std::make_shared<PropositionalTrue>();
+    result = context.makeTrue();
   }
 }
 
@@ -168,8 +168,7 @@ void DeltaBoxRegExpVisitor::visit(const TestRegExp &r) {
   DeltaVisitor d(prop_interpretation, epsilon);
   auto regex_delta = d.apply(*nnfTransformer.apply(LDLfNot(r.get_arg())));
   auto ldlf_delta = d.apply(*formula.get_formula());
-  result = std::make_shared<PropositionalOr>(
-      set_prop_formulas{regex_delta, ldlf_delta});
+  result = context.makePropOr(set_prop_formulas{regex_delta, ldlf_delta});
 }
 
 void DeltaBoxRegExpVisitor::visit(const UnionRegExp &r) {
@@ -179,7 +178,7 @@ void DeltaBoxRegExpVisitor::visit(const UnionRegExp &r) {
     auto tmp = DeltaVisitor(prop_interpretation, epsilon).apply(new_f);
     args.insert(tmp);
   }
-  result = std::make_shared<PropositionalAnd>(args);
+  result = context.makePropAnd(args);
 }
 
 void DeltaBoxRegExpVisitor::visit(const SequenceRegExp &r) {
@@ -201,16 +200,12 @@ void DeltaBoxRegExpVisitor::visit(const StarRegExp &r) {
   auto phi = d.apply(*formula.get_formula());
   auto f = std::make_shared<LDLfT>(formula);
   auto phi2 = d.apply(LDLfBox(r.get_arg(), f));
-  result = std::make_shared<PropositionalAnd>(set_prop_formulas{phi, phi2});
+  result = context.makePropAnd(set_prop_formulas{phi, phi2});
 }
 
-void DeltaVisitor::visit(const LDLfF &) {
-  result = std::make_shared<PropositionalFalse>();
-}
+void DeltaVisitor::visit(const LDLfF &) { result = context.makeFalse(); }
 
-void DeltaVisitor::visit(const LDLfT &) {
-  result = std::make_shared<PropositionalTrue>();
-}
+void DeltaVisitor::visit(const LDLfT &) { result = context.makeTrue(); }
 
 std::shared_ptr<const PropositionalFormula>
 DeltaBoxRegExpVisitor::apply(const RegExp &b) {

@@ -54,6 +54,7 @@ enum TypeID {
 class Visitor;
 class Symbol;
 
+// TODO remove enable shared from this
 class Basic : public std::enable_shared_from_this<Basic> {
 private:
   // The hash_ is defined as mutable, because its value is initialized to 0
@@ -200,6 +201,13 @@ namespace std {
 template <> struct hash<whitemech::lydia::Basic> {
   std::size_t operator()(const whitemech::lydia::Basic &b) const {
     return b.hash();
+  }
+};
+
+template <> struct hash<std::shared_ptr<whitemech::lydia::Basic>> {
+  std::size_t
+  operator()(const std::shared_ptr<whitemech::lydia::Basic> &b) const {
+    return b->hash();
   }
 };
 } // namespace std

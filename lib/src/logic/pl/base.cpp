@@ -19,11 +19,9 @@
 #include <lydia/logic/pl/base.hpp>
 #include <lydia/utils/compare.hpp>
 #include <lydia/utils/misc.hpp>
+#include <utility>
 
 namespace whitemech::lydia {
-
-prop_ptr prop_true = std::make_shared<PropositionalTrue>();
-prop_ptr prop_false = std::make_shared<PropositionalFalse>();
 
 hash_t PropositionalTrue::compute_hash_() const {
   hash_t seed = type_code_id;
@@ -39,7 +37,9 @@ bool PropositionalTrue::is_equal(const Basic &rhs) const {
   return is_a<PropositionalTrue>(rhs);
 };
 
-prop_ptr PropositionalTrue::logical_not() const { return prop_false; }
+prop_ptr PropositionalTrue::logical_not() const {
+  return this->m_ctx->makeFalse();
+}
 
 hash_t PropositionalFalse::compute_hash_() const {
   hash_t seed = type_code_id;
@@ -55,20 +55,18 @@ bool PropositionalFalse::is_equal(const Basic &rhs) const {
   return is_a<PropositionalFalse>(rhs);
 }
 
-prop_ptr PropositionalFalse::logical_not() const { return prop_true; }
+prop_ptr PropositionalFalse::logical_not() const {
+  return this->m_ctx->makeTrue();
+}
 
-PropositionalAtom::PropositionalAtom(const Symbol &s)
-    : symbol{std::make_shared<const Symbol>(s.get_name())} {
+PropositionalAtom::PropositionalAtom(AstManager &c,
+                                     std::shared_ptr<const Basic> p)
+    : PropositionalFormula(c), symbol{std::move(p)} {
   this->type_code_ = type_code_id;
 }
 
-PropositionalAtom::PropositionalAtom(const std::shared_ptr<const Basic> &p)
-    : symbol{std::shared_ptr<const Basic>(p)} {
-  this->type_code_ = type_code_id;
-}
-
-PropositionalAtom::PropositionalAtom(const std::string &name)
-    : symbol(std::make_shared<Symbol>(name)) {
+PropositionalAtom::PropositionalAtom(AstManager &c, const std::string &name)
+    : PropositionalFormula(c), symbol(c.makeSymbol(name)) {
   this->type_code_ = type_code_id;
 }
 
@@ -89,11 +87,12 @@ bool PropositionalAtom::is_equal(const Basic &rhs) const {
 }
 
 prop_ptr PropositionalAtom::logical_not() const {
-  prop_ptr ptr = std::make_shared<const PropositionalAtom>(this->symbol);
-  return std::make_shared<PropositionalNot>(ptr);
+  prop_ptr ptr = m_ctx->makePropAtom(this->symbol->str());
+  return m_ctx->makePropNot(ptr);
 }
 
-PropositionalAnd::PropositionalAnd(const set_prop_formulas &s) : container_{s} {
+PropositionalAnd::PropositionalAnd(AstManager &c, const set_prop_formulas &s)
+    : PropositionalFormula(c), container_{s} {
   this->type_code_ = type_code_id;
   assert(is_canonical(s));
 }
@@ -132,10 +131,11 @@ prop_ptr PropositionalAnd::logical_not() const {
   for (auto &a : container) {
     cont.insert(a->logical_not());
   }
-  return std::make_shared<PropositionalOr>(cont);
+  return m_ctx->makePropOr(cont);
 }
 
-PropositionalOr::PropositionalOr(const set_prop_formulas &s) : container_{s} {
+PropositionalOr::PropositionalOr(AstManager &c, const set_prop_formulas &s)
+    : PropositionalFormula(c), container_{s} {
   this->type_code_ = type_code_id;
 }
 
@@ -178,12 +178,12 @@ prop_ptr PropositionalOr::logical_not() const {
   for (auto &a : container) {
     cont.insert(a->logical_not());
   }
-  return std::make_shared<PropositionalAnd>(cont);
+  return m_ctx->makePropAnd(cont);
 }
 
 PropositionalNot::PropositionalNot(
-    const std::shared_ptr<const PropositionalFormula> &in)
-    : arg_{in} {
+    AstManager &c, const std::shared_ptr<const PropositionalFormula> &in)
+    : PropositionalFormula(c), arg_{in} {
   this->type_code_ = type_code_id;
   assert(is_canonical(*in));
 }
@@ -216,7 +216,9 @@ std::shared_ptr<const PropositionalFormula> PropositionalNot::get_arg() const {
 
 prop_ptr PropositionalNot::logical_not() const { return this->get_arg(); }
 
-prop_ptr boolean_prop(bool b) { return b ? prop_true : prop_false; }
+prop_ptr boolean_prop(bool b) {
+  return b ? context.makeTrue() : context.makeFalse();
+}
 
 template <typename caller>
 prop_ptr and_or(const set_prop_formulas &s, const bool &op_x_notx) {
@@ -254,20 +256,14 @@ prop_ptr and_or(const set_prop_formulas &s, const bool &op_x_notx) {
     return *(args.begin());
   else if (args.empty())
     return boolean_prop(not op_x_notx);
-  return std::make_shared<caller>(args);
+  return std::make_shared<caller>(context, args);
 }
 
-atom_ptr prop_atom(const Symbol &s) {
-  return std::make_shared<const PropositionalAtom>(s);
-}
+atom_ptr prop_atom(const Symbol &s) { return context.makePropAtom(s.str()); }
 
-atom_ptr prop_atom(const std::string &s) {
-  return std::make_shared<const PropositionalAtom>(s);
-}
+atom_ptr prop_atom(const std::string &s) { return context.makePropAtom(s); }
 
-atom_ptr prop_atom(const basic_ptr &p) {
-  return std::make_shared<const PropositionalAtom>(p);
-}
+atom_ptr prop_atom(const basic_ptr &p) { return context.makePropAtom(p); }
 
 prop_ptr logical_and(const set_prop_formulas &s) {
   return and_or<PropositionalAnd>(s, false);

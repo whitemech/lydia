@@ -156,14 +156,13 @@ TEST_CASE("Logical not", "[logic]") {
 }
 
 TEST_CASE("LDLfDiamond", "[logic]") {
-  auto true_ = std::make_shared<const PropositionalTrue>();
+  auto true_ = context.makeTrue();
   auto tt = boolTrue;
-  auto false_ = std::make_shared<const PropositionalFalse>();
+  auto false_ = context.makeFalse();
   auto ff = boolFalse;
-  auto a = std::make_shared<const PropositionalAtom>("a");
-  auto b = std::make_shared<const PropositionalAtom>("b");
-  auto a_and_b =
-      std::make_shared<const PropositionalAnd>(set_prop_formulas{a, b});
+  auto a = context.makePropAtom("a");
+  auto b = context.makePropAtom("b");
+  auto a_and_b = context.makePropAnd(set_prop_formulas{a, b});
 
   auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
   auto diamond_formula_true_tt = std::make_shared<LDLfDiamond>(regex_true, tt);
