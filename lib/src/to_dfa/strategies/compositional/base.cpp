@@ -142,7 +142,8 @@ void ComposeDFAVisitor::visit(const StarRegExp &r) {
     return;
   }
 
-  DFA *regex = apply(*std::make_shared<LDLfDiamond>(r.get_arg(), boolTrue));
+  DFA *regex = apply(
+      *std::make_shared<LDLfDiamond>(r.get_arg(), context.makeLdlfTrue()));
   dfa_accept_empty(regex);
   DFA *star = dfa_closure(regex, cs.indices.size(), cs.indices.data());
   if (not is_diamond) {

@@ -26,15 +26,18 @@ namespace whitemech::lydia::Test {
 TEST_CASE("Boolean atoms", "[logic]") {
   Logger log("test_logic");
 
-  auto newBoolTrue = LDLfTrue();
-  auto newBoolFalse = LDLfFalse();
+  auto context = AstManager{};
+  auto boolTrue = context.makeLdlfTrue();
+  auto boolFalse = context.makeLdlfFalse();
+  auto newBoolTrue = context.makeLdlfTrue();
+  auto newBoolFalse = context.makeLdlfFalse();
 
   SECTION("tt == tt") { REQUIRE(*boolTrue == *boolTrue); }
   SECTION("ff == ff") { REQUIRE(*boolFalse == *boolFalse); }
   SECTION("tt != ff") { REQUIRE(*boolTrue != *boolFalse); }
   SECTION("ff != tt") { REQUIRE(*boolFalse != *boolTrue); }
-  SECTION("tt == new_tt") { REQUIRE(*boolTrue == newBoolTrue); }
-  SECTION("ff == new_ff") { REQUIRE(*boolFalse == newBoolFalse); }
+  SECTION("tt == new_tt") { REQUIRE(*boolTrue == *newBoolTrue); }
+  SECTION("ff == new_ff") { REQUIRE(*boolFalse == *newBoolFalse); }
 
   SECTION("tt > tt == 0") { REQUIRE(boolTrue->compare(*boolTrue) == 0); }
   SECTION("tt > ff == -1") { REQUIRE(boolTrue->compare(*boolFalse) == -1); }
@@ -51,87 +54,96 @@ TEST_CASE("Boolean atoms", "[logic]") {
     REQUIRE(boolFalse->hash() == boolFalse->hash());
   }
   SECTION("tt->hash() == new_tt->hash()") {
-    REQUIRE(boolTrue->hash() == newBoolTrue.hash());
+    REQUIRE(boolTrue->hash() == newBoolTrue->hash());
   }
   SECTION("ff->hash() == new_ff->hash()") {
-    REQUIRE(boolFalse->hash() == newBoolFalse.hash());
+    REQUIRE(boolFalse->hash() == newBoolFalse->hash());
   }
 }
 
 TEST_CASE("LDLfNot", "[logic]") {
-
-  auto ptr_true = std::make_shared<LDLfTrue>();
-  auto not_true = LDLfNot(ptr_true);
-  auto ptr_false = std::make_shared<LDLfFalse>();
-  auto not_false = LDLfNot(ptr_false);
+  auto context = AstManager{};
+  auto ptr_true = context.makeLdlfTrue();
+  auto not_true = context.makeLdlfNot(ptr_true);
+  auto ptr_false = context.makeLdlfFalse();
+  auto not_false = context.makeLdlfNot(ptr_false);
 
   SECTION("test canonical exception") {
-    REQUIRE_THROWS(LDLfNot(std::make_shared<LDLfNot>(ptr_true)));
+    REQUIRE_THROWS(context.makeLdlfNot(context.makeLdlfNot(ptr_true)));
   }
   SECTION("test equality on same objects") {
-    REQUIRE(not_true.is_equal(not_true));
-    REQUIRE(not_false.is_equal(not_false));
+    REQUIRE(not_true->is_equal(*not_true));
+    REQUIRE(not_false->is_equal(*not_false));
   }
   SECTION("test inequality") {
-    REQUIRE(!not_true.is_equal(not_false));
-    REQUIRE(!not_false.is_equal(not_true));
+    REQUIRE(!not_true->is_equal(*not_false));
+    REQUIRE(!not_false->is_equal(*not_true));
   }
   SECTION("test compare") {
-    REQUIRE(not_true.compare(not_true) == 0);
-    REQUIRE(not_false.compare(not_false) == 0);
-    REQUIRE(not_true.compare(not_false) == -1);
-    REQUIRE(not_false.compare(not_true) == 1);
+    REQUIRE(not_true->compare(*not_true) == 0);
+    REQUIRE(not_false->compare(*not_false) == 0);
+    REQUIRE(not_true->compare(*not_false) == -1);
+    REQUIRE(not_false->compare(*not_true) == 1);
   }
 }
 
 TEST_CASE("And", "[logic]") {
+  auto context = AstManager{};
+  auto boolTrue = context.makeLdlfTrue();
+  auto boolFalse = context.makeLdlfFalse();
   set_formulas and_1_args = {};
   set_formulas and_2_args = set_formulas();
   set_formulas and_3_args = {boolTrue, boolTrue, boolFalse};
 
   SECTION("test exception for number of args") {
-    REQUIRE_THROWS(LDLfAnd(and_1_args));
-    REQUIRE_THROWS(LDLfAnd(and_2_args));
+    REQUIRE_THROWS(context.makeLdlfAnd(and_1_args));
+    REQUIRE_THROWS(context.makeLdlfAnd(and_2_args));
   }
 
-  auto and_3 = LDLfAnd(and_3_args);
-  auto and_3_p = LDLfAnd(and_3_args);
+  auto and_3 = context.makeLdlfAnd(and_3_args);
+  auto and_3_p = context.makeLdlfAnd(and_3_args);
 
-  SECTION("test equality on same object") { REQUIRE(and_3.is_equal(and_3)); }
+  SECTION("test equality on same object") { REQUIRE(and_3->is_equal(*and_3)); }
   SECTION("test equality on different object") {
-    REQUIRE(and_3_p.is_equal(and_3_p));
+    REQUIRE(and_3_p->is_equal(*and_3_p));
   }
   SECTION("test compare  on same object") {
-    REQUIRE(and_3.compare(and_3) == 0);
+    REQUIRE(and_3->compare(*and_3) == 0);
   }
   SECTION("test compare  on different object") {
-    REQUIRE(and_3.compare(and_3_p) == 0);
+    REQUIRE(and_3->compare(*and_3_p) == 0);
   }
 }
 
 TEST_CASE("LDLfOr", "[logic]") {
+  auto context = AstManager{};
+  auto boolTrue = context.makeLdlfTrue();
+  auto boolFalse = context.makeLdlfFalse();
   set_formulas or_1_args = {};
   set_formulas or_2_args = set_formulas();
   set_formulas or_3_args = {boolTrue, boolTrue, boolFalse};
 
   SECTION("test exception for number of args") {
-    REQUIRE_THROWS(LDLfOr(or_1_args));
-    REQUIRE_THROWS(LDLfOr(or_2_args));
+    REQUIRE_THROWS(context.makeLdlfOr(or_1_args));
+    REQUIRE_THROWS(context.makeLdlfOr(or_2_args));
   }
 
-  auto or_3 = LDLfOr(or_3_args);
-  auto or_3_p = LDLfOr(or_3_args);
+  auto or_3 = context.makeLdlfOr(or_3_args);
+  auto or_3_p = context.makeLdlfOr(or_3_args);
 
-  SECTION("test equality on same object") { REQUIRE(or_3.is_equal(or_3)); }
+  SECTION("test equality on same object") { REQUIRE(or_3->is_equal(*or_3)); }
   SECTION("test equality on different object") {
-    REQUIRE(or_3.is_equal(or_3_p));
+    REQUIRE(or_3->is_equal(*or_3_p));
   }
-  SECTION("test compare  on same object") { REQUIRE(or_3.compare(or_3) == 0); }
+  SECTION("test compare  on same object") {
+    REQUIRE(or_3->compare(*or_3) == 0);
+  }
 }
 
 TEST_CASE("Logical not", "[logic]") {
-  auto tt = std::make_shared<LDLfTrue>();
-  auto ff = std::make_shared<LDLfFalse>();
+  auto context = AstManager{};
+  auto tt = context.makeLdlfTrue();
+  auto ff = context.makeLdlfFalse();
 
   REQUIRE(tt->logical_not()->is_equal(*ff));
   REQUIRE(ff->logical_not()->is_equal(*tt));
@@ -139,27 +151,28 @@ TEST_CASE("Logical not", "[logic]") {
   SECTION("De Morgan's Law and-or") {
     set_formulas args_1_and = {tt, ff};
     set_formulas args_2_and = {ff, tt};
-    auto and_ = std::make_shared<LDLfAnd>(args_1_and);
+    auto and_ = context.makeLdlfAnd(args_1_and);
     auto actual_or = and_->logical_not();
-    auto expected_or = std::make_shared<LDLfOr>(args_2_and);
+    auto expected_or = context.makeLdlfOr(args_2_and);
     REQUIRE(actual_or->is_equal(*expected_or));
   }
 
   SECTION("De Morgan's Law or-and") {
     set_formulas args_1_and = {tt, ff};
     set_formulas args_2_and = {ff, tt};
-    auto or_ = std::make_shared<LDLfOr>(args_1_and);
+    auto or_ = context.makeLdlfOr(args_1_and);
     auto expected_and = or_->logical_not();
-    auto actual_and = std::make_shared<LDLfAnd>(args_2_and);
+    auto actual_and = context.makeLdlfAnd(args_2_and);
     REQUIRE(actual_and->is_equal(*expected_and));
   }
 }
 
 TEST_CASE("LDLfDiamond", "[logic]") {
+  auto context = AstManager{};
+  auto tt = context.makeLdlfTrue();
+  auto ff = context.makeLdlfFalse();
   auto true_ = context.makeTrue();
-  auto tt = boolTrue;
   auto false_ = context.makeFalse();
-  auto ff = boolFalse;
   auto a = context.makePropAtom("a");
   auto b = context.makePropAtom("b");
   auto a_and_b = context.makePropAnd(set_prop_formulas{a, b});
@@ -189,11 +202,12 @@ TEST_CASE("LDLfDiamond", "[logic]") {
 }
 
 TEST_CASE("Set of formulas", "[logic]") {
-  auto tt = boolTrue;
-  auto ff = boolFalse;
-  set_formulas args = {boolTrue, boolFalse};
-  auto and_ = std::make_shared<const LDLfAnd>(args);
-  auto or_ = std::make_shared<const LDLfOr>(args);
+  auto context = AstManager{};
+  auto tt = context.makeLdlfTrue();
+  auto ff = context.makeLdlfFalse();
+  set_formulas args = {tt, ff};
+  auto and_ = context.makeLdlfAnd(args);
+  auto or_ = context.makeLdlfOr(args);
 
   REQUIRE(*tt < *ff);
   REQUIRE(*ff < *and_);
@@ -212,6 +226,9 @@ TEST_CASE("Set of formulas", "[logic]") {
 }
 
 TEST_CASE("Test 'only test'", "[ldlf/only_test]") {
+  auto context = AstManager{};
+  auto boolTrue = context.makeLdlfTrue();
+  auto boolFalse = context.makeLdlfFalse();
   auto a = prop_atom("a");
   SECTION("Test propositional regex") {
     auto r = PropositionalRegExp(a);

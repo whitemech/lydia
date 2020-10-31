@@ -125,7 +125,7 @@ void DeltaSymbolicDiamondRegExpVisitor::visit(const SequenceRegExp &r) {
 void DeltaSymbolicDiamondRegExpVisitor::visit(const StarRegExp &r) {
   auto d = DeltaSymbolicVisitor(epsilon);
   auto phi = d.apply(*formula.get_formula());
-  auto f = std::make_shared<LDLfF>(formula);
+  auto f = context.makeLdlfF(formula);
   auto phi2 = d.apply(LDLfDiamond(r.get_arg(), f));
   result = context.makePropOr(set_prop_formulas{phi, phi2});
 }
@@ -152,7 +152,8 @@ void DeltaSymbolicBoxRegExpVisitor::visit(const PropositionalRegExp &r) {
 void DeltaSymbolicBoxRegExpVisitor::visit(const TestRegExp &r) {
   NNFTransformer nnfTransformer;
   DeltaSymbolicVisitor d(epsilon);
-  auto regex_delta = d.apply(*nnfTransformer.apply(LDLfNot(r.get_arg())));
+  auto regex_delta =
+      d.apply(*nnfTransformer.apply(LDLfNot(context, r.get_arg())));
   auto ldlf_delta = d.apply(*formula.get_formula());
   result = logical_or(set_prop_formulas{regex_delta, ldlf_delta});
 }
@@ -183,7 +184,7 @@ void DeltaSymbolicBoxRegExpVisitor::visit(const SequenceRegExp &r) {
 void DeltaSymbolicBoxRegExpVisitor::visit(const StarRegExp &r) {
   auto d = DeltaSymbolicVisitor(epsilon);
   auto phi = d.apply(*formula.get_formula());
-  auto f = std::make_shared<LDLfT>(formula);
+  auto f = context.makeLdlfT(formula);
   auto phi2 = d.apply(LDLfBox(r.get_arg(), f));
   result = context.makePropAnd(set_prop_formulas{phi, phi2});
 }

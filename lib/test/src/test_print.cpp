@@ -21,41 +21,44 @@ namespace whitemech::lydia::Test {
 
 TEST_CASE("LDLf string printer", "[string_printer]") {
 
+  auto context = AstManager{};
+  auto tt = context.makeLdlfTrue();
+  auto ff = context.makeLdlfFalse();
   SECTION("test tt.str()") {
     StrPrinter strPrinter;
-    auto f = LDLfTrue();
+    auto f = context.makeLdlfTrue();
     auto expected = "tt";
-    auto actual = strPrinter.apply(f);
+    auto actual = strPrinter.apply(*f);
     REQUIRE(actual == expected);
   }
   SECTION("test ff.str()") {
-    auto f = LDLfFalse();
+    auto f = context.makeLdlfFalse();
     auto expected = "ff";
-    auto actual = to_string(f);
+    auto actual = to_string(*f);
     REQUIRE(actual == expected);
   }
   SECTION("to string tt & ff") {
-    auto f = LDLfAnd({boolTrue, boolFalse});
+    auto f = context.makeLdlfAnd({tt, ff});
     auto expected = "(tt & ff)";
-    auto actual = to_string(f);
+    auto actual = to_string(*f);
     REQUIRE(actual == expected);
   }
   SECTION("to string tt | ff") {
-    auto f = LDLfOr({boolTrue, boolFalse});
+    auto f = context.makeLdlfOr({tt, ff});
     auto expected = "(tt | ff)";
-    auto actual = to_string(f);
+    auto actual = to_string(*f);
     REQUIRE(actual == expected);
   }
   SECTION("to string !tt") {
-    auto f = LDLfNot(boolTrue);
+    auto f = context.makeLdlfNot(tt);
     auto expected = "!(tt)";
-    auto actual = to_string(f);
+    auto actual = to_string(*f);
     REQUIRE(actual == expected);
   }
   SECTION("to string <a>tt") {
     auto ptr_re =
         std::make_shared<PropositionalRegExp>(context.makePropAtom("a"));
-    auto ptr_tt = std::make_shared<LDLfTrue>();
+    auto ptr_tt = context.makeLdlfTrue();
     auto f = LDLfDiamond(ptr_re, ptr_tt);
     auto expected = "<a>(tt)";
     auto actual = to_string(f);
@@ -64,7 +67,7 @@ TEST_CASE("LDLf string printer", "[string_printer]") {
   SECTION("to string [a]tt") {
     auto ptr_re =
         std::make_shared<PropositionalRegExp>(context.makePropAtom("a"));
-    auto ptr_tt = std::make_shared<LDLfTrue>();
+    auto ptr_tt = context.makeLdlfTrue();
     auto f = LDLfBox(ptr_re, ptr_tt);
     auto expected = "[a](tt)";
     auto actual = to_string(f);
@@ -96,16 +99,16 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
   SECTION("to string ?(tt)") {
-    auto ptr_ldlf_formula = std::make_shared<LDLfTrue>();
+    auto ptr_ldlf_formula = context.makeLdlfTrue();
     auto f = TestRegExp(ptr_ldlf_formula);
     auto expected = "(tt)?";
     auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
   SECTION("to string (tt & ff)?") {
-    auto tt = std::make_shared<LDLfTrue>();
-    auto ff = std::make_shared<LDLfFalse>();
-    auto ptr_ldlf_formula = std::make_shared<LDLfAnd>(set_formulas({tt, ff}));
+    auto tt = context.makeLdlfTrue();
+    auto ff = context.makeLdlfFalse();
+    auto ptr_ldlf_formula = context.makeLdlfAnd(set_formulas({tt, ff}));
     auto f = TestRegExp(ptr_ldlf_formula);
     auto expected = "((tt & ff))?";
     auto actual = to_string(f);

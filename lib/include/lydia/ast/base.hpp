@@ -38,6 +38,8 @@ class AstManager {
 private:
   prop_ptr prop_true_;
   prop_ptr prop_false_;
+  ldlf_ptr ldlf_true_;
+  ldlf_ptr ldlf_false_;
   std::unordered_set<basic_ptr, std::hash<basic_ptr>, ast_eq_proc> table;
   void init();
 
@@ -65,6 +67,25 @@ public:
   virtual prop_ptr makePropAnd(const set_prop_formulas &args);
   virtual prop_ptr makePropOr(const set_prop_formulas &args);
   virtual prop_ptr makePropNot(const prop_ptr &arg);
+
+  virtual ldlf_ptr makeLdlfTrue();
+  virtual ldlf_ptr makeLdlfFalse();
+  virtual ldlf_ptr makeLdlfAnd(const set_formulas &args);
+  virtual ldlf_ptr makeLdlfOr(const set_formulas &args);
+  virtual ldlf_ptr makeLdlfNot(const ldlf_ptr &arg);
+  //  virtual ldlf_ptr makeLdlfBox(const regex_ptr &arg_r, const ldlf_ptr &arg);
+  //  virtual ldlf_ptr makeLdlfDiamond(const regex_ptr &arg_r, const ldlf_ptr
+  //  &arg_f);
+  virtual ldlf_ptr makeLdlfT(const ldlf_ptr &arg);
+  virtual ldlf_ptr makeLdlfF(const ldlf_ptr &arg);
+  virtual ldlf_ptr makeLdlfT(const LDLfFormula &arg);
+  virtual ldlf_ptr makeLdlfF(const LDLfFormula &arg);
+  //
+  //  virtual regex_ptr makePropRegex(const prop_ptr& ptr);
+  //  virtual regex_ptr makeSeqRegex(const vec_regex& ptr);
+  //  virtual regex_ptr makeUnionRegex(const set_regex& ptr);
+  //  virtual regex_ptr makeStarRegex(const regex_ptr& ptr);
+  //  virtual ldlf_ptr makeTestRegex(const regex_ptr& ptr);
 };
 
 class Ast : public Basic {

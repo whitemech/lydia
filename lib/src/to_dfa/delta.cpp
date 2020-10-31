@@ -137,7 +137,7 @@ void DeltaDiamondRegExpVisitor::visit(const SequenceRegExp &r) {
 void DeltaDiamondRegExpVisitor::visit(const StarRegExp &r) {
   auto d = DeltaVisitor(prop_interpretation, epsilon);
   auto phi = d.apply(*formula.get_formula());
-  auto f = std::make_shared<LDLfF>(formula);
+  auto f = context.makeLdlfF(formula);
   auto phi2 = d.apply(LDLfDiamond(r.get_arg(), f));
   result = context.makePropOr(set_prop_formulas{phi, phi2});
 }
@@ -166,7 +166,8 @@ void DeltaBoxRegExpVisitor::visit(const PropositionalRegExp &r) {
 void DeltaBoxRegExpVisitor::visit(const TestRegExp &r) {
   NNFTransformer nnfTransformer;
   DeltaVisitor d(prop_interpretation, epsilon);
-  auto regex_delta = d.apply(*nnfTransformer.apply(LDLfNot(r.get_arg())));
+  auto regex_delta =
+      d.apply(*nnfTransformer.apply(LDLfNot(context, r.get_arg())));
   auto ldlf_delta = d.apply(*formula.get_formula());
   result = context.makePropOr(set_prop_formulas{regex_delta, ldlf_delta});
 }
@@ -198,7 +199,7 @@ void DeltaBoxRegExpVisitor::visit(const SequenceRegExp &r) {
 void DeltaBoxRegExpVisitor::visit(const StarRegExp &r) {
   auto d = DeltaVisitor(prop_interpretation, epsilon);
   auto phi = d.apply(*formula.get_formula());
-  auto f = std::make_shared<LDLfT>(formula);
+  auto f = context.makeLdlfT(formula);
   auto phi2 = d.apply(LDLfBox(r.get_arg(), f));
   result = context.makePropAnd(set_prop_formulas{phi, phi2});
 }
@@ -214,10 +215,10 @@ DeltaBoxRegExpVisitor::apply(const RegExp &b) {
 }
 
 void ExpandVisitor::visit(const LDLfTrue &f) {
-  result = std::make_shared<LDLfTrue>();
+  result = f.ctx().makeLdlfTrue();
 }
 void ExpandVisitor::visit(const LDLfFalse &f) {
-  result = std::make_shared<LDLfFalse>();
+  result = f.ctx().makeLdlfFalse();
 }
 
 void ExpandVisitor::visit(const LDLfF &x) { result = apply(x.get_arg()); }
@@ -228,7 +229,7 @@ void ExpandVisitor::visit(const LDLfAnd &f) {
   for (const auto &x : f.get_container()) {
     new_container.insert(apply(*x));
   }
-  result = std::make_shared<LDLfAnd>(new_container);
+  result = f.ctx().makeLdlfAnd(new_container);
 }
 
 void ExpandVisitor::visit(const LDLfOr &f) {
@@ -236,11 +237,11 @@ void ExpandVisitor::visit(const LDLfOr &f) {
   for (const auto &x : f.get_container()) {
     new_container.insert(apply(*x));
   }
-  result = std::make_shared<LDLfOr>(new_container);
+  result = f.ctx().makeLdlfOr(new_container);
 }
 
 void ExpandVisitor::visit(const LDLfNot &f) {
-  result = std::make_shared<LDLfNot>(apply(*f.get_arg()));
+  result = f.ctx().makeLdlfNot(apply(*f.get_arg()));
 }
 
 void ExpandVisitor::visit(const LDLfDiamond &f) {

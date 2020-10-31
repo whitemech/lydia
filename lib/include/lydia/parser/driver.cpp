@@ -70,36 +70,36 @@ void Driver::parse_helper(std::istream &stream) {
 }
 
 std::shared_ptr<const LDLfFormula> Driver::add_LDLfTrue() const {
-  return boolTrue;
+  return context->makeLdlfTrue();
 }
 
 std::shared_ptr<const LDLfFormula> Driver::add_LDLfFalse() const {
-  return boolFalse;
+  return context->makeLdlfFalse();
 }
 
 std::shared_ptr<const LDLfFormula>
 Driver::add_LDLfAnd(std::shared_ptr<const LDLfFormula> &lhs,
                     std::shared_ptr<const LDLfFormula> &rhs) const {
   set_formulas children = set_formulas({lhs, rhs});
-  return std::make_shared<LDLfAnd>(children);
+  return context->makeLdlfAnd(children);
 }
 
 std::shared_ptr<const LDLfFormula>
 Driver::add_LDLfOr(std::shared_ptr<const LDLfFormula> &lhs,
                    std::shared_ptr<const LDLfFormula> &rhs) const {
   set_formulas children = set_formulas({lhs, rhs});
-  return std::make_shared<LDLfOr>(children);
+  return context->makeLdlfOr(children);
 }
 
 std::shared_ptr<const LDLfFormula>
 Driver::add_LDLfNot(std::shared_ptr<const LDLfFormula> &formula) const {
-  return std::make_shared<LDLfNot>(formula);
+  return context->makeLdlfNot(formula);
 }
 
 std::shared_ptr<const LDLfFormula>
 Driver::add_LDLfDiamond(std::shared_ptr<const RegExp> &regex,
                         std::shared_ptr<const LDLfFormula> &formula) const {
-  return std::make_shared<LDLfDiamond>(regex, formula);
+  return std::make_shared<const LDLfDiamond>(regex, formula);
 }
 
 std::shared_ptr<const LDLfFormula>
@@ -112,9 +112,9 @@ std::shared_ptr<const LDLfFormula>
 Driver::add_LDLfImplication(std::shared_ptr<const LDLfFormula> &lhs,
                             std::shared_ptr<const LDLfFormula> &rhs) const {
   // (not lhs) OR rhs
-  auto ptr_not_lhs = std::make_shared<LDLfNot>(lhs);
+  auto ptr_not_lhs = context->makeLdlfNot(lhs);
   set_formulas children = set_formulas({ptr_not_lhs, rhs});
-  return std::make_shared<LDLfOr>(children);
+  return context->makeLdlfOr(children);
 }
 
 std::shared_ptr<const LDLfFormula>
@@ -125,19 +125,19 @@ Driver::add_LDLfEquivalence(std::shared_ptr<const LDLfFormula> &lhs,
   auto ptr_right_implication = this->add_LDLfImplication(rhs, lhs);
   set_formulas children =
       set_formulas({ptr_left_implication, ptr_right_implication});
-  return std::make_shared<LDLfAnd>(children);
+  return context->makeLdlfAnd(children);
 }
 
 std::shared_ptr<const LDLfFormula> Driver::add_LDLfEnd() const {
   auto ptr_true = std::make_shared<PropositionalRegExp>(context->makeTrue());
-  auto ptr_ff = std::make_shared<LDLfFalse>();
+  auto ptr_ff = context->makeLdlfFalse();
   return this->add_LDLfBox((std::shared_ptr<const RegExp> &)ptr_true,
                            (std::shared_ptr<const LDLfFormula> &)ptr_ff);
 }
 
 std::shared_ptr<const LDLfFormula> Driver::add_LDLfLast() const {
   auto ptr_true = std::make_shared<PropositionalRegExp>(context->makeTrue());
-  auto ptr_ff = std::make_shared<LDLfFalse>();
+  auto ptr_ff = context->makeLdlfFalse();
   auto formula = std::make_shared<LDLfBox>(ptr_true, ptr_ff);
   return this->add_LDLfDiamond((std::shared_ptr<const RegExp> &)ptr_true,
                                (std::shared_ptr<const LDLfFormula> &)formula);

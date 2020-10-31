@@ -27,15 +27,18 @@ namespace whitemech::lydia {
 
 class RegExp;
 
-class LDLfFormula : public Basic {
+class LDLfFormula : public Ast {
 public:
+  explicit LDLfFormula(AstManager &c) : Ast(c) {}
   virtual std::shared_ptr<const LDLfFormula> logical_not() const = 0;
 };
 
 class LDLfTrue : public LDLfFormula {
 public:
   const static TypeID type_code_id = TypeID::t_LDLfTrue;
-  LDLfTrue() { type_code_ = type_code_id; }
+  explicit LDLfTrue(AstManager &c) : LDLfFormula(c) {
+    type_code_ = type_code_id;
+  }
   void accept(Visitor &v) const override;
   hash_t compute_hash_() const override;
   virtual vec_formulas get_args() const;
@@ -47,7 +50,9 @@ public:
 class LDLfFalse : public LDLfFormula {
 public:
   const static TypeID type_code_id = TypeID::t_LDLfFalse;
-  LDLfFalse() { type_code_ = type_code_id; }
+  explicit LDLfFalse(AstManager &c) : LDLfFormula(c) {
+    type_code_ = type_code_id;
+  }
   void accept(Visitor &v) const override;
   hash_t compute_hash_() const override;
   virtual vec_formulas get_args() const;
@@ -66,7 +71,7 @@ private:
 public:
   const static TypeID type_code_id = TypeID::t_LDLfAnd;
   void accept(Visitor &v) const override;
-  explicit LDLfAnd(const set_formulas &s);
+  explicit LDLfAnd(AstManager &c, const set_formulas &s);
   bool is_canonical(const set_formulas &container_) const;
   hash_t compute_hash_() const override;
   virtual vec_formulas get_args() const;
@@ -83,7 +88,7 @@ private:
 public:
   const static TypeID type_code_id = TypeID::t_LDLfOr;
   void accept(Visitor &v) const override;
-  explicit LDLfOr(const set_formulas &s);
+  explicit LDLfOr(AstManager &c, const set_formulas &s);
   bool is_canonical(const set_formulas &container_) const;
   hash_t compute_hash_() const override;
   virtual vec_formulas get_args() const;
@@ -100,7 +105,7 @@ private:
 public:
   const static TypeID type_code_id = TypeID::t_LDLfNot;
   void accept(Visitor &v) const override;
-  explicit LDLfNot(const std::shared_ptr<const LDLfFormula> &in);
+  explicit LDLfNot(AstManager &c, const std::shared_ptr<const LDLfFormula> &in);
   bool is_canonical(const LDLfFormula &s) const;
   hash_t compute_hash_() const override;
   virtual vec_basic get_args() const;
@@ -117,7 +122,8 @@ private:
 
 public:
   LDLfTemporal(regex_ptr regex, ldlf_ptr formula)
-      : regex_{std::move(regex)}, arg_{std::move(formula)} {}
+      : LDLfFormula(context), regex_{std::move(regex)}, arg_{std::move(
+                                                            formula)} {}
   ldlf_ptr get_formula() const { return arg_; };
   regex_ptr get_regex() const { return regex_; };
 };
@@ -233,7 +239,7 @@ private:
 protected:
 public:
   const static TypeID type_code_id = TypeID::t_LDLfF;
-  explicit LDLfF(const LDLfFormula &formula);
+  explicit LDLfF(AstManager &c, const LDLfFormula &formula);
   void accept(Visitor &v) const override;
   bool is_canonical(const set_regex &args) const;
   hash_t compute_hash_() const override;
@@ -253,7 +259,7 @@ private:
 protected:
 public:
   const static TypeID type_code_id = TypeID::t_LDLfT;
-  explicit LDLfT(const LDLfFormula &formula);
+  explicit LDLfT(AstManager &c, const LDLfFormula &formula);
   void accept(Visitor &v) const override;
   bool is_canonical(const set_regex &args) const;
   hash_t compute_hash_() const override;

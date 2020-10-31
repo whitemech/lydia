@@ -19,8 +19,12 @@
 
 namespace whitemech::lydia {
 
-void NNFTransformer::visit(const LDLfTrue &x) { result = boolTrue; }
-void NNFTransformer::visit(const LDLfFalse &x) { result = boolFalse; }
+void NNFTransformer::visit(const LDLfTrue &x) {
+  result = x.ctx().makeLdlfTrue();
+}
+void NNFTransformer::visit(const LDLfFalse &x) {
+  result = x.ctx().makeLdlfFalse();
+}
 
 void NNFTransformer::visit(const LDLfAnd &x) {
   auto container = x.get_container();
@@ -28,7 +32,7 @@ void NNFTransformer::visit(const LDLfAnd &x) {
   for (auto &a : container) {
     new_container.insert(apply(*a));
   }
-  result = std::make_shared<LDLfAnd>(new_container);
+  result = x.ctx().makeLdlfAnd(new_container);
 }
 
 void NNFTransformer::visit(const LDLfOr &x) {
@@ -37,7 +41,7 @@ void NNFTransformer::visit(const LDLfOr &x) {
   for (auto &a : container) {
     new_container.insert(apply(*a));
   }
-  result = std::make_shared<LDLfOr>(new_container);
+  result = x.ctx().makeLdlfOr(new_container);
 }
 
 void NNFTransformer::visit(const LDLfNot &x) {

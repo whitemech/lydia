@@ -22,11 +22,6 @@
 
 namespace whitemech::lydia {
 
-const std::shared_ptr<const LDLfTrue> boolTrue =
-    std::make_shared<const LDLfTrue>();
-const std::shared_ptr<const LDLfFalse> boolFalse =
-    std::make_shared<const LDLfFalse>();
-
 hash_t LDLfTrue::compute_hash_() const { return type_code_id; }
 
 vec_formulas LDLfTrue::get_args() const { return {}; }
@@ -39,7 +34,7 @@ int LDLfTrue::compare_(const Basic &o) const {
 }
 
 std::shared_ptr<const LDLfFormula> LDLfTrue::logical_not() const {
-  return boolFalse;
+  return context.makeLdlfFalse();
 }
 
 ///////////////////////////////////
@@ -56,10 +51,11 @@ int LDLfFalse::compare_(const Basic &o) const {
 }
 
 std::shared_ptr<const LDLfFormula> LDLfFalse::logical_not() const {
-  return boolTrue;
+  return context.makeLdlfTrue();
 }
 
-LDLfAnd::LDLfAnd(const set_formulas &s) : container_{s} {
+LDLfAnd::LDLfAnd(AstManager &c, const set_formulas &s)
+    : LDLfFormula(c), container_{s} {
   this->type_code_ = type_code_id;
   if (!is_canonical(s)) {
     throw std::invalid_argument("LDLfAnd formula: arguments must be > 1");
@@ -102,10 +98,11 @@ std::shared_ptr<const LDLfFormula> LDLfAnd::logical_not() const {
   for (auto &a : container) {
     cont.insert(a->logical_not());
   }
-  return std::make_shared<LDLfOr>(cont);
+  return std::make_shared<const LDLfOr>(*this->m_ctx, cont);
 }
 
-LDLfOr::LDLfOr(const set_formulas &s) : container_{s} {
+LDLfOr::LDLfOr(AstManager &c, const set_formulas &s)
+    : LDLfFormula(c), container_{s} {
   this->type_code_ = type_code_id;
   if (!is_canonical(s)) {
     throw std::invalid_argument("LDLfOr formula: arguments must be > 1");
@@ -148,10 +145,11 @@ std::shared_ptr<const LDLfFormula> LDLfOr::logical_not() const {
   for (auto &a : container) {
     cont.insert(a->logical_not());
   }
-  return std::make_shared<LDLfAnd>(cont);
+  return std::make_shared<LDLfAnd>(*this->m_ctx, cont);
 }
 
-LDLfNot::LDLfNot(const std::shared_ptr<const LDLfFormula> &in) : arg_{in} {
+LDLfNot::LDLfNot(AstManager &c, const std::shared_ptr<const LDLfFormula> &in)
+    : LDLfFormula(c), arg_{in} {
   type_code_ = type_code_id;
   if (!is_canonical(*in)) {
     throw std::invalid_argument("LDLfNot formula: argument cannot be an "
@@ -408,7 +406,8 @@ int StarRegExp::compare_(const Basic &o) const {
   return arg_->compare(*dynamic_cast<const StarRegExp &>(o).get_arg());
 }
 
-LDLfF::LDLfF(const LDLfFormula &formula) : arg_{formula} {
+LDLfF::LDLfF(AstManager &c, const LDLfFormula &formula)
+    : LDLfFormula(c), arg_{formula} {
   this->type_code_ = type_code_id;
 }
 
@@ -421,7 +420,8 @@ hash_t LDLfF::compute_hash_() const {
 bool LDLfF::is_canonical(const set_regex &args) const { return true; }
 
 ldlf_ptr LDLfF::logical_not() const {
-  return std::make_shared<LDLfT>(*this->get_arg().logical_not());
+  return std::make_shared<const LDLfT>(*this->m_ctx,
+                                       *this->get_arg().logical_not());
 }
 
 const LDLfFormula &LDLfF::get_arg() const { return this->arg_; }
@@ -435,7 +435,8 @@ int LDLfF::compare_(const Basic &rhs) const {
   assert(is_a<LDLfF>(rhs));
   return arg_.compare(dynamic_cast<const LDLfF &>(rhs).get_arg());
 }
-LDLfT::LDLfT(const LDLfFormula &formula) : arg_{formula} {
+LDLfT::LDLfT(AstManager &c, const LDLfFormula &formula)
+    : LDLfFormula(c), arg_{formula} {
   this->type_code_ = type_code_id;
 }
 
@@ -450,7 +451,8 @@ bool LDLfT::is_canonical(const set_regex &args) const { return true; }
 const LDLfFormula &LDLfT::get_arg() const { return this->arg_; }
 
 ldlf_ptr LDLfT::logical_not() const {
-  return std::make_shared<LDLfF>(*this->get_arg().logical_not());
+  return std::make_shared<const LDLfF>(*this->m_ctx,
+                                       *this->get_arg().logical_not());
 }
 
 bool LDLfT::is_equal(const Basic &rhs) const {

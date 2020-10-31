@@ -26,6 +26,7 @@
 #include <lydia/logic/pl/base.hpp>
 #include <lydia/logic/symbol.hpp>
 #include <lydia/parser/scanner.hpp>
+#include <utility>
 
 namespace whitemech::lydia {
 
@@ -41,6 +42,7 @@ public:
   std::shared_ptr<const LDLfFormula> result;
 
   Driver() { context = std::make_shared<AstManager>(); }
+  explicit Driver(std::shared_ptr<AstManager> c) : context{std::move(c)} {}
   virtual ~Driver();
 
   /**
