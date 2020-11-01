@@ -28,6 +28,8 @@ void AstManager::init() {
   ldlf_false_ = std::make_shared<const LDLfFalse>(*this);
   this->table.insert(prop_true_);
   this->table.insert(prop_false_);
+  this->table.insert(ldlf_true_);
+  this->table.insert(ldlf_false_);
 }
 
 } // namespace whitemech::lydia

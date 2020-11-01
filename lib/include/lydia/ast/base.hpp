@@ -59,10 +59,11 @@ private:
 public:
   AstManager() { init(); }
 
-  basic_ptr makeSymbol(const std::string &name);
+  symbol_ptr makeSymbol(const std::string &name);
 
   prop_ptr makeTrue();
   prop_ptr makeFalse();
+  prop_ptr makeBool(bool value);
   atom_ptr makePropAtom(const std::string &name);
   atom_ptr makePropAtom(const basic_ptr &ptr);
   prop_ptr makePropAnd(const set_prop_formulas &args);
@@ -98,8 +99,5 @@ public:
     assert(a.m_ctx == b.m_ctx);
   };
 };
-
-// TODO remove
-static AstManager context = AstManager{};
 
 } // namespace whitemech::lydia

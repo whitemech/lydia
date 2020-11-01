@@ -22,6 +22,9 @@
 namespace whitemech::lydia {
 
 class BDDStrategy : public Strategy {
+private:
+  AstManager *current_context_;
+
 public:
   const CUDD::Cudd &mgr;
   const size_t max_nb_bits;

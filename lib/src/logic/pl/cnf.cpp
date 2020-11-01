@@ -19,12 +19,12 @@
 
 namespace whitemech::lydia {
 
-void CNFTransformer::visit(const PropositionalTrue &) {
-  result = boolean_prop(true);
+void CNFTransformer::visit(const PropositionalTrue &f) {
+  result = f.ctx().makeTrue();
 }
 
-void CNFTransformer::visit(const PropositionalFalse &) {
-  result = boolean_prop(false);
+void CNFTransformer::visit(const PropositionalFalse &f) {
+  result = f.ctx().makeFalse();
 }
 
 void CNFTransformer::visit(const PropositionalAtom &f) {
@@ -45,7 +45,7 @@ void CNFTransformer::visit(const PropositionalAnd &f) {
       args.insert(subformula_cnf);
     }
   }
-  result = logical_and(args);
+  result = f.ctx().makePropAnd(args);
 }
 
 void CNFTransformer::visit(const PropositionalOr &f) {
@@ -67,7 +67,7 @@ void CNFTransformer::visit(const PropositionalOr &f) {
   auto is_tail_and = is_a<PropositionalAnd>(*tail);
   if (!is_first_and && !is_tail_and) {
     // lucky day! both subformulas have only one clause.
-    result = logical_or({first, tail});
+    result = f.ctx().makePropOr({first, tail});
     return;
   } else {
     // one of them is an And.
@@ -77,11 +77,11 @@ void CNFTransformer::visit(const PropositionalOr &f) {
 
   for (const auto &x : first_container) {
     for (const auto &y : tail_container) {
-      args.insert(logical_or(set_prop_formulas{x, y}));
+      args.insert(f.ctx().makePropOr(set_prop_formulas{x, y}));
     }
   }
 
-  result = logical_and(args);
+  result = f.ctx().makePropAnd(args);
 }
 
 void CNFTransformer::visit(const PropositionalNot &f) {

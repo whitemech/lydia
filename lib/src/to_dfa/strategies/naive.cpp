@@ -25,9 +25,10 @@ std::shared_ptr<abstract_dfa>
 NaiveStrategy::to_dfa(const LDLfFormula &formula) {
   //  build initial state of the DFA.
   auto formula_nnf = to_nnf(formula);
+  current_context = &formula_nnf->ctx();
   set_formulas initial_state_formulas{formula_nnf};
   dfa_state_ptr initial_state =
-      std::make_shared<DFAState>(initial_state_formulas);
+      std::make_shared<DFAState>(*current_context, initial_state_formulas);
 
   // find all atoms
   set_atoms_ptr atoms = find_atoms(*formula_nnf);
@@ -96,18 +97,18 @@ dfa_state_ptr NaiveStrategy::next_state(const DFAState &state,
     auto successors = NaiveStrategy::next_states(*nfa_state, i);
     successor_nfa_states.insert(successors.begin(), successors.end());
   }
-  return std::make_shared<DFAState>(successor_nfa_states);
+  return std::make_shared<DFAState>(state.context, successor_nfa_states);
 }
 
 set_nfa_states NaiveStrategy::next_states(const NFAState &state,
                                           const set_atoms_ptr &i) {
   // This will be put in conjunction with o ther formulas
-  vec_prop_formulas args{context.makeTrue(), context.makeTrue()};
+  vec_prop_formulas args{state.context.makeTrue(), state.context.makeTrue()};
   for (const auto &formula : state.formulas) {
     args.push_back(delta(*formula, i));
   }
   auto conjunction =
-      context.makePropAnd(set_prop_formulas(args.begin(), args.end()));
+      state.context.makePropAnd(set_prop_formulas(args.begin(), args.end()));
 
   set_nfa_states result;
   auto models = all_models<NaiveModelEnumerationStategy>(*conjunction);
@@ -119,7 +120,7 @@ set_nfa_states NaiveStrategy::next_states(const NFAState &state,
           dynamic_cast<const QuotedFormula &>(*atom->symbol).formula;
       tmp.insert(std::static_pointer_cast<const LDLfFormula>(tmp_ptr));
     }
-    result.emplace(std::make_shared<NFAState>(tmp));
+    result.emplace(std::make_shared<NFAState>(state.context, tmp));
   }
 
   return result;

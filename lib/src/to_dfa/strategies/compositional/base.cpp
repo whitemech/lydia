@@ -33,7 +33,7 @@ CompositionalStrategy::to_dfa(const LDLfFormula &formula) {
   std::iota(indices.begin(), indices.end(), 0);
 
   auto visitor = ComposeDFAVisitor(*this);
-  auto result = visitor.apply(formula);
+  auto result = visitor.apply(*formula_nnf);
   return std::make_shared<mona_dfa>(result, index);
 }
 
@@ -143,7 +143,7 @@ void ComposeDFAVisitor::visit(const StarRegExp &r) {
   }
 
   DFA *regex =
-      apply(*r.ctx().makeLdlfDiamond(r.get_arg(), context.makeLdlfTrue()));
+      apply(*r.ctx().makeLdlfDiamond(r.get_arg(), r.ctx().makeLdlfTrue()));
   dfa_accept_empty(regex);
   DFA *star = dfa_closure(regex, cs.indices.size(), cs.indices.data());
   if (not is_diamond) {
@@ -199,7 +199,7 @@ void ComposeDFAVisitor::visit(const PropositionalAtom &f) {
   int atom_index =
       cs.atom2ids[std::static_pointer_cast<const PropositionalAtom>(
           f.shared_from_this())];
-  result = dfaNext(atom_index);
+  result = dfaNext(atom_index, true);
 }
 
 void ComposeDFAVisitor::visit(const PropositionalAnd &f) {
@@ -237,10 +237,11 @@ void ComposeDFAVisitor::visit(const PropositionalOr &f) {
 }
 
 void ComposeDFAVisitor::visit(const PropositionalNot &f) {
-  DFA *tmp = apply(*f.get_arg());
-  dfaNegation(tmp);
-  result = dfaMinimize(tmp);
-  dfaFree(tmp);
+  assert(f.get_arg()->type_code_ == TypeID::t_PropositionalAtom);
+  int atom_index =
+      cs.atom2ids[std::static_pointer_cast<const PropositionalAtom>(
+          f.get_arg())];
+  result = dfaNext(atom_index, false);
 }
 
 } // namespace whitemech::lydia

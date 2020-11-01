@@ -35,7 +35,7 @@ void ReplaceVisitor::visit(const PropositionalAnd &f) {
   for (const auto &subformula : f.get_container()) {
     new_args.insert(apply(*subformula));
   }
-  result = logical_and(new_args);
+  result = f.ctx().makePropAnd(new_args);
 }
 
 void ReplaceVisitor::visit(const PropositionalOr &f) {
@@ -43,7 +43,7 @@ void ReplaceVisitor::visit(const PropositionalOr &f) {
   for (const auto &subformula : f.get_container()) {
     new_args.insert(apply(*subformula));
   }
-  result = logical_or(new_args);
+  result = f.ctx().makePropOr(new_args);
 }
 
 void ReplaceVisitor::visit(const PropositionalNot &f) {
@@ -55,11 +55,11 @@ prop_ptr ReplaceVisitor::apply(const PropositionalFormula &b) {
   return result;
 }
 
-void ReplaceVisitor::visit(const PropositionalTrue &) {
-  result = boolean_prop(true);
+void ReplaceVisitor::visit(const PropositionalTrue &f) {
+  result = f.ctx().makeTrue();
 }
-void ReplaceVisitor::visit(const PropositionalFalse &) {
-  result = boolean_prop(false);
+void ReplaceVisitor::visit(const PropositionalFalse &f) {
+  result = f.ctx().makeFalse();
 }
 
 prop_ptr replace(std::map<prop_ptr, prop_ptr, SharedComparator> replacements,

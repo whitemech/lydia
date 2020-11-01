@@ -90,7 +90,7 @@ std::string get_path_guard(int n, trace_descr tp);
 
 DFA *dfaLDLfTrue();
 DFA *dfaLDLfFalse();
-DFA *dfaNext(int a);
+DFA *dfaNext(int a, bool is_positive = true);
 DFA *dfaLDLfDiamondProp(DFA *prop_regex, DFA *body, int var, int *indices);
 DFA *dfaPropositionalTrue();
 

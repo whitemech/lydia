@@ -248,7 +248,7 @@ DFA *dfaLDLfFalse() {
   return dfaBuild("-");
 }
 
-DFA *dfaNext(int a) {
+DFA *dfaNext(int a, bool is_positive) {
   int var_index[1];
   var_index[0] = a;
 
@@ -256,7 +256,8 @@ DFA *dfaNext(int a) {
 
   /* boolvar */
   dfaAllocExceptions(1);
-  dfaStoreException(1, "1");
+  dfaStoreException(1,
+                    (is_positive ? std::string("1") : std::string("0")).data());
   dfaStoreState(2);
 
   /* state 1 */

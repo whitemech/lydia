@@ -41,8 +41,9 @@ class DFAState : public Basic {
 public:
   const static TypeID type_code_id = TypeID::t_DFAState;
   const set_nfa_states states;
-  explicit DFAState(set_nfa_states states);
-  explicit DFAState(const set_formulas &formulas);
+  AstManager &context;
+  explicit DFAState(AstManager &context, set_nfa_states states);
+  explicit DFAState(AstManager &context, const set_formulas &formulas);
 
   void accept(Visitor &v) const override{};
   hash_t compute_hash_() const override;

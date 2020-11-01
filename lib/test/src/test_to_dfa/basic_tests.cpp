@@ -25,9 +25,9 @@ namespace whitemech::lydia::Test {
 
 TEST_CASE("Set of DFA states", "[translate]") {
   auto context = AstManager{};
-  auto a = DFAState(set_nfa_states{});
-  auto b = DFAState(set_formulas{context.makeLdlfTrue()});
-  auto c = DFAState(set_nfa_states{});
+  auto a = DFAState(context, set_nfa_states{});
+  auto b = DFAState(context, set_formulas{context.makeLdlfTrue()});
+  auto c = DFAState(context, set_nfa_states{});
 
   REQUIRE(a == c);
   REQUIRE(c == a);
@@ -158,6 +158,96 @@ TEST_CASE("Translate <a | b>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "01"}, true));
   REQUIRE(verify(*automaton, {"11", "10"}, true));
   REQUIRE(verify(*automaton, {"11", "11"}, true));
+}
+
+TEST_CASE("Translate <!a>tt", "[translate]") {
+  std::string formula_name = "<!a>tt";
+  auto strategy_maker = GENERATE(strategies());
+  auto mgr = CUDD::Cudd();
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
+
+  REQUIRE(verify(*automaton, {}, false));
+
+  REQUIRE(verify(*automaton, {"0"}, true));
+  REQUIRE(verify(*automaton, {"1"}, false));
+  REQUIRE(verify(*automaton, {"0", "0"}, true));
+  REQUIRE(verify(*automaton, {"0", "1"}, true));
+  REQUIRE(verify(*automaton, {"1", "0"}, false));
+  REQUIRE(verify(*automaton, {"1", "1"}, false));
+}
+
+TEST_CASE("Translate <!(a & b)>tt", "[translate]") {
+  std::string formula_name = "<!(a & b)>tt";
+  auto strategy_maker = GENERATE(strategies());
+  auto mgr = CUDD::Cudd();
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
+
+  REQUIRE(verify(*automaton, {}, false));
+
+  REQUIRE(verify(*automaton, {"00"}, true));
+  REQUIRE(verify(*automaton, {"01"}, true));
+  REQUIRE(verify(*automaton, {"10"}, true));
+  REQUIRE(verify(*automaton, {"11"}, false));
+
+  REQUIRE(verify(*automaton, {"00", "00"}, true));
+  REQUIRE(verify(*automaton, {"00", "01"}, true));
+  REQUIRE(verify(*automaton, {"00", "10"}, true));
+  REQUIRE(verify(*automaton, {"00", "11"}, true));
+
+  REQUIRE(verify(*automaton, {"01", "00"}, true));
+  REQUIRE(verify(*automaton, {"01", "01"}, true));
+  REQUIRE(verify(*automaton, {"01", "10"}, true));
+  REQUIRE(verify(*automaton, {"01", "11"}, true));
+
+  REQUIRE(verify(*automaton, {"10", "00"}, true));
+  REQUIRE(verify(*automaton, {"10", "01"}, true));
+  REQUIRE(verify(*automaton, {"10", "10"}, true));
+  REQUIRE(verify(*automaton, {"10", "11"}, true));
+
+  REQUIRE(verify(*automaton, {"11", "00"}, false));
+  REQUIRE(verify(*automaton, {"11", "01"}, false));
+  REQUIRE(verify(*automaton, {"11", "10"}, false));
+  REQUIRE(verify(*automaton, {"11", "11"}, false));
+}
+
+TEST_CASE("Translate <!(a | b)>tt", "[translate]") {
+  std::string formula_name = "<!(a | b)>tt";
+  auto strategy_maker = GENERATE(strategies());
+  auto mgr = CUDD::Cudd();
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
+
+  REQUIRE(verify(*automaton, {}, false));
+
+  REQUIRE(verify(*automaton, {"00"}, true));
+  REQUIRE(verify(*automaton, {"01"}, false));
+  REQUIRE(verify(*automaton, {"10"}, false));
+  REQUIRE(verify(*automaton, {"11"}, false));
+
+  REQUIRE(verify(*automaton, {"00", "00"}, true));
+  REQUIRE(verify(*automaton, {"00", "01"}, true));
+  REQUIRE(verify(*automaton, {"00", "10"}, true));
+  REQUIRE(verify(*automaton, {"00", "11"}, true));
+
+  REQUIRE(verify(*automaton, {"01", "00"}, false));
+  REQUIRE(verify(*automaton, {"01", "01"}, false));
+  REQUIRE(verify(*automaton, {"01", "10"}, false));
+  REQUIRE(verify(*automaton, {"01", "11"}, false));
+
+  REQUIRE(verify(*automaton, {"10", "00"}, false));
+  REQUIRE(verify(*automaton, {"10", "01"}, false));
+  REQUIRE(verify(*automaton, {"10", "10"}, false));
+  REQUIRE(verify(*automaton, {"10", "11"}, false));
+
+  REQUIRE(verify(*automaton, {"11", "00"}, false));
+  REQUIRE(verify(*automaton, {"11", "01"}, false));
+  REQUIRE(verify(*automaton, {"11", "10"}, false));
+  REQUIRE(verify(*automaton, {"11", "11"}, false));
 }
 
 TEST_CASE("Translate {true}tt", "[translate]") {

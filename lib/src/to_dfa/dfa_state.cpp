@@ -19,11 +19,13 @@
 
 namespace whitemech::lydia {
 
-DFAState::DFAState(set_nfa_states states) : states{std::move(states)} {
+DFAState::DFAState(AstManager &context, set_nfa_states states)
+    : context{context}, states{std::move(states)} {
   type_code_ = type_code_id;
 }
-DFAState::DFAState(const set_formulas &formulas)
-    : states{set_nfa_states{std::make_shared<NFAState>(formulas)}} {
+DFAState::DFAState(AstManager &context, const set_formulas &formulas)
+    : context{context}, states{set_nfa_states{
+                            std::make_shared<NFAState>(context, formulas)}} {
   type_code_ = type_code_id;
 }
 

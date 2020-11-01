@@ -227,7 +227,7 @@ TEST_CASE("Test 'only test'", "[ldlf/only_test]") {
   auto context = AstManager{};
   auto boolTrue = context.makeLdlfTrue();
   auto boolFalse = context.makeLdlfFalse();
-  auto a = prop_atom("a");
+  auto a = context.makePropAtom("a");
   SECTION("Test propositional regex") {
     auto r = context.makePropRegex(a);
     REQUIRE(is_test_only(*r) == false);

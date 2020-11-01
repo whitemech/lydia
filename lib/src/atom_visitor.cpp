@@ -27,12 +27,12 @@ void AtomsVisitor::visit(const PropositionalFalse &) {}
 void AtomsVisitor::visit(const PropositionalAtom &x) {
   set_atoms_ptr atoms_result;
   if (auto s = std::dynamic_pointer_cast<const Symbol>(x.symbol)) {
-    auto atom = prop_atom(symbol(s->get_name()));
+    auto atom = x.ctx().makePropAtom(s->get_name());
     atoms_result.insert(
         std::static_pointer_cast<const PropositionalAtom>(atom));
   } else if (auto q =
                  std::dynamic_pointer_cast<const QuotedFormula>(x.symbol)) {
-    auto atom = prop_atom(quote(q->formula));
+    auto atom = x.ctx().makePropAtom(quote(q->formula));
     atoms_result.insert(
         std::static_pointer_cast<const PropositionalAtom>(atom));
   } else {

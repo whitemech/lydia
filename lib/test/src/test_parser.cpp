@@ -25,10 +25,11 @@ namespace whitemech::lydia::Test {
 
 TEST_CASE("Driver LDLf Boolean Atoms", "[parser]") {
   Logger log("test_parser");
-  auto driver = Driver();
+  auto context = std::make_shared<AstManager>();
+  auto driver = Driver(context);
 
-  auto actualBoolTrue = context.makeLdlfTrue();
-  auto actualBoolFalse = context.makeLdlfFalse();
+  auto actualBoolTrue = context->makeLdlfTrue();
+  auto actualBoolFalse = context->makeLdlfFalse();
 
   SECTION("test parsing tt") {
     std::istringstream tt("tt");

@@ -30,6 +30,7 @@ namespace whitemech::lydia {
 
 class NaiveStrategy : public Strategy {
 private:
+  AstManager *current_context;
   const CUDD::Cudd &mgr;
   const size_t max_nb_bits;
 

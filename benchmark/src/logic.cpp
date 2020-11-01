@@ -23,8 +23,9 @@
 namespace whitemech::lydia::Benchmark {
 
 static void BM_boolean_from_constructor(benchmark::State &state) {
+  auto context = AstManager{};
   for (auto _ : state) {
-    auto x = LDLfTrue(context);
+    auto x = context.makeTrue();
     escape(&x);
     (void)x;
   }
@@ -32,8 +33,9 @@ static void BM_boolean_from_constructor(benchmark::State &state) {
 BENCHMARK(BM_boolean_from_constructor);
 
 static void BM_shared_boolean_from_constructor(benchmark::State &state) {
+  auto context = AstManager{};
   for (auto _ : state) {
-    auto x = std::make_shared<LDLfTrue>(context);
+    auto x = context.makeTrue();
     escape(&x);
     (void)x;
   }
@@ -41,6 +43,7 @@ static void BM_shared_boolean_from_constructor(benchmark::State &state) {
 BENCHMARK(BM_shared_boolean_from_constructor);
 
 static void BM_boolean_from_static_pointer(benchmark::State &state) {
+  auto context = AstManager{};
   for (auto _ : state) {
     auto x = context.makeLdlfTrue();
     escape(&x);
