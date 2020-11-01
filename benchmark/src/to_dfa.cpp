@@ -29,9 +29,9 @@ namespace whitemech::lydia::Benchmark {
 
 // Boolean atom
 inline void translate_boolean(Strategy &s) {
-  auto x = LDLfTrue();
+  auto x = context.makeLdlfTrue();
   auto t = Translator(s);
-  auto automaton = t.to_dfa(x);
+  auto automaton = t.to_dfa(*x);
   escape(&automaton);
   (void)automaton;
 }
@@ -58,7 +58,8 @@ BENCHMARK(BM_translate_boolean_compositional);
 
 // Diamond
 inline void translate_diamond(Strategy &s) {
-  auto tt = boolTrue;
+  auto context = AstManager();
+  auto tt = context.makeLdlfTrue();
   auto true_ = context.makeTrue();
   auto regex_true_ = std::make_shared<const PropositionalRegExp>(true_);
   auto diamond = LDLfDiamond(regex_true_, tt);

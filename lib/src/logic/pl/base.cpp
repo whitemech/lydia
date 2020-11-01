@@ -121,9 +121,7 @@ int PropositionalAnd::compare_(const Basic &o) const {
       container_, dynamic_cast<const PropositionalAnd &>(o).get_container());
 }
 
-const set_prop_formulas &PropositionalAnd::get_container() const {
-  return container_;
-}
+set_prop_formulas PropositionalAnd::get_container() const { return container_; }
 
 prop_ptr PropositionalAnd::logical_not() const {
   auto container = this->get_container();
@@ -168,9 +166,7 @@ bool PropositionalOr::is_canonical(const set_prop_formulas &container_) {
   return true;
 }
 
-const set_prop_formulas &PropositionalOr::get_container() const {
-  return container_;
-}
+set_prop_formulas PropositionalOr::get_container() const { return container_; }
 
 prop_ptr PropositionalOr::logical_not() const {
   auto container = this->get_container();
@@ -215,6 +211,10 @@ std::shared_ptr<const PropositionalFormula> PropositionalNot::get_arg() const {
 }
 
 prop_ptr PropositionalNot::logical_not() const { return this->get_arg(); }
+
+set_prop_formulas PropositionalNot::get_container() const {
+  return set_prop_formulas{arg_};
+}
 
 prop_ptr boolean_prop(bool b) {
   return b ? context.makeTrue() : context.makeFalse();

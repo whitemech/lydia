@@ -27,7 +27,7 @@ class PropositionalFormula : public Ast {
 public:
   virtual prop_ptr logical_not() const = 0;
   explicit PropositionalFormula(AstManager &c) : Ast(c) {}
-  virtual const set_prop_formulas &get_container() const = 0;
+  virtual set_prop_formulas get_container() const = 0;
 };
 
 class PropositionalTrue : public PropositionalFormula {
@@ -41,7 +41,9 @@ public:
   int compare_(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
   prop_ptr logical_not() const override;
-  const set_prop_formulas &get_container() const override { return {}; };
+  set_prop_formulas get_container() const override {
+    return set_prop_formulas{};
+  };
 };
 
 class PropositionalFalse : public PropositionalFormula {
@@ -55,7 +57,9 @@ public:
   int compare_(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
   prop_ptr logical_not() const override;
-  const set_prop_formulas &get_container() const override { return {}; };
+  set_prop_formulas get_container() const override {
+    return set_prop_formulas{};
+  };
 };
 
 /*!
@@ -75,7 +79,14 @@ public:
   int compare_(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
   prop_ptr logical_not() const override;
-  const set_prop_formulas &get_container() const override { return {}; };
+  // TODO find a proper solution. Either:
+  //   - enable_shared_from_this
+  //   - ask the ast manager to return a shared pointer from a reference (using
+  //   the hash?)
+  //   - re-instantiate the propositional atom (bleah)
+  set_prop_formulas get_container() const override {
+    return set_prop_formulas{};
+  };
 };
 
 class PropositionalAnd : public PropositionalFormula {
@@ -91,7 +102,7 @@ public:
   virtual vec_prop_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
   int compare_(const Basic &o) const override;
-  const set_prop_formulas &get_container() const;
+  set_prop_formulas get_container() const override;
   prop_ptr logical_not() const override;
 };
 
@@ -108,7 +119,7 @@ public:
   virtual vec_prop_formulas get_args() const;
   bool is_equal(const Basic &o) const override;
   int compare_(const Basic &o) const override;
-  const set_prop_formulas &get_container() const;
+  set_prop_formulas get_container() const override;
   prop_ptr logical_not() const override;
 };
 
@@ -127,9 +138,7 @@ public:
   int compare_(const Basic &o) const override;
   std::shared_ptr<const PropositionalFormula> get_arg() const;
   prop_ptr logical_not() const override;
-  const set_prop_formulas &get_container() const override {
-    return set_prop_formulas{this->get_arg()};
-  };
+  set_prop_formulas get_container() const override;
 };
 
 prop_ptr boolean_prop(bool b);
