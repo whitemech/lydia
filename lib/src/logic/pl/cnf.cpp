@@ -60,7 +60,7 @@ void CNFTransformer::visit(const PropositionalOr &f) {
   if (container.size() == 1)
     tail = apply(**container.begin());
   else
-    tail = apply(*std::make_shared<PropositionalOr>(container));
+    tail = apply(*f.ctx().makePropOr(container));
 
   // both first and tail are now CNF formulas.
   auto is_first_and = is_a<PropositionalAnd>(*first);

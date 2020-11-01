@@ -22,31 +22,34 @@
 namespace whitemech::lydia::Test {
 
 TEST_CASE("Negative normal form", "[nnf]") {
-
+  auto context = AstManager{};
   SECTION("tt") {
-    auto tt = LDLfTrue();
-    REQUIRE(tt == *to_nnf(tt));
+    auto tt = context.makeLdlfTrue();
+    REQUIRE(*tt == *to_nnf(*tt));
   }
 
   SECTION("ff") {
-    auto ff = LDLfFalse();
-    REQUIRE(ff == *to_nnf(ff));
+    auto ff = context.makeLdlfFalse();
+    REQUIRE(*ff == *to_nnf(*ff));
   }
 
   SECTION("!tt") {
-    auto not_ff = LDLfNot(std::make_shared<LDLfFalse>());
-    REQUIRE(LDLfTrue() == *to_nnf(not_ff));
+    auto tt = context.makeLdlfTrue();
+    auto ff = context.makeLdlfFalse();
+    auto not_ff = context.makeLdlfNot(ff);
+    REQUIRE(*tt == *to_nnf(*not_ff));
   }
 
   SECTION("!(ff & tt)") {
-    auto ff = boolFalse;
-    auto tt = boolTrue;
-    auto not_and = LDLfNot(std::make_shared<LDLfAnd>(set_formulas({ff, tt})));
-    auto tt_or = boolTrue;
-    auto ff_or = boolFalse;
-    auto expected_nnf = LDLfOr(set_formulas({tt_or, ff_or}));
-    auto actual_nnf = to_nnf(not_and);
-    bool res = expected_nnf.is_equal(*actual_nnf);
+    auto tt = context.makeLdlfTrue();
+    auto ff = context.makeLdlfFalse();
+    auto not_and =
+        context.makeLdlfNot(context.makeLdlfAnd(set_formulas({ff, tt})));
+    auto tt_or = tt;
+    auto ff_or = ff;
+    auto expected_nnf = context.makeLdlfOr(set_formulas({tt_or, ff_or}));
+    auto actual_nnf = to_nnf(*not_and);
+    bool res = expected_nnf->is_equal(*actual_nnf);
     REQUIRE(res);
   }
 }

@@ -102,16 +102,15 @@ dfa_state_ptr NaiveStrategy::next_state(const DFAState &state,
 set_nfa_states NaiveStrategy::next_states(const NFAState &state,
                                           const set_atoms_ptr &i) {
   // This will be put in conjunction with o ther formulas
-  vec_prop_formulas args{std::make_shared<PropositionalTrue>(),
-                         std::make_shared<PropositionalTrue>()};
+  vec_prop_formulas args{context.makeTrue(), context.makeTrue()};
   for (const auto &formula : state.formulas) {
     args.push_back(delta(*formula, i));
   }
   auto conjunction =
-      PropositionalAnd(set_prop_formulas(args.begin(), args.end()));
+      context.makePropAnd(set_prop_formulas(args.begin(), args.end()));
 
   set_nfa_states result;
-  auto models = all_models<NaiveModelEnumerationStategy>(conjunction);
+  auto models = all_models<NaiveModelEnumerationStategy>(*conjunction);
   for (const auto &model : models) {
     set_formulas tmp;
     for (const auto &atom : model) {

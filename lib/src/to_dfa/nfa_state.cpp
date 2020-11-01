@@ -43,18 +43,17 @@ hash_t NFAState::compute_hash_() const {
 
 bool NFAState::is_final() const {
   // This will be put in conjunction with other formulas
-  vec_prop_formulas args{std::make_shared<PropositionalTrue>(),
-                         std::make_shared<PropositionalTrue>()};
+  vec_prop_formulas args{context.makeTrue(), context.makeTrue()};
   for (const auto &formula : formulas) {
     args.push_back(delta(*formula));
   }
   auto conjunction =
-      PropositionalAnd(set_prop_formulas(args.begin(), args.end()));
+      context.makePropAnd(set_prop_formulas(args.begin(), args.end()));
 
   // to evaluate this formula, we just use an empty prop. interpretation.
   // this is because the delta with epsilon = true returns either true or false.
   auto empty = set_atoms_ptr();
-  return eval(conjunction, empty);
+  return eval(*conjunction, empty);
 }
 
 } // namespace whitemech::lydia

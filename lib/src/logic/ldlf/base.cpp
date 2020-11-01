@@ -22,11 +22,6 @@
 
 namespace whitemech::lydia {
 
-const std::shared_ptr<const LDLfTrue> boolTrue =
-    std::make_shared<const LDLfTrue>();
-const std::shared_ptr<const LDLfFalse> boolFalse =
-    std::make_shared<const LDLfFalse>();
-
 hash_t LDLfTrue::compute_hash_() const { return type_code_id; }
 
 vec_formulas LDLfTrue::get_args() const { return {}; }
@@ -39,7 +34,7 @@ int LDLfTrue::compare_(const Basic &o) const {
 }
 
 std::shared_ptr<const LDLfFormula> LDLfTrue::logical_not() const {
-  return boolFalse;
+  return context.makeLdlfFalse();
 }
 
 ///////////////////////////////////
@@ -56,10 +51,11 @@ int LDLfFalse::compare_(const Basic &o) const {
 }
 
 std::shared_ptr<const LDLfFormula> LDLfFalse::logical_not() const {
-  return boolTrue;
+  return context.makeLdlfTrue();
 }
 
-LDLfAnd::LDLfAnd(const set_formulas &s) : container_{s} {
+LDLfAnd::LDLfAnd(AstManager &c, const set_formulas &s)
+    : LDLfFormula(c), container_{s} {
   this->type_code_ = type_code_id;
   if (!is_canonical(s)) {
     throw std::invalid_argument("LDLfAnd formula: arguments must be > 1");
@@ -102,10 +98,11 @@ std::shared_ptr<const LDLfFormula> LDLfAnd::logical_not() const {
   for (auto &a : container) {
     cont.insert(a->logical_not());
   }
-  return std::make_shared<LDLfOr>(cont);
+  return std::make_shared<const LDLfOr>(*this->m_ctx, cont);
 }
 
-LDLfOr::LDLfOr(const set_formulas &s) : container_{s} {
+LDLfOr::LDLfOr(AstManager &c, const set_formulas &s)
+    : LDLfFormula(c), container_{s} {
   this->type_code_ = type_code_id;
   if (!is_canonical(s)) {
     throw std::invalid_argument("LDLfOr formula: arguments must be > 1");
@@ -148,10 +145,11 @@ std::shared_ptr<const LDLfFormula> LDLfOr::logical_not() const {
   for (auto &a : container) {
     cont.insert(a->logical_not());
   }
-  return std::make_shared<LDLfAnd>(cont);
+  return std::make_shared<LDLfAnd>(*this->m_ctx, cont);
 }
 
-LDLfNot::LDLfNot(const std::shared_ptr<const LDLfFormula> &in) : arg_{in} {
+LDLfNot::LDLfNot(AstManager &c, const std::shared_ptr<const LDLfFormula> &in)
+    : LDLfFormula(c), arg_{in} {
   type_code_ = type_code_id;
   if (!is_canonical(*in)) {
     throw std::invalid_argument("LDLfNot formula: argument cannot be an "
@@ -192,8 +190,9 @@ std::shared_ptr<const LDLfFormula> LDLfNot::logical_not() const {
   return this->get_arg();
 }
 
-LDLfDiamond::LDLfDiamond(const regex_ptr &regex, const ldlf_ptr &formula)
-    : LDLfTemporal(regex, formula) {
+LDLfDiamond::LDLfDiamond(AstManager &c, const regex_ptr &regex,
+                         const ldlf_ptr &formula)
+    : LDLfTemporal(c, regex, formula) {
   this->type_code_ = type_code_id;
 }
 
@@ -227,12 +226,12 @@ int LDLfDiamond::compare_(const Basic &o) const {
 }
 
 std::shared_ptr<const LDLfFormula> LDLfDiamond::logical_not() const {
-  return std::make_shared<LDLfBox>(this->get_regex(),
-                                   this->get_formula()->logical_not());
-};
+  return ctx().makeLdlfBox(this->get_regex(),
+                           this->get_formula()->logical_not());
+}
 
-LDLfBox::LDLfBox(const regex_ptr &regex, const ldlf_ptr &formula)
-    : LDLfTemporal(regex, formula) {
+LDLfBox::LDLfBox(AstManager &c, const regex_ptr &regex, const ldlf_ptr &formula)
+    : LDLfTemporal(c, regex, formula) {
   this->type_code_ = type_code_id;
 }
 
@@ -241,7 +240,7 @@ hash_t LDLfBox::compute_hash_() const {
   hash_combine<Basic>(seed, *this->get_regex());
   hash_combine<Basic>(seed, *this->get_formula());
   return seed;
-};
+}
 
 bool LDLfBox::is_canonical(const set_formulas &container_) const {
   // TODO
@@ -265,13 +264,13 @@ int LDLfBox::compare_(const Basic &o) const {
 }
 
 std::shared_ptr<const LDLfFormula> LDLfBox::logical_not() const {
-  return std::make_shared<LDLfDiamond>(this->get_regex(),
-                                       this->get_formula()->logical_not());
+  return ctx().makeLdlfDiamond(this->get_regex(),
+                               this->get_formula()->logical_not());
 }
 
 PropositionalRegExp::PropositionalRegExp(
-    std::shared_ptr<const PropositionalFormula> f)
-    : arg_{std::move(f)} {
+    AstManager &c, std::shared_ptr<const PropositionalFormula> f)
+    : RegExp(c), arg_{std::move(f)} {
   this->type_code_ = type_code_id;
 }
 
@@ -301,8 +300,8 @@ bool PropositionalRegExp::is_canonical(const PropositionalFormula &f) const {
   return true;
 }
 
-TestRegExp::TestRegExp(std::shared_ptr<const LDLfFormula> f)
-    : arg_{std::move(f)} {
+TestRegExp::TestRegExp(AstManager &c, std::shared_ptr<const LDLfFormula> f)
+    : RegExp(c), arg_{std::move(f)} {
   this->type_code_ = type_code_id;
 }
 
@@ -329,7 +328,8 @@ bool TestRegExp::is_canonical(const LDLfFormula &f) const {
   return true;
 }
 
-UnionRegExp::UnionRegExp(const set_regex &args) : container_{args} {
+UnionRegExp::UnionRegExp(AstManager &c, const set_regex &args)
+    : RegExp(c), container_{args} {
   this->type_code_ = type_code_id;
 }
 
@@ -356,8 +356,8 @@ int UnionRegExp::compare_(const Basic &o) const {
                          dynamic_cast<const UnionRegExp &>(o).get_container());
 }
 
-SequenceRegExp::SequenceRegExp(const vec_regex &args)
-    : container_{std::move(args)} {
+SequenceRegExp::SequenceRegExp(AstManager &c, const vec_regex &args)
+    : RegExp(c), container_{std::move(args)} {
   this->type_code_ = type_code_id;
 }
 
@@ -384,7 +384,8 @@ int SequenceRegExp::compare_(const Basic &o) const {
       container_, dynamic_cast<const SequenceRegExp &>(o).get_container());
 }
 
-StarRegExp::StarRegExp(regex_ptr arg) : arg_{std::move(arg)} {
+StarRegExp::StarRegExp(AstManager &c, regex_ptr arg)
+    : RegExp(c), arg_{std::move(arg)} {
   this->type_code_ = type_code_id;
 }
 
@@ -408,59 +409,61 @@ int StarRegExp::compare_(const Basic &o) const {
   return arg_->compare(*dynamic_cast<const StarRegExp &>(o).get_arg());
 }
 
-LDLfF::LDLfF(const LDLfFormula &formula) : arg_{formula} {
+LDLfF::LDLfF(AstManager &c, const ldlf_ptr &formula)
+    : LDLfFormula(c), arg_{formula} {
   this->type_code_ = type_code_id;
 }
 
 hash_t LDLfF::compute_hash_() const {
-  hash_t seed = TypeID::t_LDLfF;
-  hash_combine<Basic>(seed, *this);
+  hash_t seed = type_code_id;
+  hash_combine<Basic>(seed, *arg_);
   return seed;
 }
 
 bool LDLfF::is_canonical(const set_regex &args) const { return true; }
 
 ldlf_ptr LDLfF::logical_not() const {
-  return std::make_shared<LDLfT>(*this->get_arg().logical_not());
+  return ctx().makeLdlfT(this->get_arg()->logical_not());
 }
 
-const LDLfFormula &LDLfF::get_arg() const { return this->arg_; }
+ldlf_ptr LDLfF::get_arg() const { return this->arg_; }
 
 bool LDLfF::is_equal(const Basic &rhs) const {
   return is_a<LDLfF>(rhs) and
-         eq(arg_, dynamic_cast<const LDLfF &>(rhs).get_arg());
+         eq(*arg_, *dynamic_cast<const LDLfF &>(rhs).get_arg());
 }
 
 int LDLfF::compare_(const Basic &rhs) const {
   assert(is_a<LDLfF>(rhs));
-  return arg_.compare(dynamic_cast<const LDLfF &>(rhs).get_arg());
+  return arg_->compare(*dynamic_cast<const LDLfF &>(rhs).get_arg());
 }
-LDLfT::LDLfT(const LDLfFormula &formula) : arg_{formula} {
+LDLfT::LDLfT(AstManager &c, const ldlf_ptr &formula)
+    : LDLfFormula(c), arg_{formula} {
   this->type_code_ = type_code_id;
 }
 
 hash_t LDLfT::compute_hash_() const {
   hash_t seed = type_code_id;
-  hash_combine<Basic>(seed, *this);
+  hash_combine<Basic>(seed, *arg_);
   return seed;
 }
 
 bool LDLfT::is_canonical(const set_regex &args) const { return true; }
 
-const LDLfFormula &LDLfT::get_arg() const { return this->arg_; }
+ldlf_ptr LDLfT::get_arg() const { return this->arg_; }
 
 ldlf_ptr LDLfT::logical_not() const {
-  return std::make_shared<LDLfF>(*this->get_arg().logical_not());
+  return m_ctx->makeLdlfF(this->get_arg()->logical_not());
 }
 
 bool LDLfT::is_equal(const Basic &rhs) const {
   return is_a<LDLfT>(rhs) and
-         eq(arg_, dynamic_cast<const LDLfT &>(rhs).get_arg());
+         eq(*arg_, *dynamic_cast<const LDLfT &>(rhs).get_arg());
 }
 
 int LDLfT::compare_(const Basic &rhs) const {
   assert(is_a<LDLfT>(rhs));
-  return arg_.compare(dynamic_cast<const LDLfT &>(rhs).get_arg());
+  return arg_->compare(*dynamic_cast<const LDLfT &>(rhs).get_arg());
 }
 
 QuotedFormula::QuotedFormula(basic_ptr formula) : formula{std::move(formula)} {

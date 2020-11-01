@@ -27,8 +27,8 @@ TEST_CASE("Driver LDLf Boolean Atoms", "[parser]") {
   Logger log("test_parser");
   auto driver = Driver();
 
-  auto actualBoolTrue = std::make_shared<LDLfTrue>();
-  auto actualBoolFalse = std::make_shared<LDLfFalse>();
+  auto actualBoolTrue = context.makeLdlfTrue();
+  auto actualBoolFalse = context.makeLdlfFalse();
 
   SECTION("test parsing tt") {
     std::istringstream tt("tt");
@@ -57,11 +57,12 @@ TEST_CASE("Driver LDLf Boolean Atoms", "[parser]") {
 }
 
 TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser]") {
-  auto driver = Driver();
-  auto actualAnd_true_false =
-      std::make_shared<LDLfAnd>(set_formulas({boolTrue, boolFalse}));
-  auto actualAnd_false_true =
-      std::make_shared<LDLfAnd>(set_formulas({boolFalse, boolTrue}));
+  auto context = std::make_shared<AstManager>();
+  auto driver = Driver(context);
+  auto tt = context->makeLdlfTrue();
+  auto ff = context->makeLdlfFalse();
+  auto actualAnd_true_false = context->makeLdlfAnd(set_formulas({tt, ff}));
+  auto actualAnd_false_true = context->makeLdlfAnd(set_formulas({ff, tt}));
 
   SECTION("test parsing tt && ff") {
     std::istringstream tt_and_ff("tt && ff");
@@ -88,30 +89,27 @@ TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser]") {
     REQUIRE(*parsedAnd == *actualAnd_false_true);
   }
   SECTION("test parsing tt & ff & tt") {
-    auto and_ff_tt =
-        std::make_shared<LDLfAnd>(set_formulas({boolFalse, boolTrue}));
+    auto and_ff_tt = context->makeLdlfAnd(set_formulas({ff, tt}));
     auto actualAnd_tt_ff_tt =
-        std::make_shared<LDLfAnd>(set_formulas({and_ff_tt, boolTrue}));
+        context->makeLdlfAnd(set_formulas({and_ff_tt, tt}));
     std::istringstream tt_and_ff_and_tt("tt & ff & tt");
     driver.parse(tt_and_ff_and_tt);
     auto parsedAnd = driver.result;
     REQUIRE(*parsedAnd == *actualAnd_tt_ff_tt);
   }
   SECTION("test parsing (tt & ff) & tt") {
-    auto and_tt_ff =
-        std::make_shared<LDLfAnd>(set_formulas({boolTrue, boolFalse}));
+    auto and_tt_ff = context->makeLdlfAnd(set_formulas({tt, ff}));
     auto actualAnd_tt_ff_tt =
-        std::make_shared<LDLfAnd>(set_formulas({and_tt_ff, boolTrue}));
+        context->makeLdlfAnd(set_formulas({and_tt_ff, tt}));
     std::istringstream tt_and_ff_and_tt("(tt & ff) & tt");
     driver.parse(tt_and_ff_and_tt);
     auto parsedAnd = driver.result;
     REQUIRE(*parsedAnd == *actualAnd_tt_ff_tt);
   }
   SECTION("test parsing tt & (ff & tt)") {
-    auto and_ff_tt =
-        std::make_shared<LDLfAnd>(set_formulas({boolFalse, boolTrue}));
+    auto and_ff_tt = context->makeLdlfAnd(set_formulas({ff, tt}));
     auto actualAnd_tt_ff_tt =
-        std::make_shared<LDLfAnd>(set_formulas({boolTrue, and_ff_tt}));
+        context->makeLdlfAnd(set_formulas({tt, and_ff_tt}));
     std::istringstream tt_and_ff_and_tt("tt & (ff & tt)");
     driver.parse(tt_and_ff_and_tt);
     auto parsedAnd = driver.result;
@@ -120,11 +118,12 @@ TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser]") {
 }
 
 TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser]") {
-  auto driver = Driver();
-  auto actualOr_true_false =
-      std::make_shared<LDLfOr>(set_formulas({boolTrue, boolFalse}));
-  auto actualOr_false_true =
-      std::make_shared<LDLfOr>(set_formulas({boolFalse, boolTrue}));
+  auto context = std::make_shared<AstManager>();
+  auto driver = Driver(context);
+  auto tt = context->makeLdlfTrue();
+  auto ff = context->makeLdlfFalse();
+  auto actualOr_true_false = context->makeLdlfOr(set_formulas({tt, ff}));
+  auto actualOr_false_true = context->makeLdlfOr(set_formulas({ff, tt}));
 
   SECTION("test parsing tt || ff") {
     std::istringstream tt_or_ff("tt || ff");
@@ -151,10 +150,8 @@ TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser]") {
     REQUIRE(*parsedOr == *actualOr_false_true);
   }
   SECTION("test parsing tt | ff | tt") {
-    auto or_ff_tt =
-        std::make_shared<LDLfOr>(set_formulas({boolFalse, boolTrue}));
-    auto actualOr_tt_ff_tt =
-        std::make_shared<LDLfOr>(set_formulas({or_ff_tt, boolTrue}));
+    auto or_ff_tt = context->makeLdlfOr(set_formulas({ff, tt}));
+    auto actualOr_tt_ff_tt = context->makeLdlfOr(set_formulas({or_ff_tt, tt}));
     std::istringstream tt_or_ff_or_tt("tt | ff | tt");
     driver.parse(tt_or_ff_or_tt);
     auto parsedAnd = driver.result;
@@ -163,17 +160,18 @@ TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser]") {
 }
 
 TEST_CASE("Driver LDLfNot", "[parser]") {
-  auto driver = Driver();
-  auto actualNot_true = std::make_shared<LDLfNot>(boolTrue);
-  auto actualNot_false = std::make_shared<LDLfNot>(boolFalse);
+  auto context = std::make_shared<AstManager>();
+  auto driver = Driver(context);
+  auto tt = context->makeLdlfTrue();
+  auto ff = context->makeLdlfFalse();
+  auto actualNot_true = context->makeLdlfNot(tt);
+  auto actualNot_false = context->makeLdlfNot(ff);
 
-  auto actualAnd_true_false =
-      std::make_shared<LDLfAnd>(set_formulas({boolTrue, boolFalse}));
-  auto actualNot_and = std::make_shared<LDLfNot>(actualAnd_true_false);
+  auto actualAnd_true_false = context->makeLdlfAnd(set_formulas({tt, ff}));
+  auto actualNot_and = context->makeLdlfNot(actualAnd_true_false);
 
-  auto actualOr_true_false =
-      std::make_shared<LDLfOr>(set_formulas({boolTrue, boolFalse}));
-  auto actualNot_or = std::make_shared<LDLfNot>(actualOr_true_false);
+  auto actualOr_true_false = context->makeLdlfOr(set_formulas({tt, ff}));
+  auto actualNot_or = context->makeLdlfNot(actualOr_true_false);
 
   SECTION("test parsing ~tt") {
     std::istringstream not_tt("~tt");
@@ -214,55 +212,46 @@ TEST_CASE("Driver LDLfNot", "[parser]") {
 }
 
 TEST_CASE("Driver LDLfTemporal", "[parser]") {
-  auto driver = Driver();
+  auto context = std::make_shared<AstManager>();
+  auto driver = Driver(context);
 
-  auto ptr_prop_re_true = std::make_shared<PropositionalRegExp>(
-      std::make_shared<PropositionalTrue>());
-  auto ptr_prop_re_a = std::make_shared<PropositionalRegExp>(
-      std::make_shared<PropositionalAtom>("a"));
-  auto ptr_prop_re_b = std::make_shared<PropositionalRegExp>(
-      std::make_shared<PropositionalAtom>("b"));
-  auto ptr_prop_re_c = std::make_shared<PropositionalRegExp>(
-      std::make_shared<PropositionalAtom>("c"));
+  auto ptr_prop_re_true = context->makePropRegex(context->makeTrue());
+  auto ptr_prop_re_a = context->makePropRegex(context->makePropAtom("a"));
+  auto ptr_prop_re_b = context->makePropRegex(context->makePropAtom("b"));
+  auto ptr_prop_re_c = context->makePropRegex(context->makePropAtom("c"));
 
-  auto ptr_seq_re_ab = std::make_shared<SequenceRegExp>(
-      vec_regex({ptr_prop_re_a, ptr_prop_re_b}));
-  auto ptr_seq_re = std::make_shared<SequenceRegExp>(
-      vec_regex({ptr_seq_re_ab, ptr_prop_re_c}));
+  auto ptr_seq_re_ab =
+      context->makeSeqRegex(vec_regex({ptr_prop_re_a, ptr_prop_re_b}));
+  auto ptr_seq_re =
+      context->makeSeqRegex(vec_regex({ptr_seq_re_ab, ptr_prop_re_c}));
   auto ptr_union_re =
-      std::make_shared<UnionRegExp>(set_regex({ptr_prop_re_a, ptr_prop_re_b}));
-  auto ptr_star_re = std::make_shared<StarRegExp>(ptr_prop_re_c);
-  auto ptr_test_re =
-      std::make_shared<TestRegExp>(std::make_shared<LDLfFalse>());
+      context->makeUnionRegex(set_regex({ptr_prop_re_a, ptr_prop_re_b}));
+  auto ptr_star_re = context->makeStarRegex(ptr_prop_re_c);
+  auto ptr_test_re = context->makeTestRegex(context->makeLdlfFalse());
 
-  auto ptr_tt = std::make_shared<LDLfTrue>();
-  auto ptr_ff = std::make_shared<LDLfFalse>();
-  auto ptr_end = std::make_shared<LDLfBox>(ptr_prop_re_true, ptr_ff);
-  auto ptr_last = std::make_shared<LDLfDiamond>(ptr_prop_re_true, ptr_end);
+  auto ptr_tt = context->makeLdlfTrue();
+  auto ptr_ff = context->makeLdlfFalse();
+  auto ptr_end = context->makeLdlfBox(ptr_prop_re_true, ptr_ff);
+  auto ptr_last = context->makeLdlfDiamond(ptr_prop_re_true, ptr_end);
 
   auto actualDiamond_prop_re_tt =
-      std::make_shared<LDLfDiamond>(ptr_prop_re_a, ptr_tt);
-  auto actualDiamond_seq_re_tt =
-      std::make_shared<LDLfDiamond>(ptr_seq_re, ptr_tt);
+      context->makeLdlfDiamond(ptr_prop_re_a, ptr_tt);
+  auto actualDiamond_seq_re_tt = context->makeLdlfDiamond(ptr_seq_re, ptr_tt);
   auto actualDiamond_union_re_tt =
-      std::make_shared<LDLfDiamond>(ptr_union_re, ptr_tt);
-  auto actualDiamond_star_re_tt =
-      std::make_shared<LDLfDiamond>(ptr_star_re, ptr_tt);
-  auto actualDiamond_test_re_tt =
-      std::make_shared<LDLfDiamond>(ptr_test_re, ptr_tt);
+      context->makeLdlfDiamond(ptr_union_re, ptr_tt);
+  auto actualDiamond_star_re_tt = context->makeLdlfDiamond(ptr_star_re, ptr_tt);
+  auto actualDiamond_test_re_tt = context->makeLdlfDiamond(ptr_test_re, ptr_tt);
 
-  auto actualBox_prop_re_tt = std::make_shared<LDLfBox>(ptr_prop_re_a, ptr_tt);
-  auto actualBox_seq_re_tt = std::make_shared<LDLfBox>(ptr_seq_re, ptr_tt);
-  auto actualBox_union_re_tt = std::make_shared<LDLfBox>(ptr_union_re, ptr_tt);
-  auto actualBox_star_re_tt = std::make_shared<LDLfBox>(ptr_star_re, ptr_tt);
-  auto actualBox_test_re_tt = std::make_shared<LDLfBox>(ptr_test_re, ptr_tt);
+  auto actualBox_prop_re_tt = context->makeLdlfBox(ptr_prop_re_a, ptr_tt);
+  auto actualBox_seq_re_tt = context->makeLdlfBox(ptr_seq_re, ptr_tt);
+  auto actualBox_union_re_tt = context->makeLdlfBox(ptr_union_re, ptr_tt);
+  auto actualBox_star_re_tt = context->makeLdlfBox(ptr_star_re, ptr_tt);
+  auto actualBox_test_re_tt = context->makeLdlfBox(ptr_test_re, ptr_tt);
 
-  auto actualDiamond_a_end =
-      std::make_shared<LDLfDiamond>(ptr_prop_re_a, ptr_end);
-  auto actualDiamond_a_last =
-      std::make_shared<LDLfDiamond>(ptr_prop_re_a, ptr_last);
-  auto actualBox_a_end = std::make_shared<LDLfBox>(ptr_prop_re_a, ptr_end);
-  auto actualBox_a_last = std::make_shared<LDLfBox>(ptr_prop_re_a, ptr_last);
+  auto actualDiamond_a_end = context->makeLdlfDiamond(ptr_prop_re_a, ptr_end);
+  auto actualDiamond_a_last = context->makeLdlfDiamond(ptr_prop_re_a, ptr_last);
+  auto actualBox_a_end = context->makeLdlfBox(ptr_prop_re_a, ptr_end);
+  auto actualBox_a_last = context->makeLdlfBox(ptr_prop_re_a, ptr_last);
 
   SECTION("test parsing <a>tt") {
     std::istringstream a_tt("<a>tt");

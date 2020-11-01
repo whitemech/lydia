@@ -26,8 +26,9 @@ class NNFTransformer : public Visitor {
 private:
 protected:
   // TODO split into several transformers?
-  std::shared_ptr<const LDLfFormula> result;
-  std::shared_ptr<const RegExp> regex_result;
+  ldlf_ptr result;
+  regex_ptr regex_result;
+  prop_ptr prop_result;
 
 public:
   // callbacks for LDLf
@@ -48,19 +49,20 @@ public:
   void visit(const StarRegExp &) override;
 
   // callbacks for propositional logic
-  void visit(const PropositionalTrue &) override{};
-  void visit(const PropositionalFalse &) override{};
-  void visit(const PropositionalAtom &) override{};
-  void visit(const PropositionalAnd &) override{};
-  void visit(const PropositionalOr &) override{};
-  void visit(const PropositionalNot &) override{};
+  void visit(const PropositionalTrue &) override;
+  void visit(const PropositionalFalse &) override;
+  void visit(const PropositionalAtom &) override;
+  void visit(const PropositionalAnd &) override;
+  void visit(const PropositionalOr &) override;
+  void visit(const PropositionalNot &) override;
 
   void visit(const QuotedFormula &) override{};
   void visit(const LDLfF &) override;
   void visit(const LDLfT &) override;
 
-  std::shared_ptr<const LDLfFormula> apply(const LDLfFormula &b);
-  std::shared_ptr<const RegExp> apply(const RegExp &b);
+  ldlf_ptr apply(const LDLfFormula &b);
+  regex_ptr apply(const RegExp &b);
+  prop_ptr apply(const PropositionalFormula &b);
 };
 
 std::shared_ptr<const LDLfFormula> to_nnf(const LDLfFormula &);

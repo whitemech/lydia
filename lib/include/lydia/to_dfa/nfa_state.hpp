@@ -42,7 +42,7 @@ class NFAState : public Basic {
 public:
   const static TypeID type_code_id = TypeID::t_NFAState;
   const set_formulas formulas;
-  explicit NFAState(set_formulas formulas) : formulas{formulas} {
+  explicit NFAState(set_formulas formulas) : formulas{std::move(formulas)} {
     type_code_ = type_code_id;
   };
   void accept(Visitor &v) const override{};

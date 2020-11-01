@@ -1,4 +1,3 @@
-#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -16,8 +15,10 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace whitemech::lydia {
+#include <catch.hpp>
 
-class BooleanOperator {};
+namespace whitemech::lydia::Test {
 
-} // namespace whitemech::lydia
+TEST_CASE("AST", "[ast]") {}
+
+} // namespace whitemech::lydia::Test

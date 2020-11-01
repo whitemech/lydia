@@ -14,11 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include <lydia/logic/atom_visitor.hpp>
 #include <lydia/logic/pl/base.hpp>
 #include <lydia/logic/pl/eval.hpp>
-#include <lydia/logic/pl/models/base.hpp>
-#include <lydia/utils/misc.hpp>
 
 namespace whitemech::lydia {
 

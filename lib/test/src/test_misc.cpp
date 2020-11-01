@@ -14,14 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "utils/to_dfa.hpp"
 #include <catch.hpp>
-#include <cppitertools/powerset.hpp>
-#include <cppitertools/product.hpp>
-#include <lydia/logic/symbol.hpp>
 #include <lydia/to_dfa/strategies/bdd/base.hpp>
 #include <lydia/types.hpp>
-#include <lydia/utils/compare.hpp>
 #include <lydia/utils/dfa_transform.hpp>
 #include <lydia/utils/misc.hpp>
 #include <set>

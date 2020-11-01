@@ -14,9 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "../utils/print_dfa.hpp"
-#include "../utils/to_dfa.hpp"
 #include <catch.hpp>
+
+#include "../utils/to_dfa.hpp"
 #include <iostream>
 #include <lydia/logic/nnf.hpp>
 #include <lydia/to_dfa/dfa_state.hpp>
@@ -24,8 +24,9 @@
 namespace whitemech::lydia::Test {
 
 TEST_CASE("Set of DFA states", "[translate]") {
+  auto context = AstManager{};
   auto a = DFAState(set_nfa_states{});
-  auto b = DFAState(set_formulas{std::make_shared<LDLfTrue>()});
+  auto b = DFAState(set_formulas{context.makeLdlfTrue()});
   auto c = DFAState(set_nfa_states{});
 
   REQUIRE(a == c);
@@ -36,9 +37,11 @@ TEST_CASE("Set of DFA states", "[translate]") {
 
 TEST_CASE("Translate !(ff & tt)", "[translate]") {
   std::string formula_name = "!(ff & tt)";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
   REQUIRE(verify(*automaton, {}, true));
   REQUIRE(verify(*automaton, {{}}, true));
   REQUIRE(verify(*automaton, {{}, {}}, true));
@@ -46,9 +49,11 @@ TEST_CASE("Translate !(ff & tt)", "[translate]") {
 
 TEST_CASE("Translate (ff & tt)", "[translate]") {
   std::string formula_name = "(ff & tt)";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
   REQUIRE(verify(*automaton, {}, false));
   REQUIRE(verify(*automaton, {{}}, false));
   REQUIRE(verify(*automaton, {{}, {}}, false));
@@ -56,19 +61,22 @@ TEST_CASE("Translate (ff & tt)", "[translate]") {
 
 TEST_CASE("Translate <true>tt", "[translate]") {
   std::string formula_name = "<true>tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
-  REQUIRE(verify(*automaton, {}, false));
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
   REQUIRE(verify(*automaton, {{}}, true));
   REQUIRE(verify(*automaton, {{}, {}}, true));
 }
 
 TEST_CASE("Translate <a>tt", "[translate]") {
   std::string formula_name = "<a>tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, false));
 
@@ -82,9 +90,11 @@ TEST_CASE("Translate <a>tt", "[translate]") {
 
 TEST_CASE("Translate <a & b>tt", "[translate]") {
   std::string formula_name = "<a & b>tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, false));
 
@@ -116,9 +126,11 @@ TEST_CASE("Translate <a & b>tt", "[translate]") {
 
 TEST_CASE("Translate <a | b>tt", "[translate]") {
   std::string formula_name = "<a | b>tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, false));
 
@@ -150,9 +162,11 @@ TEST_CASE("Translate <a | b>tt", "[translate]") {
 
 TEST_CASE("Translate {true}tt", "[translate]") {
   std::string formula_name = "[true]tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
   REQUIRE(verify(*automaton, {}, true));
   REQUIRE(verify(*automaton, {{}}, true));
   REQUIRE(verify(*automaton, {{}, {}}, true));
@@ -160,9 +174,11 @@ TEST_CASE("Translate {true}tt", "[translate]") {
 
 TEST_CASE("Translate {a}tt", "[translate]") {
   std::string formula_name = "[a]tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, true));
   REQUIRE(verify(*automaton, {"0"}, true));
@@ -175,9 +191,11 @@ TEST_CASE("Translate {a}tt", "[translate]") {
 
 TEST_CASE("Translate {a & b}ff", "[translate]") {
   std::string formula_name = "[a & b]ff";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, true));
 
@@ -209,9 +227,11 @@ TEST_CASE("Translate {a & b}ff", "[translate]") {
 
 TEST_CASE("Translate {a | b}ff", "[translate]") {
   std::string formula_name = "[a | b]ff";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, true));
 
@@ -243,9 +263,11 @@ TEST_CASE("Translate {a | b}ff", "[translate]") {
 
 TEST_CASE("Translate {a}ff", "[translate]") {
   std::string formula_name = "[a]ff";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, true));
   REQUIRE(verify(*automaton, {"0"}, true));
@@ -258,9 +280,11 @@ TEST_CASE("Translate {a}ff", "[translate]") {
 
 TEST_CASE("Translate <<true>tt?>tt", "[translate]") {
   std::string formula_name = "<<true>tt?>tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, false));
   REQUIRE(verify(*automaton, {{}}, true));
@@ -269,9 +293,11 @@ TEST_CASE("Translate <<true>tt?>tt", "[translate]") {
 
 TEST_CASE("Translate <{true}ff?>tt", "[translate]") {
   std::string formula_name = "<[true]ff?>tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
   REQUIRE(verify(*automaton, {}, true));
   REQUIRE(verify(*automaton, {{}}, false));
   REQUIRE(verify(*automaton, {{}, {}}, false));
@@ -279,9 +305,11 @@ TEST_CASE("Translate <{true}ff?>tt", "[translate]") {
 
 TEST_CASE("Translate <a plus b>tt", "[translate]") {
   std::string formula_name = "<a + b>tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
   REQUIRE(verify(*automaton, {}, false));
 
   REQUIRE(verify(*automaton, {"00"}, false));
@@ -312,9 +340,11 @@ TEST_CASE("Translate <a plus b>tt", "[translate]") {
 
 TEST_CASE("Translate {a plus b}ff", "[translate]") {
   std::string formula_name = "[a + b]ff";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, true));
 
@@ -346,9 +376,11 @@ TEST_CASE("Translate {a plus b}ff", "[translate]") {
 
 TEST_CASE("Translate <a,b>tt", "[translate]") {
   std::string formula_name = "<a ; b>tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, false));
 
@@ -380,9 +412,11 @@ TEST_CASE("Translate <a,b>tt", "[translate]") {
 
 TEST_CASE("Translate {a,b}ff", "[translate]") {
   std::string formula_name = "[a ; b]ff";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, true));
 
@@ -414,9 +448,11 @@ TEST_CASE("Translate {a,b}ff", "[translate]") {
 
 TEST_CASE("Translate <a*>tt", "[translate]") {
   std::string formula_name = "<a*>tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, true));
 
@@ -448,9 +484,11 @@ TEST_CASE("Translate <a*>tt", "[translate]") {
 
 TEST_CASE("Translate {a*}tt", "[translate]") {
   std::string formula_name = "[a*]tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
   REQUIRE(verify(*automaton, {}, true));
 
   REQUIRE(verify(*automaton, {"00"}, true));
@@ -481,9 +519,11 @@ TEST_CASE("Translate {a*}tt", "[translate]") {
 
 TEST_CASE("Translate <a*, b>tt", "[translate]") {
   std::string formula_name = "<a*; b>tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, false));
 
@@ -515,9 +555,11 @@ TEST_CASE("Translate <a*, b>tt", "[translate]") {
 
 TEST_CASE("Translate {a*, b}ff", "[translate]") {
   std::string formula_name = "[a*; b]ff";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, true));
 
@@ -549,9 +591,11 @@ TEST_CASE("Translate {a*, b}ff", "[translate]") {
 
 TEST_CASE("Translate <a* plus b>tt", "[translate]") {
   std::string formula_name = "<a* + b>tt";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, true));
 
@@ -583,9 +627,11 @@ TEST_CASE("Translate <a* plus b>tt", "[translate]") {
 
 TEST_CASE("Translate {a* plus b}ff", "[translate]") {
   std::string formula_name = "[a* + b]ff";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, false));
 
@@ -617,9 +663,11 @@ TEST_CASE("Translate {a* plus b}ff", "[translate]") {
 
 TEST_CASE("Translate <true*>(<a>tt & ~end)", "[translate]") {
   std::string formula_name = "<true*>(<a>tt & ~end)";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, false));
 
@@ -643,9 +691,11 @@ TEST_CASE("Translate <true*>(<a>tt & ~end)", "[translate]") {
 
 TEST_CASE("Translate {true*}(<a>tt | end)", "[translate]") {
   std::string formula_name = "[true*](<a>tt | end)";
+  auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
-  auto automaton = to_dfa_from_formula_string(formula_name, mgr);
-  print_dfa(*automaton, formula_name);
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 
   REQUIRE(verify(*automaton, {}, true));
 
@@ -665,6 +715,15 @@ TEST_CASE("Translate {true*}(<a>tt | end)", "[translate]") {
   REQUIRE(verify(*automaton, {"1", "0", "1"}, false));
   REQUIRE(verify(*automaton, {"1", "1", "0"}, false));
   REQUIRE(verify(*automaton, {"1", "1", "1"}, true));
+}
+
+TEST_CASE("Translate sequence of stars", "[translate]") {
+  std::string formula_name = "<p_10* ; p_11* ; p_12* ; p_13* ; p_14*>tt";
+  auto strategy_maker = GENERATE(strategies());
+  auto mgr = CUDD::Cudd();
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
 }
 
 } // namespace whitemech::lydia::Test

@@ -26,10 +26,10 @@ namespace whitemech::lydia {
 Logger DeltaSymbolicVisitor::logger = Logger("delta");
 
 void DeltaSymbolicVisitor::visit(const LDLfTrue &x) {
-  result = std::make_shared<PropositionalTrue>();
+  result = context.makeTrue();
 }
 void DeltaSymbolicVisitor::visit(const LDLfFalse &x) {
-  result = std::make_shared<PropositionalFalse>();
+  result = context.makeFalse();
 }
 
 void DeltaSymbolicVisitor::visit(const LDLfNot &b) {
@@ -44,7 +44,7 @@ void DeltaSymbolicVisitor::visit(const LDLfAnd &x) {
   for (auto &a : container) {
     new_container.insert(apply(*a));
   }
-  result = std::make_shared<PropositionalAnd>(new_container);
+  result = context.makePropAnd(new_container);
 }
 
 void DeltaSymbolicVisitor::visit(const LDLfOr &x) {
@@ -53,7 +53,7 @@ void DeltaSymbolicVisitor::visit(const LDLfOr &x) {
   for (auto &a : container) {
     new_container.insert(apply(*a));
   }
-  result = std::make_shared<PropositionalOr>(new_container);
+  result = context.makePropOr(new_container);
 }
 
 void DeltaSymbolicVisitor::visit(const LDLfDiamond &f) {
@@ -80,7 +80,7 @@ std::shared_ptr<const PropositionalFormula> delta_symbolic(const LDLfFormula &x,
 
 void DeltaSymbolicDiamondRegExpVisitor::visit(const PropositionalRegExp &r) {
   if (epsilon) {
-    result = std::make_shared<PropositionalFalse>();
+    result = context.makeFalse();
     return;
   }
   auto prop = r.get_arg();
@@ -101,11 +101,11 @@ void DeltaSymbolicDiamondRegExpVisitor::visit(const TestRegExp &r) {
 void DeltaSymbolicDiamondRegExpVisitor::visit(const UnionRegExp &r) {
   set_prop_formulas args;
   for (const auto &regex : r.get_container()) {
-    auto new_f = LDLfDiamond(regex, formula.get_formula());
-    auto tmp = DeltaSymbolicVisitor(epsilon).apply(new_f);
+    auto new_f = r.ctx().makeLdlfDiamond(regex, formula.get_formula());
+    auto tmp = DeltaSymbolicVisitor(epsilon).apply(*new_f);
     args.insert(tmp);
   }
-  result = std::make_shared<PropositionalOr>(args);
+  result = context.makePropOr(args);
 }
 
 void DeltaSymbolicDiamondRegExpVisitor::visit(const SequenceRegExp &r) {
@@ -114,20 +114,22 @@ void DeltaSymbolicDiamondRegExpVisitor::visit(const SequenceRegExp &r) {
   if (r.get_container().size() == 2) {
     tail = r.get_container().back();
   } else {
-    tail = std::make_shared<SequenceRegExp>(
+    tail = r.ctx().makeSeqRegex(
         vec_regex(r.get_container().begin() + 1, r.get_container().end()));
   }
-  ldlf_ptr ldlf_tail =
-      std::make_shared<LDLfDiamond>(tail, formula.get_formula());
-  result = DeltaSymbolicVisitor(epsilon).apply(LDLfDiamond(head, ldlf_tail));
+  ldlf_ptr ldlf_tail = r.ctx().makeLdlfDiamond(tail, formula.get_formula());
+  result = DeltaSymbolicVisitor(epsilon).apply(
+      *r.ctx().makeLdlfDiamond(head, ldlf_tail));
 }
 
 void DeltaSymbolicDiamondRegExpVisitor::visit(const StarRegExp &r) {
   auto d = DeltaSymbolicVisitor(epsilon);
   auto phi = d.apply(*formula.get_formula());
-  auto f = std::make_shared<LDLfF>(formula);
-  auto phi2 = d.apply(LDLfDiamond(r.get_arg(), f));
-  result = std::make_shared<PropositionalOr>(set_prop_formulas{phi, phi2});
+  auto next =
+      r.ctx().makeLdlfDiamond(formula.get_regex(), formula.get_formula());
+  auto auxiliary_false = context.makeLdlfF(next);
+  auto phi2 = d.apply(*r.ctx().makeLdlfDiamond(r.get_arg(), auxiliary_false));
+  result = context.makePropOr(set_prop_formulas{phi, phi2});
 }
 
 std::shared_ptr<const PropositionalFormula>
@@ -138,7 +140,7 @@ DeltaSymbolicDiamondRegExpVisitor::apply(const RegExp &b) {
 
 void DeltaSymbolicBoxRegExpVisitor::visit(const PropositionalRegExp &r) {
   if (epsilon) {
-    result = std::make_shared<PropositionalTrue>();
+    result = context.makeTrue();
     return;
   }
   auto prop = r.get_arg();
@@ -152,7 +154,8 @@ void DeltaSymbolicBoxRegExpVisitor::visit(const PropositionalRegExp &r) {
 void DeltaSymbolicBoxRegExpVisitor::visit(const TestRegExp &r) {
   NNFTransformer nnfTransformer;
   DeltaSymbolicVisitor d(epsilon);
-  auto regex_delta = d.apply(*nnfTransformer.apply(LDLfNot(r.get_arg())));
+  auto regex_delta =
+      d.apply(*nnfTransformer.apply(LDLfNot(context, r.get_arg())));
   auto ldlf_delta = d.apply(*formula.get_formula());
   result = logical_or(set_prop_formulas{regex_delta, ldlf_delta});
 }
@@ -160,11 +163,11 @@ void DeltaSymbolicBoxRegExpVisitor::visit(const TestRegExp &r) {
 void DeltaSymbolicBoxRegExpVisitor::visit(const UnionRegExp &r) {
   set_prop_formulas args;
   for (const auto &regex : r.get_container()) {
-    auto new_f = LDLfBox(regex, formula.get_formula());
-    auto tmp = DeltaSymbolicVisitor(epsilon).apply(new_f);
+    auto new_f = r.ctx().makeLdlfBox(regex, formula.get_formula());
+    auto tmp = DeltaSymbolicVisitor(epsilon).apply(*new_f);
     args.insert(tmp);
   }
-  result = std::make_shared<PropositionalAnd>(args);
+  result = context.makePropAnd(args);
 }
 
 void DeltaSymbolicBoxRegExpVisitor::visit(const SequenceRegExp &r) {
@@ -173,28 +176,28 @@ void DeltaSymbolicBoxRegExpVisitor::visit(const SequenceRegExp &r) {
   if (r.get_container().size() == 2) {
     tail = r.get_container().back();
   } else {
-    tail = std::make_shared<SequenceRegExp>(
+    tail = r.ctx().makeSeqRegex(
         vec_regex(r.get_container().begin() + 1, r.get_container().end()));
   }
-  ldlf_ptr ldlf_tail = std::make_shared<LDLfBox>(tail, formula.get_formula());
-  result = DeltaSymbolicVisitor(epsilon).apply(LDLfBox(head, ldlf_tail));
+  ldlf_ptr ldlf_tail = r.ctx().makeLdlfBox(tail, formula.get_formula());
+  result = DeltaSymbolicVisitor(epsilon).apply(
+      *r.ctx().makeLdlfBox(head, ldlf_tail));
 }
 
 void DeltaSymbolicBoxRegExpVisitor::visit(const StarRegExp &r) {
   auto d = DeltaSymbolicVisitor(epsilon);
   auto phi = d.apply(*formula.get_formula());
-  auto f = std::make_shared<LDLfT>(formula);
-  auto phi2 = d.apply(LDLfBox(r.get_arg(), f));
-  result = std::make_shared<PropositionalAnd>(set_prop_formulas{phi, phi2});
+  auto next = r.ctx().makeLdlfBox(formula.get_regex(), formula.get_formula());
+  auto auxiliary_true = context.makeLdlfT(next);
+  auto phi2 = d.apply(*r.ctx().makeLdlfBox(r.get_arg(), auxiliary_true));
+  result = context.makePropAnd(set_prop_formulas{phi, phi2});
 }
 
 void DeltaSymbolicVisitor::visit(const LDLfF &) {
-  result = std::make_shared<PropositionalFalse>();
+  result = context.makeFalse();
 }
 
-void DeltaSymbolicVisitor::visit(const LDLfT &) {
-  result = std::make_shared<PropositionalTrue>();
-}
+void DeltaSymbolicVisitor::visit(const LDLfT &) { result = context.makeTrue(); }
 
 std::shared_ptr<const PropositionalFormula>
 DeltaSymbolicBoxRegExpVisitor::apply(const RegExp &b) {

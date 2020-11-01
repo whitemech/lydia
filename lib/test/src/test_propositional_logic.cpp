@@ -25,27 +25,28 @@
 namespace whitemech::lydia::Test {
 TEST_CASE("Propositional Logic", "[pl/logic]") {
 
-  auto t = std::make_shared<PropositionalTrue>();
-  auto f = std::make_shared<PropositionalFalse>();
-  auto a = std::make_shared<PropositionalAtom>("a");
-  auto b = std::make_shared<PropositionalAtom>("b");
-  auto a_and_b = PropositionalAnd(set_prop_formulas{a, b});
-  auto a_or_b = PropositionalOr(set_prop_formulas{a, b});
+  auto m = AstManager();
+  auto t = context.makeTrue();
+  auto f = context.makeFalse();
+  auto a = context.makePropAtom("a");
+  auto b = context.makePropAtom("b");
+  auto a_and_b = context.makePropAnd(set_prop_formulas{a, b});
+  auto a_or_b = context.makePropOr(set_prop_formulas{a, b});
 
   auto empty = set_atoms_ptr();
   auto i_a = set_atoms_ptr{a};
   auto i_b = set_atoms_ptr{b};
   auto i_ab = set_atoms_ptr{a, b};
 
-  REQUIRE(!eval(a_and_b, empty));
-  REQUIRE(!eval(a_and_b, i_a));
-  REQUIRE(!eval(a_and_b, i_b));
-  REQUIRE(eval(a_and_b, i_ab));
+  REQUIRE(!eval(*a_and_b, empty));
+  REQUIRE(!eval(*a_and_b, i_a));
+  REQUIRE(!eval(*a_and_b, i_b));
+  REQUIRE(eval(*a_and_b, i_ab));
 
-  REQUIRE(!eval(a_or_b, empty));
-  REQUIRE(eval(a_or_b, i_a));
-  REQUIRE(eval(a_or_b, i_b));
-  REQUIRE(eval(a_or_b, i_ab));
+  REQUIRE(!eval(*a_or_b, empty));
+  REQUIRE(eval(*a_or_b, i_a));
+  REQUIRE(eval(*a_or_b, i_b));
+  REQUIRE(eval(*a_or_b, i_ab));
 }
 
 TEST_CASE("Simple logical operation", "[pl/logic]") {
@@ -94,91 +95,91 @@ TEST_CASE("Simple logical operation", "[pl/logic]") {
 }
 
 TEST_CASE("Logical and", "[logic]") {
-  auto ptr_a = std::make_shared<PropositionalAtom>("a");
-  auto ptr_b = std::make_shared<PropositionalAtom>("b");
-  auto ptr_c = std::make_shared<PropositionalAtom>("c");
-  auto ptr_true = std::make_shared<PropositionalTrue>();
-  auto ptr_false = std::make_shared<PropositionalFalse>();
+  auto ptr_a = context.makePropAtom("a");
+  auto ptr_b = context.makePropAtom("b");
+  auto ptr_c = context.makePropAtom("c");
+  auto ptr_true = context.makeTrue();
+  auto ptr_false = context.makeFalse();
 
   set_prop_formulas a_b = set_prop_formulas({ptr_a, ptr_b});
-  auto ptr_and_a_b = std::make_shared<PropositionalAnd>(a_b);
+  auto ptr_and_a_b = context.makePropAnd(a_b);
   set_prop_formulas b_c = set_prop_formulas({ptr_b, ptr_c});
-  auto ptr_and_b_c = std::make_shared<PropositionalAnd>(b_c);
+  auto ptr_and_b_c = context.makePropAnd(b_c);
 
   SECTION("(a & b) & c == a & b & c") {
     set_prop_formulas and_ab_c = set_prop_formulas({ptr_and_a_b, ptr_c});
-    auto ptr_and_ab_c = std::make_shared<PropositionalAnd>(and_ab_c);
+    auto ptr_and_ab_c = context.makePropAnd(and_ab_c);
     set_prop_formulas exp_and = set_prop_formulas({ptr_a, ptr_b, ptr_c});
-    auto exp_flat_and = std::make_shared<PropositionalAnd>(exp_and);
+    auto exp_flat_and = context.makePropAnd(exp_and);
     auto flattened_and = logical_and(ptr_and_ab_c->get_container());
     REQUIRE(*flattened_and == *exp_flat_and);
   }
   SECTION("a & (b & c) == a & b & c") {
     set_prop_formulas and_a_bc = set_prop_formulas({ptr_a, ptr_and_b_c});
-    auto ptr_and_a_bc = std::make_shared<PropositionalAnd>(and_a_bc);
+    auto ptr_and_a_bc = context.makePropAnd(and_a_bc);
     set_prop_formulas exp_and = set_prop_formulas({ptr_a, ptr_b, ptr_c});
-    auto exp_flat_and = std::make_shared<PropositionalAnd>(exp_and);
+    auto exp_flat_and = context.makePropAnd(exp_and);
     auto flattened_and = logical_and(ptr_and_a_bc->get_container());
     REQUIRE(*flattened_and == *exp_flat_and);
   }
   SECTION("a & b & false == false") {
     set_prop_formulas and_a_b_false =
         set_prop_formulas({ptr_a, ptr_b, ptr_false});
-    auto ptr_and_a_b_false = std::make_shared<PropositionalAnd>(and_a_b_false);
+    auto ptr_and_a_b_false = context.makePropAnd(and_a_b_false);
     auto flattened_and = logical_and(ptr_and_a_b_false->get_container());
     REQUIRE(*flattened_and == *ptr_false);
   }
   SECTION("a & true & c == a & c") {
     set_prop_formulas and_a_true_c =
         set_prop_formulas({ptr_a, ptr_true, ptr_c});
-    auto ptr_and_a_true_c = std::make_shared<PropositionalAnd>(and_a_true_c);
+    auto ptr_and_a_true_c = context.makePropAnd(and_a_true_c);
     set_prop_formulas exp_and = set_prop_formulas({ptr_a, ptr_c});
-    auto exp_flat_and = std::make_shared<PropositionalAnd>(exp_and);
+    auto exp_flat_and = context.makePropAnd(exp_and);
     auto flattened_and = logical_and(ptr_and_a_true_c->get_container());
     REQUIRE(*flattened_and == *exp_flat_and);
   }
 }
 
 TEST_CASE("Logical or", "[logic]") {
-  auto ptr_a = std::make_shared<PropositionalAtom>("a");
-  auto ptr_b = std::make_shared<PropositionalAtom>("b");
-  auto ptr_c = std::make_shared<PropositionalAtom>("c");
-  auto ptr_true = std::make_shared<PropositionalTrue>();
-  auto ptr_false = std::make_shared<PropositionalFalse>();
+  auto ptr_a = context.makePropAtom("a");
+  auto ptr_b = context.makePropAtom("b");
+  auto ptr_c = context.makePropAtom("c");
+  auto ptr_true = context.makeTrue();
+  auto ptr_false = context.makeFalse();
 
   set_prop_formulas a_b = set_prop_formulas({ptr_a, ptr_b});
-  auto ptr_or_a_b = std::make_shared<PropositionalOr>(a_b);
+  auto ptr_or_a_b = context.makePropOr(a_b);
   set_prop_formulas b_c = set_prop_formulas({ptr_b, ptr_c});
-  auto ptr_or_b_c = std::make_shared<PropositionalOr>(b_c);
+  auto ptr_or_b_c = context.makePropOr(b_c);
 
   SECTION("(a | b) | c == a | b | c") {
     set_prop_formulas or_ab_c = set_prop_formulas({ptr_or_a_b, ptr_c});
-    auto ptr_or_ab_c = std::make_shared<PropositionalOr>(or_ab_c);
+    auto ptr_or_ab_c = context.makePropOr(or_ab_c);
     set_prop_formulas exp_or = set_prop_formulas({ptr_a, ptr_b, ptr_c});
-    auto exp_flat_or = std::make_shared<PropositionalOr>(exp_or);
+    auto exp_flat_or = context.makePropOr(exp_or);
     auto flattened_or = logical_or(ptr_or_ab_c->get_container());
     REQUIRE(*flattened_or == *exp_flat_or);
   }
   SECTION("a | (b | c) == a | b | c") {
     set_prop_formulas or_a_bc = set_prop_formulas({ptr_a, ptr_or_b_c});
-    auto ptr_or_a_bc = std::make_shared<PropositionalOr>(or_a_bc);
+    auto ptr_or_a_bc = context.makePropOr(or_a_bc);
     set_prop_formulas exp_or = set_prop_formulas({ptr_a, ptr_b, ptr_c});
-    auto exp_flat_or = std::make_shared<PropositionalOr>(exp_or);
+    auto exp_flat_or = context.makePropOr(exp_or);
     auto flattened_or = logical_or(ptr_or_a_bc->get_container());
     REQUIRE(*flattened_or == *exp_flat_or);
   }
   SECTION("a | b | false == a | b") {
     set_prop_formulas or_a_b_false =
         set_prop_formulas({ptr_a, ptr_b, ptr_false});
-    auto ptr_or_a_b_false = std::make_shared<PropositionalOr>(or_a_b_false);
+    auto ptr_or_a_b_false = context.makePropOr(or_a_b_false);
     set_prop_formulas exp_or = set_prop_formulas({ptr_a, ptr_b});
-    auto exp_flat_or = std::make_shared<PropositionalOr>(exp_or);
+    auto exp_flat_or = context.makePropOr(exp_or);
     auto flattened_or = logical_or(ptr_or_a_b_false->get_container());
     REQUIRE(*flattened_or == *exp_flat_or);
   }
   SECTION("a | true | c == true") {
     set_prop_formulas or_a_true_c = set_prop_formulas({ptr_a, ptr_true, ptr_c});
-    auto ptr_or_a_true_c = std::make_shared<PropositionalOr>(or_a_true_c);
+    auto ptr_or_a_true_c = context.makePropOr(or_a_true_c);
     auto flattened_or = logical_or(ptr_or_a_true_c->get_container());
     REQUIRE(*flattened_or == *ptr_true);
   }
@@ -212,32 +213,32 @@ TEST_CASE("to cnf", "[pl/cnf]") {
   SECTION("Or of atoms is in CNF") {
     auto p = prop_atom("p");
     auto q = prop_atom("q");
-    auto expected = PropositionalOr({p, q});
-    auto actual = to_cnf(expected);
-    REQUIRE(*actual == expected);
+    auto expected = context.makePropOr({p, q});
+    auto actual = to_cnf(*expected);
+    REQUIRE(*actual == *expected);
   }
   SECTION("And of atoms is in CNF") {
     auto p = prop_atom("p");
     auto q = prop_atom("q");
-    auto expected = PropositionalAnd({p, q});
-    auto actual = to_cnf(expected);
-    REQUIRE(*actual == expected);
+    auto expected = context.makePropAnd({p, q});
+    auto actual = to_cnf(*expected);
+    REQUIRE(*actual == *expected);
   }
   SECTION("Not of And") {
     auto p = prop_atom("p");
     auto q = prop_atom("q");
     auto f = logical_not(logical_and({p, q}));
-    auto expected = PropositionalOr({logical_not(p), logical_not(q)});
+    auto expected = context.makePropOr({logical_not(p), logical_not(q)});
     auto actual = to_cnf(*f);
-    REQUIRE(*actual == expected);
+    REQUIRE(*actual == *expected);
   }
   SECTION("Not of Or") {
     auto p = prop_atom("p");
     auto q = prop_atom("q");
     auto f = logical_not(logical_or({p, q}));
-    auto expected = PropositionalAnd({logical_not(p), logical_not(q)});
+    auto expected = context.makePropAnd({logical_not(p), logical_not(q)});
     auto actual = to_cnf(*f);
-    REQUIRE(*actual == expected);
+    REQUIRE(*actual == *expected);
   }
   SECTION("Or with one And") {
     auto p = prop_atom("p");

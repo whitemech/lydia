@@ -15,24 +15,19 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/dfa/dfa.hpp>
-#include <lydia/to_dfa/core.hpp>
-#include <lydia/to_dfa/strategies/bdd/base.hpp>
-#include <lydia/to_dfa/strategies/compositional/base.hpp>
-#include <lydia/to_dfa/strategies/naive.hpp>
-#include <memory>
+#include <lydia/ast/base.hpp>
+#include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/pl/base.hpp>
 
 namespace whitemech::lydia {
 
-std::shared_ptr<abstract_dfa> to_dfa_with_strategy(const LDLfFormula &formula,
-                                                   Strategy &s) {
-  auto t = Translator(s);
-  return t.to_dfa(formula);
-}
-
-std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula) {
-  auto s = CompositionalStrategy();
-  return to_dfa_with_strategy(formula, s);
+void AstManager::init() {
+  prop_true_ = std::make_shared<const PropositionalTrue>(*this);
+  prop_false_ = std::make_shared<const PropositionalFalse>(*this);
+  ldlf_true_ = std::make_shared<const LDLfTrue>(*this);
+  ldlf_false_ = std::make_shared<const LDLfFalse>(*this);
+  this->table.insert(prop_true_);
+  this->table.insert(prop_false_);
 }
 
 } // namespace whitemech::lydia
