@@ -36,7 +36,7 @@ StrategyGenerator::StrategyGenerator() {
       std::vector<std::function<std::shared_ptr<Strategy>(const CUDD::Cudd &)>>(
           {
               StrategyGenerator::make_bdd,
-              //                StrategyGenerator::make_compositional,
+              StrategyGenerator::make_compositional,
           });
 }
 

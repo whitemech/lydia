@@ -108,7 +108,10 @@ void NNFTransformer::visit(const PropositionalOr &f) {
   prop_result = f.ctx().makePropOr(f.get_container());
 }
 void NNFTransformer::visit(const PropositionalNot &f) {
-  prop_result = apply(*f.logical_not());
+  if (is_a<PropositionalAtom>(*f.get_arg()))
+    prop_result = f.ctx().makePropNot(f.get_arg());
+  else
+    prop_result = apply(*f.get_arg()->logical_not());
 }
 
 ldlf_ptr NNFTransformer::apply(const LDLfFormula &b) {
