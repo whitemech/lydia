@@ -190,8 +190,9 @@ std::shared_ptr<const LDLfFormula> LDLfNot::logical_not() const {
   return this->get_arg();
 }
 
-LDLfDiamond::LDLfDiamond(const regex_ptr &regex, const ldlf_ptr &formula)
-    : LDLfTemporal(regex, formula) {
+LDLfDiamond::LDLfDiamond(AstManager &c, const regex_ptr &regex,
+                         const ldlf_ptr &formula)
+    : LDLfTemporal(c, regex, formula) {
   this->type_code_ = type_code_id;
 }
 
@@ -225,12 +226,12 @@ int LDLfDiamond::compare_(const Basic &o) const {
 }
 
 std::shared_ptr<const LDLfFormula> LDLfDiamond::logical_not() const {
-  return std::make_shared<LDLfBox>(this->get_regex(),
-                                   this->get_formula()->logical_not());
-};
+  return ctx().makeLdlfBox(this->get_regex(),
+                           this->get_formula()->logical_not());
+}
 
-LDLfBox::LDLfBox(const regex_ptr &regex, const ldlf_ptr &formula)
-    : LDLfTemporal(regex, formula) {
+LDLfBox::LDLfBox(AstManager &c, const regex_ptr &regex, const ldlf_ptr &formula)
+    : LDLfTemporal(c, regex, formula) {
   this->type_code_ = type_code_id;
 }
 
@@ -239,7 +240,7 @@ hash_t LDLfBox::compute_hash_() const {
   hash_combine<Basic>(seed, *this->get_regex());
   hash_combine<Basic>(seed, *this->get_formula());
   return seed;
-};
+}
 
 bool LDLfBox::is_canonical(const set_formulas &container_) const {
   // TODO
@@ -263,13 +264,13 @@ int LDLfBox::compare_(const Basic &o) const {
 }
 
 std::shared_ptr<const LDLfFormula> LDLfBox::logical_not() const {
-  return std::make_shared<LDLfDiamond>(this->get_regex(),
-                                       this->get_formula()->logical_not());
+  return ctx().makeLdlfDiamond(this->get_regex(),
+                               this->get_formula()->logical_not());
 }
 
 PropositionalRegExp::PropositionalRegExp(
-    std::shared_ptr<const PropositionalFormula> f)
-    : arg_{std::move(f)} {
+    AstManager &c, std::shared_ptr<const PropositionalFormula> f)
+    : RegExp(c), arg_{std::move(f)} {
   this->type_code_ = type_code_id;
 }
 
@@ -299,8 +300,8 @@ bool PropositionalRegExp::is_canonical(const PropositionalFormula &f) const {
   return true;
 }
 
-TestRegExp::TestRegExp(std::shared_ptr<const LDLfFormula> f)
-    : arg_{std::move(f)} {
+TestRegExp::TestRegExp(AstManager &c, std::shared_ptr<const LDLfFormula> f)
+    : RegExp(c), arg_{std::move(f)} {
   this->type_code_ = type_code_id;
 }
 
@@ -327,7 +328,8 @@ bool TestRegExp::is_canonical(const LDLfFormula &f) const {
   return true;
 }
 
-UnionRegExp::UnionRegExp(const set_regex &args) : container_{args} {
+UnionRegExp::UnionRegExp(AstManager &c, const set_regex &args)
+    : RegExp(c), container_{args} {
   this->type_code_ = type_code_id;
 }
 
@@ -354,8 +356,8 @@ int UnionRegExp::compare_(const Basic &o) const {
                          dynamic_cast<const UnionRegExp &>(o).get_container());
 }
 
-SequenceRegExp::SequenceRegExp(const vec_regex &args)
-    : container_{std::move(args)} {
+SequenceRegExp::SequenceRegExp(AstManager &c, const vec_regex &args)
+    : RegExp(c), container_{std::move(args)} {
   this->type_code_ = type_code_id;
 }
 
@@ -382,7 +384,8 @@ int SequenceRegExp::compare_(const Basic &o) const {
       container_, dynamic_cast<const SequenceRegExp &>(o).get_container());
 }
 
-StarRegExp::StarRegExp(regex_ptr arg) : arg_{std::move(arg)} {
+StarRegExp::StarRegExp(AstManager &c, regex_ptr arg)
+    : RegExp(c), arg_{std::move(arg)} {
   this->type_code_ = type_code_id;
 }
 

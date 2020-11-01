@@ -177,20 +177,18 @@ TEST_CASE("LDLfDiamond", "[logic]") {
   auto b = context.makePropAtom("b");
   auto a_and_b = context.makePropAnd(set_prop_formulas{a, b});
 
-  auto regex_true = std::make_shared<const PropositionalRegExp>(true_);
-  auto diamond_formula_true_tt = std::make_shared<LDLfDiamond>(regex_true, tt);
+  auto regex_true = context.makePropRegex(true_);
+  auto diamond_formula_true_tt = context.makeLdlfDiamond(regex_true, tt);
 
-  auto regex_false = std::make_shared<const PropositionalRegExp>(false_);
-  auto diamond_formula_false_tt =
-      std::make_shared<LDLfDiamond>(regex_false, tt);
+  auto regex_false = context.makePropRegex(false_);
+  auto diamond_formula_false_tt = context.makeLdlfDiamond(regex_false, tt);
 
-  auto regex_a = std::make_shared<const PropositionalRegExp>(a);
-  auto diamond_formula_a_tt = std::make_shared<LDLfDiamond>(regex_a, tt);
-  auto regex_b = std::make_shared<const PropositionalRegExp>(b);
-  auto diamond_formula_b_tt = std::make_shared<LDLfDiamond>(regex_b, tt);
-  auto regex_a_and_b = std::make_shared<const PropositionalRegExp>(a_and_b);
-  auto diamond_formula_a_and_b_tt =
-      std::make_shared<LDLfDiamond>(regex_a_and_b, tt);
+  auto regex_a = context.makePropRegex(a);
+  auto diamond_formula_a_tt = context.makeLdlfDiamond(regex_a, tt);
+  auto regex_b = context.makePropRegex(b);
+  auto diamond_formula_b_tt = context.makeLdlfDiamond(regex_b, tt);
+  auto regex_a_and_b = context.makePropRegex(a_and_b);
+  auto diamond_formula_a_and_b_tt = context.makeLdlfDiamond(regex_a_and_b, tt);
 
   REQUIRE(*diamond_formula_true_tt == *diamond_formula_true_tt);
   REQUIRE(*diamond_formula_true_tt != *diamond_formula_false_tt);
@@ -231,46 +229,46 @@ TEST_CASE("Test 'only test'", "[ldlf/only_test]") {
   auto boolFalse = context.makeLdlfFalse();
   auto a = prop_atom("a");
   SECTION("Test propositional regex") {
-    auto r = PropositionalRegExp(a);
-    REQUIRE(is_test_only(r) == false);
+    auto r = context.makePropRegex(a);
+    REQUIRE(is_test_only(*r) == false);
   }
   SECTION("Test test regex") {
-    auto r = TestRegExp(boolTrue);
-    REQUIRE(is_test_only(r) == true);
+    auto r = context.makeTestRegex(boolTrue);
+    REQUIRE(is_test_only(*r) == true);
   }
   SECTION("Test seq regex positive") {
-    auto r1 = std::make_shared<TestRegExp>(boolTrue);
-    auto r2 = std::make_shared<TestRegExp>(boolFalse);
-    auto seq = SequenceRegExp({r1, r2});
-    REQUIRE(is_test_only(seq) == true);
+    auto r1 = context.makeTestRegex(boolTrue);
+    auto r2 = context.makeTestRegex(boolFalse);
+    auto seq = context.makeSeqRegex({r1, r2});
+    REQUIRE(is_test_only(*seq) == true);
   }
   SECTION("Test seq regex negative") {
-    auto r1 = std::make_shared<TestRegExp>(boolTrue);
-    auto r2 = std::make_shared<PropositionalRegExp>(a);
-    auto seq = SequenceRegExp({r1, r2});
-    REQUIRE(is_test_only(seq) == false);
+    auto r1 = context.makeTestRegex(boolTrue);
+    auto r2 = context.makePropRegex(a);
+    auto seq = context.makeSeqRegex({r1, r2});
+    REQUIRE(is_test_only(*seq) == false);
   }
   SECTION("Test union regex positive") {
-    auto r1 = std::make_shared<TestRegExp>(boolTrue);
-    auto r2 = std::make_shared<TestRegExp>(boolFalse);
-    auto u = UnionRegExp({r1, r2});
-    REQUIRE(is_test_only(u) == true);
+    auto r1 = context.makeTestRegex(boolTrue);
+    auto r2 = context.makeTestRegex(boolFalse);
+    auto u = context.makeUnionRegex({r1, r2});
+    REQUIRE(is_test_only(*u) == true);
   }
   SECTION("Test union regex negative") {
-    auto r1 = std::make_shared<TestRegExp>(boolTrue);
-    auto r2 = std::make_shared<PropositionalRegExp>(a);
-    auto u = UnionRegExp({r1, r2});
-    REQUIRE(is_test_only(u) == false);
+    auto r1 = context.makeTestRegex(boolTrue);
+    auto r2 = context.makePropRegex(a);
+    auto u = context.makeUnionRegex({r1, r2});
+    REQUIRE(is_test_only(*u) == false);
   }
   SECTION("Test star regex negative") {
-    auto r = std::make_shared<TestRegExp>(boolTrue);
-    auto star = StarRegExp(r);
-    REQUIRE(is_test_only(star) == true);
+    auto r = context.makeTestRegex(boolTrue);
+    auto star = context.makeStarRegex(r);
+    REQUIRE(is_test_only(*star) == true);
   }
   SECTION("Test star regex negative") {
-    auto r = std::make_shared<PropositionalRegExp>(a);
-    auto star = StarRegExp(r);
-    REQUIRE(is_test_only(star) == false);
+    auto r = context.makePropRegex(a);
+    auto star = context.makeStarRegex(r);
+    REQUIRE(is_test_only(*star) == false);
   }
 }
 

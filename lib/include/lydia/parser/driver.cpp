@@ -99,13 +99,13 @@ Driver::add_LDLfNot(std::shared_ptr<const LDLfFormula> &formula) const {
 std::shared_ptr<const LDLfFormula>
 Driver::add_LDLfDiamond(std::shared_ptr<const RegExp> &regex,
                         std::shared_ptr<const LDLfFormula> &formula) const {
-  return std::make_shared<const LDLfDiamond>(regex, formula);
+  return context->makeLdlfDiamond(regex, formula);
 }
 
 std::shared_ptr<const LDLfFormula>
 Driver::add_LDLfBox(std::shared_ptr<const RegExp> &regex,
                     std::shared_ptr<const LDLfFormula> &formula) const {
-  return std::make_shared<LDLfBox>(regex, formula);
+  return context->makeLdlfBox(regex, formula);
 }
 
 std::shared_ptr<const LDLfFormula>
@@ -129,47 +129,47 @@ Driver::add_LDLfEquivalence(std::shared_ptr<const LDLfFormula> &lhs,
 }
 
 std::shared_ptr<const LDLfFormula> Driver::add_LDLfEnd() const {
-  auto ptr_true = std::make_shared<PropositionalRegExp>(context->makeTrue());
+  auto ptr_true = context->makePropRegex(context->makeTrue());
   auto ptr_ff = context->makeLdlfFalse();
   return this->add_LDLfBox((std::shared_ptr<const RegExp> &)ptr_true,
                            (std::shared_ptr<const LDLfFormula> &)ptr_ff);
 }
 
 std::shared_ptr<const LDLfFormula> Driver::add_LDLfLast() const {
-  auto ptr_true = std::make_shared<PropositionalRegExp>(context->makeTrue());
+  auto ptr_true = context->makePropRegex(context->makeTrue());
   auto ptr_ff = context->makeLdlfFalse();
-  auto formula = std::make_shared<LDLfBox>(ptr_true, ptr_ff);
+  auto formula = context->makeLdlfBox(ptr_true, ptr_ff);
   return this->add_LDLfDiamond((std::shared_ptr<const RegExp> &)ptr_true,
                                (std::shared_ptr<const LDLfFormula> &)formula);
 }
 
 std::shared_ptr<const RegExp> Driver::add_PropositionalRegExp(
     std::shared_ptr<const PropositionalFormula> &prop_formula) const {
-  return std::make_shared<PropositionalRegExp>(prop_formula);
+  return context->makePropRegex(prop_formula);
 }
 
 std::shared_ptr<const RegExp>
 Driver::add_TestRegExp(std::shared_ptr<const LDLfFormula> &formula) const {
-  return std::make_shared<TestRegExp>(formula);
+  return context->makeTestRegex(formula);
 }
 
 std::shared_ptr<const RegExp>
 Driver::add_StarRegExp(std::shared_ptr<const RegExp> &regex) const {
-  return std::make_shared<StarRegExp>(regex);
+  return context->makeStarRegex(regex);
 }
 
 std::shared_ptr<const RegExp>
 Driver::add_SequenceRegExp(std::shared_ptr<const RegExp> &regex_lhs,
                            std::shared_ptr<const RegExp> &regex_rhs) const {
   vec_regex children = vec_regex({regex_lhs, regex_rhs});
-  return std::make_shared<SequenceRegExp>(children);
+  return context->makeSeqRegex(children);
 }
 
 std::shared_ptr<const RegExp>
 Driver::add_UnionRegExp(std::shared_ptr<const RegExp> &regex_lhs,
                         std::shared_ptr<const RegExp> &regex_rhs) const {
   set_regex children = set_regex({regex_lhs, regex_rhs});
-  return std::make_shared<UnionRegExp>(children);
+  return context->makeUnionRegex(children);
 }
 
 std::shared_ptr<const PropositionalFormula>

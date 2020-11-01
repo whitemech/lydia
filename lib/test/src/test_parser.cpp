@@ -215,52 +215,43 @@ TEST_CASE("Driver LDLfTemporal", "[parser]") {
   auto context = std::make_shared<AstManager>();
   auto driver = Driver(context);
 
-  auto ptr_prop_re_true =
-      std::make_shared<PropositionalRegExp>(context->makeTrue());
-  auto ptr_prop_re_a =
-      std::make_shared<PropositionalRegExp>(context->makePropAtom("a"));
-  auto ptr_prop_re_b =
-      std::make_shared<PropositionalRegExp>(context->makePropAtom("b"));
-  auto ptr_prop_re_c =
-      std::make_shared<PropositionalRegExp>(context->makePropAtom("c"));
+  auto ptr_prop_re_true = context->makePropRegex(context->makeTrue());
+  auto ptr_prop_re_a = context->makePropRegex(context->makePropAtom("a"));
+  auto ptr_prop_re_b = context->makePropRegex(context->makePropAtom("b"));
+  auto ptr_prop_re_c = context->makePropRegex(context->makePropAtom("c"));
 
-  auto ptr_seq_re_ab = std::make_shared<SequenceRegExp>(
-      vec_regex({ptr_prop_re_a, ptr_prop_re_b}));
-  auto ptr_seq_re = std::make_shared<SequenceRegExp>(
-      vec_regex({ptr_seq_re_ab, ptr_prop_re_c}));
+  auto ptr_seq_re_ab =
+      context->makeSeqRegex(vec_regex({ptr_prop_re_a, ptr_prop_re_b}));
+  auto ptr_seq_re =
+      context->makeSeqRegex(vec_regex({ptr_seq_re_ab, ptr_prop_re_c}));
   auto ptr_union_re =
-      std::make_shared<UnionRegExp>(set_regex({ptr_prop_re_a, ptr_prop_re_b}));
-  auto ptr_star_re = std::make_shared<StarRegExp>(ptr_prop_re_c);
-  auto ptr_test_re = std::make_shared<TestRegExp>(context->makeLdlfFalse());
+      context->makeUnionRegex(set_regex({ptr_prop_re_a, ptr_prop_re_b}));
+  auto ptr_star_re = context->makeStarRegex(ptr_prop_re_c);
+  auto ptr_test_re = context->makeTestRegex(context->makeLdlfFalse());
 
   auto ptr_tt = context->makeLdlfTrue();
   auto ptr_ff = context->makeLdlfFalse();
-  auto ptr_end = std::make_shared<LDLfBox>(ptr_prop_re_true, ptr_ff);
-  auto ptr_last = std::make_shared<LDLfDiamond>(ptr_prop_re_true, ptr_end);
+  auto ptr_end = context->makeLdlfBox(ptr_prop_re_true, ptr_ff);
+  auto ptr_last = context->makeLdlfDiamond(ptr_prop_re_true, ptr_end);
 
   auto actualDiamond_prop_re_tt =
-      std::make_shared<LDLfDiamond>(ptr_prop_re_a, ptr_tt);
-  auto actualDiamond_seq_re_tt =
-      std::make_shared<LDLfDiamond>(ptr_seq_re, ptr_tt);
+      context->makeLdlfDiamond(ptr_prop_re_a, ptr_tt);
+  auto actualDiamond_seq_re_tt = context->makeLdlfDiamond(ptr_seq_re, ptr_tt);
   auto actualDiamond_union_re_tt =
-      std::make_shared<LDLfDiamond>(ptr_union_re, ptr_tt);
-  auto actualDiamond_star_re_tt =
-      std::make_shared<LDLfDiamond>(ptr_star_re, ptr_tt);
-  auto actualDiamond_test_re_tt =
-      std::make_shared<LDLfDiamond>(ptr_test_re, ptr_tt);
+      context->makeLdlfDiamond(ptr_union_re, ptr_tt);
+  auto actualDiamond_star_re_tt = context->makeLdlfDiamond(ptr_star_re, ptr_tt);
+  auto actualDiamond_test_re_tt = context->makeLdlfDiamond(ptr_test_re, ptr_tt);
 
-  auto actualBox_prop_re_tt = std::make_shared<LDLfBox>(ptr_prop_re_a, ptr_tt);
-  auto actualBox_seq_re_tt = std::make_shared<LDLfBox>(ptr_seq_re, ptr_tt);
-  auto actualBox_union_re_tt = std::make_shared<LDLfBox>(ptr_union_re, ptr_tt);
-  auto actualBox_star_re_tt = std::make_shared<LDLfBox>(ptr_star_re, ptr_tt);
-  auto actualBox_test_re_tt = std::make_shared<LDLfBox>(ptr_test_re, ptr_tt);
+  auto actualBox_prop_re_tt = context->makeLdlfBox(ptr_prop_re_a, ptr_tt);
+  auto actualBox_seq_re_tt = context->makeLdlfBox(ptr_seq_re, ptr_tt);
+  auto actualBox_union_re_tt = context->makeLdlfBox(ptr_union_re, ptr_tt);
+  auto actualBox_star_re_tt = context->makeLdlfBox(ptr_star_re, ptr_tt);
+  auto actualBox_test_re_tt = context->makeLdlfBox(ptr_test_re, ptr_tt);
 
-  auto actualDiamond_a_end =
-      std::make_shared<LDLfDiamond>(ptr_prop_re_a, ptr_end);
-  auto actualDiamond_a_last =
-      std::make_shared<LDLfDiamond>(ptr_prop_re_a, ptr_last);
-  auto actualBox_a_end = std::make_shared<LDLfBox>(ptr_prop_re_a, ptr_end);
-  auto actualBox_a_last = std::make_shared<LDLfBox>(ptr_prop_re_a, ptr_last);
+  auto actualDiamond_a_end = context->makeLdlfDiamond(ptr_prop_re_a, ptr_end);
+  auto actualDiamond_a_last = context->makeLdlfDiamond(ptr_prop_re_a, ptr_last);
+  auto actualBox_a_end = context->makeLdlfBox(ptr_prop_re_a, ptr_end);
+  auto actualBox_a_last = context->makeLdlfBox(ptr_prop_re_a, ptr_last);
 
   SECTION("test parsing <a>tt") {
     std::istringstream a_tt("<a>tt");

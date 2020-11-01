@@ -16,6 +16,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
 #include <lydia/basic.hpp>
 #include <memory>
 #include <string>
@@ -58,34 +59,33 @@ private:
 public:
   AstManager() { init(); }
 
-  virtual basic_ptr makeSymbol(const std::string &name);
+  basic_ptr makeSymbol(const std::string &name);
 
-  virtual prop_ptr makeTrue();
-  virtual prop_ptr makeFalse();
-  virtual atom_ptr makePropAtom(const std::string &name);
-  virtual atom_ptr makePropAtom(const basic_ptr &ptr);
-  virtual prop_ptr makePropAnd(const set_prop_formulas &args);
-  virtual prop_ptr makePropOr(const set_prop_formulas &args);
-  virtual prop_ptr makePropNot(const prop_ptr &arg);
+  prop_ptr makeTrue();
+  prop_ptr makeFalse();
+  atom_ptr makePropAtom(const std::string &name);
+  atom_ptr makePropAtom(const basic_ptr &ptr);
+  prop_ptr makePropAnd(const set_prop_formulas &args);
+  prop_ptr makePropOr(const set_prop_formulas &args);
+  prop_ptr makePropNot(const prop_ptr &arg);
 
-  virtual ldlf_ptr makeLdlfTrue();
-  virtual ldlf_ptr makeLdlfFalse();
-  virtual ldlf_ptr makeLdlfAnd(const set_formulas &args);
-  virtual ldlf_ptr makeLdlfOr(const set_formulas &args);
-  virtual ldlf_ptr makeLdlfNot(const ldlf_ptr &arg);
-  //  virtual ldlf_ptr makeLdlfBox(const regex_ptr &arg_r, const ldlf_ptr &arg);
-  //  virtual ldlf_ptr makeLdlfDiamond(const regex_ptr &arg_r, const ldlf_ptr
-  //  &arg_f);
-  virtual ldlf_ptr makeLdlfT(const ldlf_ptr &arg);
-  virtual ldlf_ptr makeLdlfF(const ldlf_ptr &arg);
-  virtual ldlf_ptr makeLdlfT(const LDLfFormula &arg);
-  virtual ldlf_ptr makeLdlfF(const LDLfFormula &arg);
-  //
-  //  virtual regex_ptr makePropRegex(const prop_ptr& ptr);
-  //  virtual regex_ptr makeSeqRegex(const vec_regex& ptr);
-  //  virtual regex_ptr makeUnionRegex(const set_regex& ptr);
-  //  virtual regex_ptr makeStarRegex(const regex_ptr& ptr);
-  //  virtual ldlf_ptr makeTestRegex(const regex_ptr& ptr);
+  ldlf_ptr makeLdlfTrue();
+  ldlf_ptr makeLdlfFalse();
+  ldlf_ptr makeLdlfAnd(const set_formulas &args);
+  ldlf_ptr makeLdlfOr(const set_formulas &args);
+  ldlf_ptr makeLdlfNot(const ldlf_ptr &arg);
+  ldlf_ptr makeLdlfBox(const regex_ptr &arg_r, const ldlf_ptr &arg);
+  ldlf_ptr makeLdlfDiamond(const regex_ptr &arg_r, const ldlf_ptr &arg_f);
+  ldlf_ptr makeLdlfT(const ldlf_ptr &arg);
+  ldlf_ptr makeLdlfF(const ldlf_ptr &arg);
+  ldlf_ptr makeLdlfT(const LDLfFormula &arg);
+  ldlf_ptr makeLdlfF(const LDLfFormula &arg);
+
+  regex_ptr makePropRegex(const prop_ptr &ptr);
+  regex_ptr makeSeqRegex(const vec_regex &ptr);
+  regex_ptr makeUnionRegex(const set_regex &ptr);
+  regex_ptr makeStarRegex(const regex_ptr &ptr);
+  regex_ptr makeTestRegex(const ldlf_ptr &ptr);
 };
 
 class Ast : public Basic {
@@ -96,7 +96,9 @@ public:
   explicit Ast(AstManager &c) : m_ctx(&c) {}
   Ast(const Ast &s) : m_ctx(s.m_ctx) {}
   AstManager &ctx() const { return *m_ctx; }
-  friend void check_context(Ast const &a, Ast const &b){};
+  friend void check_context(Ast const &a, Ast const &b) {
+    assert(a.m_ctx == b.m_ctx);
+  };
 };
 
 // TODO remove

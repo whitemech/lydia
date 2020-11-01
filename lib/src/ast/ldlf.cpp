@@ -38,6 +38,19 @@ ldlf_ptr AstManager::makeLdlfNot(const ldlf_ptr &arg) {
   return result;
 }
 
+ldlf_ptr AstManager::makeLdlfBox(const regex_ptr &arg_r,
+                                 const ldlf_ptr &arg_f) {
+  auto tmp = std::make_shared<const LDLfBox>(*this, arg_r, arg_f);
+  auto result = insert_if_not_available_(tmp);
+  return result;
+}
+ldlf_ptr AstManager::makeLdlfDiamond(const regex_ptr &arg_r,
+                                     const ldlf_ptr &arg_f) {
+  auto tmp = std::make_shared<const LDLfDiamond>(*this, arg_r, arg_f);
+  auto result = insert_if_not_available_(tmp);
+  return result;
+}
+
 ldlf_ptr AstManager::makeLdlfF(const ldlf_ptr &arg) {
   return this->makeLdlfF(*arg);
 }
