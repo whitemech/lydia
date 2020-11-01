@@ -61,10 +61,10 @@ inline void translate_diamond(Strategy &s) {
   auto context = AstManager();
   auto tt = context.makeLdlfTrue();
   auto true_ = context.makeTrue();
-  auto regex_true_ = std::make_shared<const PropositionalRegExp>(true_);
-  auto diamond = LDLfDiamond(regex_true_, tt);
+  auto regex_true_ = context.makePropRegex(true_);
+  auto diamond = context.makeLdlfDiamond(regex_true_, tt);
   auto t = Translator(s);
-  auto automaton = t.to_dfa(diamond);
+  auto automaton = t.to_dfa(*diamond);
   escape(&automaton);
   (void)automaton;
 }

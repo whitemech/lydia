@@ -409,63 +409,61 @@ int StarRegExp::compare_(const Basic &o) const {
   return arg_->compare(*dynamic_cast<const StarRegExp &>(o).get_arg());
 }
 
-LDLfF::LDLfF(AstManager &c, const LDLfFormula &formula)
+LDLfF::LDLfF(AstManager &c, const ldlf_ptr &formula)
     : LDLfFormula(c), arg_{formula} {
   this->type_code_ = type_code_id;
 }
 
 hash_t LDLfF::compute_hash_() const {
-  hash_t seed = TypeID::t_LDLfF;
-  hash_combine<Basic>(seed, *this);
+  hash_t seed = type_code_id;
+  hash_combine<Basic>(seed, *arg_);
   return seed;
 }
 
 bool LDLfF::is_canonical(const set_regex &args) const { return true; }
 
 ldlf_ptr LDLfF::logical_not() const {
-  return std::make_shared<const LDLfT>(*this->m_ctx,
-                                       *this->get_arg().logical_not());
+  return ctx().makeLdlfT(this->get_arg()->logical_not());
 }
 
-const LDLfFormula &LDLfF::get_arg() const { return this->arg_; }
+ldlf_ptr LDLfF::get_arg() const { return this->arg_; }
 
 bool LDLfF::is_equal(const Basic &rhs) const {
   return is_a<LDLfF>(rhs) and
-         eq(arg_, dynamic_cast<const LDLfF &>(rhs).get_arg());
+         eq(*arg_, *dynamic_cast<const LDLfF &>(rhs).get_arg());
 }
 
 int LDLfF::compare_(const Basic &rhs) const {
   assert(is_a<LDLfF>(rhs));
-  return arg_.compare(dynamic_cast<const LDLfF &>(rhs).get_arg());
+  return arg_->compare(*dynamic_cast<const LDLfF &>(rhs).get_arg());
 }
-LDLfT::LDLfT(AstManager &c, const LDLfFormula &formula)
+LDLfT::LDLfT(AstManager &c, const ldlf_ptr &formula)
     : LDLfFormula(c), arg_{formula} {
   this->type_code_ = type_code_id;
 }
 
 hash_t LDLfT::compute_hash_() const {
   hash_t seed = type_code_id;
-  hash_combine<Basic>(seed, *this);
+  hash_combine<Basic>(seed, *arg_);
   return seed;
 }
 
 bool LDLfT::is_canonical(const set_regex &args) const { return true; }
 
-const LDLfFormula &LDLfT::get_arg() const { return this->arg_; }
+ldlf_ptr LDLfT::get_arg() const { return this->arg_; }
 
 ldlf_ptr LDLfT::logical_not() const {
-  return std::make_shared<const LDLfF>(*this->m_ctx,
-                                       *this->get_arg().logical_not());
+  return m_ctx->makeLdlfF(this->get_arg()->logical_not());
 }
 
 bool LDLfT::is_equal(const Basic &rhs) const {
   return is_a<LDLfT>(rhs) and
-         eq(arg_, dynamic_cast<const LDLfT &>(rhs).get_arg());
+         eq(*arg_, *dynamic_cast<const LDLfT &>(rhs).get_arg());
 }
 
 int LDLfT::compare_(const Basic &rhs) const {
   assert(is_a<LDLfT>(rhs));
-  return arg_.compare(dynamic_cast<const LDLfT &>(rhs).get_arg());
+  return arg_->compare(*dynamic_cast<const LDLfT &>(rhs).get_arg());
 }
 
 QuotedFormula::QuotedFormula(basic_ptr formula) : formula{std::move(formula)} {

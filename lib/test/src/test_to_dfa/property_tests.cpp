@@ -21,13 +21,16 @@
 namespace whitemech::lydia::Test {
 
 TEST_CASE("Duality", "[to_dfa]") {
-  CUDD::Cudd mgr1;
-  CUDD::Cudd mgr2;
+  auto strategy_maker = GENERATE(strategies());
+  auto mgr_1 = CUDD::Cudd();
+  auto mgr_2 = CUDD::Cudd();
+  auto strategy_1 = strategy_maker(mgr_1);
+  auto strategy_2 = strategy_maker(mgr_2);
   for (const auto &formula : FORMULAS) {
     SECTION("Test duality of " + formula) {
-      adfa_ptr automaton_1 = to_dfa_from_formula_string(formula, mgr1);
+      adfa_ptr automaton_1 = to_dfa_from_formula_string(formula, *strategy_1);
       adfa_ptr automaton_2 =
-          to_dfa_from_formula_string("!(" + formula + ")", mgr2);
+          to_dfa_from_formula_string("!(" + formula + ")", *strategy_2);
       REQUIRE(compare<5>(*automaton_1, *automaton_2,
                          automaton_1->get_nb_variables(), not_equal));
     }

@@ -30,7 +30,7 @@ class RegExp;
 class LDLfFormula : public Ast {
 public:
   explicit LDLfFormula(AstManager &c) : Ast(c) {}
-  virtual std::shared_ptr<const LDLfFormula> logical_not() const = 0;
+  virtual ldlf_ptr logical_not() const = 0;
 };
 
 class LDLfTrue : public LDLfFormula {
@@ -237,16 +237,16 @@ public:
  */
 class LDLfF : public LDLfFormula {
 private:
-  const LDLfFormula &arg_;
+  const ldlf_ptr arg_;
 
 protected:
 public:
   const static TypeID type_code_id = TypeID::t_LDLfF;
-  explicit LDLfF(AstManager &c, const LDLfFormula &formula);
+  explicit LDLfF(AstManager &c, const ldlf_ptr &formula);
   void accept(Visitor &v) const override;
   bool is_canonical(const set_regex &args) const;
   hash_t compute_hash_() const override;
-  const LDLfFormula &get_arg() const;
+  ldlf_ptr get_arg() const;
   int compare_(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
   ldlf_ptr logical_not() const override;
@@ -257,16 +257,16 @@ public:
  */
 class LDLfT : public LDLfFormula {
 private:
-  const LDLfFormula &arg_;
+  const ldlf_ptr arg_;
 
 protected:
 public:
   const static TypeID type_code_id = TypeID::t_LDLfT;
-  explicit LDLfT(AstManager &c, const LDLfFormula &formula);
+  explicit LDLfT(AstManager &c, const ldlf_ptr &formula);
   void accept(Visitor &v) const override;
   bool is_canonical(const set_regex &args) const;
   hash_t compute_hash_() const override;
-  const LDLfFormula &get_arg() const;
+  ldlf_ptr get_arg() const;
   int compare_(const Basic &rhs) const override;
   bool is_equal(const Basic &rhs) const override;
   ldlf_ptr logical_not() const override;

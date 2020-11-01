@@ -88,9 +88,9 @@ void NNFTransformer::visit(const StarRegExp &x) {
   regex_result = x.ctx().makeStarRegex(apply(*x.get_arg()));
 }
 
-void NNFTransformer::visit(const LDLfF &x) { result = apply(x.get_arg()); }
+void NNFTransformer::visit(const LDLfF &x) { result = apply(*x.get_arg()); }
 
-void NNFTransformer::visit(const LDLfT &x) { result = apply(x.get_arg()); }
+void NNFTransformer::visit(const LDLfT &x) { result = apply(*x.get_arg()); }
 
 void NNFTransformer::visit(const PropositionalTrue &f) {
   prop_result = f.ctx().makeTrue();

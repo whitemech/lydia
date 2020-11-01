@@ -24,12 +24,15 @@
 
 namespace whitemech::lydia {
 
-std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula,
-                                     const CUDD::Cudd &mgr) {
-  //  auto s = NaiveStrategy(mgr);
-  //  auto s = BDDStrategy(mgr);
-  auto s = CompositionalStrategy();
+std::shared_ptr<abstract_dfa> to_dfa_with_strategy(const LDLfFormula &formula,
+                                                   Strategy &s) {
   auto t = Translator(s);
   return t.to_dfa(formula);
 }
+
+std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula) {
+  auto s = CompositionalStrategy();
+  return to_dfa_with_strategy(formula, s);
+}
+
 } // namespace whitemech::lydia

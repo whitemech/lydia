@@ -136,7 +136,8 @@ void DeltaDiamondRegExpVisitor::visit(const SequenceRegExp &r) {
 void DeltaDiamondRegExpVisitor::visit(const StarRegExp &r) {
   auto d = DeltaVisitor(prop_interpretation, epsilon);
   auto phi = d.apply(*formula.get_formula());
-  auto f = context.makeLdlfF(formula);
+  auto f = context.makeLdlfF(
+      std::static_pointer_cast<const LDLfFormula>(formula.shared_from_this()));
   auto phi2 = d.apply(*r.ctx().makeLdlfDiamond(r.get_arg(), f));
   result = context.makePropOr(set_prop_formulas{phi, phi2});
 }
@@ -198,7 +199,8 @@ void DeltaBoxRegExpVisitor::visit(const SequenceRegExp &r) {
 void DeltaBoxRegExpVisitor::visit(const StarRegExp &r) {
   auto d = DeltaVisitor(prop_interpretation, epsilon);
   auto phi = d.apply(*formula.get_formula());
-  auto f = context.makeLdlfT(formula);
+  auto f = context.makeLdlfT(
+      std::static_pointer_cast<const LDLfFormula>(formula.shared_from_this()));
   auto phi2 = d.apply(*r.ctx().makeLdlfBox(r.get_arg(), f));
   result = context.makePropAnd(set_prop_formulas{phi, phi2});
 }
@@ -220,8 +222,8 @@ void ExpandVisitor::visit(const LDLfFalse &f) {
   result = f.ctx().makeLdlfFalse();
 }
 
-void ExpandVisitor::visit(const LDLfF &x) { result = apply(x.get_arg()); }
-void ExpandVisitor::visit(const LDLfT &x) { result = apply(x.get_arg()); }
+void ExpandVisitor::visit(const LDLfF &x) { result = apply(*x.get_arg()); }
+void ExpandVisitor::visit(const LDLfT &x) { result = apply(*x.get_arg()); }
 
 void ExpandVisitor::visit(const LDLfAnd &f) {
   set_formulas new_container;

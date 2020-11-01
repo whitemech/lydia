@@ -22,7 +22,10 @@
 #include <lydia/logic/ldlf/only_test.hpp>
 #include <lydia/logic/nnf.hpp>
 #include <lydia/to_dfa/core.hpp>
+#include <lydia/to_dfa/strategies/bdd/base.hpp>
 #include <lydia/to_dfa/strategies/bdd/delta_bdd.hpp>
+#include <lydia/to_dfa/strategies/compositional/base.hpp>
+#include <lydia/to_dfa/strategies/naive.hpp>
 #include <numeric>
 
 namespace whitemech::lydia {

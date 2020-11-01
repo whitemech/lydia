@@ -15,18 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 #include <bitset>
+#include <catch.hpp>
 #include <cppitertools/powerset.hpp>
 #include <cppitertools/product.hpp>
 #include <cudd/cuddObj.hh>
+#include <numeric>
+#include <sstream>
+#include <stack>
+
 #include <lydia/dfa/dfa.hpp>
 #include <lydia/logic/ldlf/base.hpp>
 #include <lydia/parser/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
-#include <numeric>
-#include <sstream>
-#include <stack>
+#include <lydia/to_dfa/strategies/bdd/base.hpp>
+#include <lydia/to_dfa/strategies/compositional/base.hpp>
+#include <lydia/to_dfa/strategies/naive.hpp>
 
 namespace whitemech::lydia {
 
@@ -126,13 +130,39 @@ from_trace_set(std::vector<interpretation_set> vector, int prop) {
   return result;
 }
 
-static adfa_ptr to_dfa_from_formula_string(const std::string &f,
-                                           const CUDD::Cudd &mgr) {
+static adfa_ptr to_dfa_from_formula_string(const std::string &f, Strategy &s) {
   auto driver = Driver();
   std::stringstream ldlf_formula_stream(f);
   driver.parse(ldlf_formula_stream);
   const auto &formula = *driver.result;
-  return to_dfa(formula, mgr);
+  return to_dfa_with_strategy(formula, s);
 }
+
+struct StrategyGenerator
+    : public Catch::Generators::IGenerator<
+          std::function<std::shared_ptr<Strategy>(const CUDD::Cudd &)>> {
+public:
+  int i = 0;
+  std::vector<std::function<std::shared_ptr<Strategy>(const CUDD::Cudd &)>>
+      factories;
+  StrategyGenerator();
+  bool next() override;
+  [[nodiscard]] std::function<
+      std::shared_ptr<Strategy>(const CUDD::Cudd &)> const &
+  get() const override;
+
+  static std::shared_ptr<Strategy> make_compositional(const CUDD::Cudd &mgr) {
+    return std::make_shared<CompositionalStrategy>();
+  }
+  static std::shared_ptr<Strategy> make_bdd(const CUDD::Cudd &mgr) {
+    return std::make_shared<BDDStrategy>(mgr, 20);
+  }
+  static std::shared_ptr<Strategy> make_naive(const CUDD::Cudd &mgr) {
+    return std::make_shared<NaiveStrategy>(CUDD::Cudd(), 20);
+  }
+};
+Catch::Generators::GeneratorWrapper<
+    std::function<std::shared_ptr<Strategy>(const CUDD::Cudd &)>>
+strategies();
 
 } // namespace whitemech::lydia

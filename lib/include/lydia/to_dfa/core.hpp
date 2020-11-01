@@ -48,7 +48,9 @@ public:
  * @param formula the LDLf formula.
  * @return the equivalent DFA.
  */
-std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula,
-                                     const CUDD::Cudd &mgr);
+std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula);
+
+std::shared_ptr<abstract_dfa> to_dfa_with_strategy(const LDLfFormula &formula,
+                                                   Strategy &s);
 
 } // namespace whitemech::lydia

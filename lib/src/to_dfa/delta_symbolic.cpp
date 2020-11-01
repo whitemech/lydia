@@ -125,8 +125,10 @@ void DeltaSymbolicDiamondRegExpVisitor::visit(const SequenceRegExp &r) {
 void DeltaSymbolicDiamondRegExpVisitor::visit(const StarRegExp &r) {
   auto d = DeltaSymbolicVisitor(epsilon);
   auto phi = d.apply(*formula.get_formula());
-  auto f = context.makeLdlfF(formula);
-  auto phi2 = d.apply(*r.ctx().makeLdlfDiamond(r.get_arg(), f));
+  auto next =
+      r.ctx().makeLdlfDiamond(formula.get_regex(), formula.get_formula());
+  auto auxiliary_false = context.makeLdlfF(next);
+  auto phi2 = d.apply(*r.ctx().makeLdlfDiamond(r.get_arg(), auxiliary_false));
   result = context.makePropOr(set_prop_formulas{phi, phi2});
 }
 
@@ -185,8 +187,9 @@ void DeltaSymbolicBoxRegExpVisitor::visit(const SequenceRegExp &r) {
 void DeltaSymbolicBoxRegExpVisitor::visit(const StarRegExp &r) {
   auto d = DeltaSymbolicVisitor(epsilon);
   auto phi = d.apply(*formula.get_formula());
-  auto f = context.makeLdlfT(formula);
-  auto phi2 = d.apply(*r.ctx().makeLdlfBox(r.get_arg(), f));
+  auto next = r.ctx().makeLdlfBox(formula.get_regex(), formula.get_formula());
+  auto auxiliary_true = context.makeLdlfT(next);
+  auto phi2 = d.apply(*r.ctx().makeLdlfBox(r.get_arg(), auxiliary_true));
   result = context.makePropAnd(set_prop_formulas{phi, phi2});
 }
 

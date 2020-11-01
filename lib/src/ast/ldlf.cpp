@@ -52,17 +52,11 @@ ldlf_ptr AstManager::makeLdlfDiamond(const regex_ptr &arg_r,
 }
 
 ldlf_ptr AstManager::makeLdlfF(const ldlf_ptr &arg) {
-  return this->makeLdlfF(*arg);
-}
-ldlf_ptr AstManager::makeLdlfF(const LDLfFormula &arg) {
   auto tmp = std::make_shared<const LDLfF>(*this, arg);
   auto result = insert_if_not_available_(tmp);
   return result;
 }
 ldlf_ptr AstManager::makeLdlfT(const ldlf_ptr &arg) {
-  return this->makeLdlfT(*arg);
-}
-ldlf_ptr AstManager::makeLdlfT(const LDLfFormula &arg) {
   auto tmp = std::make_shared<const LDLfT>(*this, arg);
   auto result = insert_if_not_available_(tmp);
   return result;
