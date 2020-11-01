@@ -51,7 +51,8 @@ static void BM_pl_models_minisat_1(benchmark::State &state) {
 BENCHMARK(BM_pl_models_minisat_1);
 
 static void BM_pl_models_naive_all_models_tautology(benchmark::State &state) {
-  auto t = boolean_prop(true);
+  auto context = AstManager{};
+  auto t = context.makeTrue();
   for (auto _ : state) {
     auto m = all_models<NaiveModelEnumerationStategy>(*t);
     escape(&m);
@@ -61,7 +62,8 @@ static void BM_pl_models_naive_all_models_tautology(benchmark::State &state) {
 BENCHMARK(BM_pl_models_naive_all_models_tautology);
 
 static void BM_pl_models_sat_all_models_tautology(benchmark::State &state) {
-  auto t = boolean_prop(true);
+  auto context = AstManager{};
+  auto t = context.makeTrue();
   for (auto _ : state) {
     auto m = all_models<SATModelEnumerationStategy>(*t);
     escape(&m);
@@ -71,15 +73,16 @@ static void BM_pl_models_sat_all_models_tautology(benchmark::State &state) {
 BENCHMARK(BM_pl_models_sat_all_models_tautology);
 
 static void BM_pl_models_naive_all_models_or(benchmark::State &state) {
-  auto t = boolean_prop(true);
+  auto context = AstManager{};
+  auto t = context.makeBool(true);
   for (auto _ : state) {
     auto N = state.range(0);
     auto operands = std::vector<prop_ptr>();
     operands.reserve(N);
     for (int i = 0; i < N; i++) {
-      operands.push_back(prop_atom(UniquePropositionalSymbol()));
+      operands.push_back(context.makePropAtom(UniquePropositionalSymbol()));
     }
-    auto f = logical_or(set_prop_formulas(operands.begin(), operands.end()));
+    auto f = context.makePropOr(set_prop_formulas(operands.begin(), operands.end()));
     auto m = all_models<NaiveModelEnumerationStategy>(*f);
     assert(m.size() == ((1 << N) - 1));
     escape(&m);
@@ -89,15 +92,16 @@ static void BM_pl_models_naive_all_models_or(benchmark::State &state) {
 BENCHMARK(BM_pl_models_naive_all_models_or)->Arg(5)->Arg(10)->Arg(15);
 
 static void BM_pl_models_sat_all_models_or(benchmark::State &state) {
-  auto t = boolean_prop(true);
+  auto context = AstManager{};
+  auto t = context.makeBool(true);
   for (auto _ : state) {
     auto N = state.range(0);
     auto operands = std::vector<prop_ptr>();
     operands.reserve(N);
     for (int i = 0; i < N; i++) {
-      operands.push_back(prop_atom(UniquePropositionalSymbol()));
+      operands.push_back(context.makePropAtom(UniquePropositionalSymbol()));
     }
-    auto f = logical_or(set_prop_formulas(operands.begin(), operands.end()));
+    auto f = context.makePropOr(set_prop_formulas(operands.begin(), operands.end()));
     auto m = all_models<SATModelEnumerationStategy>(*t);
     assert(m.size() == ((1 << N) - 1));
     escape(&m);

@@ -34,7 +34,7 @@ int LDLfTrue::compare_(const Basic &o) const {
 }
 
 std::shared_ptr<const LDLfFormula> LDLfTrue::logical_not() const {
-  return context.makeLdlfFalse();
+  return ctx().makeLdlfFalse();
 }
 
 ///////////////////////////////////
@@ -51,7 +51,7 @@ int LDLfFalse::compare_(const Basic &o) const {
 }
 
 std::shared_ptr<const LDLfFormula> LDLfFalse::logical_not() const {
-  return context.makeLdlfTrue();
+  return ctx().makeLdlfTrue();
 }
 
 LDLfAnd::LDLfAnd(AstManager &c, const set_formulas &s)

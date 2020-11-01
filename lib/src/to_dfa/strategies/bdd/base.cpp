@@ -29,9 +29,10 @@ namespace whitemech::lydia {
 
 std::shared_ptr<abstract_dfa> BDDStrategy::to_dfa(const LDLfFormula &formula) {
   auto formula_nnf = to_nnf(formula);
+  current_context_ = &formula.ctx();
   set_formulas initial_state_formulas{formula_nnf};
   dfa_state_ptr initial_state =
-      std::make_shared<DFAState>(initial_state_formulas);
+      std::make_shared<DFAState>(*current_context_, initial_state_formulas);
 
   // find all atoms
   set_atoms_ptr atoms = find_atoms(*formula_nnf);
@@ -123,7 +124,8 @@ BDDStrategy::next_transitions(const DFAState &state) {
     }
     if (current_label.IsZero())
       continue;
-    dfa_state_ptr current_dfa_state = std::make_shared<DFAState>(current_state);
+    dfa_state_ptr current_dfa_state =
+        std::make_shared<DFAState>(state.context, current_state);
     result.emplace_back(current_dfa_state, current_label);
   }
   return result;
@@ -137,7 +139,7 @@ BDDStrategy::next_transitions(const NFAState &state) {
     const auto &delta_formula = delta_symbolic(*f, false);
     setPropFormulas.insert(delta_formula);
   }
-  auto and_ = logical_and(setPropFormulas);
+  auto and_ = current_context_->makePropAnd(setPropFormulas);
   CUDD::BDD successor_fun = bdd_delta_symbolic(*this, *and_);
   if (successor_fun.IsZero())
     return result;
@@ -170,7 +172,7 @@ BDDStrategy::next_transitions(const NFAState &state) {
         }
       }
 
-      auto nfa_state = std::make_shared<NFAState>(next_state);
+      auto nfa_state = std::make_shared<NFAState>(state.context, next_state);
       if (result.find(nfa_state) == result.end()) {
         result[nfa_state] = mgr.bddZero();
       }

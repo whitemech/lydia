@@ -29,6 +29,7 @@ namespace whitemech::lydia::Benchmark {
 
 // Boolean atom
 inline void translate_boolean(Strategy &s) {
+  auto context = AstManager{};
   auto x = context.makeLdlfTrue();
   auto t = Translator(s);
   auto automaton = t.to_dfa(*x);

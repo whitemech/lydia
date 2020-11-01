@@ -25,9 +25,9 @@ namespace whitemech::lydia::Test {
 
 TEST_CASE("Set of DFA states", "[translate]") {
   auto context = AstManager{};
-  auto a = DFAState(set_nfa_states{});
-  auto b = DFAState(set_formulas{context.makeLdlfTrue()});
-  auto c = DFAState(set_nfa_states{});
+  auto a = DFAState(context, set_nfa_states{});
+  auto b = DFAState(context, set_formulas{context.makeLdlfTrue()});
+  auto c = DFAState(context, set_nfa_states{});
 
   REQUIRE(a == c);
   REQUIRE(c == a);
