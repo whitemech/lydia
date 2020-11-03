@@ -38,15 +38,15 @@ TEST_CASE("LDLf string printer", "[string_printer]") {
     REQUIRE(actual == expected);
   }
   SECTION("to string tt & ff") {
-    auto f = context.makeLdlfAnd({tt, ff});
+    auto f = LDLfAnd(context, {tt, ff});
     auto expected = "(tt & ff)";
-    auto actual = to_string(*f);
+    auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
   SECTION("to string tt | ff") {
-    auto f = context.makeLdlfOr({tt, ff});
+    auto f = LDLfOr(context, {tt, ff});
     auto expected = "(tt | ff)";
-    auto actual = to_string(*f);
+    auto actual = to_string(f);
     REQUIRE(actual == expected);
   }
   SECTION("to string !tt") {
@@ -108,7 +108,7 @@ TEST_CASE("RegEx string printer", "[string_printer]") {
     auto ff = context.makeLdlfFalse();
     auto ptr_ldlf_formula = context.makeLdlfAnd(set_formulas({tt, ff}));
     auto f = context.makeTestRegex(ptr_ldlf_formula);
-    auto expected = "((tt & ff))?";
+    auto expected = "(ff)?";
     auto actual = to_string(*f);
     REQUIRE(actual == expected);
   }

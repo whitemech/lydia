@@ -17,11 +17,12 @@
  */
 
 #include <cassert>
-#include <lydia/basic.hpp>
 #include <memory>
 #include <string>
 #include <unordered_set>
 #include <utility>
+
+#include <lydia/basic.hpp>
 
 namespace whitemech::lydia {
 
@@ -72,6 +73,7 @@ public:
 
   ldlf_ptr makeLdlfTrue();
   ldlf_ptr makeLdlfFalse();
+  ldlf_ptr makeLdlfBool(bool x);
   ldlf_ptr makeLdlfAnd(const set_formulas &args);
   ldlf_ptr makeLdlfOr(const set_formulas &args);
   ldlf_ptr makeLdlfNot(const ldlf_ptr &arg);
@@ -99,5 +101,95 @@ public:
     assert(a.m_ctx == b.m_ctx);
   };
 };
+
+template <typename T, typename caller, typename True, typename False,
+          typename Not, typename And, typename Or>
+std::shared_ptr<T>
+and_or(AstManager &context,
+       const std::set<std::shared_ptr<T>, SharedComparator> &s, bool op_x_notx,
+       std::shared_ptr<T> (AstManager::*const &fun_ptr)(bool x)) {
+  std::set<std::shared_ptr<T>, SharedComparator> args;
+  for (auto &a : s) {
+    // handle the case when a subformula is true
+    if (is_a<True>(*a)) {
+      if (op_x_notx)
+        return a;
+      else
+        continue;
+    }
+    // handle the case when a subformula is false
+    else if (is_a<False>(*a)) {
+      if (!op_x_notx)
+        return a;
+      else
+        continue;
+    }
+    // handle the case when a subformula is of the same type of the caller
+    else if (is_a<caller>(*a)) {
+      const auto &to_insert = dynamic_cast<const caller &>(*a);
+      const auto &container = to_insert.get_container();
+      args.insert(container.begin(), container.end());
+      continue;
+    } else {
+      args.insert(a);
+    }
+  }
+  for (auto &a : args) {
+    if (args.find(a->logical_not()) != args.end())
+      return (context.*fun_ptr)(op_x_notx);
+  }
+  if (args.size() == 1)
+    return *(args.begin());
+  else if (args.empty())
+    return (context.*fun_ptr)(not op_x_notx);
+  return std::make_shared<caller>(context, args);
+}
+
+template <typename T, typename caller>
+std::shared_ptr<T>
+flatten_bin_op_set(AstManager &context,
+                   const std::set<std::shared_ptr<T>, SharedComparator> &s) {
+  std::set<std::shared_ptr<T>, SharedComparator> args;
+  for (auto &a : s) {
+    // handle the case when a subformula is of the same type of the caller
+    if (is_a<caller>(*a)) {
+      const auto &to_insert = dynamic_cast<const caller &>(*a);
+      const auto &container = to_insert.get_container();
+      args.insert(container.begin(), container.end());
+      continue;
+    } else {
+      args.insert(a);
+    }
+  }
+  if (args.size() == 1)
+    return *(args.begin());
+  else if (args.empty())
+    assert(false);
+  return std::make_shared<caller>(context, args);
+}
+
+template <typename T, typename caller>
+std::shared_ptr<T>
+flatten_bin_op_vec(AstManager &context,
+                   const std::vector<std::shared_ptr<T>> &s) {
+  std::vector<std::shared_ptr<T>> args;
+  args.reserve(s.size());
+  for (auto &a : s) {
+    // handle the case when a subformula is of the same type of the caller
+    if (is_a<caller>(*a)) {
+      const auto &to_insert = dynamic_cast<const caller &>(*a);
+      const auto &container = to_insert.get_container();
+      args.insert(args.end(), container.begin(), container.end());
+      continue;
+    } else {
+      args.push_back(a);
+    }
+  }
+  if (args.size() == 1)
+    return *(args.begin());
+  else if (args.empty())
+    assert(false);
+  return std::make_shared<caller>(context, args);
+}
 
 } // namespace whitemech::lydia

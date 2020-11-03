@@ -27,13 +27,13 @@ regex_ptr AstManager::makePropRegex(const prop_ptr &ptr) {
 }
 
 regex_ptr AstManager::makeSeqRegex(const vec_regex &ptr) {
-  auto tmp = std::make_shared<const SequenceRegExp>(*this, ptr);
+  auto tmp = flatten_bin_op_vec<const RegExp, SequenceRegExp>(*this, ptr);
   auto result = insert_if_not_available_(tmp);
   return result;
 }
 
 regex_ptr AstManager::makeUnionRegex(const set_regex &ptr) {
-  auto tmp = std::make_shared<const UnionRegExp>(*this, ptr);
+  auto tmp = flatten_bin_op_set<const RegExp, UnionRegExp>(*this, ptr);
   auto result = insert_if_not_available_(tmp);
   return result;
 }
