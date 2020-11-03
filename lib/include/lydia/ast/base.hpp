@@ -134,10 +134,10 @@ and_or(AstManager &context,
       args.insert(a);
     }
   }
-//  for (auto &a : args) {
-//    if (args.find(a->logical_not()) != args.end())
-//      return (context.*fun_ptr)(op_x_notx);
-//  }
+  //  for (auto &a : args) {
+  //    if (args.find(a->logical_not()) != args.end())
+  //      return (context.*fun_ptr)(op_x_notx);
+  //  }
   if (args.size() == 1)
     return *(args.begin());
   else if (args.empty())
