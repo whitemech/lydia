@@ -136,12 +136,6 @@ void ComposeDFAVisitor::visit(const SequenceRegExp &r) {
 }
 
 void ComposeDFAVisitor::visit(const StarRegExp &r) {
-  bool test_only = is_test_only(r);
-  if (test_only) {
-    result = current_formula_;
-    return;
-  }
-
   DFA *regex =
       apply(*r.ctx().makeLdlfDiamond(r.get_arg(), r.ctx().makeLdlfEnd()));
   dfa_accept_empty(regex);
