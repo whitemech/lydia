@@ -73,6 +73,7 @@ public:
 
   ldlf_ptr makeLdlfTrue();
   ldlf_ptr makeLdlfFalse();
+  ldlf_ptr makeLdlfEnd();
   ldlf_ptr makeLdlfBool(bool x);
   ldlf_ptr makeLdlfAnd(const set_formulas &args);
   ldlf_ptr makeLdlfOr(const set_formulas &args);

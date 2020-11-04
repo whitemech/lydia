@@ -143,7 +143,7 @@ void ComposeDFAVisitor::visit(const StarRegExp &r) {
   }
 
   DFA *regex =
-      apply(*r.ctx().makeLdlfDiamond(r.get_arg(), r.ctx().makeLdlfTrue()));
+      apply(*r.ctx().makeLdlfDiamond(r.get_arg(), r.ctx().makeLdlfEnd()));
   dfa_accept_empty(regex);
   DFA *star = dfa_closure(regex, cs.indices.size(), cs.indices.data());
   if (not is_diamond) {
