@@ -302,7 +302,7 @@ void print_mona_dfa(DFA *a, const std::string &name, int num) {
   dfaPrintGraphvizToFile(a, num, x.data(), out);
   out.close();
   std::system(
-      std::string("dot -Tsvg " + name + ".dot > " + name + ".svg").c_str());
+      std::string("dot -Tsvg '" + name + ".dot' > '" + name + ".svg'").c_str());
 }
 
 void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,

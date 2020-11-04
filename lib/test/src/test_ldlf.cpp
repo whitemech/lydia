@@ -68,9 +68,6 @@ TEST_CASE("LDLfNot", "[logic]") {
   auto ptr_false = context.makeLdlfFalse();
   auto not_false = context.makeLdlfNot(ptr_false);
 
-  SECTION("test canonical exception") {
-    REQUIRE_THROWS(context.makeLdlfNot(context.makeLdlfNot(ptr_true)));
-  }
   SECTION("test equality on same objects") {
     REQUIRE(not_true->is_equal(*not_true));
     REQUIRE(not_false->is_equal(*not_false));

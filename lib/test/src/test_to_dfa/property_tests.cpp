@@ -36,4 +36,20 @@ TEST_CASE("Duality", "[to_dfa]") {
     }
   }
 }
+
+TEST_CASE("Simple theorems", "[to_dfa]") {
+  auto strategy_maker = GENERATE(strategies());
+  auto mgr = CUDD::Cudd();
+  auto strategy = strategy_maker(mgr);
+  for (const auto &theorem : SIMPLE_THEOREMS) {
+    SECTION("Test theorem " + theorem) {
+      adfa_ptr automaton = to_dfa_from_formula_string(theorem, *strategy);
+      auto true_automaton = std::make_shared<const mona_dfa>(
+          dfaTrue(), automaton->get_nb_variables());
+      REQUIRE(compare<5>(*automaton, *true_automaton,
+                         automaton->get_nb_variables(), equal));
+    }
+  }
+}
+
 } // namespace whitemech::lydia::Test

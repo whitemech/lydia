@@ -49,6 +49,14 @@ static const std::vector<std::string> FORMULAS{
     "<a | b>ff",
     "[a | b]tt",
     "[a | b]ff",
+    "<!(a & b)>tt",
+    "<!(a & b)>ff",
+    "[!(a & b)]tt",
+    "[!(a & b)]ff",
+    "<!(a | b)>tt",
+    "<!(a | b)>ff",
+    "[!(a | b)]tt",
+    "[!(a | b)]ff",
     // simple test regex
     "<ff?>ff",
     "[ff?]ff",
@@ -91,6 +99,38 @@ static const std::vector<std::string> FORMULAS{
     "[true*; true*]ff",
     "<a*; b*; c*>tt",
     "[a*; b*; c*]ff",
+    // LTLf formulas: Next and Until
+    "<true>(<a>tt & ~end)",
+    "<(<a>tt?; true)*>(<b>tt & ~end)",
+};
+
+static const std::vector<std::string> SIMPLE_THEOREMS{
+    "<a>tt <-> <a>tt",
+    "(~(<a>tt)) <-> [a]ff",
+    "<a & b>tt <-> <a & b>tt",
+    "<a | b>tt <-> <a | b>tt",
+    "(~(<a | b>tt)) <-> [a | b]ff",
+    "(<a>tt & <b>tt) <-> (<a & b>tt)",
+    "(<a>tt | <b>tt) <-> (<a | b>tt)",
+    "([a]tt & [b]tt) <-> ([a & b]tt)",
+    "([a]tt | [b]tt) <-> ([a | b]tt)",
+};
+
+static const std::vector<std::string> ADVANCED_THEOREMS{
+    "(<a>({f1}) & <a>({f2})) <-> (<a>(({f1}) & ({f2})))",
+    "(<a>({f1}) | <a>({f2})) <-> (<a>(({f1}) | ({f2})))",
+    "([a]({f1}) & [a]({f2})) <-> ([a](({f1}) & ({f2})))",
+    "([a]({f1}) | [a]({f2})) <-> ([a](({f1}) | ({f2})))",
+    "(<a>({f1}) & <b>({f2})) <-> (<a & b>(({f1}) & ({f2})))",
+    "([a]({f1}) | [b]({f2})) <-> ([a & b](({f1}) | ({f2})))",
+    "(<a>({f1}) & [b]({f2})) <-> (<a & !b>({f1}) | <a>(({f1}) & ({f2})))",
+    "([a]({f1}) | <b>({f2})) <-> ([a & !b]({f1}) & [a](({f1}) | ({f2})))",
+    "(<a>({f1}) | <b>({f1})) <-> (<a | b>({f1}))",
+    "([a]({f1}) & [b]({f1})) <-> ([a | b]({f1}))",
+    "<a>({f1}) <-> ([!a]ff & <a>({f1}))",
+    "[a]({f1}) <-> (<!a>tt | [a]({f1}))",
+    "(<?({f1})>({f2})) <-> (({f1}) & ({f2}))",
+    "([?({f1})]({f2})) <-> (!({f1}) | ({f2}))",
 };
 
 } // namespace whitemech::lydia

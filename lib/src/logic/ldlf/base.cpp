@@ -151,10 +151,6 @@ std::shared_ptr<const LDLfFormula> LDLfOr::logical_not() const {
 LDLfNot::LDLfNot(AstManager &c, const std::shared_ptr<const LDLfFormula> &in)
     : LDLfFormula(c), arg_{in} {
   type_code_ = type_code_id;
-  if (!is_canonical(*in)) {
-    throw std::invalid_argument("LDLfNot formula: argument cannot be an "
-                                "LDLfBooleanAtom or an LDLfNot");
-  }
 }
 
 hash_t LDLfNot::compute_hash_() const {
@@ -179,10 +175,7 @@ int LDLfNot::compare_(const Basic &o) const {
   return arg_->compare(*dynamic_cast<const LDLfNot &>(o).get_arg());
 }
 
-bool LDLfNot::is_canonical(const LDLfFormula &in) const {
-  // TODO add is_a<LDLfBooleanAtom>(in) when we will have other LDLf formulas
-  return !(is_a<LDLfNot>(in));
-}
+bool LDLfNot::is_canonical(const LDLfFormula &in) const { return true; }
 
 std::shared_ptr<const LDLfFormula> LDLfNot::get_arg() const { return arg_; }
 
