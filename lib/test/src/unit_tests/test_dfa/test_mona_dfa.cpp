@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../utils/to_dfa.hpp"
+#include "test/src/utils/to_dfa.hpp"
 #include <catch.hpp>
 #include <iostream>
 #include <lydia/dfa/mona_dfa.hpp>

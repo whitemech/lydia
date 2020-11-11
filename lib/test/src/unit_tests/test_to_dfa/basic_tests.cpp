@@ -16,7 +16,7 @@
  */
 #include <catch.hpp>
 
-#include "../utils/to_dfa.hpp"
+#include "test/src/utils/to_dfa.hpp"
 #include <iostream>
 #include <lydia/logic/nnf.hpp>
 #include <lydia/to_dfa/dfa_state.hpp>
