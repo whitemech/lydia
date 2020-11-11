@@ -98,7 +98,7 @@ std::shared_ptr<const LDLfFormula> LDLfAnd::logical_not() const {
   for (auto &a : container) {
     cont.insert(a->logical_not());
   }
-  return std::make_shared<const LDLfOr>(*this->m_ctx, cont);
+  return m_ctx->makeLdlfOr(cont);
 }
 
 LDLfOr::LDLfOr(AstManager &c, const set_formulas &s)
@@ -145,7 +145,7 @@ std::shared_ptr<const LDLfFormula> LDLfOr::logical_not() const {
   for (auto &a : container) {
     cont.insert(a->logical_not());
   }
-  return std::make_shared<LDLfAnd>(*this->m_ctx, cont);
+  return m_ctx->makeLdlfAnd(cont);
 }
 
 LDLfNot::LDLfNot(AstManager &c, const std::shared_ptr<const LDLfFormula> &in)
