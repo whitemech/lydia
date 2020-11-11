@@ -17,6 +17,9 @@
 #include "../data/formulas.hpp"
 #include "../utils/to_dfa.hpp"
 #include <catch.hpp>
+#include <cppitertools/enumerate.hpp>
+#include <cppitertools/product.hpp>
+#include <spdlog/fmt/bundled/core.h>
 
 namespace whitemech::lydia::Test {
 
@@ -36,4 +39,43 @@ TEST_CASE("Duality", "[to_dfa]") {
     }
   }
 }
+
+TEST_CASE("Simple theorems", "[to_dfa]") {
+  auto strategy = CompositionalStrategy();
+  for (const auto &theorem : SIMPLE_THEOREMS) {
+    SECTION("Test theorem " + theorem) {
+      adfa_ptr automaton = to_dfa_from_formula_string(theorem, strategy);
+      auto true_automaton = std::make_shared<const mona_dfa>(
+          dfaTrue(), automaton->get_nb_variables());
+      print_mona_dfa(std::static_pointer_cast<const mona_dfa>(automaton)->dfa_,
+                     theorem, 1);
+      REQUIRE(compare<5>(*automaton, *true_automaton,
+                         automaton->get_nb_variables(), equal));
+      REQUIRE(automaton->get_nb_states() == 1);
+    }
+  }
+}
+
+TEST_CASE("Advanced theorems", "[to_dfa]") {
+  Logger log("advanced-theorems");
+  auto strategy = CompositionalStrategy();
+  for (auto &&[i, e] :
+       iter::enumerate(iter::product(ADVANCED_THEOREMS, FORMULAS, FORMULAS))) {
+    const auto [theorem, formula_1, formula_2] = e;
+    const auto [theorem_str, nb_formulas] = theorem;
+    const auto new_theorem = fmt::format(theorem_str, formula_1, formula_2);
+    if (i % 1000 == 0) {
+      const std::string section_id =
+          fmt::format("Iteration {}: test theorem {}", i, new_theorem);
+      log.info(section_id);
+    }
+    adfa_ptr automaton = to_dfa_from_formula_string(new_theorem, strategy);
+    auto true_automaton = std::make_shared<const mona_dfa>(
+        dfaTrue(), automaton->get_nb_variables());
+    REQUIRE(compare<5>(*automaton, *true_automaton,
+                       automaton->get_nb_variables(), equal));
+    REQUIRE(automaton->get_nb_states() == 1);
+  }
+}
+
 } // namespace whitemech::lydia::Test

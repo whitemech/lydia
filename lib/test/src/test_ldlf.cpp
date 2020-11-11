@@ -68,9 +68,6 @@ TEST_CASE("LDLfNot", "[logic]") {
   auto ptr_false = context.makeLdlfFalse();
   auto not_false = context.makeLdlfNot(ptr_false);
 
-  SECTION("test canonical exception") {
-    REQUIRE_THROWS(context.makeLdlfNot(context.makeLdlfNot(ptr_true)));
-  }
   SECTION("test equality on same objects") {
     REQUIRE(not_true->is_equal(*not_true));
     REQUIRE(not_false->is_equal(*not_false));
@@ -96,8 +93,8 @@ TEST_CASE("And", "[logic]") {
   set_formulas and_3_args = {boolTrue, boolTrue, boolFalse};
 
   SECTION("test exception for number of args") {
-    REQUIRE_THROWS(context.makeLdlfAnd(and_1_args));
-    REQUIRE_THROWS(context.makeLdlfAnd(and_2_args));
+    REQUIRE_THROWS(LDLfAnd(context, and_1_args));
+    REQUIRE_THROWS(LDLfAnd(context, and_2_args));
   }
 
   auto and_3 = context.makeLdlfAnd(and_3_args);
@@ -124,8 +121,8 @@ TEST_CASE("LDLfOr", "[logic]") {
   set_formulas or_3_args = {boolTrue, boolTrue, boolFalse};
 
   SECTION("test exception for number of args") {
-    REQUIRE_THROWS(context.makeLdlfOr(or_1_args));
-    REQUIRE_THROWS(context.makeLdlfOr(or_2_args));
+    REQUIRE_THROWS(LDLfOr(context, or_1_args));
+    REQUIRE_THROWS(LDLfOr(context, or_2_args));
   }
 
   auto or_3 = context.makeLdlfOr(or_3_args);
@@ -203,7 +200,11 @@ TEST_CASE("Set of formulas", "[logic]") {
   auto context = AstManager{};
   auto tt = context.makeLdlfTrue();
   auto ff = context.makeLdlfFalse();
-  set_formulas args = {tt, ff};
+  auto a = context.makeLdlfDiamond(
+      context.makePropRegex(context.makePropAtom("a")), tt);
+  auto b = context.makeLdlfDiamond(
+      context.makePropRegex(context.makePropAtom("b")), tt);
+  set_formulas args = {a, b};
   auto and_ = context.makeLdlfAnd(args);
   auto or_ = context.makeLdlfOr(args);
 

@@ -34,11 +34,11 @@ namespace whitemech::lydia {
  */
 class mona_dfa : public abstract_dfa {
 private:
-  DFA *dfa_;
   int nb_variables_;
   std::vector<std::string> names;
 
 public:
+  DFA *dfa_;
   std::vector<int> indices;
 
   mona_dfa(DFA *dfa, int nb_variables)

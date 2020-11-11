@@ -328,4 +328,66 @@ TEST_CASE("Driver LDLfTemporal", "[parser]") {
   }
 }
 
+TEST_CASE("Driver LDLf Implication", "[parser]") {
+  auto context = std::make_shared<AstManager>();
+  auto driver = Driver(context);
+  auto a_tt = context->makeLdlfDiamond(
+      context->makePropRegex(context->makePropAtom("a")),
+      context->makeLdlfTrue());
+  auto b_tt = context->makeLdlfDiamond(
+      context->makePropRegex(context->makePropAtom("b")),
+      context->makeLdlfTrue());
+
+  SECTION("test parsing (<a>tt -> <b>tt)") {
+    std::istringstream f("<a>tt -> <b>tt");
+    driver.parse(f);
+    auto actual_f = driver.result;
+    auto expected_f =
+        context->makeLdlfOr(set_formulas{context->makeLdlfNot(a_tt), b_tt});
+    REQUIRE(*actual_f == *expected_f);
+  }
+  SECTION("test parsing (<a>tt -> <a>tt)") {
+    std::istringstream f("<a>tt -> <a>tt");
+    driver.parse(f);
+    auto actual_f = driver.result;
+    auto expected_f =
+        context->makeLdlfOr(set_formulas{context->makeLdlfNot(a_tt), a_tt});
+    REQUIRE(*actual_f == *expected_f);
+  }
+}
+
+TEST_CASE("Driver LDLf Equivalence", "[parser]") {
+  auto context = std::make_shared<AstManager>();
+  auto driver = Driver(context);
+  auto a_tt = context->makeLdlfDiamond(
+      context->makePropRegex(context->makePropAtom("a")),
+      context->makeLdlfTrue());
+  auto b_tt = context->makeLdlfDiamond(
+      context->makePropRegex(context->makePropAtom("b")),
+      context->makeLdlfTrue());
+  auto not_a_tt = context->makeLdlfNot(a_tt);
+  auto not_b_tt = context->makeLdlfNot(b_tt);
+
+  SECTION("test parsing (<a>tt <-> <b>tt)") {
+    std::istringstream f("<a>tt <-> <b>tt");
+    driver.parse(f);
+    auto actual_f = driver.result;
+    auto left_to_right = context->makeLdlfOr(set_formulas{not_a_tt, b_tt});
+    auto right_to_left = context->makeLdlfOr(set_formulas{not_b_tt, a_tt});
+    auto expected_f =
+        context->makeLdlfAnd(set_formulas{left_to_right, right_to_left});
+    REQUIRE(*actual_f == *expected_f);
+  }
+  SECTION("test parsing (<a>tt <-> <a>tt)") {
+    std::istringstream f("<a>tt <-> <a>tt");
+    driver.parse(f);
+    auto actual_f = driver.result;
+    auto left_to_right = context->makeLdlfOr(set_formulas{not_a_tt, a_tt});
+    auto right_to_left = context->makeLdlfOr(set_formulas{not_a_tt, a_tt});
+    auto expected_f =
+        context->makeLdlfAnd(set_formulas{left_to_right, right_to_left});
+    REQUIRE(*actual_f == *expected_f);
+  }
+}
+
 } // namespace whitemech::lydia::Test

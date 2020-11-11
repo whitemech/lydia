@@ -22,13 +22,20 @@ namespace whitemech::lydia {
 
 ldlf_ptr AstManager::makeLdlfTrue() { return ldlf_true_; }
 ldlf_ptr AstManager::makeLdlfFalse() { return ldlf_false_; }
+ldlf_ptr AstManager::makeLdlfBool(bool value) {
+  return value ? ldlf_true_ : ldlf_false_;
+}
 ldlf_ptr AstManager::makeLdlfAnd(const set_formulas &args) {
-  auto tmp = std::make_shared<const LDLfAnd>(*this, args);
+  ldlf_ptr (AstManager::*fun)(bool) = &AstManager::makeLdlfBool;
+  auto tmp = and_or<const LDLfFormula, LDLfAnd, LDLfTrue, LDLfFalse, LDLfNot,
+                    LDLfAnd, LDLfOr>(*this, args, false, fun);
   auto result = insert_if_not_available_(tmp);
   return result;
 }
 ldlf_ptr AstManager::makeLdlfOr(const set_formulas &args) {
-  auto tmp = std::make_shared<const LDLfOr>(*this, args);
+  ldlf_ptr (AstManager::*fun)(bool) = &AstManager::makeLdlfBool;
+  auto tmp = and_or<const LDLfFormula, LDLfOr, LDLfTrue, LDLfFalse, LDLfNot,
+                    LDLfAnd, LDLfOr>(*this, args, true, fun);
   auto result = insert_if_not_available_(tmp);
   return result;
 }
@@ -60,6 +67,10 @@ ldlf_ptr AstManager::makeLdlfT(const ldlf_ptr &arg) {
   auto tmp = std::make_shared<const LDLfT>(*this, arg);
   auto result = insert_if_not_available_(tmp);
   return result;
+}
+
+ldlf_ptr AstManager::makeLdlfEnd() {
+  return makeLdlfBox(makePropRegex(makeTrue()), makeLdlfFalse());
 }
 
 } // namespace whitemech::lydia
