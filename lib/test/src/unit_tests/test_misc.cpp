@@ -83,7 +83,7 @@ TEST_CASE("Test bdd2dot", "[dfa]") {
   auto cmd = "mkdir " + output_dir_path;
   std::system(cmd.c_str());
   auto my_dfa = dfa::read_from_file(
-      "../../../lib/test/src/data/mona/mona_example.dfa", mgr);
+      "../../../lib/test/src/assets/mona/mona_example.dfa", mgr);
   dfa_to_bdds(my_dfa, output_dir_path);
 }
 

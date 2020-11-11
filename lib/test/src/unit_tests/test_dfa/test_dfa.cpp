@@ -131,7 +131,7 @@ TEST_CASE("Test DFA initialization", "[dfa]") {
   SECTION("Initialize with Cudd manager.") {
     auto mgr = CUDD::Cudd();
     auto my_dfa = dfa::read_from_file( // NOLINT
-        "../../../lib/test/src/data/mona/eventually_a.dfa", mgr);
+        "../../../lib/test/src/assets/mona/eventually_a.dfa", mgr);
   }
 }
 
@@ -156,7 +156,7 @@ TEST_CASE("Test accepts", "[dfa]") {
   SECTION("Test F(a)") {
     auto mgr = CUDD::Cudd();
     auto my_dfa = dfa::read_from_file(
-        "../../../lib/test/src/data/mona/eventually_a.dfa", mgr);
+        "../../../lib/test/src/assets/mona/eventually_a.dfa", mgr);
 
     REQUIRE(!my_dfa.accepts(t_));
     REQUIRE(!my_dfa.accepts(t_na));
@@ -170,7 +170,7 @@ TEST_CASE("Test accepts", "[dfa]") {
   SECTION("Test G(a)") {
     auto mgr = CUDD::Cudd();
     auto my_dfa = dfa::read_from_file(
-        "../../../lib/test/src/data/mona/always_a.dfa", mgr);
+        "../../../lib/test/src/assets/mona/always_a.dfa", mgr);
 
     REQUIRE(!my_dfa.accepts(t_));
     REQUIRE(!my_dfa.accepts(t_na));

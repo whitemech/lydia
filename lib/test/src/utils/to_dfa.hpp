@@ -24,6 +24,8 @@
 #include <sstream>
 #include <stack>
 
+#include <filesystem>
+#include <fstream>
 #include <lydia/dfa/dfa.hpp>
 #include <lydia/logic/ldlf/base.hpp>
 #include <lydia/parser/driver.hpp>
@@ -136,6 +138,14 @@ static adfa_ptr to_dfa_from_formula_string(const std::string &f, Strategy &s) {
   driver.parse(ldlf_formula_stream);
   const auto &formula = *driver.result;
   return to_dfa_with_strategy(formula, s);
+}
+
+static adfa_ptr to_dfa_from_formula_file(const std::filesystem::path &path,
+                                         Strategy &s) {
+  std::ifstream t(path.string());
+  std::stringstream buffer;
+  buffer << t.rdbuf();
+  return to_dfa_from_formula_string(buffer.str(), s);
 }
 
 struct StrategyGenerator

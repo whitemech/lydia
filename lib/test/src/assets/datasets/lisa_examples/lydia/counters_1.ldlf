@@ -1,0 +1,64 @@
+(
+  (
+    (
+      [counterenv0]ff
+      | <initcounter0>tt)
+    & (
+      <counterenv0>tt
+      | [initcounter0]ff))
+  & [countersys0]ff
+  & [(true)*]((([carryenv0]ff | <incenv>tt) & (<carryenv0>tt | [incenv]ff)) | [true]ff)
+  & [(true)*]((([carrysys0]ff | <incsys>tt) & (<carrysys0>tt | [incsys]ff)) | [true]ff)
+  & [(true)*](
+    (
+      (
+        [true]([counterenv0]ff | [true]ff)
+        | (
+          (
+            <counterenv0>tt
+            & [carryenv0]ff)
+          | (
+            [counterenv0]ff
+            & <carryenv0>tt)))
+      & (
+        [true](<counterenv0>tt | [true]ff)
+        | (
+          (
+            [counterenv0]ff
+            | <carryenv0>tt)
+          & (
+            <counterenv0>tt
+            | [carryenv0]ff))))
+    | [true]ff)
+  & [(true)*](
+    (
+      (
+        [true]([countersys0]ff | [true]ff)
+        | (
+          (
+            <countersys0>tt
+            & [carrysys0]ff)
+          | (
+            [countersys0]ff
+            & <carrysys0>tt)))
+      & (
+        [true](<countersys0>tt | [true]ff)
+        | (
+          (
+            [countersys0]ff
+            | <carrysys0>tt)
+          & (
+            <countersys0>tt
+            | [carrysys0]ff))))
+    | [true]ff)
+  & (
+    <(true)*>((<incenv>tt & <true>(<incenv>tt & <true>tt)) & <true>tt)
+    | <(true)*>(
+      (
+        (
+          [counterenv0]ff
+          | <countersys0>tt)
+        & (
+          <counterenv0>tt
+          | [countersys0]ff))
+      & <true>tt)))

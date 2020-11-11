@@ -19,7 +19,6 @@
 #include <lydia/logger.hpp>
 #include <lydia/logic/ldlf/base.hpp>
 #include <lydia/logic/ldlf/only_test.hpp>
-#include <lydia/utils/compare.hpp>
 
 namespace whitemech::lydia::Test {
 

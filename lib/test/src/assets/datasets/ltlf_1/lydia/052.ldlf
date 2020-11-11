@@ -1,0 +1,12 @@
+(
+  [true]ff
+  | (
+    [(true)*]((<false>tt | [true]([p9]ff | [true]ff) | <p1>tt) | [true]ff)
+    & [(true)*]((<false>tt | [true]([p10]ff | [true]ff) | <p2>tt) | [true]ff)
+    & [(true)*]((<false>tt | [true]([p11]ff | [true]ff) | <p3>tt) | [true]ff)
+    & [(true)*]((<false>tt | [true]([p12]ff | [true]ff) | <p4>tt) | [true]ff)
+    & [(true)*]((<false>tt | [true]([p13]ff | [true]ff) | <p5>tt) | [true]ff)
+    & [(true)*]((<false>tt | [true]([p14]ff | [true]ff) | <p6>tt) | [true]ff)
+    & [(true)*]((<false>tt | [true]([p15]ff | [true]ff) | <p7>tt) | [true]ff)
+    & [(true)*]((<false>tt | [true]([p16]ff | [true]ff) | <p8>tt) | [true]ff)
+    & <true>tt))

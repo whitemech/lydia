@@ -1,0 +1,7 @@
+#(((G (F (req))) || (F (cancel))) -> ((G (F (grant))) || (G (ack))))
+#((! ((! (F (! (F req)))) || (F cancel))) || ((! (F (! (F grant)))) || (! (F (! ack)))))
+#BNF format
+#((! ((! (F (! (F req)))) || (F cancel))) || ((! (F (! (F grant)))) || (! (F (! ack)))))
+m2l-str;
+var2 ACK, CANCEL, GRANT, REQ;
+((((~((ex1 x1: (0 <= x1 & (~((x1 in ACK))))))) | (~((ex1 x1: (0 <= x1 & (~((ex1 x2: (x1 <= x2 & ((x2 in GRANT)))))))))))) | (~((((ex1 x1: (0 <= x1 & ((x1 in CANCEL))))) | (~((ex1 x1: (0 <= x1 & (~((ex1 x2: (x1 <= x2 & ((x2 in REQ))))))))))))));

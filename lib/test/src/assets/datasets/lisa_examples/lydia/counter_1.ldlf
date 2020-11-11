@@ -1,0 +1,33 @@
+(
+  (
+    (
+      [counter0]ff
+      | <initcounter0>tt)
+    & (
+      <counter0>tt
+      | [initcounter0]ff))
+  & [(true)*]((([carry0]ff | <inc>tt) & (<carry0>tt | [inc]ff)) | [true]ff)
+  & [(true)*](
+    (
+      (
+        [true]([counter0]ff | [true]ff)
+        | (
+          (
+            <counter0>tt
+            & [carry0]ff)
+          | (
+            [counter0]ff
+            & <carry0>tt)))
+      & (
+        [true](<counter0>tt | [true]ff)
+        | (
+          (
+            [counter0]ff
+            | <carry0>tt)
+          & (
+            <counter0>tt
+            | [carry0]ff))))
+    | [true]ff)
+  & (
+    <(true)*>(([inc]ff & [true]([inc]ff | [true]ff)) & <true>tt)
+    | <(true)*>([counter0]ff & <true>tt)))

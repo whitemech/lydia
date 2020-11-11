@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "test/src/data/formulas.hpp"
+#include "test/src/assets/formulas.hpp"
 #include "test/src/utils/to_dfa.hpp"
 #include <catch.hpp>
 #include <cppitertools/enumerate.hpp>
