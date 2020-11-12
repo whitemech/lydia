@@ -96,8 +96,7 @@ static void _dataset_test(const std::filesystem::path &dataset_path) {
     int actual_nb_states = actual_dfa->get_nb_states();
     REQUIRE((expected_nb_states == actual_nb_states + 1 or
              expected_nb_states == actual_nb_states));
-    //    REQUIRE(compare<1>(*expected_dfa, *actual_dfa, actual_nb_vars,
-    //    equal));
+    // REQUIRE(compare<1>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
     REQUIRE(compare<2>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
     REQUIRE(compare<3>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
     REQUIRE(compare<4>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
