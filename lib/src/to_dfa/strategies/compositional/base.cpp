@@ -32,9 +32,15 @@ CompositionalStrategy::to_dfa(const LDLfFormula &formula) {
   indices = std::vector<int>(atom2ids.size());
   std::iota(indices.begin(), indices.end(), 0);
 
+  auto names = std::vector<std::string>();
+  names.reserve(atom2ids.size());
+  for (const auto &[atom, id_] : atom2ids) {
+    names.push_back(atom->str());
+  }
+
   auto visitor = ComposeDFAVisitor(*this);
   auto result = visitor.apply(*formula_nnf);
-  return std::make_shared<mona_dfa>(result, index);
+  return std::make_shared<mona_dfa>(result, names);
 }
 
 void ComposeDFAVisitor::visit(const LDLfTrue &f) { result = dfaLDLfTrue(); }

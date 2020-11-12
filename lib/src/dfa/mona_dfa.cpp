@@ -248,6 +248,13 @@ DFA *dfaLDLfFalse() {
   return dfaBuild("-");
 }
 
+DFA *dfaLDLfEnd(int var, int *indices) {
+  DFA *d =
+      dfaLDLfDiamondProp(dfaPropositionalTrue(), dfaLDLfTrue(), var, indices);
+  dfaNegation(d);
+  return d;
+}
+
 DFA *dfaNext(int a, bool is_positive) {
   int var_index[1];
   var_index[0] = a;

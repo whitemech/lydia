@@ -35,16 +35,24 @@ namespace whitemech::lydia {
 class mona_dfa : public abstract_dfa {
 private:
   int nb_variables_;
-  std::vector<std::string> names;
 
 public:
   DFA *dfa_;
+  std::vector<std::string> names;
   std::vector<int> indices;
 
   mona_dfa(DFA *dfa, int nb_variables)
-      : dfa_{dfa}, nb_variables_{nb_variables} {}
+      : dfa_{dfa}, nb_variables_{nb_variables} {
+    indices = std::vector<int>(nb_variables);
+    std::iota(indices.begin(), indices.end(), 0);
+    names = std::vector<std::string>(nb_variables);
+    std::iota(names.begin(), names.end(), "0");
+  }
   mona_dfa(DFA *dfa, const std::vector<std::string> &names)
-      : dfa_{dfa}, nb_variables_{(int)names.size()}, names{names} {}
+      : dfa_{dfa}, nb_variables_{(int)names.size()}, names{names} {
+    indices = std::vector<int>(names.size());
+    std::iota(indices.begin(), indices.end(), 0);
+  }
   ~mona_dfa();
 
   DFA *get_dfa() { return dfa_; }
@@ -92,6 +100,7 @@ DFA *dfaLDLfTrue();
 DFA *dfaLDLfFalse();
 DFA *dfaNext(int a, bool is_positive = true);
 DFA *dfaLDLfDiamondProp(DFA *prop_regex, DFA *body, int var, int *indices);
+DFA *dfaLDLfEnd(int var, int *indices);
 DFA *dfaPropositionalTrue();
 
 void print_mona_dfa(DFA *a, const std::string &name, int num = 1);
