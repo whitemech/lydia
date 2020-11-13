@@ -848,6 +848,15 @@ TEST_CASE("Translate {true*}(<a>tt | end)", "[translate][ldlf][basic]") {
   REQUIRE(verify(*automaton, {"1", "1", "1"}, true));
 }
 
+TEST_CASE("Translate <(a;b) + (c;d)>tt", "[translate][ldlf][basic]") {
+  std::string formula_name = "<(a;b) + (c;d)>tt";
+  auto strategy_maker = GENERATE(strategies());
+  auto mgr = CUDD::Cudd();
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
+}
+
 TEST_CASE("Translate sequence of stars", "[translate][ldlf][basic]") {
   std::string formula_name = "<p_10* ; p_11* ; p_12* ; p_13* ; p_14*>tt";
   auto strategy_maker = GENERATE(strategies());

@@ -24,12 +24,12 @@ DFA *ComposeDFAVisitor::apply(const LDLfFormula &f) {
   f.accept(*this);
   return result;
 }
-DFA *ComposeDFAVisitor::apply(const RegExp &f) {
+DFA *ComposeDFARegexVisitor::apply(const RegExp &f) {
   result = nullptr;
   f.accept(*this);
   return result;
 }
-DFA *ComposeDFAVisitor::apply(const PropositionalFormula &f) {
+DFA *ComposeDFARegexVisitor::apply(const PropositionalFormula &f) {
   result = nullptr;
   f.accept(*this);
   return result;
@@ -63,13 +63,13 @@ void ComposeDFAVisitor::visit(const LDLfTrue &f) { result = dfaLDLfTrue(); }
 void ComposeDFAVisitor::visit(const LDLfFalse &f) { result = dfaLDLfFalse(); }
 
 void ComposeDFAVisitor::visit(const LDLfAnd &f) {
-  result =
-      and_or<const LDLfFormula, dfaLDLfTrue, dfaAND, false>(f.get_container());
+  result = dfa_and_or<const LDLfFormula, dfaLDLfTrue, dfaAND, false>(
+      f.get_container(), *this);
 }
 
 void ComposeDFAVisitor::visit(const LDLfOr &f) {
-  result =
-      and_or<const LDLfFormula, dfaLDLfFalse, dfaOR, true>(f.get_container());
+  result = dfa_and_or<const LDLfFormula, dfaLDLfFalse, dfaOR, true>(
+      f.get_container(), *this);
 }
 
 void ComposeDFAVisitor::visit(const LDLfNot &f) {
@@ -85,7 +85,8 @@ void ComposeDFAVisitor::visit(const LDLfDiamond &f) {
   is_diamond = true;
   current_formula_ = apply(*f.get_formula());
 
-  result = apply(*f.get_regex());
+  auto visitor = ComposeDFARegexVisitor(cs, current_formula_, is_diamond);
+  result = visitor.apply(*f.get_regex());
 
   is_diamond = old_is_diamond;
   current_formula_ = old_current_formula;
@@ -97,13 +98,14 @@ void ComposeDFAVisitor::visit(const LDLfBox &f) {
   is_diamond = false;
   current_formula_ = apply(*f.get_formula());
 
-  result = apply(*f.get_regex());
+  auto visitor = ComposeDFARegexVisitor(cs, current_formula_, is_diamond);
+  result = visitor.apply(*f.get_regex());
 
   is_diamond = old_is_diamond;
   current_formula_ = old_current_formula;
 }
 
-void ComposeDFAVisitor::visit(const UnionRegExp &r) {
+void ComposeDFARegexVisitor::visit(const UnionRegExp &r) {
   DFA *tmp1;
   DFA *tmp2;
   DFA *tmp3;
@@ -123,14 +125,16 @@ void ComposeDFAVisitor::visit(const UnionRegExp &r) {
   result = final;
 }
 
-void ComposeDFAVisitor::visit(const SequenceRegExp &r) {
+void ComposeDFARegexVisitor::visit(const SequenceRegExp &r) {
   DFA *old_formula = current_formula_;
   auto subregexes = r.get_container();
-  DFA *final;
+  DFA *final = nullptr;
   DFA *tmp;
 
   for (auto it = subregexes.rbegin(); it != subregexes.rend(); it++) {
     tmp = apply(**it);
+    if (final)
+      dfaFree(final);
     final = dfaMinimize(tmp);
     current_formula_ = final;
     dfaFree(tmp);
@@ -139,36 +143,38 @@ void ComposeDFAVisitor::visit(const SequenceRegExp &r) {
   current_formula_ = old_formula;
 }
 
-void ComposeDFAVisitor::visit(const StarRegExp &r) {
-  DFA *regex =
-      apply(*r.ctx().makeLdlfDiamond(r.get_arg(), r.ctx().makeLdlfEnd()));
+void ComposeDFARegexVisitor::visit(const StarRegExp &r) {
+  DFA *body = dfaCopy(current_formula_);
+  auto visitor = ComposeDFAVisitor(cs);
+  DFA *regex = visitor.apply(
+      *r.ctx().makeLdlfDiamond(r.get_arg(), r.ctx().makeLdlfEnd()));
+
   dfa_accept_empty(regex);
   DFA *star = dfa_closure(regex, cs.indices.size(), cs.indices.data());
   if (not is_diamond) {
-    dfaNegation(current_formula_);
+    dfaNegation(body);
   }
-  result = dfa_concatenate(star, current_formula_, cs.indices.size(),
-                           cs.indices.data());
+  result = dfa_concatenate(star, body, cs.indices.size(), cs.indices.data());
   if (not is_diamond) {
     dfaNegation(result);
   }
   dfaFree(regex);
   dfaFree(star);
-  dfaFree(current_formula_);
+  dfaFree(body);
 }
 
-void ComposeDFAVisitor::visit(const TestRegExp &r) {
+void ComposeDFARegexVisitor::visit(const TestRegExp &r) {
   auto op = is_diamond ? dfaAND : dfaIMPL;
   DFA *tmp;
-  DFA *regex_dfa = apply(*r.get_arg());
+  auto visitor = ComposeDFAVisitor(cs);
+  DFA *regex_dfa = visitor.apply(*r.get_arg());
   tmp = dfaProduct(regex_dfa, current_formula_, op);
   result = dfaMinimize(tmp);
   dfaFree(regex_dfa);
   dfaFree(tmp);
-  dfaFree(current_formula_);
 }
 
-void ComposeDFAVisitor::visit(const PropositionalRegExp &r) {
+void ComposeDFARegexVisitor::visit(const PropositionalRegExp &r) {
   DFA *regex = apply(*r.get_arg());
   DFA *body = current_formula_;
 
@@ -186,36 +192,42 @@ void ComposeDFAVisitor::visit(const PropositionalRegExp &r) {
   dfaFree(regex);
 }
 
-void ComposeDFAVisitor::visit(const PropositionalTrue &f) {
+void ComposeDFARegexVisitor::visit(const PropositionalTrue &f) {
   result = dfaPropositionalTrue();
 }
-void ComposeDFAVisitor::visit(const PropositionalFalse &f) {
+void ComposeDFARegexVisitor::visit(const PropositionalFalse &f) {
   result = dfaLDLfFalse();
 }
 
-void ComposeDFAVisitor::visit(const PropositionalAtom &f) {
+void ComposeDFARegexVisitor::visit(const PropositionalAtom &f) {
   int atom_index =
       cs.atom2ids[std::static_pointer_cast<const PropositionalAtom>(
           f.shared_from_this())];
   result = dfaNext(atom_index, true);
 }
 
-void ComposeDFAVisitor::visit(const PropositionalAnd &f) {
-  result = and_or<const PropositionalFormula, dfaLDLfTrue, dfaAND, false>(
-      f.get_container());
+void ComposeDFARegexVisitor::visit(const PropositionalAnd &f) {
+  result = dfa_and_or<const PropositionalFormula, dfaLDLfTrue, dfaAND, false>(
+      f.get_container(), *this);
 }
 
-void ComposeDFAVisitor::visit(const PropositionalOr &f) {
-  result = and_or<const PropositionalFormula, dfaLDLfFalse, dfaOR, true>(
-      f.get_container());
+void ComposeDFARegexVisitor::visit(const PropositionalOr &f) {
+  result = dfa_and_or<const PropositionalFormula, dfaLDLfFalse, dfaOR, true>(
+      f.get_container(), *this);
 }
 
-void ComposeDFAVisitor::visit(const PropositionalNot &f) {
+void ComposeDFARegexVisitor::visit(const PropositionalNot &f) {
   assert(f.get_arg()->type_code_ == TypeID::t_PropositionalAtom);
   int atom_index =
       cs.atom2ids[std::static_pointer_cast<const PropositionalAtom>(
           f.get_arg())];
   result = dfaNext(atom_index, false);
+}
+
+ComposeDFARegexVisitor::~ComposeDFARegexVisitor() {
+  if (current_formula_) {
+    dfaFree(current_formula_);
+  }
 }
 
 } // namespace whitemech::lydia
