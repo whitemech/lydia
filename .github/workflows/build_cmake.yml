@@ -24,6 +24,7 @@ jobs:
       run: ./scripts/check-clang-format.sh
 
   test:
+    continue-on-error: True
     runs-on: ${{ matrix.os }}
 
     strategy:
