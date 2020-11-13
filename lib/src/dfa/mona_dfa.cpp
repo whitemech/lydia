@@ -248,6 +248,17 @@ DFA *dfaLDLfFalse() {
   return dfaBuild("-");
 }
 
+DFA *dfaLDLfEnd(int var, int *indices) {
+  DFA *tmp_1 = dfaPropositionalTrue();
+  DFA *tmp_2 = dfaLDLfTrue();
+  DFA *d =
+      dfaLDLfDiamondProp(dfaPropositionalTrue(), dfaLDLfTrue(), var, indices);
+  dfaNegation(d);
+  dfaFree(tmp_1);
+  dfaFree(tmp_2);
+  return d;
+}
+
 DFA *dfaNext(int a, bool is_positive) {
   int var_index[1];
   var_index[0] = a;
@@ -401,6 +412,12 @@ void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
   mem_free(buffer);
 
   o << "}\n";
+}
+
+bool is_sink(DFA *automaton, bool is_positive) {
+  bool has_one_state = automaton->ns == 1;
+  bool is_initial_state_final = automaton->f[0] == 1;
+  return has_one_state and (is_initial_state_final == is_positive);
 }
 
 } // namespace whitemech::lydia

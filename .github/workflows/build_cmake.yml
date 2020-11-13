@@ -9,8 +9,8 @@ on:
 
 jobs:
   lint:
-    runs-on: [ubuntu-latest]
-    timeout-minutes: 10
+    runs-on: [ubuntu-20.04]
+    timeout-minutes: 30
     steps:
     - uses: actions/checkout@v2
       with:
@@ -24,11 +24,13 @@ jobs:
       run: ./scripts/check-clang-format.sh
 
   test:
+    continue-on-error: True
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [ubuntu-latest]  # TODO include macos-latest, windows-latest
+        os: [ubuntu-20.04]  # TODO include macos-latest, windows-latest
+        compiler: [g++-9]
 
     timeout-minutes: 30
 
@@ -55,6 +57,8 @@ jobs:
       - name: Check clang-tidy
         run: ./scripts/check-clang-tidy.sh
       - name: Configure CMake
+        env:
+          CXX: ${{ matrix.compiler }}
         run: ./scripts/_ci-configure.sh
       - name: Build
         run: cd build && make -j

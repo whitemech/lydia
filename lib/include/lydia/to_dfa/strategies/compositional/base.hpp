@@ -38,10 +38,17 @@ public:
   std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &f) override;
 };
 
-class ComposeDFAVisitor : public Visitor {
+class AComposeDFAVisitor : public Visitor {
+public:
+  virtual DFA *apply(const LDLfFormula &f) { return nullptr; };
+  virtual DFA *apply(const RegExp &f) { return nullptr; };
+  virtual DFA *apply(const PropositionalFormula &f) { return nullptr; };
+};
+
+class ComposeDFAVisitor : public AComposeDFAVisitor {
 private:
   DFA *current_formula_ = nullptr;
-  bool is_diamond;
+  bool is_diamond = false;
 
 public:
   CompositionalStrategy &cs;
@@ -58,6 +65,27 @@ public:
   void visit(const LDLfDiamond &) override;
   void visit(const LDLfBox &) override;
 
+  void visit(const Symbol &) override{};
+  void visit(const QuotedFormula &) override{};
+  void visit(const LDLfF &) override{};
+  void visit(const LDLfT &) override{};
+
+  DFA *apply(const LDLfFormula &f) override;
+};
+
+class ComposeDFARegexVisitor : public AComposeDFAVisitor {
+private:
+  DFA *current_formula_ = nullptr;
+  bool is_diamond;
+
+public:
+  CompositionalStrategy &cs;
+  DFA *result;
+  explicit ComposeDFARegexVisitor(CompositionalStrategy &cs,
+                                  DFA *current_formula, bool is_diamond)
+      : cs{cs}, current_formula_{current_formula}, is_diamond{is_diamond} {}
+  ~ComposeDFARegexVisitor();
+
   // callbacks for regular expressions
   void visit(const PropositionalRegExp &) override;
   void visit(const TestRegExp &) override;
@@ -73,26 +101,30 @@ public:
   void visit(const PropositionalOr &) override;
   void visit(const PropositionalNot &) override;
 
-  void visit(const Symbol &) override{};
-  void visit(const QuotedFormula &) override{};
-  void visit(const LDLfF &) override{};
-  void visit(const LDLfT &) override{};
-
-  DFA *apply(const LDLfFormula &f) {
-    result = nullptr;
-    f.accept(*this);
-    return result;
-  }
-  DFA *apply(const RegExp &f) {
-    result = nullptr;
-    f.accept(*this);
-    return result;
-  }
-  DFA *apply(const PropositionalFormula &f) {
-    result = nullptr;
-    f.accept(*this);
-    return result;
-  }
+  DFA *apply(const RegExp &f) override;
+  DFA *apply(const PropositionalFormula &f) override;
 };
+
+template <typename T, DFA *(*dfaMaker)(void), dfaProductType productType,
+          bool is_positive>
+DFA *dfa_and_or(std::set<std::shared_ptr<T>, SharedComparator> container,
+                AComposeDFAVisitor &v) {
+  DFA *tmp1;
+  DFA *tmp2;
+  DFA *tmp3;
+  DFA *final = dfaMaker();
+  for (const auto &subf : container) {
+    tmp1 = final;
+    tmp2 = v.apply(*subf);
+    tmp3 = dfaProduct(tmp1, tmp2, productType);
+    final = dfaMinimize(tmp3);
+    dfaFree(tmp1);
+    dfaFree(tmp2);
+    dfaFree(tmp3);
+    if (is_sink(final, is_positive))
+      break;
+  }
+  return final;
+}
 
 } // namespace whitemech::lydia

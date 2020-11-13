@@ -25,10 +25,24 @@ project (Lydia
          DESCRIPTION "Lydia is a tool for LDLf translation to DFA and for LDLf synthesis.")
 set(PROJECT_VERSION "0.1.0-rc.1")
 set(${PROJECT_NAME}_VERSION ${PROJECT_VERSION})
-
 add_definitions( -DLYDIA_VERSION="${PROJECT_VERSION}" )
-
 set_property (GLOBAL PROPERTY USE_FOLDERS ON)
+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    # require at least gcc 4.8
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8)
+        message(FATAL_ERROR "GCC version must be at least 8!")
+    endif()
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    # require at least clang 3.2
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6)
+        message(FATAL_ERROR "Clang version must be at least 6!")
+    endif()
+else()
+    message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
+endif()
+
+
 
 message("-- Using build type ${CMAKE_BUILD_TYPE}")
 

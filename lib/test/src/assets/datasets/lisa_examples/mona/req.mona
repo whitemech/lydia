@@ -1,0 +1,7 @@
+#((G ((cancel) -> (X (go)))) -> (G ((((req) -> (X ((grant) || (X ((grant) || (X (grant))))))) && ((grant) -> (X (! (grant))))) && ((cancel) -> (X ((! (grant)) U (go)))))))
+#((F (! ((! cancel) || (X go)))) || (! (F (((! ((! req) || (X (grant || (X (grant || (X grant))))))) || (! ((! grant) || (X (! grant))))) || (! ((! cancel) || (X ((! grant) U go))))))))
+#BNF format
+#((F (! ((! cancel) || (X go)))) || (! (F (((! ((! req) || (X (grant || (X (grant || (X grant))))))) || (! ((! grant) || (X (! grant))))) || (! ((! cancel) || (X ((! grant) U go))))))))
+m2l-str;
+var2 CANCEL, GO, GRANT, REQ;
+((~((ex1 x1: (0 <= x1 & (((~((((ex1 x2: (x2=x1+1 & ((ex1 x3: (x2 <= x3 & ((x3 in GO)) & (all1 x4: (x2 <= x4 & x4 < x3 => (~((x4 in GRANT))))))))))) | (~((x1 in CANCEL)))))) | (((~((((ex1 x2: (x2=x1+1 & (~((x2 in GRANT)))))) | (~((x1 in GRANT)))))) | (~((((ex1 x2: (x2=x1+1 & ((((ex1 x3: (x3=x2+1 & ((((ex1 x4: (x4=x3+1 & ((x4 in GRANT))))) | ((x3 in GRANT))))))) | ((x2 in GRANT))))))) | (~((x1 in REQ)))))))))))))) | ((ex1 x1: (0 <= x1 & (~((((ex1 x2: (x2=x1+1 & ((x2 in GO))))) | (~((x1 in CANCEL))))))))));

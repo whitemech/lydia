@@ -2,9 +2,9 @@
 
 set -e
 
-cd build && make test
+cd build/lib/test && ../../bin/lydiaTest "~[integration]"
 
-cd ..
+cd ../../../
 
 echo "========== Code coverage =========="
 python3 -m gcovr -r . --config "gcovr.cfg" --print-summary --html --html-details -o coverage.html

@@ -1,0 +1,19 @@
+(
+  <(true)*>((<cancel>tt & [true]([go]ff | [true]ff)) & <true>tt)
+  | [(true)*](
+    (
+      (
+        (
+          [req]ff
+          | <true>(
+            (
+              <grant>tt
+              | <true>((<grant>tt | <true>(<grant>tt & <true>tt)) & <true>tt))
+            & <true>tt))
+        & (
+          [grant]ff
+          | <true>([grant]ff & <true>tt)))
+      & (
+        [cancel]ff
+        | <true>(<((([grant](ff))? ; true))*>(<go>tt & <true>tt) & <true>tt)))
+    | [true]ff))

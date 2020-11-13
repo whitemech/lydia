@@ -112,9 +112,11 @@ typedef bool bit;
 typedef std::shared_ptr<dfa> dfa_ptr;
 typedef std::shared_ptr<abstract_dfa> adfa_ptr;
 
-class not_implemented_error : public std::logic_error {
+class not_implemented_error : public std::exception {
 public:
-  not_implemented_error() : std::logic_error("Function not yet implemented"){};
+  const char *what() const noexcept override {
+    return "Function not yet implemented.";
+  }
 };
 
 struct cmp_set_of_ptr {

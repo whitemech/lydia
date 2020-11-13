@@ -1,0 +1,74 @@
+(
+  (
+    (
+      [counter0]ff
+      | <initcounter0>tt)
+    & (
+      <counter0>tt
+      | [initcounter0]ff))
+  & (
+    (
+      [counter1]ff
+      | <initcounter1>tt)
+    & (
+      <counter1>tt
+      | [initcounter1]ff))
+  & [(true)*]((([carry0]ff | <inc>tt) & (<carry0>tt | [inc]ff)) | [true]ff)
+  & [(true)*](
+    (
+      (
+        [carry1]ff
+        | (
+          <counter0>tt
+          & <carry0>tt))
+      & (
+        <carry1>tt
+        | (
+          [counter0]ff
+          | [carry0]ff)))
+    | [true]ff)
+  & [(true)*](
+    (
+      (
+        [true]([counter0]ff | [true]ff)
+        | (
+          (
+            <counter0>tt
+            & [carry0]ff)
+          | (
+            [counter0]ff
+            & <carry0>tt)))
+      & (
+        [true](<counter0>tt | [true]ff)
+        | (
+          (
+            [counter0]ff
+            | <carry0>tt)
+          & (
+            <counter0>tt
+            | [carry0]ff))))
+    | [true]ff)
+  & [(true)*](
+    (
+      (
+        [true]([counter1]ff | [true]ff)
+        | (
+          (
+            <counter1>tt
+            & [carry1]ff)
+          | (
+            [counter1]ff
+            & <carry1>tt)))
+      & (
+        [true](<counter1>tt | [true]ff)
+        | (
+          (
+            [counter1]ff
+            | <carry1>tt)
+          & (
+            <counter1>tt
+            | [carry1]ff))))
+    | [true]ff)
+  & (
+    <(true)*>(([inc]ff & [true]([inc]ff | [true]ff)) & <true>tt)
+    | <(true)*>(([counter0]ff & [counter1]ff) & <true>tt)))

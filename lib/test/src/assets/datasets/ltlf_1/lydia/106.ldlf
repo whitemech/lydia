@@ -1,0 +1,113 @@
+(
+  [true]ff
+  | (
+    [(true)*]((<false>tt | [true]([p6]ff | [true]ff) | <p1>tt) | [true]ff)
+    & [(true)*]((<false>tt | [true]([p7]ff | [true]ff) | <p2>tt) | [true]ff)
+    & [(true)*]((<false>tt | [true]([p8]ff | [true]ff) | <p3>tt) | [true]ff)
+    & [(true)*]((<false>tt | [true]([p9]ff | [true]ff) | <p4>tt) | [true]ff)
+    & [(true)*]((<false>tt | [true]([p10]ff | [true]ff) | <p5>tt) | [true]ff)
+    & [(true)*](
+      (
+        <true>tt
+        & (
+          <false>tt
+          | [true]([p6]ff | [true]ff)
+          | [true]([p7]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p6]ff | [true]ff)
+          | [true]([p8]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p6]ff | [true]ff)
+          | [true]([p9]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p6]ff | [true]ff)
+          | [true]([p10]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p7]ff | [true]ff)
+          | [true]([p6]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p7]ff | [true]ff)
+          | [true]([p8]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p7]ff | [true]ff)
+          | [true]([p9]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p7]ff | [true]ff)
+          | [true]([p10]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p8]ff | [true]ff)
+          | [true]([p6]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p8]ff | [true]ff)
+          | [true]([p7]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p8]ff | [true]ff)
+          | [true]([p9]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p8]ff | [true]ff)
+          | [true]([p10]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p9]ff | [true]ff)
+          | [true]([p6]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p9]ff | [true]ff)
+          | [true]([p7]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p9]ff | [true]ff)
+          | [true]([p8]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p9]ff | [true]ff)
+          | [true]([p10]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p10]ff | [true]ff)
+          | [true]([p6]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p10]ff | [true]ff)
+          | [true]([p7]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p10]ff | [true]ff)
+          | [true]([p8]ff | [true]ff))
+        & (
+          <false>tt
+          | [true]([p10]ff | [true]ff)
+          | [true]([p9]ff | [true]ff)))
+      | [true]ff)
+    & (
+      <false>tt
+      | <(true)*>([(true)*]([p1]ff | [true]ff) & <true>tt)
+      | [(true)*](<(true)*>(<true>(<p6>tt & <true>tt) & <true>tt) | [true]ff))
+    & (
+      <false>tt
+      | <(true)*>([(true)*]([p2]ff | [true]ff) & <true>tt)
+      | [(true)*](<(true)*>(<true>(<p7>tt & <true>tt) & <true>tt) | [true]ff))
+    & (
+      <false>tt
+      | <(true)*>([(true)*]([p3]ff | [true]ff) & <true>tt)
+      | [(true)*](<(true)*>(<true>(<p8>tt & <true>tt) & <true>tt) | [true]ff))
+    & (
+      <false>tt
+      | <(true)*>([(true)*]([p4]ff | [true]ff) & <true>tt)
+      | [(true)*](<(true)*>(<true>(<p9>tt & <true>tt) & <true>tt) | [true]ff))
+    & (
+      <false>tt
+      | <(true)*>([(true)*]([p5]ff | [true]ff) & <true>tt)
+      | [(true)*](<(true)*>(<true>(<p10>tt & <true>tt) & <true>tt) | [true]ff))
+    & <true>tt))
