@@ -848,7 +848,7 @@ TEST_CASE("Translate {true*}(<a>tt | end)", "[translate][ldlf][basic]") {
   REQUIRE(verify(*automaton, {"1", "1", "1"}, true));
 }
 
-TEST_CASE("Translate <(a;b) + (c;d)>tt", "[translate][ldlf][basic]") {
+TEST_CASE("Translate <a,b + c,d>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<(a;b) + (c;d)>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
