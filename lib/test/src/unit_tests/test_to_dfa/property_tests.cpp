@@ -56,11 +56,11 @@ TEST_CASE("Simple theorems", "[to_dfa]") {
   }
 }
 
-TEST_CASE("Advanced theorems", "[to_dfa]") {
+TEST_CASE("Advanced theorems", "[to_dfa][advanced_theorems]") {
   Logger log("advanced-theorems");
-  auto strategy = CompositionalStrategy();
   for (auto &&[i, e] :
        iter::enumerate(iter::product(ADVANCED_THEOREMS, FORMULAS, FORMULAS))) {
+    auto strategy = CompositionalStrategy();
     const auto [theorem, formula_1, formula_2] = e;
     const auto [theorem_str, nb_formulas] = theorem;
     const auto new_theorem = fmt::format(theorem_str, formula_1, formula_2);

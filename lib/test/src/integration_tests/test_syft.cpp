@@ -20,6 +20,7 @@
 #include <filesystem>
 #include <lydia/dfa/mona_dfa.hpp>
 #include <lydia/to_dfa/strategies/compositional/base.hpp>
+#include <mona/bdd.h>
 
 namespace whitemech::lydia {
 
@@ -27,6 +28,63 @@ static Logger log("dataset-ltlf_1");
 static const auto ROOT = std::filesystem::path("..") / ".." / "..";
 static const auto DATASETS_ROOT =
     ROOT / "lib" / "test" / "src" / "assets" / "datasets";
+
+int find_sink(DFA *M) {
+  int i;
+  for (i = 0; i < M->ns; i++) {
+    if (bdd_is_leaf(M->bddm, M->q[i]) &&
+        (bdd_leaf_value(M->bddm, M->q[i]) == i) && (M->f[i] == -1))
+      return i;
+  }
+  return -1;
+}
+
+static void visit_leaves(bdd_manager *bddm, unsigned p) {
+  bool is_leaf = bdd_is_leaf(bddm, p);
+  bool is_marked = bdd_mark(bddm, p);
+  if (is_leaf and not is_marked) {
+    bdd_set_mark(bddm, p, true);
+    unsigned old_left, old_right;
+    unsigned new_first, actual_new_left, actual_new_right;
+    unsigned old_leaf_value = bdd_leaf_value(bddm, p);
+    bdd_record *leaf = &bddm->node_table[p];
+    LOAD_lr(leaf, old_left, old_right) new_first = old_leaf_value - 1;
+    new_first = new_first << 8;
+    new_first |= (old_right >> 16) & 0xff;
+    leaf->lri[0] = new_first;
+
+    LOAD_lr(leaf, actual_new_left, actual_new_right)
+        assert(actual_new_left == old_left - 1);
+    assert(actual_new_right == old_right);
+  } else if (not is_marked) {
+    bdd_set_mark(bddm, p, true);
+    visit_leaves(bddm, bdd_then(bddm, p));
+    visit_leaves(bddm, bdd_else(bddm, p));
+  }
+}
+
+DFA *remove_zero_state(DFA *automaton) {
+  // TODO free memory of BDD nodes from zero state!
+  DFA *tmp = dfaCopy(automaton);
+  if (tmp->ns == 1) {
+    return tmp;
+  }
+  int old_ns = tmp->ns;
+  tmp->ns = tmp->ns - 1;
+  tmp->s = 0;
+
+  for (int i = 0; i < old_ns - 1; i++) {
+    tmp->f[i] = tmp->f[i + 1];
+    tmp->q[i] = tmp->q[i + 1];
+  }
+
+  bdd_prepare_apply1(tmp->bddm);
+  for (int i = 0; i < old_ns - 1; i++) {
+    visit_leaves(tmp->bddm, tmp->q[i]);
+  }
+
+  return tmp;
+}
 
 std::shared_ptr<abstract_dfa> load_mona_dfa(std::filesystem::path filepath) {
   char **names;
@@ -46,9 +104,6 @@ std::shared_ptr<abstract_dfa> load_mona_dfa(std::filesystem::path filepath) {
   for (index = 0; names[index]; index++) {
     names_vector.push_back(names[index]);
   }
-
-  // TODO remove state '0' and make '1' initial, only if states > 1
-
   return std::make_shared<mona_dfa>(dfa, names_vector);
 }
 
@@ -60,28 +115,29 @@ static void _dataset_test(const std::filesystem::path &dataset_path) {
   std::filesystem::directory_iterator it(mona_dataset);
   for (const auto &datapath : it) {
     log.info("Processing file " + dataset_path.string());
-    int var;
-    int *indices;
     const auto strategy = std::make_shared<CompositionalStrategy>();
     const auto filename = datapath.path().filename().stem().string();
     const auto mona_file = mona_dataset / fmt::format("{}.mona", filename);
     const auto lydia_file = lydia_dataset / fmt::format("{}.ldlf", filename);
+    DFA *prop_true = dfaPropositionalTrue();
+    DFA *ldlf_true = dfaLDLfTrue();
     DFA *at_least_one_step =
-        dfaLDLfDiamondProp(dfaPropositionalTrue(), dfaLDLfTrue(), var, indices);
+        dfaLDLfDiamondProp(prop_true, ldlf_true, 0, nullptr);
+    dfaFree(prop_true);
+    dfaFree(ldlf_true);
 
     // Compute MONA DFA
-    auto expected_dfa =
+    auto temp_mona_dfa =
         std::static_pointer_cast<mona_dfa>(load_mona_dfa(mona_file));
-    //    auto temp_mona_df      = std::make_shared<mona_dfa>(expected_mona_dfa,
-    //    temp_mona_dfa->names);
+    auto expected_mona_dfa = remove_zero_state(temp_mona_dfa->dfa_);
+    auto expected_dfa =
+        std::make_shared<mona_dfa>(expected_mona_dfa, temp_mona_dfa->names);
 
     // Compute Lydia Dfa
     // add "[true]end" in AND
     log.info("Lydia: Computing automaton " + lydia_file.string());
     auto temp_lydia_dfa = std::static_pointer_cast<mona_dfa>(
         to_dfa_from_formula_file(lydia_file, *strategy));
-    var = temp_lydia_dfa->get_nb_variables();
-    indices = temp_lydia_dfa->indices.data();
     auto actual_lydia_dfa =
         dfaProduct(temp_lydia_dfa->dfa_, at_least_one_step, dfaAND);
     actual_lydia_dfa = dfaMinimize(actual_lydia_dfa);
@@ -94,9 +150,8 @@ static void _dataset_test(const std::filesystem::path &dataset_path) {
     //  commented because of the additional 'zero' state in mona.
     int expected_nb_states = expected_dfa->get_nb_states();
     int actual_nb_states = actual_dfa->get_nb_states();
-    REQUIRE((expected_nb_states == actual_nb_states + 1 or
-             expected_nb_states == actual_nb_states));
-    // REQUIRE(compare<1>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
+    REQUIRE((expected_nb_states == actual_nb_states));
+    REQUIRE(compare<1>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
     REQUIRE(compare<2>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
     REQUIRE(compare<3>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
     REQUIRE(compare<4>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
@@ -106,6 +161,7 @@ static void _dataset_test(const std::filesystem::path &dataset_path) {
     REQUIRE(compare<8>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
     REQUIRE(compare<9>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
     REQUIRE(compare<10>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
+    dfaFree(at_least_one_step);
   }
 }
 

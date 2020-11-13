@@ -23,7 +23,7 @@
 
 namespace whitemech::lydia::Test {
 
-TEST_CASE("Set of DFA states", "[translate]") {
+TEST_CASE("Set of DFA states", "[translate][symbolic]") {
   auto context = AstManager{};
   auto a = DFAState(context, set_nfa_states{});
   auto b = DFAState(context, set_formulas{context.makeLdlfTrue()});
@@ -35,7 +35,7 @@ TEST_CASE("Set of DFA states", "[translate]") {
   REQUIRE(a < b);
 }
 
-TEST_CASE("Translate !(ff & tt)", "[translate]") {
+TEST_CASE("Translate !(ff & tt)", "[translate][ldlf][basic]") {
   std::string formula_name = "!(ff & tt)";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -47,7 +47,7 @@ TEST_CASE("Translate !(ff & tt)", "[translate]") {
   REQUIRE(verify(*automaton, {{}, {}}, true));
 }
 
-TEST_CASE("Translate (ff & tt)", "[translate]") {
+TEST_CASE("Translate (ff & tt)", "[translate][ldlf][basic]") {
   std::string formula_name = "(ff & tt)";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -59,7 +59,7 @@ TEST_CASE("Translate (ff & tt)", "[translate]") {
   REQUIRE(verify(*automaton, {{}, {}}, false));
 }
 
-TEST_CASE("Translate <true>tt", "[translate]") {
+TEST_CASE("Translate <true>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<true>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -70,7 +70,7 @@ TEST_CASE("Translate <true>tt", "[translate]") {
   REQUIRE(verify(*automaton, {{}, {}}, true));
 }
 
-TEST_CASE("Translate <a>tt", "[translate]") {
+TEST_CASE("Translate <a>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<a>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -88,7 +88,7 @@ TEST_CASE("Translate <a>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"1", "1"}, true));
 }
 
-TEST_CASE("Translate <a & b>tt", "[translate]") {
+TEST_CASE("Translate <a & b>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<a & b>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -124,7 +124,7 @@ TEST_CASE("Translate <a & b>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, true));
 }
 
-TEST_CASE("Translate <a | b>tt", "[translate]") {
+TEST_CASE("Translate <a | b>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<a | b>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -160,7 +160,7 @@ TEST_CASE("Translate <a | b>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, true));
 }
 
-TEST_CASE("Translate <!a>tt", "[translate]") {
+TEST_CASE("Translate <!a>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<!a>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -178,7 +178,7 @@ TEST_CASE("Translate <!a>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"1", "1"}, false));
 }
 
-TEST_CASE("Translate <!(a & b)>tt", "[translate]") {
+TEST_CASE("Translate <!(a & b)>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<!(a & b)>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -214,7 +214,7 @@ TEST_CASE("Translate <!(a & b)>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, false));
 }
 
-TEST_CASE("Translate <!(a | b)>tt", "[translate]") {
+TEST_CASE("Translate <!(a | b)>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<!(a | b)>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -250,7 +250,7 @@ TEST_CASE("Translate <!(a | b)>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, false));
 }
 
-TEST_CASE("Translate {true}tt", "[translate]") {
+TEST_CASE("Translate {true}tt", "[translate][ldlf][basic]") {
   std::string formula_name = "[true]tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -262,7 +262,7 @@ TEST_CASE("Translate {true}tt", "[translate]") {
   REQUIRE(verify(*automaton, {{}, {}}, true));
 }
 
-TEST_CASE("Translate {a}tt", "[translate]") {
+TEST_CASE("Translate {a}tt", "[translate][ldlf][basic]") {
   std::string formula_name = "[a]tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -279,7 +279,7 @@ TEST_CASE("Translate {a}tt", "[translate]") {
   REQUIRE(verify(*automaton, {"1", "1"}, true));
 }
 
-TEST_CASE("Translate {a & b}ff", "[translate]") {
+TEST_CASE("Translate {a & b}ff", "[translate][ldlf][basic]") {
   std::string formula_name = "[a & b]ff";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -315,7 +315,7 @@ TEST_CASE("Translate {a & b}ff", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, false));
 }
 
-TEST_CASE("Translate {a | b}ff", "[translate]") {
+TEST_CASE("Translate {a | b}ff", "[translate][ldlf][basic]") {
   std::string formula_name = "[a | b]ff";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -351,7 +351,7 @@ TEST_CASE("Translate {a | b}ff", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, false));
 }
 
-TEST_CASE("Translate {a}ff", "[translate]") {
+TEST_CASE("Translate {a}ff", "[translate][ldlf][basic]") {
   std::string formula_name = "[a]ff";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -368,7 +368,7 @@ TEST_CASE("Translate {a}ff", "[translate]") {
   REQUIRE(verify(*automaton, {"1", "1"}, false));
 }
 
-TEST_CASE("Translate <<true>tt?>tt", "[translate]") {
+TEST_CASE("Translate <<true>tt?>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<<true>tt?>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -381,7 +381,7 @@ TEST_CASE("Translate <<true>tt?>tt", "[translate]") {
   REQUIRE(verify(*automaton, {{}, {}}, true));
 }
 
-TEST_CASE("Translate <{true}ff?>tt", "[translate]") {
+TEST_CASE("Translate <{true}ff?>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<[true]ff?>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -393,7 +393,7 @@ TEST_CASE("Translate <{true}ff?>tt", "[translate]") {
   REQUIRE(verify(*automaton, {{}, {}}, false));
 }
 
-TEST_CASE("Translate <a plus b>tt", "[translate]") {
+TEST_CASE("Translate <a plus b>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<a + b>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -428,7 +428,7 @@ TEST_CASE("Translate <a plus b>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, true));
 }
 
-TEST_CASE("Translate {a plus b}ff", "[translate]") {
+TEST_CASE("Translate {a plus b}ff", "[translate][ldlf][basic]") {
   std::string formula_name = "[a + b]ff";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -464,7 +464,7 @@ TEST_CASE("Translate {a plus b}ff", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, false));
 }
 
-TEST_CASE("Translate <a,b>tt", "[translate]") {
+TEST_CASE("Translate <a,b>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<a ; b>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -500,7 +500,7 @@ TEST_CASE("Translate <a,b>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, true));
 }
 
-TEST_CASE("Translate {a,b}ff", "[translate]") {
+TEST_CASE("Translate {a,b}ff", "[translate][ldlf][basic]") {
   std::string formula_name = "[a ; b]ff";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -536,7 +536,7 @@ TEST_CASE("Translate {a,b}ff", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, false));
 }
 
-TEST_CASE("Translate <a*>tt", "[translate]") {
+TEST_CASE("Translate <a*>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<a*>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -572,7 +572,7 @@ TEST_CASE("Translate <a*>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, true));
 }
 
-TEST_CASE("Translate {a*}tt", "[translate]") {
+TEST_CASE("Translate {a*}tt", "[translate][ldlf][basic]") {
   std::string formula_name = "[a*]tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -607,7 +607,7 @@ TEST_CASE("Translate {a*}tt", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, true));
 }
 
-TEST_CASE("Translate <a*, b>tt", "[translate]") {
+TEST_CASE("Translate <a*, b>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<a*; b>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -643,7 +643,7 @@ TEST_CASE("Translate <a*, b>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, true));
 }
 
-TEST_CASE("Translate {a*, b}ff", "[translate]") {
+TEST_CASE("Translate {a*, b}ff", "[translate][ldlf][basic]") {
   std::string formula_name = "[a*; b]ff";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -679,7 +679,7 @@ TEST_CASE("Translate {a*, b}ff", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, false));
 }
 
-TEST_CASE("Translate <a* plus b>tt", "[translate]") {
+TEST_CASE("Translate <a* plus b>tt", "[translate][ldlf][basic]") {
   std::string formula_name = "<a* + b>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -715,7 +715,7 @@ TEST_CASE("Translate <a* plus b>tt", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, true));
 }
 
-TEST_CASE("Translate {a* plus b}ff", "[translate]") {
+TEST_CASE("Translate {a* plus b}ff", "[translate][ldlf][basic]") {
   std::string formula_name = "[a* + b]ff";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -751,7 +751,7 @@ TEST_CASE("Translate {a* plus b}ff", "[translate]") {
   REQUIRE(verify(*automaton, {"11", "11"}, false));
 }
 
-TEST_CASE("Translate <true*>(<a>tt & !end)", "[translate]") {
+TEST_CASE("Translate <true*>(<a>tt & !end)", "[translate][ldlf][basic]") {
   std::string formula_name = "<true*>(<a>tt & !end)";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -779,7 +779,8 @@ TEST_CASE("Translate <true*>(<a>tt & !end)", "[translate]") {
   REQUIRE(verify(*automaton, {"1", "1", "1"}, true));
 }
 
-TEST_CASE("Translate <(<a>tt?, true)*>(<b>tt & !end)", "[translate]") {
+TEST_CASE("Translate <(<a>tt?, true)*>(<b>tt & !end)",
+          "[translate][ldlf][basic]") {
   std::string formula_name = "<(<a>tt?; true)*>(<b>tt & !end)";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -819,7 +820,7 @@ TEST_CASE("Translate <(<a>tt?, true)*>(<b>tt & !end)", "[translate]") {
   REQUIRE(verify(*automaton, {"01", "00", "10"}, false));
 }
 
-TEST_CASE("Translate {true*}(<a>tt | end)", "[translate]") {
+TEST_CASE("Translate {true*}(<a>tt | end)", "[translate][ldlf][basic]") {
   std::string formula_name = "[true*](<a>tt | end)";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
@@ -847,7 +848,7 @@ TEST_CASE("Translate {true*}(<a>tt | end)", "[translate]") {
   REQUIRE(verify(*automaton, {"1", "1", "1"}, true));
 }
 
-TEST_CASE("Translate sequence of stars", "[translate]") {
+TEST_CASE("Translate sequence of stars", "[translate][ldlf][basic]") {
   std::string formula_name = "<p_10* ; p_11* ; p_12* ; p_13* ; p_14*>tt";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();

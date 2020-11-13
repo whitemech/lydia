@@ -19,6 +19,22 @@
 
 namespace whitemech::lydia {
 
+DFA *ComposeDFAVisitor::apply(const LDLfFormula &f) {
+  result = nullptr;
+  f.accept(*this);
+  return result;
+}
+DFA *ComposeDFAVisitor::apply(const RegExp &f) {
+  result = nullptr;
+  f.accept(*this);
+  return result;
+}
+DFA *ComposeDFAVisitor::apply(const PropositionalFormula &f) {
+  result = nullptr;
+  f.accept(*this);
+  return result;
+}
+
 std::shared_ptr<abstract_dfa>
 CompositionalStrategy::to_dfa(const LDLfFormula &formula) {
   auto formula_nnf = to_nnf(formula);
@@ -47,33 +63,13 @@ void ComposeDFAVisitor::visit(const LDLfTrue &f) { result = dfaLDLfTrue(); }
 void ComposeDFAVisitor::visit(const LDLfFalse &f) { result = dfaLDLfFalse(); }
 
 void ComposeDFAVisitor::visit(const LDLfAnd &f) {
-  DFA *tmp1;
-  DFA *tmp2;
-  DFA *final = dfaLDLfTrue();
-  for (const auto &subf : f.get_container()) {
-    tmp1 = final;
-    tmp2 = apply(*subf);
-    final = dfaProduct(tmp1, tmp2, dfaAND);
-    final = dfaMinimize(final);
-    dfaFree(tmp1);
-    dfaFree(tmp2);
-  }
-  result = final;
+  result =
+      and_or<const LDLfFormula, dfaLDLfTrue, dfaAND, false>(f.get_container());
 }
 
 void ComposeDFAVisitor::visit(const LDLfOr &f) {
-  DFA *tmp1 = dfaLDLfFalse();
-  DFA *tmp2;
-  DFA *final = tmp1;
-  for (const auto &subf : f.get_container()) {
-    tmp1 = final;
-    tmp2 = apply(*subf);
-    final = dfaProduct(tmp1, tmp2, dfaOR);
-    final = dfaMinimize(final);
-    dfaFree(tmp1);
-    dfaFree(tmp2);
-  }
-  result = final;
+  result =
+      and_or<const LDLfFormula, dfaLDLfFalse, dfaOR, true>(f.get_container());
 }
 
 void ComposeDFAVisitor::visit(const LDLfNot &f) {
@@ -121,6 +117,8 @@ void ComposeDFAVisitor::visit(const UnionRegExp &r) {
     dfaFree(tmp1);
     dfaFree(tmp2);
     dfaFree(tmp3);
+    if (is_sink(final, is_diamond))
+      break;
   }
   result = final;
 }
@@ -137,7 +135,7 @@ void ComposeDFAVisitor::visit(const SequenceRegExp &r) {
     current_formula_ = final;
     dfaFree(tmp);
   }
-  result = final;
+  result = current_formula_;
   current_formula_ = old_formula;
 }
 
@@ -203,37 +201,13 @@ void ComposeDFAVisitor::visit(const PropositionalAtom &f) {
 }
 
 void ComposeDFAVisitor::visit(const PropositionalAnd &f) {
-  DFA *tmp1 = dfaLDLfTrue();
-  DFA *tmp2;
-  DFA *tmp3;
-  DFA *dfa_and = tmp1;
-  for (const auto &subf : f.get_container()) {
-    tmp1 = dfa_and;
-    tmp2 = apply(*subf);
-    tmp3 = dfaProduct(tmp1, tmp2, dfaAND);
-    dfa_and = dfaMinimize(tmp3);
-    dfaFree(tmp1);
-    dfaFree(tmp2);
-    dfaFree(tmp3);
-  }
-  result = dfa_and;
+  result = and_or<const PropositionalFormula, dfaLDLfTrue, dfaAND, false>(
+      f.get_container());
 }
 
 void ComposeDFAVisitor::visit(const PropositionalOr &f) {
-  DFA *tmp1 = dfaLDLfFalse();
-  DFA *tmp2;
-  DFA *tmp3;
-  DFA *dfa_and = tmp1;
-  for (const auto &subf : f.get_container()) {
-    tmp1 = dfa_and;
-    tmp2 = apply(*subf);
-    tmp3 = dfaProduct(tmp1, tmp2, dfaOR);
-    dfa_and = dfaMinimize(tmp3);
-    dfaFree(tmp1);
-    dfaFree(tmp2);
-    dfaFree(tmp3);
-  }
-  result = dfa_and;
+  result = and_or<const PropositionalFormula, dfaLDLfFalse, dfaOR, true>(
+      f.get_container());
 }
 
 void ComposeDFAVisitor::visit(const PropositionalNot &f) {

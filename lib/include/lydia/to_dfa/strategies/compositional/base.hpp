@@ -78,20 +78,29 @@ public:
   void visit(const LDLfF &) override{};
   void visit(const LDLfT &) override{};
 
-  DFA *apply(const LDLfFormula &f) {
-    result = nullptr;
-    f.accept(*this);
-    return result;
-  }
-  DFA *apply(const RegExp &f) {
-    result = nullptr;
-    f.accept(*this);
-    return result;
-  }
-  DFA *apply(const PropositionalFormula &f) {
-    result = nullptr;
-    f.accept(*this);
-    return result;
+  DFA *apply(const LDLfFormula &f);
+  DFA *apply(const RegExp &f);
+  DFA *apply(const PropositionalFormula &f);
+
+  template <typename T, DFA *(*dfaMaker)(void), dfaProductType productType,
+            bool is_positive>
+  DFA *and_or(std::set<std::shared_ptr<T>, SharedComparator> container) {
+    DFA *tmp1;
+    DFA *tmp2;
+    DFA *tmp3;
+    DFA *final = dfaMaker();
+    for (const auto &subf : container) {
+      tmp1 = final;
+      tmp2 = apply(*subf);
+      tmp3 = dfaProduct(tmp1, tmp2, productType);
+      final = dfaMinimize(tmp3);
+      dfaFree(tmp1);
+      dfaFree(tmp2);
+      dfaFree(tmp3);
+      if (is_sink(final, is_positive))
+        break;
+    }
+    return final;
   }
 };
 

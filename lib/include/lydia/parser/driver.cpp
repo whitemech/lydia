@@ -131,16 +131,14 @@ Driver::add_LDLfEquivalence(std::shared_ptr<const LDLfFormula> &lhs,
 std::shared_ptr<const LDLfFormula> Driver::add_LDLfEnd() const {
   auto ptr_true = context->makePropRegex(context->makeTrue());
   auto ptr_ff = context->makeLdlfFalse();
-  return this->add_LDLfBox((std::shared_ptr<const RegExp> &)ptr_true,
-                           (std::shared_ptr<const LDLfFormula> &)ptr_ff);
+  return this->add_LDLfBox(ptr_true, ptr_ff);
 }
 
 std::shared_ptr<const LDLfFormula> Driver::add_LDLfLast() const {
   auto ptr_true = context->makePropRegex(context->makeTrue());
   auto ptr_ff = context->makeLdlfFalse();
   auto formula = context->makeLdlfBox(ptr_true, ptr_ff);
-  return this->add_LDLfDiamond((std::shared_ptr<const RegExp> &)ptr_true,
-                               (std::shared_ptr<const LDLfFormula> &)formula);
+  return this->add_LDLfDiamond(ptr_true, formula);
 }
 
 std::shared_ptr<const RegExp> Driver::add_PropositionalRegExp(

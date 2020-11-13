@@ -22,7 +22,14 @@
 
 namespace whitemech::lydia::Test {
 
-TEST_CASE("Test MONA dfa_concatenate", "[dfa/mona_dfa/concatenation]") {
+TEST_CASE("Test is sink", "[dfa][is_sink]") {
+  REQUIRE(is_sink(dfaLDLfTrue(), true));
+  REQUIRE(!is_sink(dfaLDLfTrue(), false));
+  REQUIRE(is_sink(dfaLDLfFalse(), false));
+  REQUIRE(!is_sink(dfaLDLfFalse(), true));
+}
+
+TEST_CASE("Test MONA dfa_concatenate", "[dfa][mona_dfa][concatenation]") {
   bdd_init();
   int var = 2;
   auto indices = std::vector<int>(var);
@@ -30,6 +37,8 @@ TEST_CASE("Test MONA dfa_concatenate", "[dfa/mona_dfa/concatenation]") {
   auto a = dfaNext(0);
   auto b = dfaNext(1);
   auto automaton = mona_dfa(dfa_concatenate(a, b, var, indices.data()), var);
+  dfaFree(a);
+  dfaFree(b);
   print_mona_dfa(automaton.get_dfa(), "concatenate_a_b", 4);
   REQUIRE(automaton.get_nb_states() == 4);
   REQUIRE(automaton.get_nb_variables() == 2);
@@ -57,20 +66,21 @@ TEST_CASE("Test MONA dfa_concatenate", "[dfa/mona_dfa/concatenation]") {
   REQUIRE(verify(automaton, {"11", "11", "11"}, false));
 }
 
-TEST_CASE("Test MONA dfa_closure a", "[dfa/mona_dfa/closure]") {
+TEST_CASE("Test MONA dfa_closure a", "[dfa][mona_dfa][closure]") {
   bdd_init();
   int var = 1;
   auto indices = std::vector<int>(var);
   std::iota(indices.begin(), indices.end(), 0);
   auto a = dfaNext(0);
   auto automaton = mona_dfa(dfa_closure(a, var, indices.data()), var);
+  dfaFree(a);
   print_mona_dfa(automaton.get_dfa(), "closure_a", 4);
   REQUIRE(automaton.get_nb_states() == 3);
   REQUIRE(automaton.get_nb_variables() == 1);
 }
 
 TEST_CASE("Test MONA dfa_closure a,b and allow empty",
-          "[dfa/mona_dfa/closure]") {
+          "[dfa][mona_dfa][closure]") {
   bdd_init();
   int var = 2;
   auto indices = std::vector<int>(var);
@@ -81,6 +91,9 @@ TEST_CASE("Test MONA dfa_closure a,b and allow empty",
   dfa_accept_empty(ab);
   auto tmp = dfa_closure(ab, var, indices.data());
   auto automaton = mona_dfa(tmp, var);
+  dfaFree(a);
+  dfaFree(b);
+  dfaFree(ab);
   print_mona_dfa(automaton.get_dfa(), "closure_ab_accept_empty", 4);
   REQUIRE(automaton.get_nb_states() == 3);
   REQUIRE(automaton.get_nb_variables() == 2);
@@ -92,7 +105,7 @@ TEST_CASE("Test MONA dfa_closure a,b and allow empty",
   REQUIRE(verify(automaton, {"01", "10", "01", "10"}, true));
 }
 
-TEST_CASE("Test MONA dfaLDLfTrue", "[dfa/mona_dfa/true]") {
+TEST_CASE("Test MONA dfaLDLfTrue", "[dfa][mona_dfa][true]") {
   bdd_init();
   auto automaton = mona_dfa(dfaLDLfTrue(), 0);
   REQUIRE(automaton.get_nb_states() == 1);
@@ -102,7 +115,7 @@ TEST_CASE("Test MONA dfaLDLfTrue", "[dfa/mona_dfa/true]") {
   REQUIRE(verify(automaton, {"", ""}, true));
 }
 
-TEST_CASE("Test MONA dfaLDLfFalse", "[dfa/mona_dfa/true]") {
+TEST_CASE("Test MONA dfaLDLfFalse", "[dfa][mona_dfa][true]") {
   bdd_init();
   auto automaton = mona_dfa(dfaLDLfFalse(), 0);
   REQUIRE(automaton.get_nb_states() == 1);
@@ -112,13 +125,13 @@ TEST_CASE("Test MONA dfaLDLfFalse", "[dfa/mona_dfa/true]") {
   REQUIRE(verify(automaton, {"", ""}, false));
 }
 
-TEST_CASE("Test MONA dfaNext", "[dfa/mona_dfa/next]") {
+TEST_CASE("Test MONA dfaNext", "[dfa][mona_dfa][next]") {
   bdd_init();
   auto a = mona_dfa(dfaNext(0), 1);
   print_mona_dfa(a.get_dfa(), "next", 1);
 }
 
-TEST_CASE("Test MONA dfaLDLfProp", "[dfa/mona_dfa/prop]") {
+TEST_CASE("Test MONA dfaLDLfProp", "[dfa][mona_dfa][prop]") {
   bdd_init();
   int var = 1;
   auto l = std::vector<int>(var);
@@ -126,6 +139,8 @@ TEST_CASE("Test MONA dfaLDLfProp", "[dfa/mona_dfa/prop]") {
   auto ttrue = dfaLDLfTrue();
   auto a = dfaNext(0);
   auto result = mona_dfa(dfaLDLfDiamondProp(a, ttrue, var, l.data()), 1);
+  dfaFree(a);
+  dfaFree(ttrue);
   print_mona_dfa(result.get_dfa(), "dfaLDLfProp", 4);
   REQUIRE(verify(result, {}, false));
   REQUIRE(verify(result, {"0"}, false));
