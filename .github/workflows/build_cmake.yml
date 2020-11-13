@@ -62,8 +62,7 @@ jobs:
       - name: Build
         run: cd build && make -j
       - name: Test
-#        run: ./scripts/_ci-test.sh
-        run: cd build/lib/test && ../../bin/lydiaTest
+        run: ./scripts/_ci-test.sh
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
