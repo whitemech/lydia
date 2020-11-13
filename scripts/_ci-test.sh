@@ -2,7 +2,7 @@
 
 set -e
 
-cd build && make test
+cd build/lib/test && ../../bin/lydiaTest "~[integration] ~[advanced_theorems]"
 
 cd ..
 

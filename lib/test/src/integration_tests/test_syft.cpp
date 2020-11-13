@@ -143,6 +143,7 @@ static void _dataset_test(const std::filesystem::path &dataset_path) {
     actual_lydia_dfa = dfaMinimize(actual_lydia_dfa);
     auto actual_dfa =
         std::make_shared<mona_dfa>(actual_lydia_dfa, temp_lydia_dfa->names);
+    dfaFree(at_least_one_step);
 
     int expected_nb_vars = expected_dfa->get_nb_variables();
     int actual_nb_vars = actual_dfa->get_nb_variables();
@@ -161,7 +162,38 @@ static void _dataset_test(const std::filesystem::path &dataset_path) {
     REQUIRE(compare<8>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
     REQUIRE(compare<9>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
     REQUIRE(compare<10>(*expected_dfa, *actual_dfa, actual_nb_vars, equal));
-    dfaFree(at_least_one_step);
+
+    // compare shortest positive/negative examples
+    char *expected_example, *actual_example;
+    expected_example =
+        dfaMakeExample(expected_dfa->dfa_, 1, expected_dfa->get_nb_variables(),
+                       expected_dfa->indices.data());
+    actual_example =
+        dfaMakeExample(actual_dfa->dfa_, 1, actual_dfa->get_nb_variables(),
+                       actual_dfa->indices.data());
+    // eensure ither both null or both not null
+    REQUIRE((expected_example == nullptr and actual_example == nullptr or
+             expected_example != nullptr and actual_example != nullptr));
+    if (expected_example) {
+      auto expected_shortest_positive_example = std::string(actual_example);
+      auto actual_shortest_positive_example = std::string(expected_example);
+      REQUIRE(expected_shortest_positive_example ==
+              actual_shortest_positive_example);
+    }
+    expected_example =
+        dfaMakeExample(expected_dfa->dfa_, -1, expected_dfa->get_nb_variables(),
+                       expected_dfa->indices.data());
+    actual_example =
+        dfaMakeExample(actual_dfa->dfa_, -1, actual_dfa->get_nb_variables(),
+                       actual_dfa->indices.data());
+    REQUIRE((expected_example == nullptr and actual_example == nullptr or
+             expected_example != nullptr and actual_example != nullptr));
+    if (expected_example) {
+      auto expected_shortest_negative_example = std::string(actual_example);
+      auto actual_shortest_negative_example = std::string(expected_example);
+      REQUIRE(expected_shortest_negative_example ==
+              actual_shortest_negative_example);
+    }
   }
 }
 

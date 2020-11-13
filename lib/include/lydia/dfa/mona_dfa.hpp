@@ -39,18 +39,18 @@ private:
 public:
   DFA *dfa_;
   std::vector<std::string> names;
-  std::vector<int> indices;
+  std::vector<unsigned> indices;
 
   mona_dfa(DFA *dfa, int nb_variables)
       : dfa_{dfa}, nb_variables_{nb_variables} {
-    indices = std::vector<int>(nb_variables);
+    indices = std::vector<unsigned>(nb_variables);
     std::iota(indices.begin(), indices.end(), 0);
     names = std::vector<std::string>(nb_variables);
     std::iota(names.begin(), names.end(), "0");
   }
   mona_dfa(DFA *dfa, const std::vector<std::string> &names)
       : dfa_{dfa}, nb_variables_{(int)names.size()}, names{names} {
-    indices = std::vector<int>(names.size());
+    indices = std::vector<unsigned>(names.size());
     std::iota(indices.begin(), indices.end(), 0);
   }
   ~mona_dfa();
