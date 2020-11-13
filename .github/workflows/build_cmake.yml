@@ -30,7 +30,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04]  # TODO include macos-latest, windows-latest
-        compiler: [g++-8, g++-9]
+        compiler: [g++-9]
 
     timeout-minutes: 30
 
