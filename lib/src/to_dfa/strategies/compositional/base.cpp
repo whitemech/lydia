@@ -145,6 +145,12 @@ void ComposeDFARegexVisitor::visit(const SequenceRegExp &r) {
 
 void ComposeDFARegexVisitor::visit(const StarRegExp &r) {
   DFA *body = dfaCopy(current_formula_);
+  bool test_only = is_test_only(r);
+  if (test_only) {
+    result = body;
+    return;
+  }
+
   auto visitor = ComposeDFAVisitor(cs);
   DFA *regex = visitor.apply(
       *r.ctx().makeLdlfDiamond(r.get_arg(), r.ctx().makeLdlfEnd()));
