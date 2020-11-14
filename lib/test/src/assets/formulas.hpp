@@ -115,7 +115,6 @@ static const std::vector<std::string> FORMULAS{
     "[(((((<!a>tt)?) ; (true))*) ; ((<!b>tt)?))]ff",
     "(<true> tt) & ([a] <b>tt)",
     "<a>tt & !(<true>(<true>tt))",
-    "((<a>tt) && !(<true>(<true>tt)))",
     "!(<true*>!((<a>tt) -> (<true>(<b>tt))) )",
     "[( ((<!a>tt)? ; true)* ; ((<!b>tt)?))]ff",
     "< (!(a | b | c ))* ; (a | c) ; (!(a | b | c))* ; (b | c) >(<true>tt)",
