@@ -33,10 +33,10 @@ int mona_dfa::get_successor(int state, const interpretation &symbol) const {
   bdd_manager *mgr = this->dfa_->bddm;
   unsigned l, r, index;
   unsigned current_node = dfa_->q[state];
-  LOAD_lri(&mgr->node_table[current_node], l, r, index);
-  while (index != BDD_LEAF_INDEX) {
+  LOAD_lri(&mgr->node_table[current_node], l, r,
+           index) while (index != BDD_LEAF_INDEX) {
     current_node = symbol[index] ? r : l;
-    LOAD_lri(&mgr->node_table[current_node], l, r, index);
+    LOAD_lri(&mgr->node_table[current_node], l, r, index)
   }
   return l;
 }

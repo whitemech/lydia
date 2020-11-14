@@ -102,6 +102,46 @@ static const std::vector<std::string> FORMULAS{
     // LTLf formulas: Next and Until
     "<true>(<a>tt & ~end)",
     "<(<a>tt?; true)*>(<b>tt & ~end)",
+    // other misc formulas
+    "<((a & (!b)))>tt",
+    "[true*](([true]ff) || (<!a>tt) || (<true*>(<b>tt)))",
+    "<(((<a && b>tt)?)*)*>([(<((c*) + (d || a))*><b>tt)?]<d>tt)",
+    "<true>tt && (<a>tt -> <true><b>tt)",
+    "([(true*) ; ((!(<<b>tt?>(tt)))?)](ff))",
+    "[(true*) ; ((<(<!b>tt)?>tt)?)]ff",
+    "(<(((<b>tt?);true)*) ; ((<a & b>tt)?)>tt) || ([(true*);((<!b>tt)?)]ff)",
+    "(<(((<b>tt?);true)*)>(<a & b>tt) || ([true*]<b>tt))",
+    "[(((((<!a>tt)?) ; (true))*) ; ((<!b>tt)?))]ff",
+    "(<true> tt) & ([a] <b>tt)",
+    "<a>tt & !(<true>(<true>tt))",
+    "((<a>tt) && !(<true>(<true>tt)))",
+    "!(<true*>!((<a>tt) -> (<true>(<b>tt))) )",
+    "[( ((<!a>tt)? ; true)* ; ((<!b>tt)?))]ff",
+    "< (!(a | b | c ))* ; (a | c) ; (!(a | b | c))* ; (b | c) >(<true>tt)",
+    // from ltlf
+    "[(((!(<a>(tt)))? ; true))*]((<b>(tt) | end))",
+    "[(true)*](((!(<a>(tt)) | <(true)*>((<b>(tt) & !(end)))) | end))",
+    "(!(<(true)*>(([(((!(<(((<a>(tt))? ; true))*>(((<b>(tt) | <c>(tt)) & "
+    "!(end)))))? ; true))*](((<true>((<e>(tt) & !(end))) | ([true]((<f>(tt) | "
+    "end)) & [(true)*]((<h>(tt) | end)))) | end)) & !(end)))) | "
+    "[(((!(<(true)*>((<d>(tt) & !(end)))))? ; true))*]((<((((<g>(tt) | "
+    "<i>(tt)))? ; true))*>((<l>(tt) & !(end))) | end)))",
+    "([(true)*](((!(<rl>(tt)) | <(true)*>((<aa>(tt) & !(end)))) | end)) & "
+    "[(true)*](((!(<aa>(tt)) | <(true)*>((<dl>(tt) & !(end)))) | end)) & "
+    "[(true)*](((!(<aa>(tt)) | <true>((<dl>(tt) & !(end)))) | end)))",
+    "([(true)*](((!(<rl>(tt)) | <(true)*>((<aa>(tt) & !(end)))) | end)) & "
+    "[(true)*](((!(<aa>(tt)) | <true>((<dl>(tt) & !(end)))) | end)))",
+    "([(true)*](((<a>(tt) | <b>(tt)) | end)) | [(true)*]((<c>(tt) | end)))",
+    "[(true)*](((<a>(tt) | <b>(tt) | <c>(tt)) | end))",
+    "((!(([(true)*](((<a>(tt) | <b>(tt)) | end)) | [(true)*]((<c>(tt) | "
+    "end)))) | [(true)*](((<a>(tt) | <b>(tt) | <c>(tt)) | end))) & "
+    "(([(true)*](((<a>(tt) | <b>(tt)) | end)) | [(true)*]((<c>(tt) | end))) | "
+    "!([(true)*](((<a>(tt) | <b>(tt) | <c>(tt)) | end)))))",
+    "(!(<(true)*>((<a>(tt) & !(end)))) | !(<(true)*>((<b>(tt) & !(end)))))",
+    "(((<a>(tt) & !(<b>(tt))) | (<b>(tt) & !(<a>(tt)))) & [true]((<false>(tt) "
+    "| end)))",
+    "(<true>(tt) & [true](((!(<a>(tt)) | [true]((<b>(tt) | end))) | end)))",
+    "<true>((<true>(tt) & !(end)))",
 };
 
 static const std::vector<std::string> SIMPLE_THEOREMS{
