@@ -46,6 +46,10 @@ TEST_CASE("Simple theorems", "[to_dfa]") {
           dfaTrue(), automaton->get_nb_variables());
       REQUIRE(automaton->get_nb_states() == 1);
       REQUIRE(automaton->is_final(automaton->get_initial_state()));
+      auto symbol = interpretation(automaton->get_nb_variables());
+      auto successor =
+          automaton->get_successor(automaton->get_initial_state(), symbol);
+      REQUIRE(successor == automaton->get_initial_state());
     }
   }
 }
@@ -65,7 +69,6 @@ TEST_CASE("Advanced theorems", "[to_dfa][advanced_theorems]") {
       log.info(section_id);
     }
     adfa_ptr automaton = to_dfa_from_formula_string(new_theorem, strategy);
-    ;
     REQUIRE(automaton->get_nb_states() == 1);
     REQUIRE(automaton->is_final(automaton->get_initial_state()));
     auto symbol = interpretation(automaton->get_nb_variables());
