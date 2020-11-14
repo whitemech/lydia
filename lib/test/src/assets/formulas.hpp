@@ -94,6 +94,7 @@ static const std::vector<std::string> FORMULAS{
     "[a*]ff",
     "<(a & b)*>tt",
     "[(a & b)*]ff",
+    "<(<a>tt?)*><b>tt",
     // sequence of stars
     "<true*; true*>tt",
     "[true*; true*]ff",
@@ -114,11 +115,13 @@ static const std::vector<std::string> FORMULAS{
     "[(((((<!a>tt)?) ; (true))*) ; ((<!b>tt)?))]ff",
     "(<true> tt) & ([a] <b>tt)",
     "<a>tt & !(<true>(<true>tt))",
-    "((<a>tt) && !(<true>(<true>tt)))",
     "!(<true*>!((<a>tt) -> (<true>(<b>tt))) )",
     "[( ((<!a>tt)? ; true)* ; ((<!b>tt)?))]ff",
     "< (!(a | b | c ))* ; (a | c) ; (!(a | b | c))* ; (b | c) >(<true>tt)",
-    // from ltlf
+    "<a*>([(tt)?]ff)",
+    "<a;b;c>([true]ff)",
+    "<(a || b) ; (!c)*>(tt)",
+    //    // from ltlf
     "[(((!(<a>(tt)))? ; true))*]((<b>(tt) | end))",
     "[(true)*](((!(<a>(tt)) | <(true)*>((<b>(tt) & !(end)))) | end))",
     "(!(<(true)*>(([(((!(<(((<a>(tt))? ; true))*>(((<b>(tt) | <c>(tt)) & "
@@ -172,6 +175,8 @@ static const std::vector<std::pair<const std::string, const unsigned>>
         {"[a]({0}) <-> (<!a>tt | [a]({0}))", 1},
         {"(<({0}?)>({1})) <-> (({0}) & ({1}))", 2},
         {"([({0}?)]({1})) <-> (!({0}) | ({1}))", 2},
+        {"(<({0}?)*>({1})) <-> ({1}))", 2},
+        {"([({0}?)*]({1})) <-> ({1}))", 2},
     };
 
 } // namespace whitemech::lydia

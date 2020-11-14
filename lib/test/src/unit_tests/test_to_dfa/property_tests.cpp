@@ -26,9 +26,11 @@ namespace whitemech::lydia::Test {
 TEST_CASE("Duality", "[to_dfa]") {
   auto strategy_1 = CompositionalStrategy();
   auto strategy_2 = CompositionalStrategy();
-  for (const auto &formula : FORMULAS) {
-    SECTION("Test duality of " + formula) {
+  for (const auto &[i, formula] : iter::enumerate(FORMULAS)) {
+    SECTION(fmt::format("Test duality of formula {} '{}'", i, formula)) {
       adfa_ptr automaton_1 = to_dfa_from_formula_string(formula, strategy_1);
+      print_mona_dfa(std::static_pointer_cast<mona_dfa>(automaton_1)->dfa_,
+                     fmt::format("{:02}", i), automaton_1->get_nb_variables());
       adfa_ptr automaton_2 =
           to_dfa_from_formula_string("!(" + formula + ")", strategy_2);
       REQUIRE(compare<5>(*automaton_1, *automaton_2,
