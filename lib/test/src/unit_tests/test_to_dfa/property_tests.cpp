@@ -24,16 +24,13 @@
 namespace whitemech::lydia::Test {
 
 TEST_CASE("Duality", "[to_dfa]") {
-  auto strategy_maker = GENERATE(strategies());
-  auto mgr_1 = CUDD::Cudd();
-  auto mgr_2 = CUDD::Cudd();
-  auto strategy_1 = strategy_maker(mgr_1);
-  auto strategy_2 = strategy_maker(mgr_2);
+  auto strategy_1 = CompositionalStrategy();
+  auto strategy_2 = CompositionalStrategy();
   for (const auto &formula : FORMULAS) {
     SECTION("Test duality of " + formula) {
-      adfa_ptr automaton_1 = to_dfa_from_formula_string(formula, *strategy_1);
+      adfa_ptr automaton_1 = to_dfa_from_formula_string(formula, strategy_1);
       adfa_ptr automaton_2 =
-          to_dfa_from_formula_string("!(" + formula + ")", *strategy_2);
+          to_dfa_from_formula_string("!(" + formula + ")", strategy_2);
       REQUIRE(compare<5>(*automaton_1, *automaton_2,
                          automaton_1->get_nb_variables(), not_equal));
     }
@@ -47,17 +44,15 @@ TEST_CASE("Simple theorems", "[to_dfa]") {
       adfa_ptr automaton = to_dfa_from_formula_string(theorem, strategy);
       auto true_automaton = std::make_shared<const mona_dfa>(
           dfaTrue(), automaton->get_nb_variables());
-      print_mona_dfa(std::static_pointer_cast<const mona_dfa>(automaton)->dfa_,
-                     theorem, 1);
-      REQUIRE(compare<5>(*automaton, *true_automaton,
-                         automaton->get_nb_variables(), equal));
       REQUIRE(automaton->get_nb_states() == 1);
+      REQUIRE(automaton->is_final(automaton->get_initial_state()));
     }
   }
 }
 
 TEST_CASE("Advanced theorems", "[to_dfa][advanced_theorems]") {
   Logger log("advanced-theorems");
+  int i = 0;
   for (auto &&[i, e] :
        iter::enumerate(iter::product(ADVANCED_THEOREMS, FORMULAS, FORMULAS))) {
     auto strategy = CompositionalStrategy();
@@ -70,12 +65,15 @@ TEST_CASE("Advanced theorems", "[to_dfa][advanced_theorems]") {
       log.info(section_id);
     }
     adfa_ptr automaton = to_dfa_from_formula_string(new_theorem, strategy);
-    auto true_automaton = std::make_shared<const mona_dfa>(
-        dfaTrue(), automaton->get_nb_variables());
-    REQUIRE(compare<5>(*automaton, *true_automaton,
-                       automaton->get_nb_variables(), equal));
+    ;
     REQUIRE(automaton->get_nb_states() == 1);
+    REQUIRE(automaton->is_final(automaton->get_initial_state()));
+    auto symbol = interpretation(automaton->get_nb_variables());
+    auto successor =
+        automaton->get_successor(automaton->get_initial_state(), symbol);
+    REQUIRE(successor == automaton->get_initial_state());
   }
+  log.info(fmt::format("Processed {} formulas.", i));
 }
 
 } // namespace whitemech::lydia::Test
