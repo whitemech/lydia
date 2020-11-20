@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "logger.hpp"
+#include <lydia/logger.hpp>
 #include <spdlog/sinks/dist_sink.h>
 
 #ifdef _WIN32

@@ -1,0 +1,7 @@
+(
+  (
+    <(true)*>([(true)*]([req]ff | [true]ff) & <true>tt)
+    & [(true)*]([cancel]ff | [true]ff))
+  | (
+    [(true)*](<(true)*>(<grant>tt & <true>tt) | [true]ff)
+    | [(true)*](<ack>tt | [true]ff)))

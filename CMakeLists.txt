@@ -23,10 +23,26 @@ project (Lydia
          LANGUAGES CXX
          #HOMEPAGE_URL https://github.com/whitemech/lydia.git
          DESCRIPTION "Lydia is a tool for LDLf translation to DFA and for LDLf synthesis.")
-set(PROJECT_VERSION 0.1.0-rc.1)
+set(PROJECT_VERSION "0.1.0-rc.1")
 set(${PROJECT_NAME}_VERSION ${PROJECT_VERSION})
-
+add_definitions( -DLYDIA_VERSION="${PROJECT_VERSION}" )
 set_property (GLOBAL PROPERTY USE_FOLDERS ON)
+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    # require at least gcc 4.8
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8)
+        message(FATAL_ERROR "GCC version must be at least 8!")
+    endif()
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    # require at least clang 3.2
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6)
+        message(FATAL_ERROR "Clang version must be at least 6!")
+    endif()
+else()
+    message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
+endif()
+
+
 
 message("-- Using build type ${CMAKE_BUILD_TYPE}")
 
@@ -35,7 +51,7 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # TODO introduce '-Werror', eventually
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
+#set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
 
 # these cannot be added due to Flex/Bison
 #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -fno-exceptions")
@@ -71,9 +87,12 @@ set(CMAKE_MODULE_PATH
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 
+
 set (THREADS_PREFER_PTHREAD_FLAG ON)
 find_package (Threads REQUIRED)
-find_package(cudd REQUIRED)
+find_package(CUDD REQUIRED)
+find_package(MONA REQUIRED)
+find_package(minisat REQUIRED)
 find_package(Graphviz REQUIRED)
 find_package(BISON 3.0 REQUIRED)
 find_package(FLEX 2.6 REQUIRED)
@@ -81,5 +100,9 @@ find_package(FLEX 2.6 REQUIRED)
 add_subdirectory (third_party EXCLUDE_FROM_ALL)
 add_subdirectory (lib)
 add_subdirectory (app)
+add_subdirectory (benchmark)
 
 enable_testing ()
+
+install(TARGETS lydia-bin
+        DESTINATION ${CMAKE_INSTALL_BINDIR})

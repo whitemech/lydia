@@ -15,14 +15,13 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "utils/strings.hpp"
 #include <algorithm>
 #include <iostream>
 #include <iterator>
+#include <lydia/utils/strings.hpp>
 #include <sstream>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 std::vector<std::string> split(const std::string &input,
                                const std::string &regex) {
@@ -110,5 +109,4 @@ std::string interpretation2string(const interpretation &v) {
   return s;
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

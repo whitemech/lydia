@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "symbol.hpp"
+#include <lydia/logic/symbol.hpp>
 
 #include <cassert>
 #include <utility>
@@ -33,7 +33,7 @@ bool Symbol::is_equal(const Basic &o) const {
   return false;
 }
 
-int Symbol::compare(const Basic &o) const {
+int Symbol::compare_(const Basic &o) const {
   assert(is_a<Symbol>(o));
   const auto &s = dynamic_cast<const Symbol &>(o);
   if (name_ == s.name_)
@@ -42,7 +42,7 @@ int Symbol::compare(const Basic &o) const {
 }
 
 hash_t Symbol::compute_hash_() const {
-  hash_t seed = 0;
+  hash_t seed = type_code_id;
   hash_combine(seed, name_);
   return seed;
 }

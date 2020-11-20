@@ -15,15 +15,15 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "visitor.hpp"
-#include <delta.hpp>
-#include <logic.hpp>
-#include <propositional_logic.hpp>
+#include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/pl/base.hpp>
+#include <lydia/to_dfa/delta.hpp>
+#include <lydia/visitor.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 void Symbol::accept(Visitor &v) const { v.visit(*this); }
-void LDLfBooleanAtom::accept(Visitor &v) const { v.visit(*this); }
+void LDLfTrue::accept(Visitor &v) const { v.visit(*this); }
+void LDLfFalse::accept(Visitor &v) const { v.visit(*this); }
 void LDLfOr::accept(Visitor &v) const { v.visit(*this); }
 void LDLfAnd::accept(Visitor &v) const { v.visit(*this); }
 void LDLfNot::accept(Visitor &v) const { v.visit(*this); }
@@ -39,8 +39,10 @@ void StarRegExp::accept(Visitor &v) const { v.visit(*this); }
 // TODO add other accept methods
 
 void PropositionalTrue::accept(Visitor &v) const { v.visit(*this); }
+
 void PropositionalFalse::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalAtom::accept(Visitor &v) const { v.visit(*this); }
+
 void PropositionalAnd::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalOr::accept(Visitor &v) const { v.visit(*this); }
 void PropositionalNot::accept(Visitor &v) const { v.visit(*this); }
@@ -49,5 +51,4 @@ void LDLfF::accept(Visitor &v) const { v.visit(*this); }
 void LDLfT::accept(Visitor &v) const { v.visit(*this); }
 void QuotedFormula::accept(Visitor &v) const { v.visit(*this); }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia

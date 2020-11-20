@@ -15,17 +15,9 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "utils/dfa_transform.hpp"
-#include <cstdio>
-#include <graphviz/gvc.h>
-#include <numeric>
-#include <queue>
-#include <utils/misc.hpp>
-#include <utils/print.hpp>
-#include <utils/strings.hpp>
+#include <lydia/utils/dfa_transform.hpp>
 
-namespace whitemech {
-namespace lydia {
+namespace whitemech::lydia {
 
 void interpretation_set_to_vect(const interpretation_set &src,
                                 interpretation &dest) {
@@ -35,7 +27,8 @@ void interpretation_set_to_vect(const interpretation_set &src,
   }
 }
 
-void dfa_to_graphviz(const dfa &automaton, const std::string &output_filename,
+void dfa_to_graphviz(const abstract_dfa &automaton,
+                     const std::string &output_filename,
                      const std::string &format) {
   Agraph_t *g;
   GVC_t *gvc;
@@ -50,9 +43,9 @@ void dfa_to_graphviz(const dfa &automaton, const std::string &output_filename,
   }
 
   // generate all the symbols
-  interpretation symbol(automaton.nb_variables);
+  interpretation symbol(automaton.get_nb_variables());
   auto all_variables = std::set<int>();
-  for (int i = 0; i < automaton.nb_variables; i++)
+  for (int i = 0; i < automaton.get_nb_variables(); i++)
     all_variables.insert(i);
   auto all_symbols = powerset<int>(all_variables);
 
@@ -61,14 +54,15 @@ void dfa_to_graphviz(const dfa &automaton, const std::string &output_filename,
   // draw initial state
   n = agnode(g, strdup("fake"), 1); // NOLINT
   agsafeset(n, strdup("shape"), strdup("point"), strdup(""));
-  auto initial_state_str = std::to_string(automaton.initial_state);
+  auto initial_state_str = std::to_string(automaton.get_initial_state());
   m = agnode(g, initial_state_str.data(), 1);
   agedge(g, n, m, ("fake->" + initial_state_str).data(), 1);
 
   // do BFS over the automaton
   std::set<int> discovered;
   std::queue<int> to_be_visited;
-  to_be_visited.push(automaton.initial_state);
+  to_be_visited.push(automaton.get_initial_state());
+  discovered.insert(automaton.get_initial_state());
   while (!to_be_visited.empty()) {
     auto state = to_be_visited.front();
     to_be_visited.pop();
@@ -129,7 +123,7 @@ void bdd2dot(const dfa &automaton, const std::vector<std::string> &names,
 
 void dfa_to_bdds(const dfa &automaton, const std::string &directory_path) {
   auto names = std::vector<std::string>();
-  names.reserve(automaton.nb_bits + automaton.nb_variables);
+  names.reserve(automaton.nb_bits + automaton.get_nb_variables());
   // populate bit names
   for (int i = 0; i < automaton.nb_bits; i++) {
     names.push_back("b" + std::to_string(i));
@@ -140,5 +134,4 @@ void dfa_to_bdds(const dfa &automaton, const std::string &directory_path) {
   bdd2dot(automaton, names, directory_path);
 }
 
-} // namespace lydia
-} // namespace whitemech
+} // namespace whitemech::lydia
