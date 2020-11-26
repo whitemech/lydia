@@ -230,7 +230,24 @@ DFA *dfa_closure(DFA *a, int n, int *indices) {
   return result;
 }
 
-void dfa_accept_empty(DFA *x) { x->f[x->s] = 1; }
+DFA *only_empty() {
+  dfaSetup(2, 0, nullptr);
+
+  dfaAllocExceptions(0);
+  dfaStoreState(1);
+
+  dfaAllocExceptions(0);
+  dfaStoreState(1);
+
+  return dfaBuild("+-");
+}
+
+DFA *dfa_accept_empty(DFA *x) {
+  DFA *tmp = only_empty();
+  DFA *result = dfaProduct(x, tmp, dfaOR);
+  dfaFree(tmp);
+  return result;
+}
 
 DFA *dfaLDLfTrue() {
   dfaSetup(1, 0, nullptr);
