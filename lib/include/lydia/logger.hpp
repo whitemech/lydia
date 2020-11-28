@@ -34,7 +34,7 @@ enum class LogLevel {
 class Logger {
 public:
   explicit Logger(std::string section);
-  static constexpr const char *const logger_name = "whitemech::lydia::logger";
+  static constexpr const char *const logger_name = "lydia";
   auto section() const noexcept { return section_; }
 
   template <typename Arg1, typename... Args>

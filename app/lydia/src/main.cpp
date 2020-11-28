@@ -24,8 +24,21 @@
 #include <lydia/to_dfa/strategies/compositional/base.hpp>
 #include <lydia/utils/print.hpp>
 
-std::string dump_formula(const std::string &filename) {
-  std::ifstream f(filename);
+void check_file(const std::filesystem::path &filepath) {
+  if (not std::filesystem::exists(filepath)) {
+    std::string message =
+        fmt::format("File {} does not exist.", filepath.string());
+    throw std::invalid_argument(message);
+  }
+  if (not std::filesystem::is_regular_file(filepath)) {
+    std::string message =
+        fmt::format("File {} is not a regular file.", filepath.string());
+    throw std::invalid_argument(message);
+  }
+}
+
+std::string dump_formula(const std::filesystem::path &filename) {
+  std::ifstream f(filename.string());
   std::string result;
   if (f) {
     std::ostringstream ss;
@@ -37,14 +50,14 @@ std::string dump_formula(const std::string &filename) {
 }
 
 int main(int argc, char **argv) {
-  whitemech::lydia::Logger logger("lydia");
+  whitemech::lydia::Logger logger("main");
   whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::info);
 
   CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
 
-  std::string ldlf_formula;
+  std::string formula;
   CLI::Option *str_opt =
-      app.add_option("-l,--ldlf", ldlf_formula, "An LDLf formula.");
+      app.add_option("-l,--ldlf", formula, "An LDLf formula.");
 
   bool verbose;
   app.add_flag("--verbose", verbose, "Set verbose mode.");
@@ -90,25 +103,34 @@ int main(int argc, char **argv) {
   auto strategy = whitemech::lydia::CompositionalStrategy();
   auto translator = whitemech::lydia::Translator(strategy);
 
-  if (!str_opt->empty()) {
-    std::stringstream ldlf_formula_stream(ldlf_formula);
-    logger.info("parsing: {}", ldlf_formula);
-    driver.parse(ldlf_formula_stream);
-    logger.info("parsed formula: {}", to_string(*driver.result));
-  } else if (!file_opt->empty()) {
-    std::string formula = dump_formula(filename);
-    std::stringstream ldlf_formula_stream(formula);
-    logger.info("parsing: {}", formula);
-    driver.parse(ldlf_formula_stream);
-    logger.info("parsed formula: {}", to_string(*driver.result));
+  std::stringstream formula_stream;
+  if (!file_opt->empty()) {
+    std::filesystem::path formula_path(filename);
+    try {
+      check_file(formula_path);
+    } catch (const std::exception &e) {
+      logger.error(e.what());
+      return 2;
+    }
+    formula = dump_formula(formula_path);
   } else {
     logger.error("Please specify either -l or -f. Aborting...");
     return 2;
   }
 
+  formula_stream = std::stringstream(formula);
+  logger.info("parsing: {}", formula);
+  driver.parse(formula_stream);
+
   logger.info("transforming to dfa...");
+  auto t_start = std::chrono::high_resolution_clock::now();
   auto my_dfa = translator.to_dfa(*driver.result);
+  auto t_end = std::chrono::high_resolution_clock::now();
   logger.info("transforming to dfa...done!");
+  double elapsed_time_ms =
+      std::chrono::duration<double, std::milli>(t_end - t_start).count();
+  logger.info("Time elapsed: {}ms", elapsed_time_ms);
+
   if (summary) {
     // TODO add more details
     logger.info("Number of states " + std::to_string(my_dfa->get_nb_states()));
