@@ -144,6 +144,7 @@ void ComposeDFARegexVisitor::visit(const SequenceRegExp &r) {
 }
 
 void ComposeDFARegexVisitor::visit(const StarRegExp &r) {
+  DFA *tmp;
   DFA *body = dfaCopy(current_formula_);
 
   auto visitor = ComposeDFAVisitor(cs);
@@ -155,10 +156,12 @@ void ComposeDFARegexVisitor::visit(const StarRegExp &r) {
   if (not is_diamond) {
     dfaNegation(body);
   }
-  result = dfa_concatenate(star, body, cs.indices.size(), cs.indices.data());
+  tmp = dfa_concatenate(star, body, cs.indices.size(), cs.indices.data());
   if (not is_diamond) {
-    dfaNegation(result);
+    dfaNegation(tmp);
   }
+  result = dfaMinimize(tmp);
+  dfaFree(tmp);
   dfaFree(regex);
   dfaFree(regex_or_empty);
   dfaFree(star);

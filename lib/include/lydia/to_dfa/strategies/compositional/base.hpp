@@ -113,16 +113,35 @@ DFA *dfa_and_or(std::set<std::shared_ptr<T>, SharedComparator> container,
   DFA *tmp2;
   DFA *tmp3;
   DFA *final = dfaMaker();
+
+  auto dfas = std::vector<DFA *>();
+  dfas.reserve(container.size());
   for (const auto &subf : container) {
+    tmp1 = v.apply(*subf);
+    if (is_sink(tmp1, is_positive)) {
+      for (const auto dfa_to_free : dfas) {
+        dfaFree(dfa_to_free);
+      }
+      dfaFree(final);
+      return tmp1;
+    }
+    dfas.push_back(tmp1);
+  }
+
+  std::sort(dfas.begin(), dfas.end(),
+            [](DFA *d1, DFA *d2) { return d1->ns < d2->ns; });
+  for (const auto &automaton : dfas) {
     tmp1 = final;
-    tmp2 = v.apply(*subf);
-    tmp3 = dfaProduct(tmp1, tmp2, productType);
-    final = dfaMinimize(tmp3);
+    tmp2 = dfaProduct(tmp1, automaton, productType);
+    final = dfaMinimize(tmp2);
     dfaFree(tmp1);
     dfaFree(tmp2);
-    dfaFree(tmp3);
-    if (is_sink(final, is_positive))
+    if (is_sink(final, is_positive)) {
       break;
+    }
+  }
+  for (const auto dfa_to_free : dfas) {
+    dfaFree(dfa_to_free);
   }
   return final;
 }
