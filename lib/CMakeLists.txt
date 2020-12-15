@@ -21,8 +21,13 @@
 set (LIB_NAME "lydia")
 
 ## generate lexer and parser
-add_subdirectory(include/lydia/parser/ldlf)
-add_subdirectory(include/lydia/parser/ltlf)
+FLEX_TARGET(LydiaLexer include/lydia/parser/ltlf/lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/ltlf/lexer.yy.cc)
+BISON_TARGET(LydiaParser include/lydia/parser/ltlf/parser.yy ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/ltlf/parser.tab.cc )
+
+FLEX_TARGET(LydiaLexer include/lydia/parser/ldlf/lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/ldlf/lexer.yy.cc)
+BISON_TARGET(LydiaParser include/lydia/parser/ldlf/parser.yy ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/ldlf/parser.tab.cc )
+ADD_FLEX_BISON_DEPENDENCY(LydiaLexer LydiaParser)
+
 
 #configure directories
 set (LIBRARY_MODULE_PATH "${PROJECT_SOURCE_DIR}/lib")
