@@ -23,6 +23,20 @@ namespace whitemech::lydia {
 
 class Visitor {
 public:
+  // callbacks for LTLf
+  virtual void visit(const LTLfTrue &){};
+  virtual void visit(const LTLfFalse &){};
+  virtual void visit(const LTLfAtom &){};
+  virtual void visit(const LTLfAnd &){};
+  virtual void visit(const LTLfOr &){};
+  virtual void visit(const LTLfNot &){};
+  virtual void visit(const LTLfNext &){};
+  virtual void visit(const LTLfWeakNext &){};
+  virtual void visit(const LTLfUntil &){};
+  virtual void visit(const LTLfRelease &){};
+  virtual void visit(const LTLfEventually &){};
+  virtual void visit(const LTLfAlways &){};
+
   // callbacks for LDLf
   virtual void visit(const LDLfTrue &){};
   virtual void visit(const LDLfFalse &){};

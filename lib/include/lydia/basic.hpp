@@ -26,6 +26,18 @@ namespace whitemech::lydia {
 // and that might have an impact with different compilers.
 enum TypeID {
   t_Symbol,
+  t_LTLfTrue,
+  t_LTLfFalse,
+  t_LTLfAtom,
+  t_LTLfAnd,
+  t_LTLfOr,
+  t_LTLfNot,
+  t_LTLfNext,
+  t_LTLfWeakNext,
+  t_LTLfUntil,
+  t_LTLfRelease,
+  t_LTLfEventually,
+  t_LTLfAlways,
   t_LDLfTrue,
   t_LDLfFalse,
   t_LDLfAnd,

@@ -20,10 +20,9 @@
 #configure variables
 set (LIB_NAME "lydia")
 
-# generate lexer and parser
-BISON_TARGET(lydia_parser include/lydia/parser/parser.yy ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/parser.tab.cc )
-FLEX_TARGET(lydia_lexer include/lydia/parser/lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/lexer.yy.cc)
-ADD_FLEX_BISON_DEPENDENCY(lydia_lexer lydia_parser)
+## generate lexer and parser
+add_subdirectory(include/lydia/parser/ldlf)
+add_subdirectory(include/lydia/parser/ltlf)
 
 #configure directories
 set (LIBRARY_MODULE_PATH "${PROJECT_SOURCE_DIR}/lib")
@@ -43,8 +42,10 @@ add_library (${LIB_NAME}
         STATIC
         ${LIB_SOURCE_FILES}
         ${LIB_HEADER_FILES}
-        ${BISON_lydia_parser_OUTPUTS}
-        ${FLEX_lydia_lexer_OUTPUTS})
+        ${BISON_lydia_ltlf_lexer_OUTPUTS}
+        ${FLEX_lydia_ltlf_parser_OUTPUTS}
+        ${BISON_lydia_ldlf_parser_OUTPUTS}
+        ${FLEX_lydia_ldlf_lexer_OUTPUTS})
 
 target_link_libraries(${LIB_NAME}
         ${CUDD_LIBRARIES}

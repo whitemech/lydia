@@ -17,6 +17,7 @@
 
 #include <lydia/ast/base.hpp>
 #include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/ltlf/base.hpp>
 #include <lydia/logic/pl/base.hpp>
 
 namespace whitemech::lydia {
@@ -24,10 +25,14 @@ namespace whitemech::lydia {
 void AstManager::init() {
   prop_true_ = std::make_shared<const PropositionalTrue>(*this);
   prop_false_ = std::make_shared<const PropositionalFalse>(*this);
+  ltlf_true_ = std::make_shared<const LTLfTrue>(*this);
+  ltlf_false_ = std::make_shared<const LTLfFalse>(*this);
   ldlf_true_ = std::make_shared<const LDLfTrue>(*this);
   ldlf_false_ = std::make_shared<const LDLfFalse>(*this);
   this->table.insert(prop_true_);
   this->table.insert(prop_false_);
+  this->table.insert(ltlf_true_);
+  this->table.insert(ltlf_false_);
   this->table.insert(ldlf_true_);
   this->table.insert(ldlf_false_);
 }

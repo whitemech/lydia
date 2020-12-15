@@ -17,13 +17,13 @@
 
 #include <catch.hpp>
 #include <lydia/logger.hpp>
-#include <lydia/parser/driver.hpp>
+#include <lydia/parser/ldlf/driver.hpp>
 #include <sstream>
 #include <string>
 
 namespace whitemech::lydia::Test {
 
-TEST_CASE("Driver LDLf Boolean Atoms", "[parser]") {
+TEST_CASE("Driver LDLf Boolean Atoms", "[parser][ldlf]") {
   Logger log("test_parser");
   auto context = std::make_shared<AstManager>();
   auto driver = Driver(context);
@@ -57,7 +57,7 @@ TEST_CASE("Driver LDLf Boolean Atoms", "[parser]") {
   }
 }
 
-TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser]") {
+TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser][ldlf]") {
   auto context = std::make_shared<AstManager>();
   auto driver = Driver(context);
   auto tt = context->makeLdlfTrue();
@@ -118,7 +118,7 @@ TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser]") {
   }
 }
 
-TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser]") {
+TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser][ldlf]") {
   auto context = std::make_shared<AstManager>();
   auto driver = Driver(context);
   auto tt = context->makeLdlfTrue();
@@ -160,7 +160,7 @@ TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser]") {
   }
 }
 
-TEST_CASE("Driver LDLfNot", "[parser]") {
+TEST_CASE("Driver LDLfNot", "[parser][ldlf]") {
   auto context = std::make_shared<AstManager>();
   auto driver = Driver(context);
   auto tt = context->makeLdlfTrue();
@@ -212,7 +212,7 @@ TEST_CASE("Driver LDLfNot", "[parser]") {
   }
 }
 
-TEST_CASE("Driver LDLfTemporal", "[parser]") {
+TEST_CASE("Driver LDLfTemporal", "[parser][ldlf]") {
   auto context = std::make_shared<AstManager>();
   auto driver = Driver(context);
 
@@ -328,7 +328,7 @@ TEST_CASE("Driver LDLfTemporal", "[parser]") {
   }
 }
 
-TEST_CASE("Driver LDLf Implication", "[parser]") {
+TEST_CASE("Driver LDLf Implication", "[parser][ldlf]") {
   auto context = std::make_shared<AstManager>();
   auto driver = Driver(context);
   auto a_tt = context->makeLdlfDiamond(
@@ -356,7 +356,7 @@ TEST_CASE("Driver LDLf Implication", "[parser]") {
   }
 }
 
-TEST_CASE("Driver LDLf Equivalence", "[parser]") {
+TEST_CASE("Driver LDLf Equivalence", "[parser][ldlf]") {
   auto context = std::make_shared<AstManager>();
   auto driver = Driver(context);
   auto a_tt = context->makeLdlfDiamond(

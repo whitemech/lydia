@@ -19,14 +19,15 @@
 #include <cstddef>
 #include <istream>
 #include <string>
+#include <utility>
 
-#include "parser.tab.hh"
 #include <lydia/ast/base.hpp>
 #include <lydia/logic/ldlf/base.hpp>
 #include <lydia/logic/pl/base.hpp>
 #include <lydia/logic/symbol.hpp>
-#include <lydia/parser/scanner.hpp>
-#include <utility>
+
+#include "lydia/parser/ldlf/parser.tab.hh"
+#include <lydia/parser/ldlf/scanner.hpp>
 
 namespace whitemech::lydia {
 
@@ -34,15 +35,17 @@ class Driver {
 private:
   void parse_helper(std::istream &stream);
 
-  Parser *parser = nullptr;
-  Scanner *scanner = nullptr;
+  LDLfParser *parser = nullptr;
+  LDLfScanner *scanner = nullptr;
   std::shared_ptr<AstManager> context = nullptr;
 
 public:
   std::shared_ptr<const LDLfFormula> result;
 
   Driver() { context = std::make_shared<AstManager>(); }
+
   explicit Driver(std::shared_ptr<AstManager> c) : context{std::move(c)} {}
+
   virtual ~Driver();
 
   /**
@@ -50,6 +53,7 @@ public:
    * @param filename - valid string with input file
    */
   void parse(const char *const filename);
+
   /**
    * parse - parse from a c++ input stream
    * @param is - std::istream&, valid input stream
@@ -57,59 +61,78 @@ public:
   void parse(std::istream &iss);
 
   std::shared_ptr<const LDLfFormula> add_LDLfTrue() const;
+
   std::shared_ptr<const LDLfFormula> add_LDLfFalse() const;
+
   std::shared_ptr<const LDLfFormula>
   add_LDLfAnd(std::shared_ptr<const LDLfFormula> &lhs,
               std::shared_ptr<const LDLfFormula> &rhs) const;
+
   std::shared_ptr<const LDLfFormula>
   add_LDLfOr(std::shared_ptr<const LDLfFormula> &lhs,
              std::shared_ptr<const LDLfFormula> &rhs) const;
+
   std::shared_ptr<const LDLfFormula>
   add_LDLfNot(std::shared_ptr<const LDLfFormula> &formula) const;
 
   std::shared_ptr<const LDLfFormula>
   add_LDLfDiamond(std::shared_ptr<const RegExp> &regex,
                   std::shared_ptr<const LDLfFormula> &formula) const;
+
   std::shared_ptr<const LDLfFormula>
   add_LDLfBox(std::shared_ptr<const RegExp> &regex,
               std::shared_ptr<const LDLfFormula> &formula) const;
+
   std::shared_ptr<const LDLfFormula>
   add_LDLfImplication(std::shared_ptr<const LDLfFormula> &lhs,
                       std::shared_ptr<const LDLfFormula> &rhs) const;
+
   std::shared_ptr<const LDLfFormula>
   add_LDLfEquivalence(std::shared_ptr<const LDLfFormula> &lhs,
                       std::shared_ptr<const LDLfFormula> &rhs) const;
+
   std::shared_ptr<const LDLfFormula> add_LDLfEnd() const;
+
   std::shared_ptr<const LDLfFormula> add_LDLfLast() const;
 
   std::shared_ptr<const RegExp> add_PropositionalRegExp(
       std::shared_ptr<const PropositionalFormula> &prop_formula) const;
+
   std::shared_ptr<const RegExp>
   add_TestRegExp(std::shared_ptr<const LDLfFormula> &formula) const;
+
   std::shared_ptr<const RegExp>
   add_StarRegExp(std::shared_ptr<const RegExp> &regex) const;
+
   std::shared_ptr<const RegExp>
   add_SequenceRegExp(std::shared_ptr<const RegExp> &regex_lhs,
                      std::shared_ptr<const RegExp> &regex_rhs) const;
+
   std::shared_ptr<const RegExp>
   add_UnionRegExp(std::shared_ptr<const RegExp> &regex_lhs,
                   std::shared_ptr<const RegExp> &regex_rhs) const;
 
   std::shared_ptr<const PropositionalFormula>
   add_PropositionalBooleanAtom(const bool &flag) const;
+
   std::shared_ptr<const PropositionalFormula>
   add_PropositionalAtom(std::string &symbol_name) const;
+
   std::shared_ptr<const PropositionalFormula>
   add_PropositionalAnd(std::shared_ptr<const PropositionalFormula> &lhs,
                        std::shared_ptr<const PropositionalFormula> &rhs) const;
+
   std::shared_ptr<const PropositionalFormula>
   add_PropositionalOr(std::shared_ptr<const PropositionalFormula> &lhs,
                       std::shared_ptr<const PropositionalFormula> &rhs) const;
+
   std::shared_ptr<const PropositionalFormula> add_PropositionalNot(
       std::shared_ptr<const PropositionalFormula> &prop_formula) const;
+
   std::shared_ptr<const PropositionalFormula> add_PropositionalImplication(
       std::shared_ptr<const PropositionalFormula> &lhs,
       std::shared_ptr<const PropositionalFormula> &rhs) const;
+
   std::shared_ptr<const PropositionalFormula> add_PropositionalEquivalence(
       std::shared_ptr<const PropositionalFormula> &lhs,
       std::shared_ptr<const PropositionalFormula> &rhs) const;

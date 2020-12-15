@@ -16,28 +16,27 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "lydia/logic/ldlf/base.hpp"
-#include "lydia/logic/pl/base.hpp"
-#include <string>
+#include "lydia/parser/ldlf/location.hh"
+#include "lydia/parser/ldlf/parser.tab.hh"
+#include <lydia/parser/ldlf/parser_stype.h>
 
 namespace whitemech::lydia {
 
-struct YYSTYPE {
-  std::shared_ptr<const LDLfFormula> formula;
-  std::shared_ptr<const RegExp> regex;
-  std::shared_ptr<const PropositionalFormula> prop_formula;
-  std::string symbol_name;
+class LDLfScanner : public ldlfFlexLexer {
+public:
+  /* yyval ptr */
+  whitemech::lydia::LDLf_YYSTYPE *yylval = nullptr;
 
-  // Constructor
-  YYSTYPE() = default;
-  // Destructor
-  ~YYSTYPE() = default;
-  // Copy constructor and assignment
-  YYSTYPE(const YYSTYPE &) = default;
-  YYSTYPE &operator=(const YYSTYPE &) = default;
-  // Move constructor and assignment
-  YYSTYPE(YYSTYPE &&) = default;
-  YYSTYPE &operator=(YYSTYPE &&) = default;
+  explicit LDLfScanner(std::istream *in) : ldlfFlexLexer(in){};
+  virtual ~LDLfScanner(){};
+
+  // get rid of override virtual function warning
+  using FlexLexer::yylex;
+
+  virtual int yylex(whitemech::lydia::LDLf_YYSTYPE *lval,
+                    LDLfParser::location_type *location);
+  // YY_DECL defined in lexer.l
+  // Method body created by flex in lexer.yy.cc
 };
 
 } // namespace whitemech::lydia

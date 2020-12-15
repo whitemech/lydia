@@ -16,12 +16,26 @@
  */
 
 #include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/ltlf/base.hpp>
 #include <lydia/logic/pl/base.hpp>
-#include <lydia/to_dfa/delta.hpp>
 #include <lydia/visitor.hpp>
 
 namespace whitemech::lydia {
 void Symbol::accept(Visitor &v) const { v.visit(*this); }
+
+void LTLfTrue::accept(Visitor &v) const { v.visit(*this); }
+void LTLfFalse::accept(Visitor &v) const { v.visit(*this); }
+void LTLfOr::accept(Visitor &v) const { v.visit(*this); }
+void LTLfAnd::accept(Visitor &v) const { v.visit(*this); }
+void LTLfAtom::accept(Visitor &v) const { v.visit(*this); }
+void LTLfNot::accept(Visitor &v) const { v.visit(*this); }
+void LTLfNext::accept(Visitor &v) const { v.visit(*this); }
+void LTLfWeakNext::accept(Visitor &v) const { v.visit(*this); }
+void LTLfUntil::accept(Visitor &v) const { v.visit(*this); }
+void LTLfRelease::accept(Visitor &v) const { v.visit(*this); }
+void LTLfEventually::accept(Visitor &v) const { v.visit(*this); }
+void LTLfAlways::accept(Visitor &v) const { v.visit(*this); }
+
 void LDLfTrue::accept(Visitor &v) const { v.visit(*this); }
 void LDLfFalse::accept(Visitor &v) const { v.visit(*this); }
 void LDLfOr::accept(Visitor &v) const { v.visit(*this); }

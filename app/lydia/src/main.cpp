@@ -19,7 +19,7 @@
 #include <iostream>
 #include <istream>
 #include <lydia/dfa/mona_dfa.hpp>
-#include <lydia/parser/driver.cpp>
+#include <lydia/parser/ldlf/driver.cpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/strategies/compositional/base.hpp>
 #include <lydia/utils/print.hpp>

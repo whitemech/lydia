@@ -1,7 +1,8 @@
 %skeleton "lalr1.cc" /* -*- C++ -*- */
 %require  "3.0"
 %debug 
-%defines 
+%defines
+%define api.prefix {ldlf}
 %define api.namespace {whitemech::lydia}
 
 /*
@@ -9,14 +10,14 @@
  * for %define api.parser.class {}, but
  * we want backward compatibility for bison 3.0.4.
  */
-%define parser_class_name {Parser}
+%define api.parser.class {LDLfParser}
 
 %code requires{
    #include "lydia/logic/ldlf/base.hpp"
-   #include "lydia/parser/parser_stype.h"
+   #include "lydia/parser/ldlf/parser_stype.h"
 namespace whitemech::lydia {
       class Driver;
-      class Scanner;
+      class LDLfScanner;
 }
 
 // The following definitions is missing when %locations isn't used
@@ -30,7 +31,7 @@ namespace whitemech::lydia {
 
 }
 
-%parse-param { Scanner  &scanner  }
+%parse-param { LDLfScanner  &scanner  }
 %parse-param { Driver  &d  }
 
 %code{
@@ -39,15 +40,16 @@ namespace whitemech::lydia {
    #include <fstream>
    
    /* include for all driver functions */
-   #include "lydia/parser/driver.hpp"
+   #include "lydia/parser/ldlf/scanner.hpp"
+   #include "lydia/parser/ldlf/driver.hpp"
 
 #undef yylex
-#define yylex scanner.yylex
+#define yylex scanner.ldlflex
 }
 
 %define parse.assert
 
-%define api.value.type {struct whitemech::lydia::YYSTYPE}
+%define api.value.type {struct whitemech::lydia::LDLf_YYSTYPE}
 
 %type<formula> input ldlf_formula
 %type<regex> regular_expression
@@ -126,6 +128,6 @@ propositional_formula: LPAR propositional_formula RPAR                          
     
 %%
 
-void whitemech::lydia::Parser::error(const location_type &l, const std::string &err_message) {
+void whitemech::lydia::LDLfParser::error(const location_type &l, const std::string &err_message) {
    std::cerr << "Error: " << err_message << " at " << l << "\n";
 }

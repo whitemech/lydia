@@ -1,14 +1,20 @@
+%option debug
+%option prefix="ltlf"
+%option yyclass="whitemech::lydia::LTLfScanner"
+%option noyywrap
+%option c++
+
 %{
 /* C++ string header, for string ops below */
 #include <string>
 
-/* Implementation of yyFlexScanner */
-#include "lydia/parser/scanner.hpp"
+/* Implementation of yyFlexLTLfScanner */
+#include "lydia/parser/ltlf/scanner_internal.hpp"
 #undef  YY_DECL
-#define YY_DECL int whitemech::lydia::Scanner::yylex( whitemech::lydia::YYSTYPE * lval, whitemech::lydia::Parser::location_type *loc )
+#define YY_DECL int whitemech::lydia::LTLfScanner::yylex( whitemech::lydia::LTLf_YYSTYPE * lval, whitemech::lydia::LTLfParser::location_type *loc )
 
 /* typedef to make the returns for the tokens shorter */
-using token = whitemech::lydia::Parser::token;
+using token = whitemech::lydia::LTLfParser::token;
 
 /* define yyterminate as this instead of NULL */
 #define yyterminate() return( token::END_OF_FILE )
@@ -21,10 +27,6 @@ using token = whitemech::lydia::Parser::token;
 
 %}
 
-%option debug
-%option yyclass="whitemech::lydia::Scanner"
-%option noyywrap
-%option c++
 
 %%
 
@@ -35,16 +37,12 @@ using token = whitemech::lydia::Parser::token;
 "("                         { return token::LPAR; }
 ")"                         { return token::RPAR; }
 
-"["                         { return token::BOX_LPAR; }
-"]"                         { return token::BOX_RPAR; }
-
-"<"                         { return token::DIAMOND_LPAR; }
-">"                         { return token::DIAMOND_RPAR; }
-
-"+"                         { return token::UNION; }
-";"                         { return token::SEQUENCE; }
-"?"                         { return token::TEST; }
-"*"                         { return token::STAR; }
+"X"                         { return token::NEXT; }
+"W"                         { return token::WEAK_NEXT; }
+"U"                         { return token::UNTIL; }
+"R"                         { return token::RELEASE; }
+"F"                         { return token::EVENTUALLY; }
+"G"                         { return token::ALWAYS; }
 
 "<=>"|"<->"                 { return token::EQUIVALENCE; }
 "=>"|"->"                   { return token::IMPLICATION; }
@@ -54,13 +52,9 @@ using token = whitemech::lydia::Parser::token;
 
 "!"|"~"                     { return token::NOT; }
 
-(?i:tt)                     { return token::TT; }
-(?i:ff)                     { return token::FF; }
-
 (?i:true)                   { return token::TRUE_; }
 (?i:false)                  { return token::FALSE_; }
 
-(?i:end)                    { return token::END; }
 (?i:last)                   { return token::LAST; }
 
 [a-zA-Z_][a-zA-Z0-9_]*|(".*") {
