@@ -20,7 +20,7 @@
 #include "lydia/logic/pl/base.hpp"
 #include <string>
 
-namespace whitemech::lydia {
+namespace whitemech::lydia::parsers::ldlf {
 
 struct LDLf_YYSTYPE {
   std::shared_ptr<const LDLfFormula> formula;
@@ -40,4 +40,4 @@ struct LDLf_YYSTYPE {
   LDLf_YYSTYPE &operator=(LDLf_YYSTYPE &&) = default;
 };
 
-} // namespace whitemech::lydia
+} // namespace whitemech::lydia::parsers::ldlf

@@ -55,6 +55,7 @@ add_library (${LIB_NAME}
 target_link_libraries(${LIB_NAME}
         ${CUDD_LIBRARIES}
         ${MONA_LIBRARIES}
+        ${SYFT_LIBRARIES}
         ${GRAPHVIZ_LIBRARIES}
         ${MINISAT_LIBRARIES}
         ${FLEX_LIBRARIES}

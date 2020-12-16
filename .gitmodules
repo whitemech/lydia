@@ -13,3 +13,6 @@
 [submodule "third_party/cppitertools/cppitertools"]
 	path = third_party/cppitertools/cppitertools
 	url = https://github.com/ryanhaining/cppitertools.git
+[submodule "third_party/Syft"]
+	path = third_party/Syft
+	url = https://github.com/whitemech/Syft

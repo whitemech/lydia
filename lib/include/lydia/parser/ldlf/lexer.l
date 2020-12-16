@@ -1,6 +1,6 @@
 %option debug
 %option prefix="ldlf"
-%option yyclass="whitemech::lydia::LDLfScanner"
+%option yyclass="whitemech::lydia::parsers::ldlf::LDLfScanner"
 %option noyywrap
 %option c++
 
@@ -11,10 +11,10 @@
 /* Implementation of yyFlexLDLfScanner */
 #include "lydia/parser/ldlf/scanner_internal.hpp"
 #undef  YY_DECL
-#define YY_DECL int whitemech::lydia::LDLfScanner::yylex( whitemech::lydia::LDLf_YYSTYPE * lval, whitemech::lydia::LDLfParser::location_type *loc )
+#define YY_DECL int whitemech::lydia::parsers::ldlf::LDLfScanner::yylex( whitemech::lydia::parsers::ldlf::LDLf_YYSTYPE * lval, whitemech::lydia::parsers::ldlf::LDLfParser::location_type *loc )
 
 /* typedef to make the returns for the tokens shorter */
-using token = whitemech::lydia::LDLfParser::token;
+using token = whitemech::lydia::parsers::ldlf::LDLfParser::token;
 
 /* define yyterminate as this instead of NULL */
 #define yyterminate() return( token::END_OF_FILE )

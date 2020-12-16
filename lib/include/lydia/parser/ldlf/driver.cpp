@@ -20,7 +20,7 @@
 
 #include <lydia/parser/ldlf/driver.hpp>
 
-namespace whitemech::lydia {
+namespace whitemech::lydia::parsers::ldlf {
 
 Driver::~Driver() {
   delete (scanner);
@@ -228,4 +228,4 @@ std::ostream &Driver::print(std::ostream &stream) const {
   return (stream);
 }
 
-} // namespace whitemech::lydia
+} // namespace whitemech::lydia::parsers::ldlf

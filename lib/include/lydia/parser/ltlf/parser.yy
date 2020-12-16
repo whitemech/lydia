@@ -3,7 +3,7 @@
 %debug 
 %defines 
 %define api.prefix {ltlf}
-%define api.namespace {whitemech::lydia}
+%define api.namespace {whitemech::lydia::parsers::ltlf}
 
 /*
  * bison 3.3.2 deprecates %define parser_class_name {}
@@ -15,7 +15,7 @@
 %code requires{
    #include "lydia/logic/ltlf/base.hpp"
    #include "lydia/parser/ltlf/parser_stype.h"
-namespace whitemech::lydia {
+namespace whitemech::lydia::parsers::ltlf {
       class LTLfDriver;
       class LTLfScanner;
 }
@@ -49,7 +49,7 @@ namespace whitemech::lydia {
 
 %define parse.assert
 
-%define api.value.type {struct whitemech::lydia::LTLf_YYSTYPE}
+%define api.value.type {struct whitemech::lydia::parsers::ltlf::LTLf_YYSTYPE}
 
 %type<formula> input ltlf_formula
 %type<symbol_name> SYMBOL
@@ -106,6 +106,6 @@ ltlf_formula: LPAR ltlf_formula RPAR                                            
 
 %%
 
-void whitemech::lydia::LTLfParser::error(const location_type &l, const std::string &err_message) {
+void whitemech::lydia::parsers::ltlf::LTLfParser::error(const location_type &l, const std::string &err_message) {
    std::cerr << "Error: " << err_message << " at " << l << "\n";
 }

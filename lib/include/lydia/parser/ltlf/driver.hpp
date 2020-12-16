@@ -22,15 +22,16 @@
 #include <utility>
 
 #include <lydia/ast/base.hpp>
-#include <lydia/logic/ltlf/base.hpp>
+#include <lydia/logic/ldlf/base.hpp>
 #include <lydia/logic/symbol.hpp>
 
 #include "lydia/parser/ltlf/parser.tab.hh"
+#include <lydia/parser/abstract_driver.hpp>
 #include <lydia/parser/ltlf/scanner.hpp>
 
-namespace whitemech::lydia {
+namespace whitemech::lydia::parsers::ltlf {
 
-class LTLfDriver {
+class LTLfDriver : public AbstractDriver {
 private:
   void parse_helper(std::istream &stream);
 
@@ -39,19 +40,21 @@ private:
   std::shared_ptr<AstManager> context = nullptr;
 
 public:
-  std::shared_ptr<const LTLfFormula> result;
+  ldlf_ptr result;
 
-  LTLfDriver() { context = std::make_shared<AstManager>(); }
+  LTLfDriver() : AbstractDriver() { context = std::make_shared<AstManager>(); }
 
   explicit LTLfDriver(std::shared_ptr<AstManager> c) : context{std::move(c)} {}
 
   virtual ~LTLfDriver();
 
+  ldlf_ptr get_result() override { return result; }
+
   /**
    * parse - parse from a file
    * @param filename - valid string with input file
    */
-  void parse(const char *const filename);
+  void parse(const char *const filename) override;
 
   /**
    * parse - parse from a c++ input stream
@@ -59,54 +62,23 @@ public:
    */
   void parse(std::istream &iss);
 
-  std::shared_ptr<const LTLfFormula> add_LTLfTrue() const;
-
-  std::shared_ptr<const LTLfFormula> add_LTLfFalse() const;
-
-  std::shared_ptr<const LTLfFormula> add_LTLfAtom(std::string s) const;
-
-  std::shared_ptr<const LTLfFormula>
-  add_LTLfAnd(std::shared_ptr<const LTLfFormula> &lhs,
-              std::shared_ptr<const LTLfFormula> &rhs) const;
-
-  std::shared_ptr<const LTLfFormula>
-  add_LTLfOr(std::shared_ptr<const LTLfFormula> &lhs,
-             std::shared_ptr<const LTLfFormula> &rhs) const;
-
-  std::shared_ptr<const LTLfFormula>
-  add_LTLfNot(std::shared_ptr<const LTLfFormula> &formula) const;
-
-  std::shared_ptr<const LTLfFormula>
-  add_LTLfNext(std::shared_ptr<const LTLfFormula> &formula) const;
-
-  std::shared_ptr<const LTLfFormula>
-  add_LTLfWeakNext(std::shared_ptr<const LTLfFormula> &formula) const;
-
-  std::shared_ptr<const LTLfFormula>
-  add_LTLfEventually(std::shared_ptr<const LTLfFormula> &formula) const;
-
-  std::shared_ptr<const LTLfFormula>
-  add_LTLfAlways(std::shared_ptr<const LTLfFormula> &formula) const;
-
-  std::shared_ptr<const LTLfFormula>
-  add_LTLfUntil(std::shared_ptr<const LTLfFormula> &lhs,
-                std::shared_ptr<const LTLfFormula> &rhs) const;
-
-  std::shared_ptr<const LTLfFormula>
-  add_LTLfRelease(std::shared_ptr<const LTLfFormula> &lhs,
-                  std::shared_ptr<const LTLfFormula> &rhs) const;
-
-  std::shared_ptr<const LTLfFormula>
-  add_LTLfImplication(std::shared_ptr<const LTLfFormula> &lhs,
-                      std::shared_ptr<const LTLfFormula> &rhs) const;
-
-  std::shared_ptr<const LTLfFormula>
-  add_LTLfEquivalence(std::shared_ptr<const LTLfFormula> &lhs,
-                      std::shared_ptr<const LTLfFormula> &rhs) const;
-
-  std::shared_ptr<const LTLfFormula> add_LTLfLast() const;
+  ldlf_ptr add_LTLfTrue() const;
+  ldlf_ptr add_LTLfFalse() const;
+  ldlf_ptr add_LTLfAtom(std::string s) const;
+  ldlf_ptr add_LTLfAnd(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
+  ldlf_ptr add_LTLfOr(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
+  ldlf_ptr add_LTLfNot(ldlf_ptr &formula) const;
+  ldlf_ptr add_LTLfNext(ldlf_ptr &formula) const;
+  ldlf_ptr add_LTLfWeakNext(ldlf_ptr &formula) const;
+  ldlf_ptr add_LTLfEventually(ldlf_ptr &formula) const;
+  ldlf_ptr add_LTLfAlways(ldlf_ptr &formula) const;
+  ldlf_ptr add_LTLfUntil(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
+  ldlf_ptr add_LTLfRelease(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
+  ldlf_ptr add_LTLfImplication(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
+  ldlf_ptr add_LTLfEquivalence(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
+  ldlf_ptr add_LTLfLast() const;
 
   std::ostream &print(std::ostream &stream) const;
 };
 
-} // namespace whitemech::lydia
+} // namespace whitemech::lydia::parsers::ltlf

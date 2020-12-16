@@ -20,7 +20,7 @@
 
 #include <lydia/parser/ltlf/driver.hpp>
 
-namespace whitemech::lydia {
+namespace whitemech::lydia::parsers::ltlf {
 
 LTLfDriver::~LTLfDriver() {
   delete (scanner);
@@ -68,90 +68,104 @@ void LTLfDriver::parse_helper(std::istream &stream) {
   }
 }
 
-std::shared_ptr<const LTLfFormula> LTLfDriver::add_LTLfTrue() const {
-  return context->makeLtlfTrue();
+ldlf_ptr LTLfDriver::add_LTLfTrue() const {
+  auto prop_true = context->makePropRegex(context->makeTrue());
+  auto logical_true = context->makeLdlfTrue();
+  return context->makeLdlfDiamond(prop_true, logical_true);
 }
 
-std::shared_ptr<const LTLfFormula> LTLfDriver::add_LTLfFalse() const {
-  return context->makeLtlfFalse();
+ldlf_ptr LTLfDriver::add_LTLfFalse() const {
+  auto prop_true = context->makePropRegex(context->makeFalse());
+  auto logical_true = context->makeLdlfTrue();
+  return context->makeLdlfDiamond(prop_true, logical_true);
 }
 
-std::shared_ptr<const LTLfFormula>
-LTLfDriver::add_LTLfAtom(std::string s) const {
-  return context->makeLtlfAtom(s);
+ldlf_ptr LTLfDriver::add_LTLfAtom(std::string s) const {
+  auto prop_atom = context->makePropRegex(context->makePropAtom(s));
+  auto logical_true = context->makeLdlfTrue();
+  return context->makeLdlfDiamond(prop_atom, logical_true);
 }
 
-std::shared_ptr<const LTLfFormula>
-LTLfDriver::add_LTLfAnd(std::shared_ptr<const LTLfFormula> &lhs,
-                        std::shared_ptr<const LTLfFormula> &rhs) const {
-  auto children = set_ltlf_formulas({lhs, rhs});
-  return context->makeLtlfAnd(children);
+ldlf_ptr LTLfDriver::add_LTLfAnd(ldlf_ptr &lhs, ldlf_ptr &rhs) const {
+  auto children = set_formulas({lhs, rhs});
+  return context->makeLdlfAnd(children);
 }
 
-std::shared_ptr<const LTLfFormula>
-LTLfDriver::add_LTLfOr(std::shared_ptr<const LTLfFormula> &lhs,
-                       std::shared_ptr<const LTLfFormula> &rhs) const {
-  auto children = set_ltlf_formulas({lhs, rhs});
-  return context->makeLtlfOr(children);
+ldlf_ptr LTLfDriver::add_LTLfOr(ldlf_ptr &lhs, ldlf_ptr &rhs) const {
+  auto children = set_formulas({lhs, rhs});
+  return context->makeLdlfOr(children);
 }
 
-std::shared_ptr<const LTLfFormula>
-LTLfDriver::add_LTLfNot(std::shared_ptr<const LTLfFormula> &formula) const {
-  return context->makeLtlfNot(formula);
+ldlf_ptr LTLfDriver::add_LTLfNot(ldlf_ptr &formula) const {
+  return context->makeLdlfNot(formula);
 }
 
-std::shared_ptr<const LTLfFormula>
-LTLfDriver::add_LTLfNext(std::shared_ptr<const LTLfFormula> &formula) const {
-  return context->makeLtlfNext(formula);
+ldlf_ptr LTLfDriver::add_LTLfNext(ldlf_ptr &formula) const {
+  auto not_end = context->makeLdlfNot(context->makeLdlfEnd());
+  auto formula_and_not_end = context->makeLdlfAnd({formula, not_end});
+  return context->makeLdlfDiamond(context->makePropRegex(context->makeTrue()),
+                                  formula_and_not_end);
 }
 
-std::shared_ptr<const LTLfFormula> LTLfDriver::add_LTLfWeakNext(
-    std::shared_ptr<const LTLfFormula> &formula) const {
-  return context->makeLtlfWeakNext(formula);
+ldlf_ptr LTLfDriver::add_LTLfWeakNext(ldlf_ptr &formula) const {
+  auto end = context->makeLdlfEnd();
+  auto formula_or_end = context->makeLdlfOr({formula, end});
+  return context->makeLdlfBox(context->makePropRegex(context->makeTrue()),
+                              formula_or_end);
 }
 
-std::shared_ptr<const LTLfFormula> LTLfDriver::add_LTLfEventually(
-    std::shared_ptr<const LTLfFormula> &formula) const {
-  return context->makeLtlfEventually(formula);
+ldlf_ptr LTLfDriver::add_LTLfEventually(ldlf_ptr &formula) const {
+  auto not_end = context->makeLdlfNot(context->makeLdlfEnd());
+  auto formula_and_not_end = context->makeLdlfAnd({formula, not_end});
+  auto true_star =
+      context->makeStarRegex(context->makePropRegex(context->makeTrue()));
+  return context->makeLdlfDiamond(true_star, formula_and_not_end);
 }
 
-std::shared_ptr<const LTLfFormula>
-LTLfDriver::add_LTLfAlways(std::shared_ptr<const LTLfFormula> &formula) const {
-  return context->makeLtlfAlways(formula);
+ldlf_ptr LTLfDriver::add_LTLfAlways(ldlf_ptr &formula) const {
+  auto end = context->makeLdlfEnd();
+  auto formula_or_end = context->makeLdlfOr({formula, end});
+  auto true_star =
+      context->makeStarRegex(context->makePropRegex(context->makeTrue()));
+  return context->makeLdlfBox(true_star, formula_or_end);
 }
 
-std::shared_ptr<const LTLfFormula>
-LTLfDriver::add_LTLfUntil(std::shared_ptr<const LTLfFormula> &lhs,
-                          std::shared_ptr<const LTLfFormula> &rhs) const {
-  return context->makeLtlfUntil(lhs, rhs);
+ldlf_ptr LTLfDriver::add_LTLfUntil(ldlf_ptr &lhs, ldlf_ptr &rhs) const {
+  auto not_end = context->makeLdlfNot(context->makeLdlfEnd());
+  auto formula_and_not_end = context->makeLdlfAnd({rhs, not_end});
+  auto true_regex = context->makePropRegex(context->makeTrue());
+  auto formula_test = context->makeTestRegex(lhs);
+  auto seq_star =
+      context->makeStarRegex(context->makeSeqRegex({formula_test, true_regex}));
+  return context->makeLdlfDiamond(seq_star, formula_and_not_end);
 }
 
-std::shared_ptr<const LTLfFormula>
-LTLfDriver::add_LTLfRelease(std::shared_ptr<const LTLfFormula> &lhs,
-                            std::shared_ptr<const LTLfFormula> &rhs) const {
-  return context->makeLtlfRelease(lhs, rhs);
+ldlf_ptr LTLfDriver::add_LTLfRelease(ldlf_ptr &lhs, ldlf_ptr &rhs) const {
+  auto end = context->makeLdlfEnd();
+  auto formula_or_end = context->makeLdlfOr({rhs, end});
+  auto true_regex = context->makePropRegex(context->makeTrue());
+  auto formula_test = context->makeTestRegex(lhs);
+  auto seq_star =
+      context->makeStarRegex(context->makeSeqRegex({formula_test, true_regex}));
+  return context->makeLdlfBox(seq_star, formula_or_end);
 }
 
-std::shared_ptr<const LTLfFormula>
-LTLfDriver::add_LTLfImplication(std::shared_ptr<const LTLfFormula> &lhs,
-                                std::shared_ptr<const LTLfFormula> &rhs) const {
-  auto ptr_not_lhs = context->makeLtlfNot(lhs);
-  auto children = set_ltlf_formulas({ptr_not_lhs, rhs});
-  return context->makeLtlfOr(children);
+ldlf_ptr LTLfDriver::add_LTLfImplication(ldlf_ptr &lhs, ldlf_ptr &rhs) const {
+  auto ptr_not_lhs = context->makeLdlfNot(lhs);
+  auto children = set_formulas({ptr_not_lhs, rhs});
+  return context->makeLdlfOr(children);
 }
 
-std::shared_ptr<const LTLfFormula>
-LTLfDriver::add_LTLfEquivalence(std::shared_ptr<const LTLfFormula> &lhs,
-                                std::shared_ptr<const LTLfFormula> &rhs) const {
+ldlf_ptr LTLfDriver::add_LTLfEquivalence(ldlf_ptr &lhs, ldlf_ptr &rhs) const {
   auto ptr_left_implication = this->add_LTLfImplication(lhs, rhs);
   auto ptr_right_implication = this->add_LTLfImplication(rhs, lhs);
-  auto children =
-      set_ltlf_formulas({ptr_left_implication, ptr_right_implication});
-  return context->makeLtlfAnd(children);
+  auto children = set_formulas({ptr_left_implication, ptr_right_implication});
+  return context->makeLdlfAnd(children);
 }
 
-std::shared_ptr<const LTLfFormula> LTLfDriver::add_LTLfLast() const {
-  return context->makeLtlfWeakNext(context->makeLtlfFalse());
+ldlf_ptr LTLfDriver::add_LTLfLast() const {
+  return context->makeLdlfDiamond(context->makePropRegex(context->makeTrue()),
+                                  context->makeLdlfEnd());
 }
 
 std::ostream &LTLfDriver::print(std::ostream &stream) const {
@@ -159,4 +173,4 @@ std::ostream &LTLfDriver::print(std::ostream &stream) const {
   return (stream);
 }
 
-} // namespace whitemech::lydia
+} // namespace whitemech::lydia::parsers::ltlf

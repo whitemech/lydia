@@ -27,11 +27,12 @@
 #include <lydia/logic/symbol.hpp>
 
 #include "lydia/parser/ldlf/parser.tab.hh"
+#include <lydia/parser/abstract_driver.hpp>
 #include <lydia/parser/ldlf/scanner.hpp>
 
-namespace whitemech::lydia {
+namespace whitemech::lydia::parsers::ldlf {
 
-class Driver {
+class Driver : public AbstractDriver {
 private:
   void parse_helper(std::istream &stream);
 
@@ -40,104 +41,76 @@ private:
   std::shared_ptr<AstManager> context = nullptr;
 
 public:
-  std::shared_ptr<const LDLfFormula> result;
+  ldlf_ptr result;
 
-  Driver() { context = std::make_shared<AstManager>(); }
+  Driver() : AbstractDriver() { context = std::make_shared<AstManager>(); }
 
   explicit Driver(std::shared_ptr<AstManager> c) : context{std::move(c)} {}
 
   virtual ~Driver();
 
+  ldlf_ptr get_result() override { return result; }
+
   /**
    * parse - parse from a file
    * @param filename - valid string with input file
    */
-  void parse(const char *const filename);
+  void parse(const char *const filename) override;
 
   /**
    * parse - parse from a c++ input stream
-   * @param is - std::istream&, valid input stream
+   * @param iss - std::istream&, valid input stream
    */
   void parse(std::istream &iss);
 
-  std::shared_ptr<const LDLfFormula> add_LDLfTrue() const;
+  ldlf_ptr add_LDLfTrue() const;
 
-  std::shared_ptr<const LDLfFormula> add_LDLfFalse() const;
+  ldlf_ptr add_LDLfFalse() const;
 
-  std::shared_ptr<const LDLfFormula>
-  add_LDLfAnd(std::shared_ptr<const LDLfFormula> &lhs,
-              std::shared_ptr<const LDLfFormula> &rhs) const;
+  ldlf_ptr add_LDLfAnd(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
 
-  std::shared_ptr<const LDLfFormula>
-  add_LDLfOr(std::shared_ptr<const LDLfFormula> &lhs,
-             std::shared_ptr<const LDLfFormula> &rhs) const;
+  ldlf_ptr add_LDLfOr(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
 
-  std::shared_ptr<const LDLfFormula>
-  add_LDLfNot(std::shared_ptr<const LDLfFormula> &formula) const;
+  ldlf_ptr add_LDLfNot(ldlf_ptr &formula) const;
 
-  std::shared_ptr<const LDLfFormula>
-  add_LDLfDiamond(std::shared_ptr<const RegExp> &regex,
-                  std::shared_ptr<const LDLfFormula> &formula) const;
+  ldlf_ptr add_LDLfDiamond(regex_ptr &regex, ldlf_ptr &formula) const;
 
-  std::shared_ptr<const LDLfFormula>
-  add_LDLfBox(std::shared_ptr<const RegExp> &regex,
-              std::shared_ptr<const LDLfFormula> &formula) const;
+  ldlf_ptr add_LDLfBox(regex_ptr &regex, ldlf_ptr &formula) const;
 
-  std::shared_ptr<const LDLfFormula>
-  add_LDLfImplication(std::shared_ptr<const LDLfFormula> &lhs,
-                      std::shared_ptr<const LDLfFormula> &rhs) const;
+  ldlf_ptr add_LDLfImplication(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
 
-  std::shared_ptr<const LDLfFormula>
-  add_LDLfEquivalence(std::shared_ptr<const LDLfFormula> &lhs,
-                      std::shared_ptr<const LDLfFormula> &rhs) const;
+  ldlf_ptr add_LDLfEquivalence(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
 
-  std::shared_ptr<const LDLfFormula> add_LDLfEnd() const;
+  ldlf_ptr add_LDLfEnd() const;
 
-  std::shared_ptr<const LDLfFormula> add_LDLfLast() const;
+  ldlf_ptr add_LDLfLast() const;
 
-  std::shared_ptr<const RegExp> add_PropositionalRegExp(
-      std::shared_ptr<const PropositionalFormula> &prop_formula) const;
+  regex_ptr add_PropositionalRegExp(prop_ptr &prop_formula) const;
 
-  std::shared_ptr<const RegExp>
-  add_TestRegExp(std::shared_ptr<const LDLfFormula> &formula) const;
+  regex_ptr add_TestRegExp(ldlf_ptr &formula) const;
 
-  std::shared_ptr<const RegExp>
-  add_StarRegExp(std::shared_ptr<const RegExp> &regex) const;
+  regex_ptr add_StarRegExp(regex_ptr &regex) const;
 
-  std::shared_ptr<const RegExp>
-  add_SequenceRegExp(std::shared_ptr<const RegExp> &regex_lhs,
-                     std::shared_ptr<const RegExp> &regex_rhs) const;
+  regex_ptr add_SequenceRegExp(regex_ptr &regex_lhs,
+                               regex_ptr &regex_rhs) const;
 
-  std::shared_ptr<const RegExp>
-  add_UnionRegExp(std::shared_ptr<const RegExp> &regex_lhs,
-                  std::shared_ptr<const RegExp> &regex_rhs) const;
+  regex_ptr add_UnionRegExp(regex_ptr &regex_lhs, regex_ptr &regex_rhs) const;
 
-  std::shared_ptr<const PropositionalFormula>
-  add_PropositionalBooleanAtom(const bool &flag) const;
+  prop_ptr add_PropositionalBooleanAtom(const bool &flag) const;
 
-  std::shared_ptr<const PropositionalFormula>
-  add_PropositionalAtom(std::string &symbol_name) const;
+  prop_ptr add_PropositionalAtom(std::string &symbol_name) const;
 
-  std::shared_ptr<const PropositionalFormula>
-  add_PropositionalAnd(std::shared_ptr<const PropositionalFormula> &lhs,
-                       std::shared_ptr<const PropositionalFormula> &rhs) const;
+  prop_ptr add_PropositionalAnd(prop_ptr &lhs, prop_ptr &rhs) const;
 
-  std::shared_ptr<const PropositionalFormula>
-  add_PropositionalOr(std::shared_ptr<const PropositionalFormula> &lhs,
-                      std::shared_ptr<const PropositionalFormula> &rhs) const;
+  prop_ptr add_PropositionalOr(prop_ptr &lhs, prop_ptr &rhs) const;
 
-  std::shared_ptr<const PropositionalFormula> add_PropositionalNot(
-      std::shared_ptr<const PropositionalFormula> &prop_formula) const;
+  prop_ptr add_PropositionalNot(prop_ptr &prop_formula) const;
 
-  std::shared_ptr<const PropositionalFormula> add_PropositionalImplication(
-      std::shared_ptr<const PropositionalFormula> &lhs,
-      std::shared_ptr<const PropositionalFormula> &rhs) const;
+  prop_ptr add_PropositionalImplication(prop_ptr &lhs, prop_ptr &rhs) const;
 
-  std::shared_ptr<const PropositionalFormula> add_PropositionalEquivalence(
-      std::shared_ptr<const PropositionalFormula> &lhs,
-      std::shared_ptr<const PropositionalFormula> &rhs) const;
+  prop_ptr add_PropositionalEquivalence(prop_ptr &lhs, prop_ptr &rhs) const;
 
   std::ostream &print(std::ostream &stream) const;
 };
 
-} // namespace whitemech::lydia
+} // namespace whitemech::lydia::parsers::ldlf

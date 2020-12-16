@@ -3,7 +3,7 @@
 %debug 
 %defines
 %define api.prefix {ldlf}
-%define api.namespace {whitemech::lydia}
+%define api.namespace {whitemech::lydia::parsers::ldlf}
 
 /*
  * bison 3.3.2 deprecates %define parser_class_name {}
@@ -15,7 +15,7 @@
 %code requires{
    #include "lydia/logic/ldlf/base.hpp"
    #include "lydia/parser/ldlf/parser_stype.h"
-namespace whitemech::lydia {
+namespace whitemech::lydia::parsers::ldlf {
       class Driver;
       class LDLfScanner;
 }
@@ -49,7 +49,7 @@ namespace whitemech::lydia {
 
 %define parse.assert
 
-%define api.value.type {struct whitemech::lydia::LDLf_YYSTYPE}
+%define api.value.type {struct whitemech::lydia::parsers::ldlf::LDLf_YYSTYPE}
 
 %type<formula> input ldlf_formula
 %type<regex> regular_expression
@@ -128,6 +128,6 @@ propositional_formula: LPAR propositional_formula RPAR                          
     
 %%
 
-void whitemech::lydia::LDLfParser::error(const location_type &l, const std::string &err_message) {
+void whitemech::lydia::parsers::ldlf::LDLfParser::error(const location_type &l, const std::string &err_message) {
    std::cerr << "Error: " << err_message << " at " << l << "\n";
 }

@@ -20,13 +20,13 @@
 #include "lydia/parser/ltlf/parser.tab.hh"
 #include <lydia/parser/ltlf/parser_stype.h>
 
-namespace whitemech::lydia {
+namespace whitemech::lydia::parsers::ltlf {
 
 class LTLfScanner : public ltlfFlexLexer {
 private:
 public:
   /* yyval ptr */
-  whitemech::lydia::LTLf_YYSTYPE *yylval = nullptr;
+  whitemech::lydia::parsers::ltlf::LTLf_YYSTYPE *yylval = nullptr;
 
   explicit LTLfScanner(std::istream *in) : ltlfFlexLexer(in){};
   virtual ~LTLfScanner(){};
@@ -34,10 +34,10 @@ public:
   // get rid of override virtual function warning
   using FlexLexer::yylex;
 
-  virtual int yylex(whitemech::lydia::LTLf_YYSTYPE *lval,
+  virtual int yylex(whitemech::lydia::parsers::ltlf::LTLf_YYSTYPE *lval,
                     LTLfParser::location_type *location);
   // YY_DECL defined in lexer.l
   // Method body created by flex in lexer.yy.cc
 };
 
-} // namespace whitemech::lydia
+} // namespace whitemech::lydia::parsers::ltlf

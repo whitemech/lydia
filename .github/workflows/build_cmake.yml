@@ -50,10 +50,13 @@ jobs:
           sudo apt-get install -y flex bison
           sudo apt-get autoremove
 
+          # install boost
+          sudo apt-get install -y libboost-dev
+
           sudo apt-get install -y graphviz libgraphviz-dev
           sudo python3 -m pip install gcovr
       - name: Install dependencies
-        run: ./scripts/_ci-install-dependencies-ubuntu.sh
+        run: sudo ./scripts/_ci-install-dependencies-ubuntu.sh
       - name: Check clang-tidy
         run: ./scripts/check-clang-tidy.sh
       - name: Configure CMake

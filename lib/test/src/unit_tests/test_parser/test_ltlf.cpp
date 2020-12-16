@@ -310,7 +310,6 @@ TEST_CASE("LTLfDriver LTLfRelease", "[parser][ltlf]") {
   }
 }
 
-
 TEST_CASE("LTLfDriver LTLfEventually", "[parser][ltlf]") {
   auto context = std::make_shared<AstManager>();
   auto driver = LTLfDriver(context);

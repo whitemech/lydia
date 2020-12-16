@@ -55,6 +55,10 @@ set (MONA_INCLUDE_PATH ${MONA_INCLUDE_DIRS})
 # MiniSAT
 set (MINISAT_INCLUDE_PATH ${MINISAT_INCLUDE_DIRS})
 # -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+# Syft
+set (SYFT_INCLUDE_PATH ${SYFT_INCLUDE_DIRS})
+# -------------------------------------------------------------------------
 
 #set variables
 set (THIRD_PARTY_INCLUDE_PATH
@@ -62,6 +66,7 @@ set (THIRD_PARTY_INCLUDE_PATH
         ${CLI11_INCLUDE_PATH}
         ${CUDD_INCLUDE_PATH}
         ${MONA_INCLUDE_PATH}
+        ${SYFT_INCLUDE_PATH}
         ${GOOGLE_BENCHMARK_INCLUDE_PATH}
         ${CPPITERTOOLS_INCLUDE_PATH}
         ${MINISAT_INCLUDE_PATH}

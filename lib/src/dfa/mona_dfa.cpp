@@ -41,6 +41,21 @@ int mona_dfa::get_successor(int state, const interpretation &symbol) const {
   return l;
 }
 
+void mona_dfa::export_dfa(const std::string &filename) const {
+  std::vector<char> filename_cstr(filename.c_str(),
+                                  filename.c_str() + filename.size() + 1);
+  char **arr = new char *[names.size()];
+  for (size_t i = 0; i < names.size(); i++) {
+    arr[i] = new char[names[i].size() + 1];
+    strcpy(arr[i], names[i].c_str());
+  }
+  dfaExport(dfa_, filename_cstr.data(), get_nb_variables(), arr, {});
+  for (size_t i = 0; i < names.size(); i++) {
+    delete[] arr[i];
+  }
+  delete[] arr;
+}
+
 std::string get_path_guard(int n, trace_descr tp) {
   auto result = std::string(n, 'X');
   trace_descr cur_node = tp;

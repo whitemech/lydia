@@ -16,25 +16,10 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "lydia/logic/ltlf/base.hpp"
-#include <string>
-
-namespace whitemech::lydia::parsers::ltlf {
-
-struct LTLf_YYSTYPE {
-  ldlf_ptr formula;
-  std::string symbol_name;
-
-  // Constructor
-  LTLf_YYSTYPE() = default;
-  // Destructor
-  ~LTLf_YYSTYPE() = default;
-  // Copy constructor and assignment
-  LTLf_YYSTYPE(const LTLf_YYSTYPE &) = default;
-  LTLf_YYSTYPE &operator=(const LTLf_YYSTYPE &) = default;
-  // Move constructor and assignment
-  LTLf_YYSTYPE(LTLf_YYSTYPE &&) = default;
-  LTLf_YYSTYPE &operator=(LTLf_YYSTYPE &&) = default;
+namespace whitemech::lydia {
+class AbstractDriver {
+public:
+  virtual void parse(const char *const filename) = 0;
+  virtual ldlf_ptr get_result() = 0;
 };
-
-} // namespace whitemech::lydia::parsers::ltlf
+} // namespace whitemech::lydia
