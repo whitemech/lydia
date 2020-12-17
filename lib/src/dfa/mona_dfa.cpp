@@ -49,7 +49,10 @@ void mona_dfa::export_dfa(const std::string &filename) const {
     arr[i] = new char[names[i].size() + 1];
     strcpy(arr[i], names[i].c_str());
   }
-  dfaExport(dfa_, filename_cstr.data(), get_nb_variables(), arr, {});
+  char *orders = new char[names.size()];
+  memset(orders, 2, names.size());
+
+  dfaExport(dfa_, filename_cstr.data(), get_nb_variables(), arr, orders);
   for (size_t i = 0; i < names.size(); i++) {
     delete[] arr[i];
   }

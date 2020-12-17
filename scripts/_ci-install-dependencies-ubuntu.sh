@@ -32,7 +32,6 @@ cd ..
 echo "MiniSAT installed."
 
 echo "Installing Syft..."
-sudo ldconfig
 cd third_party/Syft
 /bin/rm -rf build
 mkdir build && cd build

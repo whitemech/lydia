@@ -26,7 +26,7 @@ namespace whitemech::lydia::Test {
 TEST_CASE("LTLfDriver LTLf Boolean Atoms", "[parser][ltlf]") {
   Logger log("test_parser");
   auto context = std::make_shared<AstManager>();
-  auto driver = LTLfDriver(context);
+  auto driver = parsers::ltlf::LTLfDriver(context);
 
   auto actualBoolTrue = context->makeLtlfTrue();
   auto actualBoolFalse = context->makeLtlfFalse();
@@ -47,7 +47,7 @@ TEST_CASE("LTLfDriver LTLf Boolean Atoms", "[parser][ltlf]") {
 
 TEST_CASE("LTLfDriver LTLfAnd between Boolean atoms", "[parser][ltlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = LTLfDriver(context);
+  auto driver = parsers::ltlf::LTLfDriver(context);
   auto tt = context->makeLtlfTrue();
   auto ff = context->makeLtlfFalse();
   auto actualAnd_true_false = context->makeLtlfAnd(set_ltlf_formulas({tt, ff}));
@@ -96,7 +96,7 @@ TEST_CASE("LTLfDriver LTLfAnd between Boolean atoms", "[parser][ltlf]") {
 
 TEST_CASE("LTLfDriver LTLfOr between Boolean atoms", "[parser][ltlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = LTLfDriver(context);
+  auto driver = parsers::ltlf::LTLfDriver(context);
   auto tt = context->makeLtlfTrue();
   auto ff = context->makeLtlfFalse();
   auto actualOr_true_false = context->makeLtlfOr(set_ltlf_formulas({tt, ff}));
@@ -139,7 +139,7 @@ TEST_CASE("LTLfDriver LTLfOr between Boolean atoms", "[parser][ltlf]") {
 
 TEST_CASE("LTLfDriver LTLfNot", "[parser][ltlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = LTLfDriver(context);
+  auto driver = parsers::ltlf::LTLfDriver(context);
   auto tt = context->makeLtlfTrue();
   auto ff = context->makeLtlfFalse();
   auto actualNot_true = context->makeLtlfNot(tt);
@@ -191,7 +191,7 @@ TEST_CASE("LTLfDriver LTLfNot", "[parser][ltlf]") {
 
 TEST_CASE("LTLfDriver atoms", "[parser][ltlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = LTLfDriver(context);
+  auto driver = parsers::ltlf::LTLfDriver(context);
 
   auto true_ = context->makePropRegex(context->makeTrue());
   auto a = context->makeLtlfAtom("a");
@@ -226,7 +226,7 @@ TEST_CASE("LTLfDriver atoms", "[parser][ltlf]") {
 
 TEST_CASE("LTLfDriver LTLfNext", "[parser][ltlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = LTLfDriver(context);
+  auto driver = parsers::ltlf::LTLfDriver(context);
 
   auto a = context->makeLtlfAtom("a");
 
@@ -241,7 +241,7 @@ TEST_CASE("LTLfDriver LTLfNext", "[parser][ltlf]") {
 
 TEST_CASE("LTLfDriver LTLfWeakNext", "[parser][ltlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = LTLfDriver(context);
+  auto driver = parsers::ltlf::LTLfDriver(context);
 
   auto a = context->makeLtlfAtom("a");
 
@@ -256,7 +256,7 @@ TEST_CASE("LTLfDriver LTLfWeakNext", "[parser][ltlf]") {
 
 TEST_CASE("LTLfDriver LTLfUntil", "[parser][ltlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = LTLfDriver(context);
+  auto driver = parsers::ltlf::LTLfDriver(context);
 
   auto a = context->makeLtlfAtom("a");
   auto b = context->makeLtlfAtom("b");
@@ -284,7 +284,7 @@ TEST_CASE("LTLfDriver LTLfUntil", "[parser][ltlf]") {
 
 TEST_CASE("LTLfDriver LTLfRelease", "[parser][ltlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = LTLfDriver(context);
+  auto driver = parsers::ltlf::LTLfDriver(context);
 
   auto a = context->makeLtlfAtom("a");
   auto b = context->makeLtlfAtom("b");
@@ -312,7 +312,7 @@ TEST_CASE("LTLfDriver LTLfRelease", "[parser][ltlf]") {
 
 TEST_CASE("LTLfDriver LTLfEventually", "[parser][ltlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = LTLfDriver(context);
+  auto driver = parsers::ltlf::LTLfDriver(context);
 
   auto a = context->makeLtlfAtom("a");
 
@@ -326,7 +326,7 @@ TEST_CASE("LTLfDriver LTLfEventually", "[parser][ltlf]") {
 }
 TEST_CASE("LTLfDriver LTLfAlways", "[parser][ltlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = LTLfDriver(context);
+  auto driver = parsers::ltlf::LTLfDriver(context);
 
   auto a = context->makeLtlfAtom("a");
 
@@ -341,7 +341,7 @@ TEST_CASE("LTLfDriver LTLfAlways", "[parser][ltlf]") {
 
 TEST_CASE("LTLfDriver LTLf Implication", "[parser][ltlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = LTLfDriver(context);
+  auto driver = parsers::ltlf::LTLfDriver(context);
   auto a = context->makeLtlfAtom("a");
   auto b = context->makeLtlfAtom("b");
 
@@ -357,7 +357,7 @@ TEST_CASE("LTLfDriver LTLf Implication", "[parser][ltlf]") {
 
 TEST_CASE("LTLfDriver LTLf Equivalence", "[parser][ltlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = LTLfDriver(context);
+  auto driver = parsers::ltlf::LTLfDriver(context);
   auto a = context->makeLtlfAtom("a");
   auto b = context->makeLtlfAtom("b");
   auto not_a = context->makeLtlfNot(a);

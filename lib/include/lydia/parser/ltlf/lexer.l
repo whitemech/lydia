@@ -57,7 +57,7 @@ using token = whitemech::lydia::parsers::ltlf::LTLfParser::token;
 
 (?i:last)                   { return token::LAST; }
 
-[a-zA-Z_][a-zA-Z0-9_]*|(".*") {
+[a-zA-Z0-9_]+|("[a-zA-Z0-9_]+") {
                                 yylval->symbol_name = yytext;
                                 return token::SYMBOL;
                             }

@@ -51,7 +51,7 @@ void Driver::parse_helper(std::istream &stream) {
     scanner = new LDLfScanner(&stream);
   } catch (std::bad_alloc &ba) {
     std::cerr << "Failed to allocate scanner: (" << ba.what()
-              << "), exiting!!\n";
+              << "), exiting!\n";
     exit(EXIT_FAILURE);
   }
 
@@ -65,6 +65,7 @@ void Driver::parse_helper(std::istream &stream) {
   const int accept(0);
   if (parser->parse() != accept) {
     std::cerr << "Parse failed!\n";
+    exit(EXIT_FAILURE);
   }
 }
 

@@ -37,14 +37,13 @@ private:
 
   LTLfParser *parser = nullptr;
   LTLfScanner *scanner = nullptr;
-  std::shared_ptr<AstManager> context = nullptr;
 
 public:
   ldlf_ptr result;
 
-  LTLfDriver() : AbstractDriver() { context = std::make_shared<AstManager>(); }
+  LTLfDriver() : AbstractDriver() {}
 
-  explicit LTLfDriver(std::shared_ptr<AstManager> c) : context{std::move(c)} {}
+  explicit LTLfDriver(std::shared_ptr<AstManager> c) : AbstractDriver(c) {}
 
   virtual ~LTLfDriver();
 

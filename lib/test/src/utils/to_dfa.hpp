@@ -133,7 +133,7 @@ from_trace_set(std::vector<interpretation_set> vector, int prop) {
 }
 
 static adfa_ptr to_dfa_from_formula_string(const std::string &f, Strategy &s) {
-  auto driver = Driver();
+  auto driver = parsers::ldlf::Driver();
   std::stringstream ldlf_formula_stream(f);
   driver.parse(ldlf_formula_stream);
   const auto &formula = *driver.result;
