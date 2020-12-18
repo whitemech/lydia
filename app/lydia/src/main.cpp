@@ -176,7 +176,7 @@ int main(int argc, char **argv) {
 
   logger.info("Start synthesis...");
   auto t_syn_start = std::chrono::high_resolution_clock::now();
-  Syft::syn test(mgr, temp_filename_string, part_file, false, false);
+  Syft::syn test(mgr, temp_filename_string, part_file);
 
   if (starting_player_env) {
     logger.info("Testing environment realizability...");
