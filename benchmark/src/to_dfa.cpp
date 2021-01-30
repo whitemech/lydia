@@ -95,7 +95,7 @@ inline void translate_sequence_of_atoms(int N, Strategy &s) {
   auto regex = sequence(N, ";");
   auto formula_string = "<" + regex + ">tt";
   auto sstream = std::stringstream(formula_string);
-  auto driver = Driver();
+  auto driver = parsers::ldlf::Driver();
   driver.parse(sstream);
   auto formula = driver.result;
   auto translator = Translator(s);
@@ -144,7 +144,7 @@ inline void translate_sequence_of_stars_of_atoms(int N, Strategy &s) {
   auto regex = sequence(N, ";", true);
   auto formula_string = "<" + regex + ">tt";
   auto sstream = std::stringstream(formula_string);
-  auto driver = Driver();
+  auto driver = parsers::ldlf::Driver();
   driver.parse(sstream);
   auto formula = driver.result;
   auto translator = Translator(s);
@@ -198,7 +198,7 @@ inline void translate_union(int N, Strategy &s) {
   auto regex = sequence(N, "+", false);
   auto formula_string = "<" + regex + ">tt";
   auto sstream = std::stringstream(formula_string);
-  auto driver = Driver();
+  auto driver = parsers::ldlf::Driver();
   driver.parse(sstream);
   auto formula = driver.result;
   auto translator = Translator(s);

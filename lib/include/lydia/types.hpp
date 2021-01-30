@@ -17,7 +17,7 @@
  */
 
 #include <cstdint>
-#include <cudd/cuddObj.hh>
+#include <cuddObj.hh>
 #include <exception>
 #include <map>
 #include <memory>

@@ -19,7 +19,7 @@
 // TODO require CUDD headers are installed in cudd/
 #include <algorithm>
 #include <cassert>
-#include <cudd/cuddObj.hh>
+#include <cuddObj.hh>
 #include <fstream>
 #include <iostream>
 #include <lydia/dfa/abstract_dfa.hpp>

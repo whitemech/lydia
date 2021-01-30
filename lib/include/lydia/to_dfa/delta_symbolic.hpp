@@ -16,7 +16,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <cudd/cuddObj.hh>
+#include <cuddObj.hh>
 #include <lydia/logger.hpp>
 #include <lydia/logic/ldlf/base.hpp>
 #include <lydia/logic/pl/base.hpp>

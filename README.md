@@ -25,7 +25,7 @@ to download it for your platform.
 ### Flex and Bison
 The project uses Flex and Bison for parsing purposes.
 
-Firse check that you have them: ```whereis flex bison```
+Firse check that you have them: `whereis flex bison`
 
 If no item occurs, then you have to install them:  
 ```sudo apt-get install -f flex bison```
@@ -42,17 +42,18 @@ wget https://github.com/whitemech/cudd/releases/download/v3.0.0/cudd_3.0.0_linux
 tar -xf cudd_3.0.0_linux-amd64.tar.gz
 cd cudd_3.0.0_linux-amd64
 sudo cp -P lib/* /usr/local/lib/
-sudo cp -Pr include/* /usr/local/include
+sudo cp -Pr include/cudd/* /usr/local/include
 ```
 
-Otherwise, build from source (customize `--prefix` flag as you see fit):
+Otherwise, build from source (customize `PREFIX` variable as you see fit).
 ```
 git clone https://github.com/whitemech/cudd && cd cudd
-./configure --enable-silent-rules --enable-obj --enable-dddmp --prefix=/usr/local
+PREFIX="/usr/local"
+./configure --enable-silent-rules --enable-obj --enable-dddmp --prefix=$PREFIX
 sudo make install
 ```
 
-  If you get an error about aclocal, this might be due to either
+If you get an error about aclocal, this might be due to either
   1. Not having automake: 
 ```sudo apt-get install automake```
   2. Needing to reconfigure, do this before configuring: 
@@ -71,7 +72,7 @@ To install the MONA library, run the following commands:
 
 ```shell script
 wget https://github.com/whitemech/MONA/releases/download/v1.4-18.dev0/mona_1.4-18.dev0_linux-amd64.tar.gz
-tar -xf mona_1.4-18.dev0_linux-amd64
+tar -xf mona_1.4-18.dev0_linux-amd64.tar.gz
 cd mona_1.4-18.dev0_linux-amd64
 sudo cp -P lib/* /usr/local/lib/
 sudo cp -Pr include/* /usr/local/include
@@ -83,33 +84,24 @@ git clone https://github.com/whitemech/MONA.git && cd MONA
 ./configure && make && sudo make install
 ```
 
-### ZLib
+### Syft+
 
-The software depends on MiniSAT Solver, which in turn depends
-on [ZLib](https://www.zlib.net/).
+Lydia depends on Syft+ to perform synthesis. 
 
-To install it, e.g. on Ubuntu:
-
-```bash
-sudo apt-get install zlib1g-dev
+First, install the Boost libraries.
+```
+sudo apt-get install libboost-dev
 ```
 
-### MiniSAT
-
-Install the pre-built library:
-```
-wget https://github.com/whitemech/minisat/releases/download/v2.1.0/minisat_2.1.0_linux-amd64.tar.gz
-tar -xf minisat_2.1.0_linux-amd64
-cd minisat_2.1.0_linux-amd64
-sudo cp -P lib/* /usr/local/lib/
-sudo cp -Pr include/* /usr/local/include
-```
-
-Or, build from source:
-```
-git clone https://github.com/whitemech/minisat.git && cd minisat
-mkdir build && cd build && cmake ..
-make -j4 && sudo make install 
+Install it with:
+```shell script
+git clone https://github.com/whitemech/Syft.git
+cd Syft
+git checkout syft+
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j
+sudo make install
 ```
 
 ### Graphviz
@@ -122,6 +114,22 @@ On Ubuntu, this should work:
 ```bash
 sudo apt-get install libgraphviz-dev
 ```
+
+### Use the Docker image
+
+We have prepared the Docker image (`./Dockerfile`) with all the needed dependencies.
+
+To build it:
+```shell
+./scripts/docker-build.sh
+```
+
+To run it, with the current working directory mounted, run:
+```shell
+./scripts/docker-run.sh
+```
+
+Then, you can follow the installation steps inside the Docker container.
 
 ## Installation
 

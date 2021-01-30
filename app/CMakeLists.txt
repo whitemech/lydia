@@ -16,4 +16,3 @@
 #
 
 add_subdirectory(lydia)
-add_subdirectory(mona2sym)
