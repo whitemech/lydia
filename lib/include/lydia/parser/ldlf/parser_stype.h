@@ -20,24 +20,24 @@
 #include "lydia/logic/pl/base.hpp"
 #include <string>
 
-namespace whitemech::lydia {
+namespace whitemech::lydia::parsers::ldlf {
 
-struct YYSTYPE {
+struct LDLf_YYSTYPE {
   std::shared_ptr<const LDLfFormula> formula;
   std::shared_ptr<const RegExp> regex;
   std::shared_ptr<const PropositionalFormula> prop_formula;
   std::string symbol_name;
 
   // Constructor
-  YYSTYPE() = default;
+  LDLf_YYSTYPE() = default;
   // Destructor
-  ~YYSTYPE() = default;
+  ~LDLf_YYSTYPE() = default;
   // Copy constructor and assignment
-  YYSTYPE(const YYSTYPE &) = default;
-  YYSTYPE &operator=(const YYSTYPE &) = default;
+  LDLf_YYSTYPE(const LDLf_YYSTYPE &) = default;
+  LDLf_YYSTYPE &operator=(const LDLf_YYSTYPE &) = default;
   // Move constructor and assignment
-  YYSTYPE(YYSTYPE &&) = default;
-  YYSTYPE &operator=(YYSTYPE &&) = default;
+  LDLf_YYSTYPE(LDLf_YYSTYPE &&) = default;
+  LDLf_YYSTYPE &operator=(LDLf_YYSTYPE &&) = default;
 };
 
-} // namespace whitemech::lydia
+} // namespace whitemech::lydia::parsers::ldlf

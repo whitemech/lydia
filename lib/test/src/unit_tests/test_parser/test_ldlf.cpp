@@ -17,16 +17,16 @@
 
 #include <catch.hpp>
 #include <lydia/logger.hpp>
-#include <lydia/parser/driver.hpp>
+#include <lydia/parser/ldlf/driver.hpp>
 #include <sstream>
 #include <string>
 
 namespace whitemech::lydia::Test {
 
-TEST_CASE("Driver LDLf Boolean Atoms", "[parser]") {
+TEST_CASE("Driver LDLf Boolean Atoms", "[parser][ldlf]") {
   Logger log("test_parser");
   auto context = std::make_shared<AstManager>();
-  auto driver = Driver(context);
+  auto driver = parsers::ldlf::Driver(context);
 
   auto actualBoolTrue = context->makeLdlfTrue();
   auto actualBoolFalse = context->makeLdlfFalse();
@@ -57,9 +57,9 @@ TEST_CASE("Driver LDLf Boolean Atoms", "[parser]") {
   }
 }
 
-TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser]") {
+TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser][ldlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = Driver(context);
+  auto driver = parsers::ldlf::Driver(context);
   auto tt = context->makeLdlfTrue();
   auto ff = context->makeLdlfFalse();
   auto actualAnd_true_false = context->makeLdlfAnd(set_formulas({tt, ff}));
@@ -118,9 +118,9 @@ TEST_CASE("Driver LDLfAnd between Boolean atoms", "[parser]") {
   }
 }
 
-TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser]") {
+TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser][ldlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = Driver(context);
+  auto driver = parsers::ldlf::Driver(context);
   auto tt = context->makeLdlfTrue();
   auto ff = context->makeLdlfFalse();
   auto actualOr_true_false = context->makeLdlfOr(set_formulas({tt, ff}));
@@ -160,9 +160,9 @@ TEST_CASE("Driver LDLfOr between Boolean atoms", "[parser]") {
   }
 }
 
-TEST_CASE("Driver LDLfNot", "[parser]") {
+TEST_CASE("Driver LDLfNot", "[parser][ldlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = Driver(context);
+  auto driver = parsers::ldlf::Driver(context);
   auto tt = context->makeLdlfTrue();
   auto ff = context->makeLdlfFalse();
   auto actualNot_true = context->makeLdlfNot(tt);
@@ -212,9 +212,9 @@ TEST_CASE("Driver LDLfNot", "[parser]") {
   }
 }
 
-TEST_CASE("Driver LDLfTemporal", "[parser]") {
+TEST_CASE("Driver LDLfTemporal", "[parser][ldlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = Driver(context);
+  auto driver = parsers::ldlf::Driver(context);
 
   auto ptr_prop_re_true = context->makePropRegex(context->makeTrue());
   auto ptr_prop_re_a = context->makePropRegex(context->makePropAtom("a"));
@@ -328,9 +328,9 @@ TEST_CASE("Driver LDLfTemporal", "[parser]") {
   }
 }
 
-TEST_CASE("Driver LDLf Implication", "[parser]") {
+TEST_CASE("Driver LDLf Implication", "[parser][ldlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = Driver(context);
+  auto driver = parsers::ldlf::Driver(context);
   auto a_tt = context->makeLdlfDiamond(
       context->makePropRegex(context->makePropAtom("a")),
       context->makeLdlfTrue());
@@ -356,9 +356,9 @@ TEST_CASE("Driver LDLf Implication", "[parser]") {
   }
 }
 
-TEST_CASE("Driver LDLf Equivalence", "[parser]") {
+TEST_CASE("Driver LDLf Equivalence", "[parser][ldlf]") {
   auto context = std::make_shared<AstManager>();
-  auto driver = Driver(context);
+  auto driver = parsers::ldlf::Driver(context);
   auto a_tt = context->makeLdlfDiamond(
       context->makePropRegex(context->makePropAtom("a")),
       context->makeLdlfTrue());

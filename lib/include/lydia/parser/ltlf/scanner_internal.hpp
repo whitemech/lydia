@@ -16,32 +16,28 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if !defined(yyFlexLexerOnce)
-#include <FlexLexer.h>
-#endif
+#include "lydia/parser/ltlf/location.hh"
+#include "lydia/parser/ltlf/parser.tab.hh"
+#include <lydia/parser/ltlf/parser_stype.h>
 
-#include "location.hh"
-#include "parser.tab.hh"
-#include <lydia/parser/parser_stype.h>
+namespace whitemech::lydia::parsers::ltlf {
 
-namespace whitemech::lydia {
-
-class Scanner : public yyFlexLexer {
+class LTLfScanner : public ltlfFlexLexer {
 private:
 public:
   /* yyval ptr */
-  whitemech::lydia::YYSTYPE *yylval = nullptr;
+  whitemech::lydia::parsers::ltlf::LTLf_YYSTYPE *yylval = nullptr;
 
-  explicit Scanner(std::istream *in) : yyFlexLexer(in){};
-  virtual ~Scanner(){};
+  explicit LTLfScanner(std::istream *in) : ltlfFlexLexer(in){};
+  virtual ~LTLfScanner(){};
 
   // get rid of override virtual function warning
   using FlexLexer::yylex;
 
-  virtual int yylex(whitemech::lydia::YYSTYPE *lval,
-                    Parser::location_type *location);
+  virtual int yylex(whitemech::lydia::parsers::ltlf::LTLf_YYSTYPE *lval,
+                    LTLfParser::location_type *location);
   // YY_DECL defined in lexer.l
   // Method body created by flex in lexer.yy.cc
 };
 
-} // namespace whitemech::lydia
+} // namespace whitemech::lydia::parsers::ltlf

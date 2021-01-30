@@ -44,7 +44,6 @@ target_link_libraries (${BENCHMARK_APP_NAME}
         ${LIB_NAME}
         ${CUDD_LIBRARIES}
         ${MONA_LIBRARIES}
-        ${MINISAT_LIBRARIES}
         benchmark::benchmark
         Threads::Threads)
 

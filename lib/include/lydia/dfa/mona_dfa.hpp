@@ -89,6 +89,8 @@ public:
 
   void add_transition(int from, const interpretation_set &symbol, int to,
                       bool dont_care = true) override{};
+
+  void export_dfa(const std::string &filename) const;
 };
 
 DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices);

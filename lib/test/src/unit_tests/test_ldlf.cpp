@@ -22,7 +22,7 @@
 
 namespace whitemech::lydia::Test {
 
-TEST_CASE("Boolean atoms", "[logic]") {
+TEST_CASE("LDLfBoolean atoms", "[logic][ldlf]") {
   Logger log("test_logic");
 
   auto context = AstManager{};
@@ -60,7 +60,7 @@ TEST_CASE("Boolean atoms", "[logic]") {
   }
 }
 
-TEST_CASE("LDLfNot", "[logic]") {
+TEST_CASE("LDLfNot", "[logic][ldlf]") {
   auto context = AstManager{};
   auto ptr_true = context.makeLdlfTrue();
   auto not_true = context.makeLdlfNot(ptr_true);
@@ -83,7 +83,7 @@ TEST_CASE("LDLfNot", "[logic]") {
   }
 }
 
-TEST_CASE("And", "[logic]") {
+TEST_CASE("LDLfAnd", "[logic][ldlf]") {
   auto context = AstManager{};
   auto boolTrue = context.makeLdlfTrue();
   auto boolFalse = context.makeLdlfFalse();
@@ -111,7 +111,7 @@ TEST_CASE("And", "[logic]") {
   }
 }
 
-TEST_CASE("LDLfOr", "[logic]") {
+TEST_CASE("LDLfOr", "[logic][ldlf]") {
   auto context = AstManager{};
   auto boolTrue = context.makeLdlfTrue();
   auto boolFalse = context.makeLdlfFalse();
@@ -136,7 +136,7 @@ TEST_CASE("LDLfOr", "[logic]") {
   }
 }
 
-TEST_CASE("Logical not", "[logic]") {
+TEST_CASE("LDLfLogical not", "[logic][ldlf]") {
   auto context = AstManager{};
   auto tt = context.makeLdlfTrue();
   auto ff = context.makeLdlfFalse();
@@ -163,7 +163,7 @@ TEST_CASE("Logical not", "[logic]") {
   }
 }
 
-TEST_CASE("LDLfDiamond", "[logic]") {
+TEST_CASE("LDLfDiamond", "[logic][ldlf]") {
   auto context = AstManager{};
   auto tt = context.makeLdlfTrue();
   auto ff = context.makeLdlfFalse();
@@ -195,7 +195,7 @@ TEST_CASE("LDLfDiamond", "[logic]") {
   REQUIRE(*diamond_formula_a_and_b_tt == *diamond_formula_a_and_b_tt);
 }
 
-TEST_CASE("Set of formulas", "[logic]") {
+TEST_CASE("LDLfSet of formulas", "[logic][ldlf]") {
   auto context = AstManager{};
   auto tt = context.makeLdlfTrue();
   auto ff = context.makeLdlfFalse();
@@ -223,7 +223,7 @@ TEST_CASE("Set of formulas", "[logic]") {
   REQUIRE(result[3]->is_equal(*or_));
 }
 
-TEST_CASE("Test 'only test'", "[ldlf/only_test]") {
+TEST_CASE("LDLf Test 'only test'", "[ldlf/only_test]") {
   auto context = AstManager{};
   auto boolTrue = context.makeLdlfTrue();
   auto boolFalse = context.makeLdlfFalse();

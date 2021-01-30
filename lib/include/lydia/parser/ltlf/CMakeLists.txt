@@ -15,11 +15,8 @@
 # along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-# CMake build : main application test
 
-#configure variables
-set (APP_NAME mona2sym)
-set (TEST_NAME "${APP_NAME}Test")
-
-enable_testing ()
-add_test (NAME ${TEST_NAME} COMMAND ${APP_NAME} )
+# LTLf parser
+FLEX_TARGET(lydia_ltlf_lexer include/lydia/parser/ltlf/lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/ltlf/lexer.yy.cc)
+BISON_TARGET(lydia_ltlf_parser include/lydia/parser/ltlf/parser.yy ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/ltlf/parser.tab.cc )
+ADD_FLEX_BISON_DEPENDENCY(lydia_ltlf_lexer lydia_ltlf_parser)

@@ -19,7 +19,7 @@
 #include <catch.hpp>
 #include <cppitertools/powerset.hpp>
 #include <cppitertools/product.hpp>
-#include <cudd/cuddObj.hh>
+#include <cuddObj.hh>
 #include <numeric>
 #include <sstream>
 #include <stack>
@@ -28,7 +28,7 @@
 #include <fstream>
 #include <lydia/dfa/dfa.hpp>
 #include <lydia/logic/ldlf/base.hpp>
-#include <lydia/parser/driver.hpp>
+#include <lydia/parser/ldlf/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/strategies/bdd/base.hpp>
 #include <lydia/to_dfa/strategies/compositional/base.hpp>
@@ -132,8 +132,9 @@ from_trace_set(std::vector<interpretation_set> vector, int prop) {
   return result;
 }
 
+template <typename Parser = parsers::ldlf::Driver>
 static adfa_ptr to_dfa_from_formula_string(const std::string &f, Strategy &s) {
-  auto driver = Driver();
+  auto driver = Parser();
   std::stringstream ldlf_formula_stream(f);
   driver.parse(ldlf_formula_stream);
   const auto &formula = *driver.result;

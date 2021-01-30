@@ -21,8 +21,6 @@
 #include <lydia/logic/pl/eval.hpp>
 #include <lydia/logic/pl/models/base.hpp>
 #include <lydia/utils/misc.hpp>
-#include <minisat/core/Solver.h>
-#include <minisat/simp/SimpSolver.h>
 
 namespace whitemech::lydia {
 

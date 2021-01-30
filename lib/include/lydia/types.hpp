@@ -17,7 +17,7 @@
  */
 
 #include <cstdint>
-#include <cudd/cuddObj.hh>
+#include <cuddObj.hh>
 #include <exception>
 #include <map>
 #include <memory>
@@ -28,6 +28,19 @@ namespace whitemech::lydia {
 
 class Basic;
 class Symbol;
+class LTLfFormula;
+class LTLfTrue;
+class LTLfFalse;
+class LTLfAtom;
+class LTLfAnd;
+class LTLfOr;
+class LTLfNot;
+class LTLfNext;
+class LTLfWeakNext;
+class LTLfUntil;
+class LTLfRelease;
+class LTLfEventually;
+class LTLfAlways;
 class LDLfFormula;
 class LDLfTrue;
 class LDLfFalse;
@@ -85,6 +98,10 @@ typedef std::tuple<const DFAState &, const set_atoms_ptr &, const DFAState &>
 typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
 typedef std::set<std::shared_ptr<const Basic>, SharedComparator> set_basic;
 typedef std::shared_ptr<const LDLfFormula> ldlf_ptr;
+typedef std::shared_ptr<const LTLfFormula> ltlf_ptr;
+typedef std::vector<std::shared_ptr<const LTLfFormula>> vec_ltlf_formulas;
+typedef std::set<std::shared_ptr<const LTLfFormula>, SharedComparator>
+    set_ltlf_formulas;
 typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
 typedef std::set<std::shared_ptr<const LDLfFormula>, SharedComparator>
     set_formulas;

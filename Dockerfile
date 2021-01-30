@@ -1,4 +1,8 @@
-FROM ubuntu:19.10
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -41,32 +45,37 @@ ENV CXX=/usr/bin/g++
 ENV CCACHE_DIR=/build/docker_ccache
 
 
-USER default
-
-RUN sudo apt-get install -y flex libgraphviz-dev
+RUN sudo apt-get install -y flex bison libgraphviz-dev libboost-all-dev
 
 WORKDIR /home/default
 
-RUN git clone https://github.com/KavrakiLab/cudd --recursive && \
-  cd cudd && \
-  autoreconf -i && \
-  ./configure --enable-silent-rules --enable-obj --enable-dddmp && \
-  sudo make install
+RUN wget https://github.com/whitemech/cudd/releases/download/v3.0.0/cudd_3.0.0_linux-amd64.tar.gz &&\
+    tar -xf cudd_3.0.0_linux-amd64.tar.gz &&\
+    cd cudd_3.0.0_linux-amd64 &&\
+    sudo cp -P lib/* /usr/local/lib/ &&\
+    sudo cp -Pr include/cudd/* /usr/local/include
 
-RUN wget http://ftp.us.debian.org/debian/pool/main/b/bison/libbison-dev_3.0.4.dfsg-1+b1_amd64.deb &&\
-  wget http://ftp.us.debian.org/debian/pool/main/b/bison/bison_3.0.4.dfsg-1+b1_amd64.deb &&\
-  sudo dpkg -i libbison-dev_3.0.4.dfsg-1+b1_amd64.deb &&\
-  sudo dpkg -i bison_3.0.4.dfsg-1+b1_amd64.deb
+RUN wget https://github.com/whitemech/MONA/releases/download/v1.4-18.dev0/mona_1.4-18.dev0_linux-amd64.tar.gz &&\
+    tar -xf mona_1.4-18.dev0_linux-amd64.tar.gz &&\
+    cd mona_1.4-18.dev0_linux-amd64 &&\
+    sudo cp -P lib/* /usr/local/lib/ &&\
+    sudo cp -Pr include/* /usr/local/include
 
-RUN wget https://github.com/msoos/cryptominisat/archive/5.7.1.tar.gz &&\
-    tar -xzvf 5.7.1.tar.gz &&\
-    cd cryptominisat-5.7.1 &&\
-    mkdir build &&\
-    cd build &&\
-    cmake .. &&\
-    make &&\
-    sudo make install &&\
-    sudo ldconfig
+RUN git clone https://github.com/whitemech/Syft.git &&\
+    cd Syft &&\
+    git checkout syft+ &&\
+    mkdir build && cd build &&\
+    cmake -DCMAKE_BUILD_TYPE=Release .. &&\
+    make -j &&\
+    sudo make install
+
+#RUN wget http://ftp.us.debian.org/debian/pool/main/b/bison/libbison-dev_3.0.4.dfsg-1+b1_amd64.deb &&\
+#  wget http://ftp.us.debian.org/debian/pool/main/b/bison/bison_3.0.4.dfsg-1+b1_amd64.deb &&\
+#  sudo dpkg -i libbison-dev_3.0.4.dfsg-1+b1_amd64.deb &&\
+#  sudo dpkg -i bison_3.0.4.dfsg-1+b1_amd64.deb
+
+
+USER default
 
 WORKDIR /build
 

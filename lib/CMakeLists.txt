@@ -20,10 +20,14 @@
 #configure variables
 set (LIB_NAME "lydia")
 
-# generate lexer and parser
-BISON_TARGET(lydia_parser include/lydia/parser/parser.yy ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/parser.tab.cc )
-FLEX_TARGET(lydia_lexer include/lydia/parser/lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/lexer.yy.cc)
-ADD_FLEX_BISON_DEPENDENCY(lydia_lexer lydia_parser)
+## generate lexer and parser
+FLEX_TARGET(LTLfLydiaLexer include/lydia/parser/ltlf/lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/ltlf/lexer.yy.cc)
+BISON_TARGET(LTLfLydiaParser include/lydia/parser/ltlf/parser.yy ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/ltlf/parser.tab.cc )
+ADD_FLEX_BISON_DEPENDENCY(LTLfLydiaLexer LTLfLydiaParser)
+FLEX_TARGET(LDLfLydiaLexer include/lydia/parser/ldlf/lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/ldlf/lexer.yy.cc)
+BISON_TARGET(LDLfLydiaParser include/lydia/parser/ldlf/parser.yy ${CMAKE_CURRENT_SOURCE_DIR}/include/lydia/parser/ldlf/parser.tab.cc )
+ADD_FLEX_BISON_DEPENDENCY(LDLfLydiaLexer LDLfLydiaParser)
+
 
 #configure directories
 set (LIBRARY_MODULE_PATH "${PROJECT_SOURCE_DIR}/lib")
@@ -43,14 +47,16 @@ add_library (${LIB_NAME}
         STATIC
         ${LIB_SOURCE_FILES}
         ${LIB_HEADER_FILES}
-        ${BISON_lydia_parser_OUTPUTS}
-        ${FLEX_lydia_lexer_OUTPUTS})
+        ${BISON_LTLfLydiaParser_OUTPUTS}
+        ${BISON_LDLfLydiaParser_OUTPUTS}
+        ${FLEX_LTLfLydiaLexer_OUTPUTS}
+        ${FLEX_LDLfLydiaLexer_OUTPUTS})
 
 target_link_libraries(${LIB_NAME}
         ${CUDD_LIBRARIES}
         ${MONA_LIBRARIES}
+        ${SYFT_LIBRARIES}
         ${GRAPHVIZ_LIBRARIES}
-        ${MINISAT_LIBRARIES}
         ${FLEX_LIBRARIES}
         ${BISON_LIBRARIES})
 

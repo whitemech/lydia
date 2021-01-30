@@ -18,9 +18,9 @@
 #include <cassert>
 #include <fstream>
 
-#include <lydia/parser/driver.hpp>
+#include <lydia/parser/ldlf/driver.hpp>
 
-namespace whitemech::lydia {
+namespace whitemech::lydia::parsers::ldlf {
 
 Driver::~Driver() {
   delete (scanner);
@@ -48,24 +48,24 @@ void Driver::parse(std::istream &stream) {
 void Driver::parse_helper(std::istream &stream) {
   delete (scanner);
   try {
-    scanner = new Scanner(&stream);
+    scanner = new LDLfScanner(&stream);
   } catch (std::bad_alloc &ba) {
     std::cerr << "Failed to allocate scanner: (" << ba.what()
-              << "), exiting!!\n";
+              << "), exiting!\n";
     exit(EXIT_FAILURE);
   }
 
   delete (parser);
   try {
-    parser = new Parser((*scanner) /* scanner */, (*this) /* driver */);
+    parser = new LDLfParser((*scanner) /* scanner */, (*this) /* driver */);
   } catch (std::bad_alloc &ba) {
-    std::cerr << "Failed to allocate parser: (" << ba.what()
-              << "), exiting!!\n";
+    std::cerr << "Failed to allocate parser: (" << ba.what() << "), exiting!\n";
     exit(EXIT_FAILURE);
   }
   const int accept(0);
   if (parser->parse() != accept) {
-    std::cerr << "Parse failed!!\n";
+    std::cerr << "Parse failed!\n";
+    exit(EXIT_FAILURE);
   }
 }
 
@@ -229,4 +229,4 @@ std::ostream &Driver::print(std::ostream &stream) const {
   return (stream);
 }
 
-} // namespace whitemech::lydia
+} // namespace whitemech::lydia::parsers::ldlf

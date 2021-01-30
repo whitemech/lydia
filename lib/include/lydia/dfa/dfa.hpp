@@ -17,12 +17,12 @@
  */
 
 // TODO require CUDD headers are installed in cudd/
-#include "abstract_dfa.hpp"
 #include <algorithm>
 #include <cassert>
-#include <cudd/cuddObj.hh>
+#include <cuddObj.hh>
 #include <fstream>
 #include <iostream>
+#include <lydia/dfa/abstract_dfa.hpp>
 #include <lydia/logger.hpp>
 #include <lydia/types.hpp>
 #include <set>

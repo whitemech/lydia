@@ -40,6 +40,8 @@ class AstManager {
 private:
   prop_ptr prop_true_;
   prop_ptr prop_false_;
+  ltlf_ptr ltlf_true_;
+  ltlf_ptr ltlf_false_;
   ldlf_ptr ldlf_true_;
   ldlf_ptr ldlf_false_;
   std::unordered_set<basic_ptr, std::hash<basic_ptr>, ast_eq_proc> table;
@@ -70,6 +72,20 @@ public:
   prop_ptr makePropAnd(const set_prop_formulas &args);
   prop_ptr makePropOr(const set_prop_formulas &args);
   prop_ptr makePropNot(const prop_ptr &arg);
+
+  ltlf_ptr makeLtlfTrue();
+  ltlf_ptr makeLtlfFalse();
+  ltlf_ptr makeLtlfBool(bool x);
+  ltlf_ptr makeLtlfAtom(const std::string &name);
+  ltlf_ptr makeLtlfAnd(const set_ltlf_formulas &args);
+  ltlf_ptr makeLtlfOr(const set_ltlf_formulas &args);
+  ltlf_ptr makeLtlfNot(const ltlf_ptr &arg);
+  ltlf_ptr makeLtlfNext(const ltlf_ptr &arg);
+  ltlf_ptr makeLtlfWeakNext(const ltlf_ptr &arg);
+  ltlf_ptr makeLtlfUntil(const ltlf_ptr &arg_1, const ltlf_ptr &arg_2);
+  ltlf_ptr makeLtlfRelease(const ltlf_ptr &arg_1, const ltlf_ptr &arg_2);
+  ltlf_ptr makeLtlfEventually(const ltlf_ptr &arg);
+  ltlf_ptr makeLtlfAlways(const ltlf_ptr &arg);
 
   ldlf_ptr makeLdlfTrue();
   ldlf_ptr makeLdlfFalse();

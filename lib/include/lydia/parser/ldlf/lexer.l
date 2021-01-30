@@ -1,14 +1,20 @@
+%option debug
+%option prefix="ldlf"
+%option yyclass="whitemech::lydia::parsers::ldlf::LDLfScanner"
+%option noyywrap
+%option c++
+
 %{
 /* C++ string header, for string ops below */
 #include <string>
 
-/* Implementation of yyFlexScanner */
-#include "lydia/parser/scanner.hpp"
+/* Implementation of yyFlexLDLfScanner */
+#include "lydia/parser/ldlf/scanner_internal.hpp"
 #undef  YY_DECL
-#define YY_DECL int whitemech::lydia::Scanner::yylex( whitemech::lydia::YYSTYPE * lval, whitemech::lydia::Parser::location_type *loc )
+#define YY_DECL int whitemech::lydia::parsers::ldlf::LDLfScanner::yylex( whitemech::lydia::parsers::ldlf::LDLf_YYSTYPE * lval, whitemech::lydia::parsers::ldlf::LDLfParser::location_type *loc )
 
 /* typedef to make the returns for the tokens shorter */
-using token = whitemech::lydia::Parser::token;
+using token = whitemech::lydia::parsers::ldlf::LDLfParser::token;
 
 /* define yyterminate as this instead of NULL */
 #define yyterminate() return( token::END_OF_FILE )
@@ -21,10 +27,6 @@ using token = whitemech::lydia::Parser::token;
 
 %}
 
-%option debug
-%option yyclass="whitemech::lydia::Scanner"
-%option noyywrap
-%option c++
 
 %%
 
@@ -63,7 +65,7 @@ using token = whitemech::lydia::Parser::token;
 (?i:end)                    { return token::END; }
 (?i:last)                   { return token::LAST; }
 
-[a-zA-Z_][a-zA-Z0-9_]*|(".*") {
+[a-zA-Z0-9_]+|("[a-zA-Z0-9_]+") {
                                 yylval->symbol_name = yytext;
                                 return token::SYMBOL;
                             }

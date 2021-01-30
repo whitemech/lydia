@@ -61,9 +61,6 @@ public:
   std::shared_ptr<const LDLfFormula> logical_not() const override;
 };
 
-extern const std::shared_ptr<const LDLfTrue> boolTrue;
-extern const std::shared_ptr<const LDLfFalse> boolFalse;
-
 class LDLfAnd : public LDLfFormula {
 private:
   const set_formulas container_;
