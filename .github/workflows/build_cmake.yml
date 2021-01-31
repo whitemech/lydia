@@ -64,8 +64,12 @@ jobs:
         env:
           CXX: ${{ matrix.compiler }}
         run: ./scripts/_ci-configure.sh
-      - name: Build
-        run: cd build && make -j
+      - name: Build library
+        run: cd build && make lydia -j
+      - name: Build app
+        run: cd build && make lydia-bin -j
+      - name: Build benchmarks
+        run: cd build && make lydiaBench -j
 
   # Build and run the tests.
   test:
@@ -104,9 +108,15 @@ jobs:
       - name: Configure CMake
         env:
           CXX: ${{ matrix.compiler }}
-        run: ./scripts/_ci-configure.sh
+        # use release mode for testing - a faster
+        # in the future, consider running them also in debug mode
+        run: |
+          echo "Configuring tests (release mode)"
+          ./scripts/_ci-configure.sh "Release"
       - name: Build
-        run: cd build && make lydiaTest -j
+        run: |
+          echo "Running tests (release mode)"
+          cd build && make lydiaTest -j
       - name: Test
         run: ./scripts/_ci-test.sh
       - name: Upload coverage to Codecov
