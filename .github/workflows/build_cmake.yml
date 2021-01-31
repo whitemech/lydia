@@ -64,8 +64,16 @@ jobs:
         env:
           CXX: ${{ matrix.compiler }}
         run: ./scripts/_ci-configure.sh
-      - name: Build
-        run: cd build && make -j
+      - name: Build library
+        run: cd build && make lydia -j
+      - name: Build app
+        run: cd build && make lydia-bin -j
+      - name: Build tests
+        run: cd build && make lydiaTest -j
+      - name: Build benchmark library
+        run: cd build && make lydia-benchmark -j
+      - name: Build benchmark executable
+        run: cd build && make lydiaBench -j
 
   # Build and run the tests.
   test:
