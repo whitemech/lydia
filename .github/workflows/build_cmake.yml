@@ -68,8 +68,6 @@ jobs:
         run: cd build && make lydia -j
       - name: Build app
         run: cd build && make lydia-bin -j
-      - name: Build tests
-        run: cd build && make lydiaTest -j
       - name: Build benchmarks
         run: cd build && make lydiaBench -j
 
