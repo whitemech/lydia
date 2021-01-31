@@ -49,5 +49,5 @@ target_link_libraries (${BENCHMARK_APP_NAME}
 
 add_custom_target(lydia-benchmark
         COMMAND ${CMAKE_BINARY_DIR}/bin/${BENCHMARK_APP_NAME}
-        DEPENDS lydia
+        DEPENDS lydia ${BENCHMARK_APP_NAME}
         COMMENT "Run benchmarks." VERBATIM)

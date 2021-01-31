@@ -70,9 +70,7 @@ jobs:
         run: cd build && make lydia-bin -j
       - name: Build tests
         run: cd build && make lydiaTest -j
-      - name: Build benchmark library
-        run: cd build && make lydia-benchmark -j
-      - name: Build benchmark executable
+      - name: Build benchmarks
         run: cd build && make lydiaBench -j
 
   # Build and run the tests.
