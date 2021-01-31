@@ -23,8 +23,8 @@
 
 namespace whitemech::lydia::Test {
 
-//TODO LTLf parser should produce LTLf formulae, not LDLf formulae.
-//TEST_CASE("LTLfDriver LTLf Boolean Atoms", "[parser][ltlf]") {
+// TODO LTLf parser should produce LTLf formulae, not LDLf formulae.
+// TEST_CASE("LTLfDriver LTLf Boolean Atoms", "[parser][ltlf]") {
 //  Logger log("test_parser");
 //  auto context = std::make_shared<AstManager>();
 //  auto driver = parsers::ltlf::LTLfDriver(context);
@@ -46,13 +46,14 @@ namespace whitemech::lydia::Test {
 //  }
 //}
 //
-//TEST_CASE("LTLfDriver LTLfAnd between Boolean atoms", "[parser][ltlf]") {
+// TEST_CASE("LTLfDriver LTLfAnd between Boolean atoms", "[parser][ltlf]") {
 //  auto context = std::make_shared<AstManager>();
 //  auto driver = parsers::ltlf::LTLfDriver(context);
 //  auto tt = context->makeLtlfTrue();
 //  auto ff = context->makeLtlfFalse();
-//  auto actualAnd_true_false = context->makeLtlfAnd(set_ltlf_formulas({tt, ff}));
-//  auto actualAnd_false_true = context->makeLtlfAnd(set_ltlf_formulas({ff, tt}));
+//  auto actualAnd_true_false = context->makeLtlfAnd(set_ltlf_formulas({tt,
+//  ff})); auto actualAnd_false_true =
+//  context->makeLtlfAnd(set_ltlf_formulas({ff, tt}));
 //
 //  SECTION("test parsing false && true") {
 //    std::istringstream ff_and_tt("false && true");
@@ -95,7 +96,7 @@ namespace whitemech::lydia::Test {
 //  }
 //}
 //
-//TEST_CASE("LTLfDriver LTLfOr between Boolean atoms", "[parser][ltlf]") {
+// TEST_CASE("LTLfDriver LTLfOr between Boolean atoms", "[parser][ltlf]") {
 //  auto context = std::make_shared<AstManager>();
 //  auto driver = parsers::ltlf::LTLfDriver(context);
 //  auto tt = context->makeLtlfTrue();
@@ -138,7 +139,7 @@ namespace whitemech::lydia::Test {
 //  }
 //}
 //
-//TEST_CASE("LTLfDriver LTLfNot", "[parser][ltlf]") {
+// TEST_CASE("LTLfDriver LTLfNot", "[parser][ltlf]") {
 //  auto context = std::make_shared<AstManager>();
 //  auto driver = parsers::ltlf::LTLfDriver(context);
 //  auto tt = context->makeLtlfTrue();
@@ -146,8 +147,8 @@ namespace whitemech::lydia::Test {
 //  auto actualNot_true = context->makeLtlfNot(tt);
 //  auto actualNot_false = context->makeLtlfNot(ff);
 //
-//  auto actualAnd_true_false = context->makeLtlfAnd(set_ltlf_formulas({tt, ff}));
-//  auto actualNot_and = context->makeLtlfNot(actualAnd_true_false);
+//  auto actualAnd_true_false = context->makeLtlfAnd(set_ltlf_formulas({tt,
+//  ff})); auto actualNot_and = context->makeLtlfNot(actualAnd_true_false);
 //
 //  auto actualOr_true_false = context->makeLtlfOr(set_ltlf_formulas({tt, ff}));
 //  auto actualNot_or = context->makeLtlfNot(actualOr_true_false);
@@ -190,7 +191,7 @@ namespace whitemech::lydia::Test {
 //  }
 //}
 //
-//TEST_CASE("LTLfDriver atoms", "[parser][ltlf]") {
+// TEST_CASE("LTLfDriver atoms", "[parser][ltlf]") {
 //  auto context = std::make_shared<AstManager>();
 //  auto driver = parsers::ltlf::LTLfDriver(context);
 //
@@ -225,7 +226,7 @@ namespace whitemech::lydia::Test {
 //  }
 //}
 //
-//TEST_CASE("LTLfDriver LTLfNext", "[parser][ltlf]") {
+// TEST_CASE("LTLfDriver LTLfNext", "[parser][ltlf]") {
 //  auto context = std::make_shared<AstManager>();
 //  auto driver = parsers::ltlf::LTLfDriver(context);
 //
@@ -240,7 +241,7 @@ namespace whitemech::lydia::Test {
 //  }
 //}
 //
-//TEST_CASE("LTLfDriver LTLfWeakNext", "[parser][ltlf]") {
+// TEST_CASE("LTLfDriver LTLfWeakNext", "[parser][ltlf]") {
 //  auto context = std::make_shared<AstManager>();
 //  auto driver = parsers::ltlf::LTLfDriver(context);
 //
@@ -255,7 +256,7 @@ namespace whitemech::lydia::Test {
 //  }
 //}
 //
-//TEST_CASE("LTLfDriver LTLfUntil", "[parser][ltlf]") {
+// TEST_CASE("LTLfDriver LTLfUntil", "[parser][ltlf]") {
 //  auto context = std::make_shared<AstManager>();
 //  auto driver = parsers::ltlf::LTLfDriver(context);
 //
@@ -283,7 +284,7 @@ namespace whitemech::lydia::Test {
 //  }
 //}
 //
-//TEST_CASE("LTLfDriver LTLfRelease", "[parser][ltlf]") {
+// TEST_CASE("LTLfDriver LTLfRelease", "[parser][ltlf]") {
 //  auto context = std::make_shared<AstManager>();
 //  auto driver = parsers::ltlf::LTLfDriver(context);
 //
@@ -311,7 +312,7 @@ namespace whitemech::lydia::Test {
 //  }
 //}
 //
-//TEST_CASE("LTLfDriver LTLfEventually", "[parser][ltlf]") {
+// TEST_CASE("LTLfDriver LTLfEventually", "[parser][ltlf]") {
 //  auto context = std::make_shared<AstManager>();
 //  auto driver = parsers::ltlf::LTLfDriver(context);
 //
@@ -325,7 +326,7 @@ namespace whitemech::lydia::Test {
 //    REQUIRE(*actual_formula == *expected_formula);
 //  }
 //}
-//TEST_CASE("LTLfDriver LTLfAlways", "[parser][ltlf]") {
+// TEST_CASE("LTLfDriver LTLfAlways", "[parser][ltlf]") {
 //  auto context = std::make_shared<AstManager>();
 //  auto driver = parsers::ltlf::LTLfDriver(context);
 //
@@ -340,7 +341,7 @@ namespace whitemech::lydia::Test {
 //  }
 //}
 //
-//TEST_CASE("LTLfDriver LTLf Implication", "[parser][ltlf]") {
+// TEST_CASE("LTLfDriver LTLf Implication", "[parser][ltlf]") {
 //  auto context = std::make_shared<AstManager>();
 //  auto driver = parsers::ltlf::LTLfDriver(context);
 //  auto a = context->makeLtlfAtom("a");
@@ -356,7 +357,7 @@ namespace whitemech::lydia::Test {
 //  }
 //}
 //
-//TEST_CASE("LTLfDriver LTLf Equivalence", "[parser][ltlf]") {
+// TEST_CASE("LTLfDriver LTLf Equivalence", "[parser][ltlf]") {
 //  auto context = std::make_shared<AstManager>();
 //  auto driver = parsers::ltlf::LTLfDriver(context);
 //  auto a = context->makeLtlfAtom("a");

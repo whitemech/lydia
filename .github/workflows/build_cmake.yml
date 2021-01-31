@@ -107,11 +107,11 @@ jobs:
         # use release mode for testing - a faster
         # in the future, consider running them also in debug mode
         run: |
-          echo "Configuring tests (release mode)
-          ./scripts/_ci-configure.sh Release
+          echo "Configuring tests (release mode)"
+          ./scripts/_ci-configure.sh "Release"
       - name: Build
         run: |
-          echo "Running tests (release mode)
+          echo "Running tests (release mode)"
           cd build && make lydiaTest -j
       - name: Test
         run: ./scripts/_ci-test.sh

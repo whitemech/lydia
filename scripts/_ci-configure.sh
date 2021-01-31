@@ -4,7 +4,7 @@
 set -e
 
 BUILD_DIR=build
-BUILD_TYPE=${1:-"Debug"}
+BUILD_TYPE=${1:-Debug}
 mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} && rm -rf ./*
 
 # Configure compiler build with coverage flags
