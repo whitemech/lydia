@@ -93,23 +93,4 @@ public:
   void export_dfa(const std::string &filename) const;
 };
 
-DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices);
-DFA *dfa_closure(DFA *a, int n, int *indices);
-DFA *only_empty();
-DFA *dfa_accept_empty(DFA *x);
-std::string get_path_guard(int n, trace_descr tp);
-
-DFA *dfaLDLfTrue();
-DFA *dfaLDLfFalse();
-DFA *dfaNext(int a, bool is_positive = true);
-DFA *dfaLDLfDiamondProp(DFA *prop_regex, DFA *body, int var, int *indices);
-DFA *dfaLDLfEnd(int var, int *indices);
-DFA *dfaPropositionalTrue();
-
-bool is_sink(DFA *automaton, bool is_positive = true);
-
-void print_mona_dfa(DFA *a, const std::string &name, int num = 1);
-void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
-                            std::ostream &o = std::cout);
-
 } // namespace whitemech::lydia
