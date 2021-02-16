@@ -40,7 +40,7 @@ std::string dump_formula(const std::filesystem::path &filename) {
 
 int main(int argc, char **argv) {
   whitemech::lydia::Logger logger("main");
-  whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::info);
+  whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::debug);
 
   CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
   bool verbose = false;
@@ -55,7 +55,12 @@ int main(int argc, char **argv) {
   auto formula_group = app.add_option_group("formula");
   std::string ldlf_file;
   std::string ltlf_file;
-  formula_group->require_option();
+  std::string ldlf_formula;
+  std::string ltlf_formula;
+  CLI::Option *str_opt_ldlf =
+      formula_group->add_option("--ldlf-inline", ldlf_formula, "An LDLf formula.");
+  CLI::Option *str_opt_ltlf =
+      formula_group->add_option("--ltlf-inline", ltlf_formula, "An LTLf formula.");
   CLI::Option *ldlf_file_opt =
       formula_group->add_option("--ldlf", ldlf_file, "File to an LDLf formula.")
           ->check(CLI::ExistingFile);
@@ -65,15 +70,22 @@ int main(int argc, char **argv) {
   // --ldlf and --ltlf are mutually exclusive.
   ldlf_file_opt->excludes(ltlf_file_opt);
   ltlf_file_opt->excludes(ldlf_file_opt);
+  str_opt_ldlf->excludes(str_opt_ltlf);
+  str_opt_ltlf->excludes(str_opt_ldlf);
+  str_opt_ldlf->excludes(ldlf_file_opt);
+  str_opt_ltlf->excludes(ltlf_file_opt);
+  ldlf_file_opt->excludes(str_opt_ldlf);
+  ltlf_file_opt->excludes(str_opt_ltlf);
+  formula_group->require_option();
 
-  std::string part_file;
-  CLI::Option *part_file_opt = app.add_option("--part", part_file, "Part file.")
-                                   ->check(CLI::ExistingFile);
-
-  bool starting_player_env = false;
-  CLI::Option *starting_player_env_opt =
-      app.add_flag("--env", starting_player_env, "Check env realizability.");
-  starting_player_env_opt->needs(part_file_opt);
+//  std::string part_file;
+//  CLI::Option *part_file_opt = app.add_option("--part", part_file, "Part file.")
+//                                   ->check(CLI::ExistingFile);
+//
+//  bool starting_player_env = false;
+//  CLI::Option *starting_player_env_opt =
+//      app.add_flag("--env", starting_player_env, "Check env realizability.");
+//  starting_player_env_opt->needs(part_file_opt);
 
   std::string graphviz_path;
   CLI::Option *dot_option =
@@ -106,14 +118,26 @@ int main(int argc, char **argv) {
 
   std::string filename = ldlf_file_opt->empty() ? ltlf_file : ldlf_file;
   std::shared_ptr<whitemech::lydia::AbstractDriver> driver;
-  if (!ldlf_file_opt->empty())
+  if (!ldlf_file_opt->empty() || !str_opt_ldlf->empty())
     driver = std::make_shared<whitemech::lydia::parsers::ldlf::Driver>();
   else {
     driver = std::make_shared<whitemech::lydia::parsers::ltlf::LTLfDriver>();
   }
-  std::filesystem::path formula_path(filename);
-  logger.info("parsing {}", formula_path);
-  driver->parse(formula_path.string().c_str());
+  if (!ldlf_file_opt->empty() || !ltlf_file_opt->empty()) {
+    std::filesystem::path formula_path(filename);
+    logger.info("parsing {}", formula_path);
+    driver->parse(formula_path.string().c_str());
+  }
+  else {
+    std::string formula;
+    if (!str_opt_ldlf->empty())
+      formula = ldlf_formula;
+    else
+      formula = ltlf_formula;
+    std::stringstream formula_stream(formula);
+    logger.info("parsing {}", formula);
+    driver->parse(formula_stream);
+  }
 
   auto parsed_formula = driver->get_result();
   if (no_empty) {
@@ -141,8 +165,14 @@ int main(int argc, char **argv) {
 
   if (summary) {
     // TODO add more details
-    logger.info("Number of states " +
-                std::to_string(my_mona_dfa->get_nb_states()));
+    logger.info("summary yes");
+    if(my_mona_dfa){
+      std::vector<unsigned> x(my_mona_dfa->get_nb_variables());
+      std::iota(std::begin(x), std::end(x), 0);
+      whitemech::lydia::dfaPrintGraphvizToFile(my_mona_dfa->get_dfa(),
+                                               my_mona_dfa->get_nb_variables(),
+                                               x.data(), std::cout);
+    }
   }
   if (!dot_option->empty()) {
     logger.info("Printing the automaton...");
@@ -156,49 +186,49 @@ int main(int argc, char **argv) {
   }
 
   // synthesis part
-  if (part_file_opt->empty()) {
-    // stop here.
-    double elapsed_time =
-        std::chrono::duration<double, std::milli>(t_dfa_end - t_start).count();
-    logger.info("Overall time elapsed: {}ms", elapsed_time);
-    return 0;
-  }
-
-  Cudd *mgr = new Cudd();
-  bool res = false;
-  std::unordered_map<unsigned, BDD> strategy;
-
-  // export DFA in MONA format, so it can be used by Syft
-  char *temp_filename = tmpnam(nullptr);
-  std::string temp_filename_string = std::string(temp_filename);
-  logger.info("Writing MONA DFA into '{}'...", temp_filename_string);
-  my_mona_dfa->export_dfa(temp_filename_string);
-
-  logger.info("Start synthesis...");
-  auto t_syn_start = std::chrono::high_resolution_clock::now();
-  Syft::syn test(mgr, temp_filename_string, part_file);
-
-  if (starting_player_env) {
-    logger.info("Testing environment realizability...");
-    res = test.realizablity_env(strategy);
-  } else {
-    logger.info("Testing system realizability...");
-    res = test.realizablity_sys(strategy);
-  }
-
-  if (res)
-    logger.info("realizable.");
-  else
-    logger.info("unrealizable.");
-
-  auto t_syn_end = std::chrono::high_resolution_clock::now();
-  double elapsed_time_syn =
-      std::chrono::duration<double, std::milli>(t_syn_end - t_syn_start)
-          .count();
-  logger.info("Time elapsed for synthesis: {}ms", elapsed_time_syn);
-  double elapsed_time =
-      std::chrono::duration<double, std::milli>(t_syn_end - t_start).count();
-  logger.info("Overall time elapsed: {}ms", elapsed_time);
+//  if (part_file_opt->empty()) {
+//    // stop here.
+//    double elapsed_time =
+//        std::chrono::duration<double, std::milli>(t_dfa_end - t_start).count();
+//    logger.info("Overall time elapsed: {}ms", elapsed_time);
+//    return 0;
+//  }
+//
+//  Cudd *mgr = new Cudd();
+//  bool res = false;
+//  std::unordered_map<unsigned, BDD> strategy;
+//
+//  // export DFA in MONA format, so it can be used by Syft
+//  char *temp_filename = tmpnam(nullptr);
+//  std::string temp_filename_string = std::string(temp_filename);
+//  logger.info("Writing MONA DFA into '{}'...", temp_filename_string);
+//  my_mona_dfa->export_dfa(temp_filename_string);
+//
+//  logger.info("Start synthesis...");
+//  auto t_syn_start = std::chrono::high_resolution_clock::now();
+//  Syft::syn test(mgr, temp_filename_string, part_file);
+//
+//  if (starting_player_env) {
+//    logger.info("Testing environment realizability...");
+//    res = test.realizablity_env(strategy);
+//  } else {
+//    logger.info("Testing system realizability...");
+//    res = test.realizablity_sys(strategy);
+//  }
+//
+//  if (res)
+//    logger.info("realizable.");
+//  else
+//    logger.info("unrealizable.");
+//
+//  auto t_syn_end = std::chrono::high_resolution_clock::now();
+//  double elapsed_time_syn =
+//      std::chrono::duration<double, std::milli>(t_syn_end - t_syn_start)
+//          .count();
+//  logger.info("Time elapsed for synthesis: {}ms", elapsed_time_syn);
+//  double elapsed_time =
+//      std::chrono::duration<double, std::milli>(t_syn_end - t_start).count();
+//  logger.info("Overall time elapsed: {}ms", elapsed_time);
 
   return 0;
 }
