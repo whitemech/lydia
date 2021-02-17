@@ -40,7 +40,7 @@ std::string dump_formula(const std::filesystem::path &filename) {
 
 int main(int argc, char **argv) {
   whitemech::lydia::Logger logger("main");
-  whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::debug);
+  whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::error);
 
   CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
   bool verbose = false;
@@ -169,9 +169,13 @@ int main(int argc, char **argv) {
     if(my_mona_dfa){
       std::vector<unsigned> x(my_mona_dfa->get_nb_variables());
       std::iota(std::begin(x), std::end(x), 0);
-      whitemech::lydia::dfaPrintGraphvizToFile(my_mona_dfa->get_dfa(),
-                                               my_mona_dfa->get_nb_variables(),
-                                               x.data(), std::cout);
+      whitemech::lydia::dfaPrint(my_mona_dfa->get_dfa(),
+                                 my_mona_dfa->get_nb_variables(),
+                                 my_mona_dfa->names,
+                                 x.data(), std::cout);
+//      whitemech::lydia::dfaPrintGraphvizToFile(my_mona_dfa->get_dfa(),
+//                                               my_mona_dfa->get_nb_variables(),
+//                                               x.data(), std::cout);
     }
   }
   if (!dot_option->empty()) {

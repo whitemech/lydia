@@ -351,6 +351,79 @@ void print_mona_dfa(DFA *a, const std::string &name, int num) {
       std::string("dot -Tsvg '" + name + ".dot' > '" + name + ".svg'").c_str());
 }
 
+void dfaPrint(DFA *a, int no_free_vars, std::vector<std::string> free_variables,
+              unsigned *offsets, std::ostream &o) {
+  paths state_paths, pp;
+  trace_descr tp;
+  int i, j, any = 0;
+
+  o << "DFA for formula with free variables: ";
+
+  for (i = 0; i < no_free_vars; i++)
+    o << free_variables[i] << " ";
+
+  o << "\nInitial state: " << a->s << "\n"
+                                      "Accepting states: ";
+
+  for (i = 0; i < a->ns; i++)
+    if (a->f[i] == 1)
+      o << i << " ";
+
+  o << "\n"
+       "Rejecting states: ";
+
+  for (i = 0; i < a->ns; i++)
+    if (a->f[i] == -1)
+      o << i << " ";
+
+  o << "\n";
+
+  for (i = 0; i < a->ns; i++)
+    if (a->f[i] == 0) {
+      any = 1;
+      break;
+    }
+  if (any) {
+    printf("Don't-care states: ");
+    for (i = 0; i < a->ns; i++)
+      if (a->f[i] == 0)
+        o << i << " ";
+
+    o << "\n";
+  }
+
+  o << "\nAutomaton has "
+    << a->ns << " state(s) and "
+    << bdd_size(a->bddm) << " BDD-node(s)\n";
+
+  o << "Transitions:\n";
+
+  for (i = 0; i < a->ns; i++) {
+    state_paths = pp = make_paths(a->bddm, a->q[i]);
+
+    while (pp) {
+      o << "State " << i << ": ";
+
+      for (j = 0; j < no_free_vars; j++) {
+        for (tp = pp->trace; tp && (tp->index != offsets[j]); tp = tp->next);
+
+        if (tp) {
+          if (tp->value) o << "1";
+          else o << "0";
+        }
+        else
+          o << "X";
+      }
+
+      o << " -> state " << pp->to << "\n";
+
+      pp = pp->next;
+    }
+
+    kill_paths(state_paths);
+  }
+}
+
 void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
                             std::ostream &o) {
   paths state_paths, pp;
