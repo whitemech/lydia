@@ -28,8 +28,11 @@
 extern "C" {
 #include <mona/bdd.h>
 #include <mona/dfa.h>
+#include <mona/hash.h>
 #include <mona/mem.h>
 }
+
+DFA *dfaUniversalProject(DFA *a, unsigned var_index);
 
 namespace whitemech::lydia {
 

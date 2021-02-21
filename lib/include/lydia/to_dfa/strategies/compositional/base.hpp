@@ -21,7 +21,7 @@
 #include <lydia/logic/atom_visitor.hpp>
 #include <lydia/logic/ldlf/only_test.hpp>
 #include <lydia/logic/nnf.hpp>
-#include <lydia/mona_ext.hpp>
+#include <lydia/mona_ext/mona_ext_base.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/strategies/compositional/base.hpp>
 #include <numeric>

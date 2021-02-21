@@ -15,7 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/mona_ext.hpp>
+#include <lydia/mona_ext/mona_ext_base.hpp>
 
 namespace whitemech::lydia {
 
