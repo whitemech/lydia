@@ -16,7 +16,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <cudd/cuddObj.hh>
+#include <cuddObj.hh>
 
 namespace whitemech::lydia {
 
