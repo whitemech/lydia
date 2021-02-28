@@ -98,6 +98,7 @@ public:
   ldlf_ptr makeLdlfDiamond(const regex_ptr &arg_r, const ldlf_ptr &arg_f);
   ldlf_ptr makeLdlfT(const ldlf_ptr &arg);
   ldlf_ptr makeLdlfF(const ldlf_ptr &arg);
+  ldlf_ptr makeLdlfQ(const ldlf_ptr &arg);
 
   regex_ptr makePropRegex(const prop_ptr &ptr);
   regex_ptr makeSeqRegex(const vec_regex &ptr);

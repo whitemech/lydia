@@ -64,6 +64,7 @@ class PropositionalAtom;
 class QuotedFormula;
 class LDLfF;
 class LDLfT;
+class LDLfQ;
 class PropositionalAnd;
 class PropositionalOr;
 class PropositionalNot;

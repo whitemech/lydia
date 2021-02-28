@@ -28,11 +28,10 @@ TEST_CASE("Duality", "[to_dfa]") {
   auto strategy_2 = CompositionalStrategy();
   for (const auto &[i, formula] : iter::enumerate(FORMULAS)) {
     SECTION(fmt::format("Test duality of formula {} '{}'", i, formula)) {
+      auto negated_formula = "!(" + formula + ")";
       adfa_ptr automaton_1 = to_dfa_from_formula_string(formula, strategy_1);
-      print_mona_dfa(std::static_pointer_cast<mona_dfa>(automaton_1)->dfa_,
-                     fmt::format("{:02}", i), automaton_1->get_nb_variables());
       adfa_ptr automaton_2 =
-          to_dfa_from_formula_string("!(" + formula + ")", strategy_2);
+          to_dfa_from_formula_string(negated_formula, strategy_2);
       REQUIRE(compare<5>(*automaton_1, *automaton_2,
                          automaton_1->get_nb_variables(), not_equal));
     }
@@ -61,7 +60,6 @@ TEST_CASE("Advanced theorems", "[to_dfa][advanced_theorems]") {
   int i = 0;
   for (auto &&[i, e] :
        iter::enumerate(iter::product(ADVANCED_THEOREMS, FORMULAS, FORMULAS))) {
-    auto strategy = CompositionalStrategy();
     const auto [theorem, formula_1, formula_2] = e;
     const auto [theorem_str, nb_formulas] = theorem;
     const auto new_theorem = fmt::format(theorem_str, formula_1, formula_2);
@@ -70,6 +68,7 @@ TEST_CASE("Advanced theorems", "[to_dfa][advanced_theorems]") {
           fmt::format("Iteration {}: test theorem {}", i, new_theorem);
       log.info(section_id);
     }
+    auto strategy = CompositionalStrategy();
     adfa_ptr automaton = to_dfa_from_formula_string(new_theorem, strategy);
     REQUIRE(automaton->get_nb_states() == 1);
     REQUIRE(automaton->is_final(automaton->get_initial_state()));

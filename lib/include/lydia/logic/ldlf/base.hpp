@@ -269,6 +269,26 @@ public:
   ldlf_ptr logical_not() const override;
 };
 
+/*
+ * Auxiliary construct for the delta function.
+ */
+class LDLfQ : public LDLfFormula {
+private:
+  const ldlf_ptr arg_;
+
+protected:
+public:
+  const static TypeID type_code_id = TypeID::t_LDLfQ;
+  explicit LDLfQ(AstManager &c, const ldlf_ptr &formula);
+  void accept(Visitor &v) const override;
+  bool is_canonical(const set_regex &args) const;
+  hash_t compute_hash_() const override;
+  ldlf_ptr get_arg() const;
+  int compare_(const Basic &rhs) const override;
+  bool is_equal(const Basic &rhs) const override;
+  ldlf_ptr logical_not() const override;
+};
+
 class QuotedFormula : public Basic {
 private:
 protected:

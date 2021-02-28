@@ -820,6 +820,48 @@ TEST_CASE("Translate <(<a>tt?, true)*>(<b>tt & !end)",
   REQUIRE(verify(*automaton, {"01", "00", "10"}, false));
 }
 
+TEST_CASE("Translate with star test a,a and body b",
+          "[translate][ldlf][basic]") {
+  std::string formula_name = "<(<a;a>tt?; true)*>(<b>tt & !end)";
+  auto strategy_maker = GENERATE(strategies());
+  auto mgr = CUDD::Cudd();
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string(formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
+
+  REQUIRE(verify(*automaton, {}, false));
+
+  REQUIRE(verify(*automaton, {"00"}, false));
+  REQUIRE(verify(*automaton, {"01"}, false));
+  REQUIRE(verify(*automaton, {"10"}, true));
+  REQUIRE(verify(*automaton, {"11"}, true));
+
+  REQUIRE(verify(*automaton, {"00", "00"}, false));
+  REQUIRE(verify(*automaton, {"00", "01"}, false));
+  REQUIRE(verify(*automaton, {"00", "10"}, false));
+  REQUIRE(verify(*automaton, {"00", "11"}, false));
+
+  REQUIRE(verify(*automaton, {"01", "00"}, false));
+  REQUIRE(verify(*automaton, {"01", "01"}, false));
+  REQUIRE(verify(*automaton, {"01", "10"}, false));
+  REQUIRE(verify(*automaton, {"01", "11"}, true));
+
+  REQUIRE(verify(*automaton, {"10", "00"}, true));
+  REQUIRE(verify(*automaton, {"10", "01"}, true));
+  REQUIRE(verify(*automaton, {"10", "10"}, true));
+  REQUIRE(verify(*automaton, {"10", "11"}, true));
+
+  REQUIRE(verify(*automaton, {"11", "00"}, true));
+  REQUIRE(verify(*automaton, {"11", "01"}, true));
+  REQUIRE(verify(*automaton, {"11", "10"}, true));
+  REQUIRE(verify(*automaton, {"11", "11"}, true));
+
+  // corner cases
+  REQUIRE(verify(*automaton, {"01", "01", "10"}, false));
+  REQUIRE(verify(*automaton, {"01", "01", "11", "01"}, true));
+  REQUIRE(verify(*automaton, {"01", "00", "10"}, false));
+}
+
 TEST_CASE("Translate {true*}(<a>tt | end)", "[translate][ldlf][basic]") {
   std::string formula_name = "[true*](<a>tt | end)";
   auto strategy_maker = GENERATE(strategies());

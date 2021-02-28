@@ -69,6 +69,12 @@ ldlf_ptr AstManager::makeLdlfT(const ldlf_ptr &arg) {
   return result;
 }
 
+ldlf_ptr AstManager::makeLdlfQ(const ldlf_ptr &arg) {
+  auto tmp = std::make_shared<const LDLfQ>(*this, arg);
+  auto result = insert_if_not_available_(tmp);
+  return result;
+}
+
 ldlf_ptr AstManager::makeLdlfEnd() {
   return makeLdlfBox(makePropRegex(makeTrue()), makeLdlfFalse());
 }

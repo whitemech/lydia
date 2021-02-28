@@ -63,6 +63,7 @@ void PropositionalNot::accept(Visitor &v) const { v.visit(*this); }
 
 void LDLfF::accept(Visitor &v) const { v.visit(*this); }
 void LDLfT::accept(Visitor &v) const { v.visit(*this); }
+void LDLfQ::accept(Visitor &v) const { v.visit(*this); }
 void QuotedFormula::accept(Visitor &v) const { v.visit(*this); }
 
 } // namespace whitemech::lydia

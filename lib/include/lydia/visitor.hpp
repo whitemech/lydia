@@ -65,6 +65,7 @@ public:
   virtual void visit(const QuotedFormula &){};
   virtual void visit(const LDLfF &){};
   virtual void visit(const LDLfT &){};
+  virtual void visit(const LDLfQ &){};
 };
 
 } // namespace whitemech::lydia

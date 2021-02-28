@@ -257,15 +257,15 @@ DFA *dfaUniversalProject(DFA *a, unsigned var_index) {
 
       for (i = 0; i < next_state; i++) { /* Walk through list */
         int non_bottom_found = 0;
-        int minus_one_found = 0;
+        int non_one_found = 0;
         res->q[i] = new_roots[i];
         for (e = ssets[lst->sset_id].elements; *e >= 0; e++) {
           non_bottom_found += (a->f[*e] != 0);
-          minus_one_found += (a->f[*e] == -1);
+          non_one_found += (a->f[*e] != 1);
         }
         if (!non_bottom_found)
           res->f[i] = 0;
-        else if (minus_one_found)
+        else if (non_one_found)
           res->f[i] = -1;
         else
           res->f[i] = 1;
