@@ -112,14 +112,12 @@ jobs:
       - name: Configure CMake
         env:
           CXX: ${{ matrix.compiler }}
-        # use release mode for testing - a faster
-        # in the future, consider running them also in debug mode
         run: |
-          echo "Configuring tests (release mode)"
-          ./scripts/_ci-configure.sh "Release"
+          echo "Configuring tests"
+          ./scripts/_ci-configure.sh
       - name: Build
         run: |
-          echo "Running tests (release mode)"
+          echo "Running tests"
           cd build && VERBOSE=1 make lydiaTest -j
       - name: Test
         run: ./scripts/_ci-test.sh

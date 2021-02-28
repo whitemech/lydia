@@ -297,32 +297,20 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
   statuses += "-";
 
   DFA *result = dfaBuild(statuses.data());
-  print_mona_dfa(result, "before_projection", new_indices.size());
   DFA *tmp = dfaMinimize(result);
   dfaFree(result);
   result = tmp;
-  print_mona_dfa(result, "before_projection_minimized", new_indices.size());
 
   for (int j = max_and_bits - 1; j >= 0; --j) {
     tmp = dfaUniversalProject(result, indices.size() + max_or_bits + j);
     dfaFree(result);
-    print_mona_dfa(tmp, "after_and_projection_" + std::to_string(j),
-                   indices.size() + max_or_bits + j);
     result = dfaMinimize(tmp);
-    print_mona_dfa(result,
-                   "after_and_projection_" + std::to_string(j) + "_minimized",
-                   indices.size() + max_or_bits + j);
     dfaFree(tmp);
   }
   for (int i = max_or_bits - 1; i >= 0; --i) {
     tmp = dfaProject(result, indices.size() + i);
     dfaFree(result);
-    print_mona_dfa(tmp, "after_or_projection_" + std::to_string(i),
-                   indices.size() + i);
     result = dfaMinimize(tmp);
-    print_mona_dfa(result,
-                   "after_or_projection_" + std::to_string(i) + "_minimized",
-                   indices.size() + i);
     dfaFree(tmp);
   }
 

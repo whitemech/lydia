@@ -144,11 +144,6 @@ static void _dataset_test(const std::filesystem::path &dataset_path) {
     auto actual_dfa =
         std::make_shared<mona_dfa>(actual_lydia_dfa, temp_lydia_dfa->names);
     dfaFree(at_least_one_step);
-    //
-    //    print_mona_dfa(expected_dfa->dfa_, filename + "-expected",
-    //    expected_dfa->get_nb_variables()); print_mona_dfa(actual_dfa->dfa_,
-    //    filename + "-actual", expected_dfa->get_nb_variables());
-
     int expected_nb_vars = expected_dfa->get_nb_variables();
     int actual_nb_vars = actual_dfa->get_nb_variables();
     REQUIRE(expected_nb_vars == actual_nb_vars);

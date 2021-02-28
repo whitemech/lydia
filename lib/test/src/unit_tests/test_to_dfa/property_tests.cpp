@@ -23,7 +23,7 @@
 
 namespace whitemech::lydia::Test {
 
-TEST_CASE("Duality", "[to_dfa]") {
+TEST_CASE("Duality", "[to_dfa][property_tests][duality]") {
   auto strategy_1 = CompositionalStrategy();
   auto strategy_2 = CompositionalStrategy();
   for (const auto &[i, formula] : iter::enumerate(FORMULAS)) {
@@ -38,7 +38,7 @@ TEST_CASE("Duality", "[to_dfa]") {
   }
 }
 
-TEST_CASE("Simple theorems", "[to_dfa]") {
+TEST_CASE("Simple theorems", "[to_dfa][property_tests][simple_theorems]") {
   auto strategy = CompositionalStrategy();
   for (const auto &theorem : SIMPLE_THEOREMS) {
     SECTION("Test theorem " + theorem) {
@@ -55,7 +55,7 @@ TEST_CASE("Simple theorems", "[to_dfa]") {
   }
 }
 
-TEST_CASE("Advanced theorems", "[to_dfa][advanced_theorems]") {
+TEST_CASE("Advanced theorems", "[to_dfa][property_tests][advanced_theorems]") {
   Logger log("advanced-theorems");
   int i = 0;
   for (auto &&[i, e] :
