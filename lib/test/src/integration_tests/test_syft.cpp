@@ -144,7 +144,6 @@ static void _dataset_test(const std::filesystem::path &dataset_path) {
     auto actual_dfa =
         std::make_shared<mona_dfa>(actual_lydia_dfa, temp_lydia_dfa->names);
     dfaFree(at_least_one_step);
-
     int expected_nb_vars = expected_dfa->get_nb_variables();
     int actual_nb_vars = actual_dfa->get_nb_variables();
     REQUIRE(expected_nb_vars == actual_nb_vars);
@@ -171,7 +170,7 @@ static void _dataset_test(const std::filesystem::path &dataset_path) {
     actual_example =
         dfaMakeExample(actual_dfa->dfa_, 1, actual_dfa->get_nb_variables(),
                        actual_dfa->indices.data());
-    // eensure ither both null or both not null
+    // ensure either both null or both not null
     REQUIRE((expected_example == nullptr and actual_example == nullptr or
              expected_example != nullptr and actual_example != nullptr));
     if (expected_example) {

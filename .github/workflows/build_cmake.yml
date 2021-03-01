@@ -12,6 +12,8 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-20.04
     timeout-minutes: 10
+    env:
+      DEBIAN_FRONTEND: noninteractive
     steps:
     - uses: actions/checkout@v2
       with:
@@ -34,7 +36,8 @@ jobs:
     continue-on-error: true
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
-
+    env:
+      DEBIAN_FRONTEND: noninteractive
     steps:
       - uses: actions/checkout@v2
         with:
@@ -65,11 +68,11 @@ jobs:
           CXX: ${{ matrix.compiler }}
         run: ./scripts/_ci-configure.sh
       - name: Build library
-        run: cd build && make lydia -j
+        run: cd build && VERBOSE=1 make lydia -j
       - name: Build app
-        run: cd build && make lydia-bin -j
+        run: cd build && VERBOSE=1 make lydia-bin -j
       - name: Build benchmarks
-        run: cd build && make lydiaBench -j
+        run: cd build && VERBOSE=1 make lydiaBench -j
 
   # Build and run the tests.
   test:
@@ -81,7 +84,8 @@ jobs:
     continue-on-error: false
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
-
+    env:
+      DEBIAN_FRONTEND: noninteractive
     steps:
       - uses: actions/checkout@v2
         with:
@@ -90,7 +94,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y clang-tidy-9
-          sudo apt-get install -y wget
+          sudo apt-get install -y wget git cmake
 
           # install flex/bison
           sudo apt-get purge -y flex
@@ -108,15 +112,13 @@ jobs:
       - name: Configure CMake
         env:
           CXX: ${{ matrix.compiler }}
-        # use release mode for testing - a faster
-        # in the future, consider running them also in debug mode
         run: |
-          echo "Configuring tests (release mode)"
-          ./scripts/_ci-configure.sh "Release"
+          echo "Configuring tests"
+          ./scripts/_ci-configure.sh
       - name: Build
         run: |
-          echo "Running tests (release mode)"
-          cd build && make lydiaTest -j
+          echo "Running tests"
+          cd build && VERBOSE=1 make lydiaTest -j
       - name: Test
         run: ./scripts/_ci-test.sh
       - name: Upload coverage to Codecov

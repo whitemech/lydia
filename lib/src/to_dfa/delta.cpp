@@ -203,6 +203,8 @@ void DeltaVisitor::visit(const LDLfF &f) { result = f.ctx().makeFalse(); }
 
 void DeltaVisitor::visit(const LDLfT &f) { result = f.ctx().makeTrue(); }
 
+void DeltaVisitor::visit(const LDLfQ &f) { result = apply(*f.get_arg()); }
+
 std::shared_ptr<const PropositionalFormula>
 DeltaBoxRegExpVisitor::apply(const RegExp &b) {
   b.accept(*this);
@@ -218,6 +220,9 @@ void ExpandVisitor::visit(const LDLfFalse &f) {
 
 void ExpandVisitor::visit(const LDLfF &x) { result = apply(*x.get_arg()); }
 void ExpandVisitor::visit(const LDLfT &x) { result = apply(*x.get_arg()); }
+void ExpandVisitor::visit(const LDLfQ &x) {
+  result = std::static_pointer_cast<const LDLfQ>(x.shared_from_this());
+}
 
 void ExpandVisitor::visit(const LDLfAnd &f) {
   set_formulas new_container;

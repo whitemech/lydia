@@ -52,6 +52,7 @@ enum TypeID {
   t_StarRegExp,
   t_LDLfF,
   t_LDLfT,
+  t_LDLfQ,
   t_NFAState,
   t_DFAState,
   t_PropositionalTrue,

@@ -124,6 +124,9 @@ static const std::vector<std::string> FORMULAS{
     //    // from ltlf
     "[(((!(<a>(tt)))? ; true))*]((<b>(tt) | end))",
     "[(true)*](((!(<a>(tt)) | <(true)*>((<b>(tt) & !(end)))) | end))",
+    "[(((!(<(true)*>((<d>(tt) & !(end)))))? ; true))*]((<((((<g>(tt) | "
+    "<i>(tt)))? ; true))*>((<l>(tt) & !(end))) | end))",
+    "[(((!(<(true)*>((<d>(tt) & !(end)))))? ; true))*](<l>(tt) | end)",
     "(!(<(true)*>(([(((!(<(((<a>(tt))? ; true))*>(((<b>(tt) | <c>(tt)) & "
     "!(end)))))? ; true))*](((<true>((<e>(tt) & !(end))) | ([true]((<f>(tt) | "
     "end)) & [(true)*]((<h>(tt) | end)))) | end)) & !(end)))) | "
@@ -140,6 +143,7 @@ static const std::vector<std::string> FORMULAS{
     "end)))) | [(true)*](((<a>(tt) | <b>(tt) | <c>(tt)) | end))) & "
     "(([(true)*](((<a>(tt) | <b>(tt)) | end)) | [(true)*]((<c>(tt) | end))) | "
     "!([(true)*](((<a>(tt) | <b>(tt) | <c>(tt)) | end)))))",
+    "!([(true)*](((<a>(tt) | <b>(tt) | <c>(tt)) | end)))",
     "(!(<(true)*>((<a>(tt) & !(end)))) | !(<(true)*>((<b>(tt) & !(end)))))",
     "(((<a>(tt) & !(<b>(tt))) | (<b>(tt) & !(<a>(tt)))) & [true]((<false>(tt) "
     "| end)))",
@@ -177,6 +181,9 @@ static const std::vector<std::pair<const std::string, const unsigned>>
         {"([({0}?)]({1})) <-> (!({0}) | ({1}))", 2},
         {"(<({0}?)*>({1})) <-> ({1})", 2},
         {"([({0}?)*]({1})) <-> ({1})", 2},
+        {"(<((<(({0}?);true)*>({1}))?;true)*>({1})) <-> "
+         "(<(({0}?);true)*>({1}))",
+         2},
     };
 
 } // namespace whitemech::lydia

@@ -21,21 +21,28 @@
 #include <lydia/logic/atom_visitor.hpp>
 #include <lydia/logic/ldlf/only_test.hpp>
 #include <lydia/logic/nnf.hpp>
+#include <lydia/mona_ext/mona_ext_base.hpp>
 #include <lydia/to_dfa/core.hpp>
-#include <lydia/to_dfa/strategies/bdd/base.hpp>
-#include <lydia/to_dfa/strategies/bdd/delta_bdd.hpp>
-#include <lydia/to_dfa/strategies/compositional/base.hpp>
-#include <lydia/to_dfa/strategies/naive.hpp>
 #include <numeric>
 
 namespace whitemech::lydia {
 
 class CompositionalStrategy : public Strategy {
+private:
+  CUDD::Cudd *prop_mgr;
+  void reset();
+
 public:
+  CompositionalStrategy() { prop_mgr = new CUDD::Cudd(0, 0, 0, 0, 0); }
+  ~CompositionalStrategy() { delete prop_mgr; }
+  set_atoms_ptr atoms;
   std::vector<atom_ptr> id2atoms;
   std::map<atom_ptr, size_t, SharedComparator> atom2ids;
   std::vector<int> indices;
   std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &f) override;
+  DFA *to_dfa_internal(const LDLfFormula &f, set_atoms_ptr atoms);
+
+  DFA *star(const RegExp &r, DFA *body);
 };
 
 class AComposeDFAVisitor : public Visitor {
@@ -47,7 +54,8 @@ public:
 
 class ComposeDFAVisitor : public AComposeDFAVisitor {
 private:
-  DFA *current_formula_ = nullptr;
+  DFA *current_body_dfa_ = nullptr;
+  ldlf_ptr *current_body_ = nullptr;
   bool is_diamond = false;
 
 public:
@@ -77,6 +85,9 @@ class ComposeDFARegexVisitor : public AComposeDFAVisitor {
 private:
   DFA *current_formula_ = nullptr;
   bool is_diamond;
+
+  void test_free_star_(const StarRegExp &);
+  void general_star_(const StarRegExp &);
 
 public:
   CompositionalStrategy &cs;
