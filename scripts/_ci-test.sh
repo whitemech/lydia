@@ -2,7 +2,7 @@
 
 set -e
 
-cd build/lib/test && ../../bin/lydiaTest "~[integration]" "~[advanced_theorems]"
+cd build/lib/test && ../../bin/lydiaTest "~[integration]"
 
 cd ../../../
 
