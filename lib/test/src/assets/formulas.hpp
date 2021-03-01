@@ -181,6 +181,9 @@ static const std::vector<std::pair<const std::string, const unsigned>>
         {"([({0}?)]({1})) <-> (!({0}) | ({1}))", 2},
         {"(<({0}?)*>({1})) <-> ({1})", 2},
         {"([({0}?)*]({1})) <-> ({1})", 2},
+        {"(<((<(({0}?);true)*>({1}))?;true)*>({1})) <-> "
+         "(<(({0}?);true)*>({1}))",
+         2},
     };
 
 } // namespace whitemech::lydia

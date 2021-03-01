@@ -63,11 +63,9 @@ TEST_CASE("Advanced theorems", "[to_dfa][property_tests][advanced_theorems]") {
     const auto [theorem, formula_1, formula_2] = e;
     const auto [theorem_str, nb_formulas] = theorem;
     const auto new_theorem = fmt::format(theorem_str, formula_1, formula_2);
-    if (i % 1000 == 0) {
-      const std::string section_id =
-          fmt::format("Iteration {}: test theorem {}", i, new_theorem);
-      log.info(section_id);
-    }
+    const std::string section_id =
+        fmt::format("Iteration {}: test theorem {}", i, new_theorem);
+    log.info(section_id);
     auto strategy = CompositionalStrategy();
     adfa_ptr automaton = to_dfa_from_formula_string(new_theorem, strategy);
     REQUIRE(automaton->get_nb_states() == 1);
