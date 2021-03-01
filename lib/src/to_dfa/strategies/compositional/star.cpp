@@ -20,7 +20,6 @@
 #include <lydia/to_dfa/strategies/compositional/delta_compositional.hpp>
 #include <lydia/to_dfa/strategies/compositional/star.hpp>
 #include <lydia/utils/cudd.hpp>
-#include <lydia/utils/misc.hpp>
 #include <lydia/utils/strings.hpp>
 #include <queue>
 
@@ -164,8 +163,9 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
   std::for_each(test_formula_to_dfa.begin(), test_formula_to_dfa.end(),
                 [&new_ns](const auto &dfa_ptr) { new_ns += dfa_ptr->ns; });
   // for the sink
-  new_ns += 1;
-  auto sink = new_ns - 1;
+  new_ns += 2;
+  auto accepting_sink = new_ns - 2;
+  auto rejecting_sink = new_ns - 1;
 
   // compute offsets for test and phi automata states
   // last index is for body offset
@@ -243,6 +243,18 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
             exceptions.emplace_back(next_state_id, cube_string);
           }
         }
+
+        for (size_t jj = universal_transitions.size();
+             jj < (size_t)pow(2, nb_and_bits); ++jj) {
+          auto auxiliary_default_and_guard =
+              state2bin(jj, nb_and_bits, true) +
+              std::string(max_and_bits - nb_and_bits, 'X');
+          auto dont_care_variables = std::string(indices.size(), 'X');
+          auto auxiliary_default_guard = dont_care_variables +
+                                         auxiliary_or_guard +
+                                         auxiliary_default_and_guard;
+          exceptions.emplace_back(accepting_sink, auxiliary_default_guard);
+        }
       }
     }
 
@@ -257,7 +269,7 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
     auto delta_epsilon_output = delta_visitor.apply(*state_formula);
     auto is_final = eval(*delta_epsilon_output, set_atoms_ptr{});
     statuses += is_final ? "+" : "-";
-    dfaStoreState(sink);
+    dfaStoreState(rejecting_sink);
   }
 
   auto auxiliary_guard_x = std::string(max_or_bits + max_and_bits, 'X');
@@ -286,14 +298,19 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
         dfaStoreException(next_state + current_offset,
                           next_guard.append(auxiliary_guard_x).data());
       }
-      dfaStoreState(sink);
+      dfaStoreState(rejecting_sink);
       kill_paths(state_paths);
     }
   }
 
-  // store new sink state.
+  // store new accepting sink state.
   dfaAllocExceptions(0);
-  dfaStoreState(sink);
+  dfaStoreState(accepting_sink);
+  statuses += "+";
+
+  // store new rejecting sink state.
+  dfaAllocExceptions(0);
+  dfaStoreState(rejecting_sink);
   statuses += "-";
 
   DFA *result = dfaBuild(statuses.data());
