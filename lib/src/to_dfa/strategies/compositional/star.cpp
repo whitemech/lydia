@@ -27,6 +27,17 @@ namespace whitemech::lydia {
 
 typedef std::pair<prop_ptr, ldlf_ptr> transition;
 
+DFA *remove_unreachable_states(DFA *arg) {
+  DFA *result;
+  DFA *tmp = dfaLDLfTrue();
+  result = dfaProduct(arg, tmp, dfaAND);
+  dfaFree(tmp);
+  tmp = dfaMinimize(result);
+  dfaFree(result);
+  result = tmp;
+  return result;
+}
+
 DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
   if (!is_a<StarRegExp>(r)) {
     throw std::invalid_argument("Only star regex allowed.");
@@ -316,7 +327,8 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
   DFA *result = dfaBuild(statuses.data());
   DFA *tmp = dfaMinimize(result);
   dfaFree(result);
-  result = tmp;
+  result = remove_unreachable_states(tmp);
+  dfaFree(tmp);
 
   for (int j = max_and_bits - 1; j >= 0; --j) {
     tmp = dfaUniversalProject(result, indices.size() + max_or_bits + j);
@@ -335,19 +347,11 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
   result = dfaMinimize(tmp);
   dfaFree(tmp);
 
-  // remove unreachable states.
-  DFA *tmp2 = dfaLDLfTrue();
-  tmp = dfaProduct(result, tmp2, dfaAND);
-  dfaFree(result);
-  dfaFree(tmp2);
-  result = dfaMinimize(tmp);
-  dfaFree(tmp);
-
   // ----------------------------------------------------------------
   // end automaton building
   // ----------------------------------------------------------------
 
-  // free DFAs
+  // free test DFAs
   std::for_each(test_formula_to_dfa.begin(), test_formula_to_dfa.end(),
                 [](const auto &dfa_ptr) { dfaFree(dfa_ptr); });
 
