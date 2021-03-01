@@ -86,6 +86,9 @@ private:
   DFA *current_formula_ = nullptr;
   bool is_diamond;
 
+  void test_free_star_(const StarRegExp &);
+  void general_star_(const StarRegExp &);
+
 public:
   CompositionalStrategy &cs;
   DFA *result;

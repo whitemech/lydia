@@ -15,6 +15,7 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <lydia/logic/ldlf/test_free.hpp>
 #include <lydia/to_dfa/strategies/compositional/base.hpp>
 #include <lydia/to_dfa/strategies/compositional/star.hpp>
 #include <utility>
@@ -159,29 +160,39 @@ void ComposeDFARegexVisitor::visit(const SequenceRegExp &r) {
 }
 
 void ComposeDFARegexVisitor::visit(const StarRegExp &r) {
-  //  DFA *tmp;
-  //  DFA *body = dfaCopy(current_formula_);
-  //
-  //  auto visitor = ComposeDFAVisitor(cs);
-  //  DFA *regex = visitor.apply(
-  //      *r.ctx().makeLdlfDiamond(r.get_arg(), r.ctx().makeLdlfEnd()));
-  //
-  //  DFA *regex_or_empty = dfa_accept_empty(regex);
-  //  DFA *star = dfa_closure(regex_or_empty, cs.indices.size(),
-  //  cs.indices.data()); if (not is_diamond) {
-  //    dfaNegation(body);
-  //  }
-  //  tmp = dfa_concatenate(star, body, cs.indices.size(), cs.indices.data());
-  //  if (not is_diamond) {
-  //    dfaNegation(tmp);
-  //  }
-  //  result = dfaMinimize(tmp);
-  //  dfaFree(tmp);
-  //  dfaFree(regex);
-  //  dfaFree(regex_or_empty);
-  //  dfaFree(star);
-  //  dfaFree(body);
+  if (is_test_free(r)) {
+    test_free_star_(r);
+  } else {
+    general_star_(r);
+  }
+}
 
+void ComposeDFARegexVisitor::test_free_star_(const StarRegExp &r) {
+  DFA *tmp;
+  DFA *body = dfaCopy(current_formula_);
+
+  auto visitor = ComposeDFAVisitor(cs);
+  DFA *regex = visitor.apply(
+      *r.ctx().makeLdlfDiamond(r.get_arg(), r.ctx().makeLdlfEnd()));
+
+  DFA *regex_or_empty = dfa_accept_empty(regex);
+  DFA *star = dfa_closure(regex_or_empty, cs.indices.size(), cs.indices.data());
+  if (not is_diamond) {
+    dfaNegation(body);
+  }
+  tmp = dfa_concatenate(star, body, cs.indices.size(), cs.indices.data());
+  if (not is_diamond) {
+    dfaNegation(tmp);
+  }
+  result = dfaMinimize(tmp);
+  dfaFree(tmp);
+  dfaFree(regex);
+  dfaFree(regex_or_empty);
+  dfaFree(star);
+  dfaFree(body);
+}
+
+void ComposeDFARegexVisitor::general_star_(const StarRegExp &r) {
   DFA *body = dfaCopy(current_formula_);
   if (not is_diamond) {
     dfaNegation(body);
