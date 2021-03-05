@@ -24,6 +24,7 @@
 #include <lydia/mona_ext/mona_ext_base.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <numeric>
+#include <queue>
 
 namespace whitemech::lydia {
 
@@ -121,9 +122,7 @@ template <typename T, DFA *(*dfaMaker)(void), dfaProductType productType,
 DFA *dfa_and_or(std::set<std::shared_ptr<T>, SharedComparator> container,
                 AComposeDFAVisitor &v) {
   DFA *tmp1;
-  DFA *tmp2;
-  DFA *tmp3;
-  DFA *final = dfaMaker();
+  DFA *final;
 
   auto dfas = std::vector<DFA *>();
   dfas.reserve(container.size());
@@ -133,27 +132,34 @@ DFA *dfa_and_or(std::set<std::shared_ptr<T>, SharedComparator> container,
       for (const auto dfa_to_free : dfas) {
         dfaFree(dfa_to_free);
       }
-      dfaFree(final);
       return tmp1;
     }
     dfas.push_back(tmp1);
   }
 
-  std::sort(dfas.begin(), dfas.end(),
-            [](DFA *d1, DFA *d2) { return d1->ns < d2->ns; });
-  for (const auto &automaton : dfas) {
-    tmp1 = final;
-    tmp2 = dfaProduct(tmp1, automaton, productType);
-    final = dfaMinimize(tmp2);
+  auto cmp = [](const DFA *d1, const DFA *d2) { return d1->ns > d2->ns; };
+  std::priority_queue<DFA *, std::vector<DFA *>, decltype(cmp)> queue(
+      dfas.begin(), dfas.end(), cmp);
+  while (queue.size() > 1) {
+    DFA *lhs = queue.top();
+    queue.pop();
+    DFA *rhs = queue.top();
+    queue.pop();
+    tmp1 = dfaProduct(lhs, rhs, productType);
+    final = dfaMinimize(tmp1);
+    dfaFree(lhs);
+    dfaFree(rhs);
     dfaFree(tmp1);
-    dfaFree(tmp2);
     if (is_sink(final, is_positive)) {
-      break;
+      while (!queue.empty()) {
+        dfaFree(queue.top());
+        queue.pop();
+      }
+      return final;
     }
+    queue.push(final);
   }
-  for (const auto dfa_to_free : dfas) {
-    dfaFree(dfa_to_free);
-  }
+  final = queue.top();
   return final;
 }
 
