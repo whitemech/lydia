@@ -56,19 +56,16 @@ using token = whitemech::lydia::parsers::ldlf::LDLfParser::token;
 
 "!"|"~"                     { return token::NOT; }
 
-(?i:tt)                     { return token::TT; }
-(?i:ff)                     { return token::FF; }
+"tt"|"TT"                   { return token::TT; }
+"ff"|"FF"                   { return token::FF; }
 
-(?i:true)                   { return token::TRUE_; }
-(?i:false)                  { return token::FALSE_; }
+"true"|"TRUE"|"True"|"1"    { return token::TRUE_; }
+"false"|"FALSE"|"False"|"0" { return token::FALSE_; }
 
-(?i:1)                      { return token::TT; }
-(?i:0)                      { return token::FF; }
+"end"|"END"|"End"           { return token::END; }
+"last"|"LAST"|"Last"        { return token::LAST; }
 
-(?i:end)                    { return token::END; }
-(?i:last)                   { return token::LAST; }
-
-[a-zA-Z_][a-zA-Z0-9_]+|("[a-zA-Z0-9_]+") {
+[a-zA-Z_][a-zA-Z0-9_]*|("[a-zA-Z0-9_]+") {
                                 yylval->symbol_name = yytext;
                                 return token::SYMBOL;
                             }
