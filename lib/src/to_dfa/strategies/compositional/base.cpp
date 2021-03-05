@@ -160,7 +160,7 @@ void ComposeDFARegexVisitor::visit(const SequenceRegExp &r) {
 }
 
 void ComposeDFARegexVisitor::visit(const StarRegExp &r) {
-  if (is_test_free(r)) {
+  if (is_test_free(r) or is_atomic_until_test_(*r.get_arg())) {
     test_free_star_(r);
   } else {
     general_star_(r);
@@ -271,6 +271,36 @@ ComposeDFARegexVisitor::~ComposeDFARegexVisitor() {
   if (current_formula_) {
     dfaFree(current_formula_);
   }
+}
+
+bool ComposeDFARegexVisitor::is_atomic_until_test_(const RegExp &r) {
+  if (!is_a<SequenceRegExp>(r))
+    return false;
+
+  auto seq_regex = dynamic_cast<const SequenceRegExp &>(r);
+  if (seq_regex.get_container().size() != 2)
+    return false;
+
+  auto first_regex = *seq_regex.get_container().begin();
+  auto second_regex = *(seq_regex.get_container().begin() + 1);
+
+  if (!is_a<TestRegExp>(*first_regex) ||
+      !is_a<PropositionalRegExp>(*second_regex))
+    return false;
+
+  auto test_regex = dynamic_cast<const TestRegExp &>(*first_regex);
+  auto prop_regex = dynamic_cast<const PropositionalRegExp &>(*second_regex);
+
+  if (!is_a<LDLfDiamond>(*test_regex.get_arg()) ||
+      !is_a<PropositionalTrue>(*prop_regex.get_arg())) {
+    return false;
+  }
+
+  auto diamond_formula =
+      dynamic_cast<const LDLfDiamond &>(*test_regex.get_arg());
+  auto regex = diamond_formula.get_regex();
+  auto formula = diamond_formula.get_formula();
+  return is_a<PropositionalRegExp>(*regex) and is_a<LDLfTrue>(*formula);
 }
 
 } // namespace whitemech::lydia
