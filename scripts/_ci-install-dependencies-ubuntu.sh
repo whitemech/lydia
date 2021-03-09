@@ -12,9 +12,9 @@ cd ..
 echo "CUDD installed."
 
 echo "Installing MONA..."
-wget https://github.com/whitemech/MONA/releases/download/v1.4-18.dev0/mona_1.4-18.dev0_linux-amd64.tar.gz
-tar -xf mona_1.4-18.dev0_linux-amd64.tar.gz
-cd mona_1.4-18.dev0_linux-amd64
+wget https://github.com/whitemech/MONA/releases/download/v1.4-19.dev0/mona_1.4-19.dev0_linux-amd64.tar.gz
+tar -xf mona_1.4-19.dev0_linux-amd64.tar.gz
+cd mona_1.4-19.dev0_linux-amd64
 sudo cp -P lib/* /usr/local/lib/
 sudo cp -Pr include/* /usr/local/include
 cd ..
