@@ -52,12 +52,12 @@ using token = whitemech::lydia::parsers::ltlf::LTLfParser::token;
 
 "!"|"~"                     { return token::NOT; }
 
-(?i:true)                   { return token::TRUE_; }
-(?i:false)                  { return token::FALSE_; }
+"true"|"TRUE"|"True"|"1"    { return token::TRUE_; }
+"false"|"FALSE"|"False"|"0" { return token::FALSE_; }
 
-(?i:last)                   { return token::LAST; }
+"last"|"LAST"|"Last"        { return token::LAST; }
 
-[a-zA-Z0-9_]+|("[a-zA-Z0-9_]+") {
+[a-zA-Z_][a-zA-Z0-9_]*|("[a-zA-Z0-9_]+") {
                                 yylval->symbol_name = yytext;
                                 return token::SYMBOL;
                             }
