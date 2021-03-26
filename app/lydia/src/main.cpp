@@ -149,8 +149,15 @@ int main(int argc, char **argv) {
 
   if (print_dfa) {
     logger.info("Computed automaton:");
+
+    std::vector<char*> cstrings;
+    cstrings.reserve(my_mona_dfa->names.size());
+
+    for(size_t i = 0; i < my_mona_dfa->names.size(); ++i)
+      cstrings.push_back(const_cast<char*>(my_mona_dfa->names[i].c_str()));
+
     dfaPrint(my_mona_dfa->dfa_, my_mona_dfa->get_nb_variables(),
-             reinterpret_cast<char **>(my_mona_dfa->names.data()),
+             cstrings.data(),
              my_mona_dfa->indices.data());
   }
 
