@@ -47,6 +47,8 @@ int main(int argc, char **argv) {
   app.add_flag("--verbose", verbose, "Set verbose mode.");
   bool version = false;
   app.add_flag("--version", version, "Print the version and exit.");
+  bool print_dfa = false;
+  app.add_flag("-p,--print", print_dfa, "Print the DFA.");
 
   bool no_empty = false;
   app.add_flag("-n,--no-empty", no_empty, "Enforce non-empty semantics.");
@@ -144,6 +146,14 @@ int main(int argc, char **argv) {
     logger.info("Number of states " +
                 std::to_string(my_mona_dfa->get_nb_states()));
   }
+
+  if (print_dfa) {
+    logger.info("Computed automaton:");
+    dfaPrint(my_mona_dfa->dfa_, my_mona_dfa->get_nb_variables(),
+             reinterpret_cast<char **>(my_mona_dfa->names.data()),
+             my_mona_dfa->indices.data());
+  }
+
   if (!dot_option->empty()) {
     logger.info("Printing the automaton...");
     // workaround to use MONA printer if possible
