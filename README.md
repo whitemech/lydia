@@ -41,7 +41,7 @@ Options:
 
 For example, this command translates the LDLf formula in the file `examples/liveness.ldlf` to a DFA:
 ```
-lydia -s --ldlf examples/liveness.ldlf -g liveness
+lydia --ldlf examples/liveness.ldlf -g liveness
 ```
 
 The output is in `liveness.svg`.
@@ -80,7 +80,7 @@ To run it, with the current working directory mounted, run:
 
 or, you can define an alias for `lydia` such that it always run inside a Docker container:
 ```
-
+alias lydia="docker run -v$(pwd):/home/default -it whitemech/lydia lydia "
 ```
 
 ## Build from source
