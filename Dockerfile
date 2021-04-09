@@ -45,22 +45,22 @@ ENV CXX=/usr/bin/g++
 ENV CCACHE_DIR=/build/docker_ccache
 ENV LD_LIBRARY_PATH=/usr/local/lib
 
-RUN sudo apt-get install -y flex bison libgraphviz-dev libboost-all-dev graphviz
+RUN apt-get install -y flex bison libgraphviz-dev libboost-all-dev graphviz
 
 WORKDIR /build
 
 RUN wget https://github.com/whitemech/cudd/releases/download/v3.0.0/cudd_3.0.0_linux-amd64.tar.gz &&\
     tar -xf cudd_3.0.0_linux-amd64.tar.gz &&\
     cd cudd_3.0.0_linux-amd64 &&\
-    sudo cp -P lib/* /usr/local/lib/ &&\
-    sudo cp -Pr include/cudd/* /usr/local/include &&\
+    cp -P lib/* /usr/local/lib/ &&\
+    cp -Pr include/cudd/* /usr/local/include &&\
     rm -rf cudd_3.0.0_linux-amd64*
 
 RUN wget https://github.com/whitemech/MONA/releases/download/v1.4-19.dev0/mona_1.4-19.dev0_linux-amd64.tar.gz &&\
     tar -xf mona_1.4-19.dev0_linux-amd64.tar.gz &&\
     cd mona_1.4-19.dev0_linux-amd64 &&\
-    sudo cp -P lib/* /usr/local/lib/ &&\
-    sudo cp -Pr include/* /usr/local/include &&\
+    cp -P lib/* /usr/local/lib/ &&\
+    cp -Pr include/* /usr/local/include &&\
     rm -rf mona_1.4-19.dev0_linux-amd64*
 
 RUN git clone https://github.com/whitemech/Syft.git &&\
@@ -69,14 +69,13 @@ RUN git clone https://github.com/whitemech/Syft.git &&\
     mkdir build && cd build &&\
     cmake -DCMAKE_BUILD_TYPE=Release .. &&\
     make -j &&\
-    sudo make install &&\
+    make install &&\
     cd .. &&\
     rm -rf Syft
 
 USER default
 
-#RUN git clone --recursive https://github.com/whitemech/lydia.git /home/default/lydia
-COPY --chown=default:default . /build/lydia
+RUN git clone --recursive https://github.com/whitemech/lydia.git /home/default/lydia
 
 WORKDIR /build/lydia
 
