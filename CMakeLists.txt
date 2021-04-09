@@ -42,13 +42,15 @@ else()
     message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
 endif()
 
-
-
-message("-- Using build type ${CMAKE_BUILD_TYPE}")
+#supports arbitrary characters in test names.
+cmake_policy(SET CMP0110 NEW)
 
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+message("-- Using build type ${CMAKE_BUILD_TYPE}")
+
 
 # TODO introduce '-Werror', eventually
 #set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
