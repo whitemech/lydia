@@ -49,9 +49,9 @@ if(SYFT_ROOT)
 endif()
 
 find_path(SYFT_INCLUDE_DIRS NAMES synthesis/DFA.h HINTS ${SYFT_INCLUDE_PATH})
-find_library(SYFT_SYNTHESIS_LIBRARY NAMES ltlf_translation)
+find_library(SYFT_TRANSLATION_LIBRARY NAMES ltlf_translation)
 find_library(SYFT_SYNTHESIS_LIBRARY NAMES synthesis)
-set(SYFT_LIBRARIES  ${SYFT_SYNTHESIS_LIBRARY}  ${SYFT_SYNTHESIS_LIBRARY})
+set(SYFT_LIBRARIES  ${SYFT_TRANSLATION_LIBRARY}  ${SYFT_SYNTHESIS_LIBRARY})
 
 include(FindPackageHandleStandardArgs)
 
