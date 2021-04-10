@@ -420,8 +420,9 @@ void dfaPrint(DFA *a, int no_free_vars, std::vector<std::string> free_variables,
   for (i = 0; i < no_free_vars; i++)
     o << free_variables[i] << " ";
 
-  o << "\nInitial state: " << a->s << "\n"
-                                      "Accepting states: ";
+  o << "\nInitial state: " << a->s
+    << "\n"
+       "Accepting states: ";
 
   for (i = 0; i < a->ns; i++)
     if (a->f[i] == 1)
@@ -450,9 +451,8 @@ void dfaPrint(DFA *a, int no_free_vars, std::vector<std::string> free_variables,
     o << "\n";
   }
 
-  o << "\nAutomaton has "
-    << a->ns << " state(s) and "
-    << bdd_size(a->bddm) << " BDD-node(s)\n";
+  o << "\nAutomaton has " << a->ns << " state(s) and " << bdd_size(a->bddm)
+    << " BDD-node(s)\n";
 
   o << "Transitions:\n";
 
@@ -463,13 +463,15 @@ void dfaPrint(DFA *a, int no_free_vars, std::vector<std::string> free_variables,
       o << "State " << i << ": ";
 
       for (j = 0; j < no_free_vars; j++) {
-        for (tp = pp->trace; tp && (tp->index != offsets[j]); tp = tp->next);
+        for (tp = pp->trace; tp && (tp->index != offsets[j]); tp = tp->next)
+          ;
 
         if (tp) {
-          if (tp->value) o << "1";
-          else o << "0";
-        }
-        else
+          if (tp->value)
+            o << "1";
+          else
+            o << "0";
+        } else
           o << "X";
       }
 

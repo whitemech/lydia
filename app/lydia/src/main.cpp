@@ -124,8 +124,7 @@ int main(int argc, char **argv) {
     std::filesystem::path formula_path(filename);
     logger.info("parsing {}", formula_path);
     driver->parse(formula_path.string().c_str());
-  }
-  else {
+  } else {
     std::string formula = ldlf_opt->empty() ? ltlf : ldlf;
     std::stringstream formula_stream(formula);
     logger.info("parsing {}", formula);
@@ -166,8 +165,7 @@ int main(int argc, char **argv) {
     logger.info("Computed automaton:");
     whitemech::lydia::dfaPrint(my_mona_dfa->get_dfa(),
                                my_mona_dfa->get_nb_variables(),
-                               my_mona_dfa->names,
-                               my_mona_dfa->indices.data());
+                               my_mona_dfa->names, my_mona_dfa->indices.data());
   }
 
   if (!dot_option->empty()) {
