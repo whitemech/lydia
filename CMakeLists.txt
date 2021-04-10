@@ -21,7 +21,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project (Lydia
          LANGUAGES CXX
-         #HOMEPAGE_URL https://github.com/whitemech/lydia.git
+         HOMEPAGE_URL https://github.com/whitemech/lydia.git
          DESCRIPTION "Lydia is a tool for LDLf translation to DFA and for LDLf synthesis.")
 set(PROJECT_VERSION "0.1.0-rc.1")
 set(${PROJECT_NAME}_VERSION ${PROJECT_VERSION})
@@ -41,9 +41,6 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 else()
     message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
 endif()
-
-#supports arbitrary characters in test names.
-cmake_policy(SET CMP0110 NEW)
 
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
