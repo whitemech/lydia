@@ -73,21 +73,22 @@ RUN git clone https://github.com/whitemech/Syft.git &&\
     cd .. &&\
     rm -rf Syft
 
-USER default
-
-RUN git clone --recursive https://github.com/whitemech/lydia.git /home/default/lydia
+RUN git clone --recursive https://github.com/whitemech/lydia.git /build/lydia
 
 WORKDIR /build/lydia
 
-RUN rm -rf build &&\
+RUN git checkout develop &&\
+    rm -rf build &&\
     mkdir build &&\
     cd build &&\
     cmake -DCMAKE_BUILD_TYPE=Release .. &&\
-    make lydia-bin -j4 &&\
+    cmake --build . --target lydia-bin -j4 &&\
     sudo make install &&\
     cd .. &&\
-    rm -rf lydia
+    rm -rf /build/lydia
 
 WORKDIR /home/default
+
+USER default
 
 CMD ["/usr/local/bin/lydia"]
