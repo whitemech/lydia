@@ -56,20 +56,21 @@ int main(int argc, char **argv) {
   app.add_flag("-n,--no-empty", no_empty, "Enforce non-empty semantics.");
 
   // define --ltlf and --ldlf
-  auto formula_group = app.add_option_group("formula");
-  std::string ldlf;
-  std::string ltlf;
-  formula_group->require_option();
-  CLI::Option *ldlf_opt =
-      formula_group->add_option("--ldlf", ldlf, "LDLf formula.");
-  CLI::Option *ltlf_opt =
-      formula_group->add_option("--ltlf", ltlf, "LTLf formula.");
-  // --ldlf and --ltlf are mutually exclusive.
-  ldlf_opt->excludes(ltlf_opt);
-  ltlf_opt->excludes(ldlf_opt);
+  bool ldlf = false;
+  app.add_flag("--ldlf", ldlf, "LDLf formula.");
+  bool ltlf = false;
+  app.add_flag("--ltlf", ltlf, "LTLf formula.");
 
-  bool file_flag = false;
-  app.add_flag("-f,--file", file_flag, "File flag.");
+  auto input_group = app.add_option_group("input");
+  std::string filename;
+  CLI::Option *file_opt =
+      input_group->add_option("-f,--file", filename, "File option.")
+          ->check(CLI::ExistingFile);
+  std::string formula;
+  CLI::Option *inline_opt =
+      input_group->add_option("-i,--inline", formula, "Inline option.");
+  file_opt->excludes(inline_opt);
+  inline_opt->excludes(file_opt);
 
   std::string part_file;
   CLI::Option *part_file_opt = app.add_option("--part", part_file, "Part file.")
@@ -114,18 +115,16 @@ int main(int argc, char **argv) {
   auto translator = whitemech::lydia::Translator(dfa_strategy);
 
   std::shared_ptr<whitemech::lydia::AbstractDriver> driver;
-  if (!ldlf_opt->empty())
+  if (ldlf)
     driver = std::make_shared<whitemech::lydia::parsers::ldlf::Driver>();
-  else {
+  else if (ltlf) {
     driver = std::make_shared<whitemech::lydia::parsers::ltlf::LTLfDriver>();
   }
-  if (file_flag) {
-    std::string filename = ldlf_opt->empty() ? ltlf : ldlf;
+  if (!file_opt->empty()) {
     std::filesystem::path formula_path(filename);
     logger.info("parsing {}", formula_path);
     driver->parse(formula_path.string().c_str());
   } else {
-    std::string formula = ldlf_opt->empty() ? ltlf : ldlf;
     std::stringstream formula_stream(formula);
     logger.info("parsing {}", formula);
     driver->parse(formula_stream);
