@@ -65,4 +65,7 @@ void print_mona_dfa(DFA *a, const std::string &name, int num = 1);
 void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
                             std::ostream &o = std::cout);
 
+void dfaPrint(DFA *a, int no_free_vars, std::vector<std::string> free_variables,
+              unsigned *offsets, std::ostream &o = std::cout);
+
 } // namespace whitemech::lydia
