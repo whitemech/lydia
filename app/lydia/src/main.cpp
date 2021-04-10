@@ -43,6 +43,8 @@ int main(int argc, char **argv) {
   whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::info);
 
   CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
+  bool quiet = false;
+  app.add_flag("--quiet", quiet, "Set quiet mode.");
   bool verbose = false;
   app.add_flag("--verbose", verbose, "Set verbose mode.");
   bool version = false;
@@ -55,18 +57,19 @@ int main(int argc, char **argv) {
 
   // define --ltlf and --ldlf
   auto formula_group = app.add_option_group("formula");
-  std::string ldlf_file;
-  std::string ltlf_file;
+  std::string ldlf;
+  std::string ltlf;
   formula_group->require_option();
-  CLI::Option *ldlf_file_opt =
-      formula_group->add_option("--ldlf", ldlf_file, "File to an LDLf formula.")
-          ->check(CLI::ExistingFile);
-  CLI::Option *ltlf_file_opt =
-      formula_group->add_option("--ltlf", ltlf_file, "File to an LTLf formula.")
-          ->check(CLI::ExistingFile);
+  CLI::Option *ldlf_opt =
+      formula_group->add_option("--ldlf", ldlf, "LDLf formula.");
+  CLI::Option *ltlf_opt =
+      formula_group->add_option("--ltlf", ltlf, "LTLf formula.");
   // --ldlf and --ltlf are mutually exclusive.
-  ldlf_file_opt->excludes(ltlf_file_opt);
-  ltlf_file_opt->excludes(ldlf_file_opt);
+  ldlf_opt->excludes(ltlf_opt);
+  ltlf_opt->excludes(ldlf_opt);
+
+  bool file_flag = false;
+  app.add_flag("-f,--file", file_flag, "File flag.");
 
   std::string part_file;
   CLI::Option *part_file_opt = app.add_option("--part", part_file, "Part file.")
@@ -93,29 +96,41 @@ int main(int argc, char **argv) {
 
   CLI11_PARSE(app, argc, argv)
 
-  if (version) {
-    std::cout << LYDIA_VERSION << std::endl;
-    return 0;
+  if (quiet) {
+    whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::error);
   }
 
   if (verbose) {
     whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::debug);
   }
 
+  if (version) {
+    std::cout << LYDIA_VERSION << std::endl;
+    return 0;
+  }
+
   // TODO make it configurable
   auto dfa_strategy = whitemech::lydia::CompositionalStrategy();
   auto translator = whitemech::lydia::Translator(dfa_strategy);
 
-  std::string filename = ldlf_file_opt->empty() ? ltlf_file : ldlf_file;
   std::shared_ptr<whitemech::lydia::AbstractDriver> driver;
-  if (!ldlf_file_opt->empty())
+  if (!ldlf_opt->empty())
     driver = std::make_shared<whitemech::lydia::parsers::ldlf::Driver>();
   else {
     driver = std::make_shared<whitemech::lydia::parsers::ltlf::LTLfDriver>();
   }
-  std::filesystem::path formula_path(filename);
-  logger.info("parsing {}", formula_path);
-  driver->parse(formula_path.string().c_str());
+  if (file_flag) {
+    std::string filename = ldlf_opt->empty() ? ltlf : ldlf;
+    std::filesystem::path formula_path(filename);
+    logger.info("parsing {}", formula_path);
+    driver->parse(formula_path.string().c_str());
+  }
+  else {
+    std::string formula = ldlf_opt->empty() ? ltlf : ldlf;
+    std::stringstream formula_stream(formula);
+    logger.info("parsing {}", formula);
+    driver->parse(formula_stream);
+  }
 
   auto parsed_formula = driver->get_result();
   if (no_empty) {
@@ -149,9 +164,10 @@ int main(int argc, char **argv) {
 
   if (print_dfa) {
     logger.info("Computed automaton:");
-    dfaPrint(my_mona_dfa->dfa_, my_mona_dfa->get_nb_variables(),
-             reinterpret_cast<char **>(my_mona_dfa->names.data()),
-             my_mona_dfa->indices.data());
+    whitemech::lydia::dfaPrint(my_mona_dfa->get_dfa(),
+                               my_mona_dfa->get_nb_variables(),
+                               my_mona_dfa->names,
+                               my_mona_dfa->indices.data());
   }
 
   if (!dot_option->empty()) {
