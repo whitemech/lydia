@@ -38,48 +38,50 @@ std::string dump_formula(const std::filesystem::path &filename) {
   return result;
 }
 
+void add_options(CLI::App* sub, std::string &formula, std::string &filename,
+                 std::string &part_file, bool &starting_player_env) {
+  CLI::Option *formula_opt = sub->add_option("-i,--inline", formula, "Formula.");
+  CLI::Option *file_opt = sub->add_option("-f,--file", filename, "File.")
+      ->check(CLI::ExistingFile);
+  formula_opt->excludes(file_opt);
+  file_opt->excludes(formula_opt);
+  CLI::Option *part_opt = sub->add_option("--part", part_file, "Part file.")
+      ->check(CLI::ExistingFile);
+  sub->add_flag("--env", starting_player_env, "Check env realizability.")
+      ->needs(part_opt);
+}
+
 int main(int argc, char **argv) {
   whitemech::lydia::Logger logger("main");
   whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::info);
 
-  CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
+  CLI::App app{"A tool for LTLf/LDLf automata translation and LTLf/LDLf synthesis."};
+
   bool quiet = false;
-  app.add_flag("--quiet", quiet, "Set quiet mode.");
+  app.add_flag("-q,--quiet", quiet, "Set quiet mode.");
   bool verbose = false;
-  app.add_flag("--verbose", verbose, "Set verbose mode.");
+  app.add_flag("-v,--verbose", verbose, "Set verbose mode.");
   bool version = false;
-  app.add_flag("--version", version, "Print the version and exit.");
+  app.add_flag("-V,--version", version, "Print the version and exit.");
   bool print_dfa = false;
   app.add_flag("-p,--print", print_dfa, "Print the DFA.");
-
   bool no_empty = false;
   app.add_flag("-n,--no-empty", no_empty, "Enforce non-empty semantics.");
 
-  // define --ltlf and --ldlf
-  bool ldlf = false;
-  app.add_flag("--ldlf", ldlf, "LDLf formula.");
-  bool ltlf = false;
-  app.add_flag("--ltlf", ltlf, "LTLf formula.");
+  // define ltlf and ldlf subcommands
+  app.require_subcommand( 0, 1);
+  CLI::App* ldlf = app.add_subcommand("ldlf", "LDLf formula.");
+  CLI::App* ltlf = app.add_subcommand("ltlf", "LTLf formula.");
+  ldlf->excludes(ltlf);
+  ltlf->excludes(ldlf);
 
-  auto input_group = app.add_option_group("input");
+  // options & flags
   std::string filename;
-  CLI::Option *file_opt =
-      input_group->add_option("-f,--file", filename, "File option.")
-          ->check(CLI::ExistingFile);
   std::string formula;
-  CLI::Option *inline_opt =
-      input_group->add_option("-i,--inline", formula, "Inline option.");
-  file_opt->excludes(inline_opt);
-  inline_opt->excludes(file_opt);
-
   std::string part_file;
-  CLI::Option *part_file_opt = app.add_option("--part", part_file, "Part file.")
-                                   ->check(CLI::ExistingFile);
-
   bool starting_player_env = false;
-  CLI::Option *starting_player_env_opt =
-      app.add_flag("--env", starting_player_env, "Check env realizability.");
-  starting_player_env_opt->needs(part_file_opt);
+  add_options(ldlf, formula, filename, part_file, starting_player_env);
+  add_options(ltlf, formula, filename, part_file, starting_player_env);
 
   std::string graphviz_path;
   CLI::Option *dot_option =
@@ -115,18 +117,23 @@ int main(int argc, char **argv) {
   auto translator = whitemech::lydia::Translator(dfa_strategy);
 
   std::shared_ptr<whitemech::lydia::AbstractDriver> driver;
-  if (ldlf)
+  if (*ldlf) {
+    assert(!ldlf->get_option("-i")->empty() || !ldlf->get_option("-f")->empty());
     driver = std::make_shared<whitemech::lydia::parsers::ldlf::Driver>();
-  else if (ltlf) {
+  }
+  else if (*ltlf) {
+    assert(!ltlf->get_option("-i")->empty() || !ltlf->get_option("-f")->empty());
     driver = std::make_shared<whitemech::lydia::parsers::ltlf::LTLfDriver>();
   }
-  if (!file_opt->empty()) {
+
+  if (!ldlf->get_option("-f")->empty() ||
+      !ltlf->get_option("-f")->empty()) {
     std::filesystem::path formula_path(filename);
-    logger.info("parsing {}", formula_path);
+    logger.info("Parsing {}", formula_path);
     driver->parse(formula_path.string().c_str());
   } else {
     std::stringstream formula_stream(formula);
-    logger.info("parsing {}", formula);
+    logger.info("Parsing {}", formula);
     driver->parse(formula_stream);
   }
 
@@ -141,14 +148,14 @@ int main(int argc, char **argv) {
 
   auto t_start = std::chrono::high_resolution_clock::now();
 
-  logger.info("transforming to DFA...");
+  logger.info("Transforming to DFA...");
   auto t_dfa_start = std::chrono::high_resolution_clock::now();
   auto my_dfa = translator.to_dfa(*parsed_formula);
   // TODO make 'dfa' abstraction stronger
   auto my_mona_dfa =
       std::dynamic_pointer_cast<whitemech::lydia::mona_dfa>(my_dfa);
   auto t_dfa_end = std::chrono::high_resolution_clock::now();
-  logger.info("transforming to DFA...done!");
+  logger.info("Transforming to DFA...done!");
   double elapsed_time_dfa =
       std::chrono::duration<double, std::milli>(t_dfa_end - t_dfa_start)
           .count();
@@ -179,7 +186,7 @@ int main(int argc, char **argv) {
   }
 
   // synthesis part
-  if (part_file_opt->empty()) {
+  if (ldlf->get_option(part_file)->empty() || ltlf->get_option(part_file)->empty()) {
     // stop here.
     double elapsed_time =
         std::chrono::duration<double, std::milli>(t_dfa_end - t_start).count();
