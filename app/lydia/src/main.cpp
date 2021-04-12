@@ -40,12 +40,17 @@ std::string dump_formula(const std::filesystem::path &filename) {
 
 void add_options(CLI::App *sub, std::string &formula, std::string &filename,
                  std::string &part_file, bool &starting_player_env) {
+  auto format = sub->add_option_group("input_format",
+                                      "inline or file formula input format.");
   CLI::Option *formula_opt =
       sub->add_option("-i,--inline", formula, "Formula.");
   CLI::Option *file_opt =
       sub->add_option("-f,--file", filename, "File.")->check(CLI::ExistingFile);
   formula_opt->excludes(file_opt);
   file_opt->excludes(formula_opt);
+  format->add_option(formula_opt);
+  format->add_option(file_opt);
+  format->require_option(1, 1);
   CLI::Option *part_opt = sub->add_option("--part", part_file, "Part file.")
                               ->check(CLI::ExistingFile);
   sub->add_flag("--env", starting_player_env, "Check env realizability.")
@@ -120,12 +125,8 @@ int main(int argc, char **argv) {
 
   std::shared_ptr<whitemech::lydia::AbstractDriver> driver;
   if (*ldlf) {
-    assert(!ldlf->get_option("-i")->empty() ||
-           !ldlf->get_option("-f")->empty());
     driver = std::make_shared<whitemech::lydia::parsers::ldlf::Driver>();
   } else if (*ltlf) {
-    assert(!ltlf->get_option("-i")->empty() ||
-           !ltlf->get_option("-f")->empty());
     driver = std::make_shared<whitemech::lydia::parsers::ltlf::LTLfDriver>();
   }
 

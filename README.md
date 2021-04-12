@@ -42,12 +42,16 @@ Usage: lydia ldlf [OPTIONS]
 
 Options:
   -h,--help                   Print this help message and exit
-  -i,--inline TEXT Excludes: --file
-                              Formula.
-  -f,--file TEXT:FILE Excludes: --inline
-                              File.
   --part TEXT:FILE            Part file.
   --env Needs: --part         Check env realizability.
+[Option Group: input_format]
+  inline or file formula input format. 
+  [Exactly 1 of the following options is required]
+  Options:
+    -i,--inline TEXT Excludes: --file
+                                Formula.
+    -f,--file TEXT:FILE Excludes: --inline
+                                File.
 
 ```
 
