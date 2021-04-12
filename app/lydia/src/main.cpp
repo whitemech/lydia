@@ -26,36 +26,7 @@
 #include <lydia/utils/print.hpp>
 #include <synthesis/syn.h>
 
-std::string dump_formula(const std::filesystem::path &filename) {
-  std::ifstream f(filename.string());
-  std::string result;
-  if (f) {
-    std::ostringstream ss;
-    ss << f.rdbuf(); // reading data
-    result = ss.str();
-  }
-  f.close();
-  return result;
-}
-
-void add_options(CLI::App *sub, std::string &formula, std::string &filename,
-                 std::string &part_file, bool &starting_player_env) {
-  auto format = sub->add_option_group("input_format",
-                                      "inline or file formula input format.");
-  CLI::Option *formula_opt =
-      sub->add_option("-i,--inline", formula, "Formula.");
-  CLI::Option *file_opt =
-      sub->add_option("-f,--file", filename, "File.")->check(CLI::ExistingFile);
-  formula_opt->excludes(file_opt);
-  file_opt->excludes(formula_opt);
-  format->add_option(formula_opt);
-  format->add_option(file_opt);
-  format->require_option(1, 1);
-  CLI::Option *part_opt = sub->add_option("--part", part_file, "Part file.")
-                              ->check(CLI::ExistingFile);
-  sub->add_flag("--env", starting_player_env, "Check env realizability.")
-      ->needs(part_opt);
-}
+enum class Logic : int { ldlf, ltlf };
 
 int main(int argc, char **argv) {
   whitemech::lydia::Logger logger("main");
@@ -64,31 +35,18 @@ int main(int argc, char **argv) {
   CLI::App app{
       "A tool for LTLf/LDLf automata translation and LTLf/LDLf synthesis."};
 
+  bool no_empty = false;
+  app.add_flag("-n,--no-empty", no_empty, "Enforce non-empty semantics.");
   bool quiet = false;
   app.add_flag("-q,--quiet", quiet, "Set quiet mode.");
   bool verbose = false;
   app.add_flag("-v,--verbose", verbose, "Set verbose mode.");
   bool version = false;
   app.add_flag("-V,--version", version, "Print the version and exit.");
+  bool summary = false;
+  app.add_flag("-s,--summary", summary, "Print the summary.");
   bool print_dfa = false;
   app.add_flag("-p,--print", print_dfa, "Print the DFA.");
-  bool no_empty = false;
-  app.add_flag("-n,--no-empty", no_empty, "Enforce non-empty semantics.");
-
-  // define ltlf and ldlf subcommands
-  app.require_subcommand(0, 1);
-  CLI::App *ldlf = app.add_subcommand("ldlf", "LDLf formula.");
-  CLI::App *ltlf = app.add_subcommand("ltlf", "LTLf formula.");
-  ldlf->excludes(ltlf);
-  ltlf->excludes(ldlf);
-
-  // options & flags
-  std::string filename;
-  std::string formula;
-  std::string part_file;
-  bool starting_player_env = false;
-  add_options(ldlf, formula, filename, part_file, starting_player_env);
-  add_options(ltlf, formula, filename, part_file, starting_player_env);
 
   std::string graphviz_path;
   CLI::Option *dot_option =
@@ -96,13 +54,42 @@ int main(int argc, char **argv) {
                      "Output the automaton in Graphviz format.")
           ->check(CLI::NonexistentPath);
 
-  bool summary = false;
-  app.add_flag("-s", summary, "Print the summary.");
-
   // TODO add possibility to print in HOA format in future work
   //  bool hoa_flag = false;
   //  app.add_option("-a, --hoa", hoa_flag, "Output the
   //  automaton in HOA format.");
+
+  // define logic options
+  Logic logic;
+  std::vector<std::pair<std::string, Logic>> map{{"ldlf", Logic::ldlf},
+                                                 {"ltlf", Logic::ltlf}};
+  CLI::Option *logic_opt =
+      app.add_option("-l,--logic", logic, "Logic.")
+          ->required()
+          ->transform(CLI::CheckedTransformer(map, CLI::ignore_case));
+
+  // options & flags
+  std::string filename;
+  std::string formula;
+
+  auto format = app.add_option_group("Input format");
+  CLI::Option *formula_opt = app.add_option("-i,--inline", formula, "Formula.");
+  CLI::Option *file_opt =
+      app.add_option("-f,--file", filename, "File to formula.")
+          ->check(CLI::ExistingFile);
+  formula_opt->excludes(file_opt);
+  file_opt->excludes(formula_opt);
+  format->add_option(formula_opt);
+  format->add_option(file_opt);
+  format->require_option(1, 1);
+  format->needs(logic_opt);
+
+  std::string part_file;
+  bool starting_player_env = false;
+  CLI::Option *part_opt = app.add_option("--part", part_file, "Part file.")
+                              ->check(CLI::ExistingFile);
+  app.add_flag("--env", starting_player_env, "Check env realizability.")
+      ->needs(part_opt);
 
   CLI11_PARSE(app, argc, argv)
 
@@ -124,13 +111,13 @@ int main(int argc, char **argv) {
   auto translator = whitemech::lydia::Translator(dfa_strategy);
 
   std::shared_ptr<whitemech::lydia::AbstractDriver> driver;
-  if (*ldlf) {
+  if (logic == Logic::ldlf) {
     driver = std::make_shared<whitemech::lydia::parsers::ldlf::Driver>();
-  } else if (*ltlf) {
+  } else if (logic == Logic::ltlf) {
     driver = std::make_shared<whitemech::lydia::parsers::ltlf::LTLfDriver>();
   }
 
-  if (!ldlf->get_option("-f")->empty() || !ltlf->get_option("-f")->empty()) {
+  if (!file_opt->empty()) {
     std::filesystem::path formula_path(filename);
     logger.info("Parsing {}", formula_path);
     driver->parse(formula_path.string().c_str());
@@ -189,8 +176,7 @@ int main(int argc, char **argv) {
   }
 
   // synthesis part
-  if (ldlf->get_option(part_file)->empty() ||
-      ltlf->get_option(part_file)->empty()) {
+  if (part_opt->empty()) {
     // stop here.
     double elapsed_time =
         std::chrono::duration<double, std::milli>(t_dfa_end - t_start).count();

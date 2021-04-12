@@ -16,48 +16,35 @@ This is the output of `lydia --help`:
 
 ```
 A tool for LTLf/LDLf automata translation and LTLf/LDLf synthesis.
-Usage: lydia [OPTIONS] [SUBCOMMAND]
+Usage: lydia [OPTIONS]
 
 Options:
   -h,--help                   Print this help message and exit
+  -n,--no-empty               Enforce non-empty semantics.
   -q,--quiet                  Set quiet mode.
   -v,--verbose                Set verbose mode.
   -V,--version                Print the version and exit.
+  -s,--summary                Print the summary.
   -p,--print                  Print the DFA.
-  -n,--no-empty               Enforce non-empty semantics.
   -g,--graphviz TEXT:PATH(non-existing)
                               Output the automaton in Graphviz format.
-  -s                          Print the summary.
-
-Subcommands:
-  ldlf                        LDLf formula.
-  ltlf                        LTLf formula.
-```
-
-Subcommands has same options/flags and can be used as follows:
-
-```
-LDLf formula.
-Usage: lydia ldlf [OPTIONS]
-
-Options:
-  -h,--help                   Print this help message and exit
+  -l,--logic ENUM:value in {ldlf->0,ltlf->1} OR {0,1} REQUIRED
+                              Logic.
   --part TEXT:FILE            Part file.
   --env Needs: --part         Check env realizability.
-[Option Group: input_format]
-  inline or file formula input format. 
+[Option Group: Input format]
+   
   [Exactly 1 of the following options is required]
   Options:
     -i,--inline TEXT Excludes: --file
                                 Formula.
     -f,--file TEXT:FILE Excludes: --inline
-                                File.
-
+                                File to formula.
 ```
 
 For example, this command translates the LDLf formula in the file `examples/liveness.ldlf` to a DFA:
 ```
-lydia ldlf -f examples/liveness.ldlf -g liveness
+lydia -l ldlf -f examples/liveness.ldlf -g liveness
 ```
 
 The output is in `liveness.svg`.
@@ -65,7 +52,7 @@ The output is in `liveness.svg`.
 To do synthesis of an LTLf formula, you have to provide both the path to the formula
 e.g. `examples/counter_1.ltlf` and a file to the partition file, e.g. `examples/counter_1.part`:
 ```
-lydia ltlf -f examples/counter_1.ltlf --part examples/counter_1.part
+lydia -l ltlf -f examples/counter_1.ltlf --part examples/counter_1.part
 ```
 
 > :warning: We apologize for lack of thorough documentation, e.g. on the grammar accepted by 
