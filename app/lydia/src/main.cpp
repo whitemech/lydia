@@ -38,15 +38,16 @@ std::string dump_formula(const std::filesystem::path &filename) {
   return result;
 }
 
-void add_options(CLI::App* sub, std::string &formula, std::string &filename,
+void add_options(CLI::App *sub, std::string &formula, std::string &filename,
                  std::string &part_file, bool &starting_player_env) {
-  CLI::Option *formula_opt = sub->add_option("-i,--inline", formula, "Formula.");
-  CLI::Option *file_opt = sub->add_option("-f,--file", filename, "File.")
-      ->check(CLI::ExistingFile);
+  CLI::Option *formula_opt =
+      sub->add_option("-i,--inline", formula, "Formula.");
+  CLI::Option *file_opt =
+      sub->add_option("-f,--file", filename, "File.")->check(CLI::ExistingFile);
   formula_opt->excludes(file_opt);
   file_opt->excludes(formula_opt);
   CLI::Option *part_opt = sub->add_option("--part", part_file, "Part file.")
-      ->check(CLI::ExistingFile);
+                              ->check(CLI::ExistingFile);
   sub->add_flag("--env", starting_player_env, "Check env realizability.")
       ->needs(part_opt);
 }
@@ -55,7 +56,8 @@ int main(int argc, char **argv) {
   whitemech::lydia::Logger logger("main");
   whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::info);
 
-  CLI::App app{"A tool for LTLf/LDLf automata translation and LTLf/LDLf synthesis."};
+  CLI::App app{
+      "A tool for LTLf/LDLf automata translation and LTLf/LDLf synthesis."};
 
   bool quiet = false;
   app.add_flag("-q,--quiet", quiet, "Set quiet mode.");
@@ -69,9 +71,9 @@ int main(int argc, char **argv) {
   app.add_flag("-n,--no-empty", no_empty, "Enforce non-empty semantics.");
 
   // define ltlf and ldlf subcommands
-  app.require_subcommand( 0, 1);
-  CLI::App* ldlf = app.add_subcommand("ldlf", "LDLf formula.");
-  CLI::App* ltlf = app.add_subcommand("ltlf", "LTLf formula.");
+  app.require_subcommand(0, 1);
+  CLI::App *ldlf = app.add_subcommand("ldlf", "LDLf formula.");
+  CLI::App *ltlf = app.add_subcommand("ltlf", "LTLf formula.");
   ldlf->excludes(ltlf);
   ltlf->excludes(ldlf);
 
@@ -118,16 +120,16 @@ int main(int argc, char **argv) {
 
   std::shared_ptr<whitemech::lydia::AbstractDriver> driver;
   if (*ldlf) {
-    assert(!ldlf->get_option("-i")->empty() || !ldlf->get_option("-f")->empty());
+    assert(!ldlf->get_option("-i")->empty() ||
+           !ldlf->get_option("-f")->empty());
     driver = std::make_shared<whitemech::lydia::parsers::ldlf::Driver>();
-  }
-  else if (*ltlf) {
-    assert(!ltlf->get_option("-i")->empty() || !ltlf->get_option("-f")->empty());
+  } else if (*ltlf) {
+    assert(!ltlf->get_option("-i")->empty() ||
+           !ltlf->get_option("-f")->empty());
     driver = std::make_shared<whitemech::lydia::parsers::ltlf::LTLfDriver>();
   }
 
-  if (!ldlf->get_option("-f")->empty() ||
-      !ltlf->get_option("-f")->empty()) {
+  if (!ldlf->get_option("-f")->empty() || !ltlf->get_option("-f")->empty()) {
     std::filesystem::path formula_path(filename);
     logger.info("Parsing {}", formula_path);
     driver->parse(formula_path.string().c_str());
@@ -186,7 +188,8 @@ int main(int argc, char **argv) {
   }
 
   // synthesis part
-  if (ldlf->get_option(part_file)->empty() || ltlf->get_option(part_file)->empty()) {
+  if (ldlf->get_option(part_file)->empty() ||
+      ltlf->get_option(part_file)->empty()) {
     // stop here.
     double elapsed_time =
         std::chrono::duration<double, std::milli>(t_dfa_end - t_start).count();
