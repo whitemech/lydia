@@ -26,60 +26,27 @@
 #include <lydia/utils/print.hpp>
 #include <synthesis/syn.h>
 
-std::string dump_formula(const std::filesystem::path &filename) {
-  std::ifstream f(filename.string());
-  std::string result;
-  if (f) {
-    std::ostringstream ss;
-    ss << f.rdbuf(); // reading data
-    result = ss.str();
-  }
-  f.close();
-  return result;
-}
+enum class Logic : int { ldlf, ltlf };
 
 int main(int argc, char **argv) {
   whitemech::lydia::Logger logger("main");
   whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::info);
 
-  CLI::App app{"A tool for LDLf automata translation and LDLf synthesis."};
-  bool quiet = false;
-  app.add_flag("--quiet", quiet, "Set quiet mode.");
-  bool verbose = false;
-  app.add_flag("--verbose", verbose, "Set verbose mode.");
-  bool version = false;
-  app.add_flag("--version", version, "Print the version and exit.");
-  bool print_dfa = false;
-  app.add_flag("-p,--print", print_dfa, "Print the DFA.");
+  CLI::App app{
+      "A tool for LTLf/LDLf automata translation and LTLf/LDLf synthesis."};
 
   bool no_empty = false;
   app.add_flag("-n,--no-empty", no_empty, "Enforce non-empty semantics.");
-
-  // define --ltlf and --ldlf
-  bool ldlf = false;
-  app.add_flag("--ldlf", ldlf, "LDLf formula.");
-  bool ltlf = false;
-  app.add_flag("--ltlf", ltlf, "LTLf formula.");
-
-  auto input_group = app.add_option_group("input");
-  std::string filename;
-  CLI::Option *file_opt =
-      input_group->add_option("-f,--file", filename, "File option.")
-          ->check(CLI::ExistingFile);
-  std::string formula;
-  CLI::Option *inline_opt =
-      input_group->add_option("-i,--inline", formula, "Inline option.");
-  file_opt->excludes(inline_opt);
-  inline_opt->excludes(file_opt);
-
-  std::string part_file;
-  CLI::Option *part_file_opt = app.add_option("--part", part_file, "Part file.")
-                                   ->check(CLI::ExistingFile);
-
-  bool starting_player_env = false;
-  CLI::Option *starting_player_env_opt =
-      app.add_flag("--env", starting_player_env, "Check env realizability.");
-  starting_player_env_opt->needs(part_file_opt);
+  bool quiet = false;
+  app.add_flag("-q,--quiet", quiet, "Set quiet mode.");
+  bool verbose = false;
+  app.add_flag("-v,--verbose", verbose, "Set verbose mode.");
+  bool version = false;
+  app.add_flag("-V,--version", version, "Print the version and exit.");
+  bool summary = false;
+  app.add_flag("-s,--summary", summary, "Print the summary.");
+  bool print_dfa = false;
+  app.add_flag("-p,--print", print_dfa, "Print the DFA.");
 
   std::string graphviz_path;
   CLI::Option *dot_option =
@@ -87,13 +54,42 @@ int main(int argc, char **argv) {
                      "Output the automaton in Graphviz format.")
           ->check(CLI::NonexistentPath);
 
-  bool summary = false;
-  app.add_flag("-s", summary, "Print the summary.");
-
   // TODO add possibility to print in HOA format in future work
   //  bool hoa_flag = false;
   //  app.add_option("-a, --hoa", hoa_flag, "Output the
   //  automaton in HOA format.");
+
+  // define logic options
+  Logic logic;
+  std::vector<std::pair<std::string, Logic>> map{{"ldlf", Logic::ldlf},
+                                                 {"ltlf", Logic::ltlf}};
+  CLI::Option *logic_opt =
+      app.add_option("-l,--logic", logic, "Logic.")
+          ->required()
+          ->transform(CLI::CheckedTransformer(map, CLI::ignore_case));
+
+  // options & flags
+  std::string filename;
+  std::string formula;
+
+  auto format = app.add_option_group("Input format");
+  CLI::Option *formula_opt = app.add_option("-i,--inline", formula, "Formula.");
+  CLI::Option *file_opt =
+      app.add_option("-f,--file", filename, "File to formula.")
+          ->check(CLI::ExistingFile);
+  formula_opt->excludes(file_opt);
+  file_opt->excludes(formula_opt);
+  format->add_option(formula_opt);
+  format->add_option(file_opt);
+  format->require_option(1, 1);
+  format->needs(logic_opt);
+
+  std::string part_file;
+  bool starting_player_env = false;
+  CLI::Option *part_opt = app.add_option("--part", part_file, "Part file.")
+                              ->check(CLI::ExistingFile);
+  app.add_flag("--env", starting_player_env, "Check env realizability.")
+      ->needs(part_opt);
 
   CLI11_PARSE(app, argc, argv)
 
@@ -115,18 +111,19 @@ int main(int argc, char **argv) {
   auto translator = whitemech::lydia::Translator(dfa_strategy);
 
   std::shared_ptr<whitemech::lydia::AbstractDriver> driver;
-  if (ldlf)
+  if (logic == Logic::ldlf) {
     driver = std::make_shared<whitemech::lydia::parsers::ldlf::Driver>();
-  else if (ltlf) {
+  } else if (logic == Logic::ltlf) {
     driver = std::make_shared<whitemech::lydia::parsers::ltlf::LTLfDriver>();
   }
+
   if (!file_opt->empty()) {
     std::filesystem::path formula_path(filename);
-    logger.info("parsing {}", formula_path);
+    logger.info("Parsing {}", formula_path);
     driver->parse(formula_path.string().c_str());
   } else {
     std::stringstream formula_stream(formula);
-    logger.info("parsing {}", formula);
+    logger.info("Parsing {}", formula);
     driver->parse(formula_stream);
   }
 
@@ -141,14 +138,14 @@ int main(int argc, char **argv) {
 
   auto t_start = std::chrono::high_resolution_clock::now();
 
-  logger.info("transforming to DFA...");
+  logger.info("Transforming to DFA...");
   auto t_dfa_start = std::chrono::high_resolution_clock::now();
   auto my_dfa = translator.to_dfa(*parsed_formula);
   // TODO make 'dfa' abstraction stronger
   auto my_mona_dfa =
       std::dynamic_pointer_cast<whitemech::lydia::mona_dfa>(my_dfa);
   auto t_dfa_end = std::chrono::high_resolution_clock::now();
-  logger.info("transforming to DFA...done!");
+  logger.info("Transforming to DFA...done!");
   double elapsed_time_dfa =
       std::chrono::duration<double, std::milli>(t_dfa_end - t_dfa_start)
           .count();
@@ -179,7 +176,7 @@ int main(int argc, char **argv) {
   }
 
   // synthesis part
-  if (part_file_opt->empty()) {
+  if (part_opt->empty()) {
     // stop here.
     double elapsed_time =
         std::chrono::duration<double, std::milli>(t_dfa_end - t_start).count();

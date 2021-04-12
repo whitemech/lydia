@@ -15,33 +15,36 @@ Linear Dynamic Logic on finite traces (LDLf)  to DFA, and for LTLf/LDLf synthesi
 This is the output of `lydia --help`:
 
 ```
-
-A tool for LDLf automata translation and LDLf synthesis.
+A tool for LTLf/LDLf automata translation and LTLf/LDLf synthesis.
 Usage: lydia [OPTIONS]
 
 Options:
   -h,--help                   Print this help message and exit
-  --verbose                   Set verbose mode.
-  --version                   Print the version and exit.
   -n,--no-empty               Enforce non-empty semantics.
-  --part TEXT:FILE            Part file.
-  --env Needs: --part         Check env realizability.
+  -q,--quiet                  Set quiet mode.
+  -v,--verbose                Set verbose mode.
+  -V,--version                Print the version and exit.
+  -s,--summary                Print the summary.
+  -p,--print                  Print the DFA.
   -g,--graphviz TEXT:PATH(non-existing)
                               Output the automaton in Graphviz format.
-  -s                          Print the summary.
-[Option Group: formula]
+  -l,--logic ENUM:value in {ldlf->0,ltlf->1} OR {0,1} REQUIRED
+                              Logic.
+  --part TEXT:FILE            Part file.
+  --env Needs: --part         Check env realizability.
+[Option Group: Input format]
    
-  [At least 1 of the following options are required]
+  [Exactly 1 of the following options is required]
   Options:
-    --ldlf TEXT:FILE Excludes: --ltlf
-                                File to an LDLf formula.
-    --ltlf TEXT:FILE Excludes: --ldlf
-                                File to an LTLf formula.
+    -i,--inline TEXT Excludes: --file
+                                Formula.
+    -f,--file TEXT:FILE Excludes: --inline
+                                File to formula.
 ```
 
 For example, this command translates the LDLf formula in the file `examples/liveness.ldlf` to a DFA:
 ```
-lydia --ldlf examples/liveness.ldlf -g liveness
+lydia -l ldlf -f examples/liveness.ldlf -g liveness
 ```
 
 The output is in `liveness.svg`.
@@ -49,7 +52,7 @@ The output is in `liveness.svg`.
 To do synthesis of an LTLf formula, you have to provide both the path to the formula
 e.g. `examples/counter_1.ltlf` and a file to the partition file, e.g. `examples/counter_1.part`:
 ```
-lydia --ltlf examples/counter_1.ltlf --part examples/counter_1.part
+lydia -l ltlf -f examples/counter_1.ltlf --part examples/counter_1.part
 ```
 
 > :warning: We apologize for lack of thorough documentation, e.g. on the grammar accepted by 
