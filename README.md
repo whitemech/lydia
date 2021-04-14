@@ -56,7 +56,9 @@ lydia -l ltlf -f examples/counter_1.ltlf --part examples/counter_1.part
 ```
 
 > :warning: We apologize for lack of thorough documentation, e.g. on the grammar accepted by 
->   the tool. We will address this issue as soon as possible.
+>   the tool. We will address this issue as soon as possible. Please
+>   feel free to contact one of the authors for specific help, or 
+>   [open an issue](https://github.com/whitemech/lydia/issues/new/choose).
 
 
 ## Use the Docker image
@@ -255,10 +257,14 @@ Hence, you have to make sure new versions of `flex` and `bison` executables are 
 system path as:
 ```
 export PATH="/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH"
-```
+``` 
 Finally, in order to get the Lydia parser working, you may have to set the 
 following environment variable up (e.g. in your `.bashrc`) as follows:
 
 ```
 export CPLUS_INCLUDE_PATH="/System/Volumes/Data/usr/local/Cellar/flex/2.6.4_1/include/:$CPLUS_INCLUDE_PATH"
 ```
+
+## License
+
+This software is released under the GNU Lesser General Public License version 3 or later.
