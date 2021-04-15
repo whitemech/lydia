@@ -268,3 +268,9 @@ export CPLUS_INCLUDE_PATH="/System/Volumes/Data/usr/local/Cellar/flex/2.6.4_1/in
 ## License
 
 This software is released under the GNU Lesser General Public License version 3 or later.
+
+## Acknowledgements
+
+This work has been funded by the [ERC Advanced Grant "WhiteMech"](whitemech.github.io/)
+and by the [TAILOR research network](https://tailor-network.eu/).
+
