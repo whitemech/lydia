@@ -40,32 +40,40 @@ RUN HOME=/home/default && \
     usermod -a -G sudo default && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
+RUN apt-get install -y flex bison libgraphviz-dev libboost-all-dev graphviz
+
 ENV CC=/usr/bin/gcc
 ENV CXX=/usr/bin/g++
 ENV CCACHE_DIR=/build/docker_ccache
 ENV LD_LIBRARY_PATH=/usr/local/lib
 
-RUN apt-get install -y flex bison libgraphviz-dev libboost-all-dev graphviz
+ENV CUDD_VERSION="3.0.0"
+ENV MONA_VERSION="1.4-19.dev0"
+ENV SYFT_TAG="v0.1.0"
+
 
 WORKDIR /build
 
-RUN wget https://github.com/whitemech/cudd/releases/download/v3.0.0/cudd_3.0.0_linux-amd64.tar.gz &&\
-    tar -xf cudd_3.0.0_linux-amd64.tar.gz &&\
-    cd cudd_3.0.0_linux-amd64 &&\
+# Install CUDD
+RUN wget https://github.com/whitemech/cudd/releases/download/v${CUDD_VERSION}/cudd_${CUDD_VERSION}_linux-amd64.tar.gz &&\
+    tar -xf cudd_${CUDD_VERSION}_linux-amd64.tar.gz &&\
+    cd cudd_${CUDD_VERSION}_linux-amd64 &&\
     cp -P lib/* /usr/local/lib/ &&\
-    cp -Pr include/cudd/* /usr/local/include &&\
-    rm -rf cudd_3.0.0_linux-amd64*
+    cp -Pr include/cudd/* /usr/local/include/ &&\
+    rm -rf cudd_${CUDD_VERSION}_linux-amd64*
 
-RUN wget https://github.com/whitemech/MONA/releases/download/v1.4-19.dev0/mona_1.4-19.dev0_linux-amd64.tar.gz &&\
-    tar -xf mona_1.4-19.dev0_linux-amd64.tar.gz &&\
-    cd mona_1.4-19.dev0_linux-amd64 &&\
+# Install MONA
+RUN wget https://github.com/whitemech/MONA/releases/download/v${MONA_VERSION}/mona_${MONA_VERSION}_linux-amd64.tar.gz &&\
+    tar -xf mona_${MONA_VERSION}_linux-amd64.tar.gz &&\
+    cd mona_${MONA_VERSION}_linux-amd64 &&\
     cp -P lib/* /usr/local/lib/ &&\
     cp -Pr include/* /usr/local/include &&\
-    rm -rf mona_1.4-19.dev0_linux-amd64*
+    rm -rf mona_${MONA_VERSION}_linux-amd64*
 
+# Build and install Syft
 RUN git clone https://github.com/whitemech/Syft.git &&\
     cd Syft &&\
-    git checkout syft+ &&\
+    git checkout ${SYFT_TAG} &&\
     mkdir build && cd build &&\
     cmake -DCMAKE_BUILD_TYPE=Release .. &&\
     make -j &&\
@@ -73,17 +81,20 @@ RUN git clone https://github.com/whitemech/Syft.git &&\
     cd .. &&\
     rm -rf Syft
 
-RUN git clone --recursive https://github.com/whitemech/lydia.git /build/lydia
 
 WORKDIR /build/lydia
 
-RUN git checkout develop &&\
+ARG GIT_REF=master
+
+# Clone and build Lydia
+RUN git clone --recursive https://github.com/whitemech/lydia.git /build/lydia
+RUN git checkout ${GIT_REF} &&\
     rm -rf build &&\
     mkdir build &&\
     cd build &&\
     cmake -DCMAKE_BUILD_TYPE=Release .. &&\
     cmake --build . --target lydia-bin -j4 &&\
-    sudo make install &&\
+    make install &&\
     cd .. &&\
     rm -rf /build/lydia
 
