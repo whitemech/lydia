@@ -271,6 +271,5 @@ This software is released under the GNU Lesser General Public License version 3 
 
 ## Acknowledgements
 
-This work has been funded by the [ERC Advanced Grant "WhiteMech"](whitemech.github.io/)
+This work has been partially funded by the [ERC Advanced Grant "WhiteMech"](whitemech.github.io/)
 and by the [TAILOR research network](https://tailor-network.eu/).
-
