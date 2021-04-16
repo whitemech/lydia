@@ -1,4 +1,7 @@
 FROM ubuntu:20.04
+LABEL version="0.1.0"
+LABEL authors="Marco Favorito <favorito@diag.uniroma1.it>, Francesco Fuggitti <fuggitti@diag.uniroma1.it>"
+LABEL description="A Docker image to build the Lydia project."
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LC_ALL C.UTF-8
@@ -6,26 +9,29 @@ ENV LANG C.UTF-8
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y \
-       clang \
-       gcc \
-       g++ \
-       g++-multilib \
-       gdb \
-       clang-tidy \
-       clang-format \
-       gcovr \
-       llvm \
-       sudo \
-       vim \
-       make \
-       cmake \
-       automake \
-       libtool \
-       git \
-       less \
-       curl \
-       wget
+    apt-get install -y           \
+       clang                     \
+       gcc                       \
+       g++                       \
+       g++-multilib              \
+       gdb                       \
+       clang-tidy                \
+       clang-format              \
+       gcovr                     \
+       llvm                      \
+       sudo                      \
+       make                      \
+       cmake                     \
+       git                       \
+       less                      \
+       wget                      \
+       flex                      \
+       bison                     \
+       libgraphviz-dev           \
+       libboost-all-dev          \
+       graphviz &&\
+    apt-get clean &&\
+    rm -rf /var/cache
 
 
 # This adds the 'default' user to sudoers with full privileges:
@@ -39,8 +45,6 @@ RUN HOME=/home/default && \
     chown -R "$USER_ID:$GROUP_ID" ${HOME} && \
     usermod -a -G sudo default && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
-RUN apt-get install -y flex bison libgraphviz-dev libboost-all-dev graphviz
 
 ENV CC=/usr/bin/gcc
 ENV CXX=/usr/bin/g++
