@@ -1,6 +1,7 @@
 FROM ubuntu:20.04
 LABEL version="0.1.0"
-LABEL authors="Marco Favorito <favorito@diag.uniroma1.it>, Francesco Fuggitti <fuggitti@diag.uniroma1.it>"
+LABEL authors="Marco Favorito <favorito@diag.uniroma1.it>"
+LABEL contributors="Francesco Fuggitti <fuggitti@diag.uniroma1.it>"
 LABEL description="A Docker image to build the Lydia project."
 
 ENV DEBIAN_FRONTEND noninteractive
