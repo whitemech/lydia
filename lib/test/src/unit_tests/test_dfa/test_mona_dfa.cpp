@@ -2,16 +2,16 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -88,12 +88,13 @@ TEST_CASE("Test MONA dfa_closure a,b and allow empty",
   auto a = dfaNext(0);
   auto b = dfaNext(1);
   auto ab = dfa_concatenate(a, b, var, indices.data());
-  dfa_accept_empty(ab);
-  auto tmp = dfa_closure(ab, var, indices.data());
+  auto ab_or_empty = dfa_accept_empty(ab);
+  auto tmp = dfa_closure(ab_or_empty, var, indices.data());
   auto automaton = mona_dfa(tmp, var);
   dfaFree(a);
   dfaFree(b);
   dfaFree(ab);
+  dfaFree(ab_or_empty);
   print_mona_dfa(automaton.get_dfa(), "closure_ab_accept_empty", 4);
   REQUIRE(automaton.get_nb_states() == 3);
   REQUIRE(automaton.get_nb_variables() == 2);

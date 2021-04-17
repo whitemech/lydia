@@ -3,16 +3,16 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -26,6 +26,18 @@ namespace whitemech::lydia {
 // and that might have an impact with different compilers.
 enum TypeID {
   t_Symbol,
+  t_LTLfTrue,
+  t_LTLfFalse,
+  t_LTLfAtom,
+  t_LTLfAnd,
+  t_LTLfOr,
+  t_LTLfNot,
+  t_LTLfNext,
+  t_LTLfWeakNext,
+  t_LTLfUntil,
+  t_LTLfRelease,
+  t_LTLfEventually,
+  t_LTLfAlways,
   t_LDLfTrue,
   t_LDLfFalse,
   t_LDLfAnd,
@@ -40,6 +52,7 @@ enum TypeID {
   t_StarRegExp,
   t_LDLfF,
   t_LDLfT,
+  t_LDLfQ,
   t_NFAState,
   t_DFAState,
   t_PropositionalTrue,

@@ -2,16 +2,16 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -203,6 +203,8 @@ void DeltaVisitor::visit(const LDLfF &f) { result = f.ctx().makeFalse(); }
 
 void DeltaVisitor::visit(const LDLfT &f) { result = f.ctx().makeTrue(); }
 
+void DeltaVisitor::visit(const LDLfQ &f) { result = apply(*f.get_arg()); }
+
 std::shared_ptr<const PropositionalFormula>
 DeltaBoxRegExpVisitor::apply(const RegExp &b) {
   b.accept(*this);
@@ -218,6 +220,9 @@ void ExpandVisitor::visit(const LDLfFalse &f) {
 
 void ExpandVisitor::visit(const LDLfF &x) { result = apply(*x.get_arg()); }
 void ExpandVisitor::visit(const LDLfT &x) { result = apply(*x.get_arg()); }
+void ExpandVisitor::visit(const LDLfQ &x) {
+  result = std::static_pointer_cast<const LDLfQ>(x.shared_from_this());
+}
 
 void ExpandVisitor::visit(const LDLfAnd &f) {
   set_formulas new_container;

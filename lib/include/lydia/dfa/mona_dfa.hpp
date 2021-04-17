@@ -3,16 +3,16 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -89,24 +89,8 @@ public:
 
   void add_transition(int from, const interpretation_set &symbol, int to,
                       bool dont_care = true) override{};
+
+  void export_dfa(const std::string &filename) const;
 };
-
-DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices);
-DFA *dfa_closure(DFA *a, int n, int *indices);
-void dfa_accept_empty(DFA *x);
-std::string get_path_guard(int n, trace_descr tp);
-
-DFA *dfaLDLfTrue();
-DFA *dfaLDLfFalse();
-DFA *dfaNext(int a, bool is_positive = true);
-DFA *dfaLDLfDiamondProp(DFA *prop_regex, DFA *body, int var, int *indices);
-DFA *dfaLDLfEnd(int var, int *indices);
-DFA *dfaPropositionalTrue();
-
-bool is_sink(DFA *automaton, bool is_positive = true);
-
-void print_mona_dfa(DFA *a, const std::string &name, int num = 1);
-void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
-                            std::ostream &o = std::cout);
 
 } // namespace whitemech::lydia

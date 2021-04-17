@@ -1,0 +1,1 @@
+((COUNTER0 <-> INITCOUNTER0)) && (G (CARRY0 <-> INC)) && (G ((X COUNTER0 -> !(COUNTER0 <-> CARRY0)) && (X !COUNTER0 -> (COUNTER0 <-> CARRY0)))) && ((G ((!INC -> X INC)) -> F (!COUNTER0)))

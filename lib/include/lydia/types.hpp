@@ -3,21 +3,21 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <cstdint>
-#include <cudd/cuddObj.hh>
+#include <cuddObj.hh>
 #include <exception>
 #include <map>
 #include <memory>
@@ -28,6 +28,19 @@ namespace whitemech::lydia {
 
 class Basic;
 class Symbol;
+class LTLfFormula;
+class LTLfTrue;
+class LTLfFalse;
+class LTLfAtom;
+class LTLfAnd;
+class LTLfOr;
+class LTLfNot;
+class LTLfNext;
+class LTLfWeakNext;
+class LTLfUntil;
+class LTLfRelease;
+class LTLfEventually;
+class LTLfAlways;
 class LDLfFormula;
 class LDLfTrue;
 class LDLfFalse;
@@ -51,6 +64,7 @@ class PropositionalAtom;
 class QuotedFormula;
 class LDLfF;
 class LDLfT;
+class LDLfQ;
 class PropositionalAnd;
 class PropositionalOr;
 class PropositionalNot;
@@ -85,6 +99,10 @@ typedef std::tuple<const DFAState &, const set_atoms_ptr &, const DFAState &>
 typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
 typedef std::set<std::shared_ptr<const Basic>, SharedComparator> set_basic;
 typedef std::shared_ptr<const LDLfFormula> ldlf_ptr;
+typedef std::shared_ptr<const LTLfFormula> ltlf_ptr;
+typedef std::vector<std::shared_ptr<const LTLfFormula>> vec_ltlf_formulas;
+typedef std::set<std::shared_ptr<const LTLfFormula>, SharedComparator>
+    set_ltlf_formulas;
 typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;
 typedef std::set<std::shared_ptr<const LDLfFormula>, SharedComparator>
     set_formulas;

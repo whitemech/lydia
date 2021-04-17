@@ -2,16 +2,16 @@
 # This file is part of Lydia.
 #
 # Lydia is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
+# it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
 # Lydia is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# You should have received a copy of the GNU Lesser General Public License
 # along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
 #
 
@@ -51,9 +51,8 @@ set (CUDD_INCLUDE_PATH ${CUDD_INCLUDE_DIRS})
 # MONA
 set (MONA_INCLUDE_PATH ${MONA_INCLUDE_DIRS})
 # -------------------------------------------------------------------------
-# -------------------------------------------------------------------------
-# MiniSAT
-set (MINISAT_INCLUDE_PATH ${MINISAT_INCLUDE_DIRS})
+# Syft
+set (SYFT_INCLUDE_PATH ${SYFT_INCLUDE_DIRS})
 # -------------------------------------------------------------------------
 
 #set variables
@@ -62,9 +61,8 @@ set (THIRD_PARTY_INCLUDE_PATH
         ${CLI11_INCLUDE_PATH}
         ${CUDD_INCLUDE_PATH}
         ${MONA_INCLUDE_PATH}
+        ${SYFT_INCLUDE_PATH}
         ${GOOGLE_BENCHMARK_INCLUDE_PATH}
-        ${CPPITERTOOLS_INCLUDE_PATH}
-        ${MINISAT_INCLUDE_PATH}
         ${FLEX_INCLUDE_DIRS}
         ${BISON_INCLUDE_DIRS})
 
