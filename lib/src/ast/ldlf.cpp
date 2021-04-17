@@ -2,16 +2,16 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -65,6 +65,12 @@ ldlf_ptr AstManager::makeLdlfF(const ldlf_ptr &arg) {
 }
 ldlf_ptr AstManager::makeLdlfT(const ldlf_ptr &arg) {
   auto tmp = std::make_shared<const LDLfT>(*this, arg);
+  auto result = insert_if_not_available_(tmp);
+  return result;
+}
+
+ldlf_ptr AstManager::makeLdlfQ(const ldlf_ptr &arg) {
+  auto tmp = std::make_shared<const LDLfQ>(*this, arg);
   auto result = insert_if_not_available_(tmp);
   return result;
 }

@@ -2,16 +2,16 @@
 # This file is part of Lydia.
 #
 # Lydia is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
+# it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
 # Lydia is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# You should have received a copy of the GNU Lesser General Public License
 # along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
 #
 
@@ -44,11 +44,10 @@ target_link_libraries (${BENCHMARK_APP_NAME}
         ${LIB_NAME}
         ${CUDD_LIBRARIES}
         ${MONA_LIBRARIES}
-        ${MINISAT_LIBRARIES}
         benchmark::benchmark
         Threads::Threads)
 
 add_custom_target(lydia-benchmark
         COMMAND ${CMAKE_BINARY_DIR}/bin/${BENCHMARK_APP_NAME}
-        DEPENDS lydia
+        DEPENDS lydia ${BENCHMARK_APP_NAME}
         COMMENT "Run benchmarks." VERBATIM)

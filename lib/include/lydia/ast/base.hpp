@@ -3,16 +3,16 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -40,6 +40,8 @@ class AstManager {
 private:
   prop_ptr prop_true_;
   prop_ptr prop_false_;
+  ltlf_ptr ltlf_true_;
+  ltlf_ptr ltlf_false_;
   ldlf_ptr ldlf_true_;
   ldlf_ptr ldlf_false_;
   std::unordered_set<basic_ptr, std::hash<basic_ptr>, ast_eq_proc> table;
@@ -71,6 +73,20 @@ public:
   prop_ptr makePropOr(const set_prop_formulas &args);
   prop_ptr makePropNot(const prop_ptr &arg);
 
+  ltlf_ptr makeLtlfTrue();
+  ltlf_ptr makeLtlfFalse();
+  ltlf_ptr makeLtlfBool(bool x);
+  ltlf_ptr makeLtlfAtom(const std::string &name);
+  ltlf_ptr makeLtlfAnd(const set_ltlf_formulas &args);
+  ltlf_ptr makeLtlfOr(const set_ltlf_formulas &args);
+  ltlf_ptr makeLtlfNot(const ltlf_ptr &arg);
+  ltlf_ptr makeLtlfNext(const ltlf_ptr &arg);
+  ltlf_ptr makeLtlfWeakNext(const ltlf_ptr &arg);
+  ltlf_ptr makeLtlfUntil(const ltlf_ptr &arg_1, const ltlf_ptr &arg_2);
+  ltlf_ptr makeLtlfRelease(const ltlf_ptr &arg_1, const ltlf_ptr &arg_2);
+  ltlf_ptr makeLtlfEventually(const ltlf_ptr &arg);
+  ltlf_ptr makeLtlfAlways(const ltlf_ptr &arg);
+
   ldlf_ptr makeLdlfTrue();
   ldlf_ptr makeLdlfFalse();
   ldlf_ptr makeLdlfEnd();
@@ -82,6 +98,7 @@ public:
   ldlf_ptr makeLdlfDiamond(const regex_ptr &arg_r, const ldlf_ptr &arg_f);
   ldlf_ptr makeLdlfT(const ldlf_ptr &arg);
   ldlf_ptr makeLdlfF(const ldlf_ptr &arg);
+  ldlf_ptr makeLdlfQ(const ldlf_ptr &arg);
 
   regex_ptr makePropRegex(const prop_ptr &ptr);
   regex_ptr makeSeqRegex(const vec_regex &ptr);

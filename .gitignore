@@ -249,5 +249,7 @@ coverage.html
 coverage.*.html
 
 # custom flex and bison
-lib/include/lydia/parser/*.cc
-lib/include/lydia/parser/*.hh
+lib/include/lydia/parser/ldlf/*.cc
+lib/include/lydia/parser/ldlf/*.hh
+lib/include/lydia/parser/ltlf/*.cc
+lib/include/lydia/parser/ltlf/*.hh

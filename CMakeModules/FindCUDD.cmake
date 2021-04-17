@@ -2,16 +2,16 @@
 # This file is part of Lydia.
 #
 # Lydia is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
+# it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
 # Lydia is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# You should have received a copy of the GNU Lesser General Public License
 # along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
 #
 
@@ -50,7 +50,7 @@ if(CUDD_ROOT)
 	set(CUDD_LIBRARY_PATH PATHS "${CUDD_ROOT}/lib" NO_DEFAULT_PATH)
 endif()
 
-find_path(CUDD_INCLUDE_DIRS NAMES cudd/cudd.h cudd/cuddObj.hh HINTS ${CUDD_INCLUDE_PATH})
+find_path(CUDD_INCLUDE_DIRS NAMES cudd.h cuddObj.hh HINTS ${CUDD_INCLUDE_PATH})
 find_library(CUDD_LIBRARIES NAMES cudd CUDDVC-3.0.0 HINTS ${CUDD_LIBRARY_PATH})
 
 include(FindPackageHandleStandardArgs)

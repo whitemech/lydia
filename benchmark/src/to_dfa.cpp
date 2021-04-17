@@ -2,22 +2,22 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <benchmark/benchmark.h>
 #include <lydia/logic/ldlf/base.hpp>
-#include <lydia/parser/driver.hpp>
+#include <lydia/parser/ldlf/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/strategies/bdd/base.hpp>
 #include <lydia/to_dfa/strategies/compositional/base.hpp>
@@ -95,7 +95,7 @@ inline void translate_sequence_of_atoms(int N, Strategy &s) {
   auto regex = sequence(N, ";");
   auto formula_string = "<" + regex + ">tt";
   auto sstream = std::stringstream(formula_string);
-  auto driver = Driver();
+  auto driver = parsers::ldlf::Driver();
   driver.parse(sstream);
   auto formula = driver.result;
   auto translator = Translator(s);
@@ -144,7 +144,7 @@ inline void translate_sequence_of_stars_of_atoms(int N, Strategy &s) {
   auto regex = sequence(N, ";", true);
   auto formula_string = "<" + regex + ">tt";
   auto sstream = std::stringstream(formula_string);
-  auto driver = Driver();
+  auto driver = parsers::ldlf::Driver();
   driver.parse(sstream);
   auto formula = driver.result;
   auto translator = Translator(s);
@@ -198,7 +198,7 @@ inline void translate_union(int N, Strategy &s) {
   auto regex = sequence(N, "+", false);
   auto formula_string = "<" + regex + ">tt";
   auto sstream = std::stringstream(formula_string);
-  auto driver = Driver();
+  auto driver = parsers::ldlf::Driver();
   driver.parse(sstream);
   auto formula = driver.result;
   auto translator = Translator(s);

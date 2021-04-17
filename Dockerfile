@@ -1,27 +1,38 @@
-FROM ubuntu:19.10
+FROM ubuntu:20.04
+LABEL version="0.1.0"
+LABEL authors="Marco Favorito <favorito@diag.uniroma1.it>"
+LABEL contributors="Francesco Fuggitti <fuggitti@diag.uniroma1.it>"
+LABEL description="A Docker image to build the Lydia project."
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y \
-       clang \
-       gcc \
-       g++ \
-       g++-multilib \
-       gdb \
-       clang-tidy \
-       clang-format \
-       gcovr \
-       llvm \
-       sudo \
-       vim \
-       make \
-       cmake \
-       automake \
-       libtool \
-       git \
-       less \
-       curl \
-       wget
+    apt-get install -y           \
+       clang                     \
+       gcc                       \
+       g++                       \
+       g++-multilib              \
+       gdb                       \
+       clang-tidy                \
+       clang-format              \
+       gcovr                     \
+       llvm                      \
+       sudo                      \
+       make                      \
+       cmake                     \
+       git                       \
+       less                      \
+       wget                      \
+       flex                      \
+       bison                     \
+       libgraphviz-dev           \
+       libboost-all-dev          \
+       graphviz &&\
+    apt-get clean &&\
+    rm -rf /var/cache
 
 
 # This adds the 'default' user to sudoers with full privileges:
@@ -39,35 +50,61 @@ RUN HOME=/home/default && \
 ENV CC=/usr/bin/gcc
 ENV CXX=/usr/bin/g++
 ENV CCACHE_DIR=/build/docker_ccache
+ENV LD_LIBRARY_PATH=/usr/local/lib
 
+ENV CUDD_VERSION="3.0.0"
+ENV MONA_VERSION="1.4-19.dev0"
+ENV SYFT_TAG="v0.1.0"
 
-USER default
-
-RUN sudo apt-get install -y flex libgraphviz-dev
-
-WORKDIR /home/default
-
-RUN git clone https://github.com/KavrakiLab/cudd --recursive && \
-  cd cudd && \
-  autoreconf -i && \
-  ./configure --enable-silent-rules --enable-obj --enable-dddmp && \
-  sudo make install
-
-RUN wget http://ftp.us.debian.org/debian/pool/main/b/bison/libbison-dev_3.0.4.dfsg-1+b1_amd64.deb &&\
-  wget http://ftp.us.debian.org/debian/pool/main/b/bison/bison_3.0.4.dfsg-1+b1_amd64.deb &&\
-  sudo dpkg -i libbison-dev_3.0.4.dfsg-1+b1_amd64.deb &&\
-  sudo dpkg -i bison_3.0.4.dfsg-1+b1_amd64.deb
-
-RUN wget https://github.com/msoos/cryptominisat/archive/5.7.1.tar.gz &&\
-    tar -xzvf 5.7.1.tar.gz &&\
-    cd cryptominisat-5.7.1 &&\
-    mkdir build &&\
-    cd build &&\
-    cmake .. &&\
-    make &&\
-    sudo make install &&\
-    sudo ldconfig
 
 WORKDIR /build
 
-ENTRYPOINT []
+# Install CUDD
+RUN wget https://github.com/whitemech/cudd/releases/download/v${CUDD_VERSION}/cudd_${CUDD_VERSION}_linux-amd64.tar.gz &&\
+    tar -xf cudd_${CUDD_VERSION}_linux-amd64.tar.gz &&\
+    cd cudd_${CUDD_VERSION}_linux-amd64 &&\
+    cp -P lib/* /usr/local/lib/ &&\
+    cp -Pr include/cudd/* /usr/local/include/ &&\
+    rm -rf cudd_${CUDD_VERSION}_linux-amd64*
+
+# Install MONA
+RUN wget https://github.com/whitemech/MONA/releases/download/v${MONA_VERSION}/mona_${MONA_VERSION}_linux-amd64.tar.gz &&\
+    tar -xf mona_${MONA_VERSION}_linux-amd64.tar.gz &&\
+    cd mona_${MONA_VERSION}_linux-amd64 &&\
+    cp -P lib/* /usr/local/lib/ &&\
+    cp -Pr include/* /usr/local/include &&\
+    rm -rf mona_${MONA_VERSION}_linux-amd64*
+
+# Build and install Syft
+RUN git clone https://github.com/whitemech/Syft.git &&\
+    cd Syft &&\
+    git checkout ${SYFT_TAG} &&\
+    mkdir build && cd build &&\
+    cmake -DCMAKE_BUILD_TYPE=Release .. &&\
+    make -j &&\
+    make install &&\
+    cd .. &&\
+    rm -rf Syft
+
+
+WORKDIR /build/lydia
+
+ARG GIT_REF=master
+
+# Clone and build Lydia
+RUN git clone --recursive https://github.com/whitemech/lydia.git /build/lydia
+RUN git checkout ${GIT_REF} &&\
+    rm -rf build &&\
+    mkdir build &&\
+    cd build &&\
+    cmake -DCMAKE_BUILD_TYPE=Release .. &&\
+    cmake --build . --target lydia-bin -j4 &&\
+    make install &&\
+    cd .. &&\
+    rm -rf /build/lydia
+
+WORKDIR /home/default
+
+USER default
+
+CMD ["/usr/local/bin/lydia"]

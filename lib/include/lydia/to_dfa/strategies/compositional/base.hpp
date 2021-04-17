@@ -3,16 +3,16 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -21,21 +21,29 @@
 #include <lydia/logic/atom_visitor.hpp>
 #include <lydia/logic/ldlf/only_test.hpp>
 #include <lydia/logic/nnf.hpp>
+#include <lydia/mona_ext/mona_ext_base.hpp>
 #include <lydia/to_dfa/core.hpp>
-#include <lydia/to_dfa/strategies/bdd/base.hpp>
-#include <lydia/to_dfa/strategies/bdd/delta_bdd.hpp>
-#include <lydia/to_dfa/strategies/compositional/base.hpp>
-#include <lydia/to_dfa/strategies/naive.hpp>
 #include <numeric>
+#include <queue>
 
 namespace whitemech::lydia {
 
 class CompositionalStrategy : public Strategy {
+private:
+  CUDD::Cudd *prop_mgr;
+  void reset();
+
 public:
+  CompositionalStrategy() { prop_mgr = new CUDD::Cudd(0, 0, 0, 0, 0); }
+  ~CompositionalStrategy() { delete prop_mgr; }
+  set_atoms_ptr atoms;
   std::vector<atom_ptr> id2atoms;
   std::map<atom_ptr, size_t, SharedComparator> atom2ids;
   std::vector<int> indices;
   std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &f) override;
+  DFA *to_dfa_internal(const LDLfFormula &f, set_atoms_ptr atoms);
+
+  DFA *star(const RegExp &r, DFA *body);
 };
 
 class AComposeDFAVisitor : public Visitor {
@@ -47,7 +55,8 @@ public:
 
 class ComposeDFAVisitor : public AComposeDFAVisitor {
 private:
-  DFA *current_formula_ = nullptr;
+  DFA *current_body_dfa_ = nullptr;
+  ldlf_ptr *current_body_ = nullptr;
   bool is_diamond = false;
 
 public:
@@ -77,6 +86,10 @@ class ComposeDFARegexVisitor : public AComposeDFAVisitor {
 private:
   DFA *current_formula_ = nullptr;
   bool is_diamond;
+
+  static bool is_atomic_until_test_(const RegExp &r);
+  void test_free_star_(const StarRegExp &);
+  void general_star_(const StarRegExp &);
 
 public:
   CompositionalStrategy &cs;
@@ -110,20 +123,44 @@ template <typename T, DFA *(*dfaMaker)(void), dfaProductType productType,
 DFA *dfa_and_or(std::set<std::shared_ptr<T>, SharedComparator> container,
                 AComposeDFAVisitor &v) {
   DFA *tmp1;
-  DFA *tmp2;
-  DFA *tmp3;
-  DFA *final = dfaMaker();
+  DFA *final;
+
+  auto dfas = std::vector<DFA *>();
+  dfas.reserve(container.size());
   for (const auto &subf : container) {
-    tmp1 = final;
-    tmp2 = v.apply(*subf);
-    tmp3 = dfaProduct(tmp1, tmp2, productType);
-    final = dfaMinimize(tmp3);
-    dfaFree(tmp1);
-    dfaFree(tmp2);
-    dfaFree(tmp3);
-    if (is_sink(final, is_positive))
-      break;
+    tmp1 = v.apply(*subf);
+    if (is_sink(tmp1, is_positive)) {
+      for (const auto dfa_to_free : dfas) {
+        dfaFree(dfa_to_free);
+      }
+      return tmp1;
+    }
+    dfas.push_back(tmp1);
   }
+
+  auto cmp = [](const DFA *d1, const DFA *d2) { return d1->ns > d2->ns; };
+  std::priority_queue<DFA *, std::vector<DFA *>, decltype(cmp)> queue(
+      dfas.begin(), dfas.end(), cmp);
+  while (queue.size() > 1) {
+    DFA *lhs = queue.top();
+    queue.pop();
+    DFA *rhs = queue.top();
+    queue.pop();
+    tmp1 = dfaProduct(lhs, rhs, productType);
+    final = dfaMinimize(tmp1);
+    dfaFree(lhs);
+    dfaFree(rhs);
+    dfaFree(tmp1);
+    if (is_sink(final, is_positive)) {
+      while (!queue.empty()) {
+        dfaFree(queue.top());
+        queue.pop();
+      }
+      return final;
+    }
+    queue.push(final);
+  }
+  final = queue.top();
   return final;
 }
 

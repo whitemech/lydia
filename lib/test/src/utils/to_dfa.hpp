@@ -3,23 +3,23 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <bitset>
 #include <catch.hpp>
 #include <cppitertools/powerset.hpp>
 #include <cppitertools/product.hpp>
-#include <cudd/cuddObj.hh>
+#include <cuddObj.hh>
 #include <numeric>
 #include <sstream>
 #include <stack>
@@ -28,7 +28,7 @@
 #include <fstream>
 #include <lydia/dfa/dfa.hpp>
 #include <lydia/logic/ldlf/base.hpp>
-#include <lydia/parser/driver.hpp>
+#include <lydia/parser/ldlf/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/strategies/bdd/base.hpp>
 #include <lydia/to_dfa/strategies/compositional/base.hpp>
@@ -132,8 +132,9 @@ from_trace_set(std::vector<interpretation_set> vector, int prop) {
   return result;
 }
 
+template <typename Parser = parsers::ldlf::Driver>
 static adfa_ptr to_dfa_from_formula_string(const std::string &f, Strategy &s) {
-  auto driver = Driver();
+  auto driver = Parser();
   std::stringstream ldlf_formula_stream(f);
   driver.parse(ldlf_formula_stream);
   const auto &formula = *driver.result;

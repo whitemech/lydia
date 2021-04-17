@@ -3,16 +3,16 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -23,6 +23,20 @@ namespace whitemech::lydia {
 
 class Visitor {
 public:
+  // callbacks for LTLf
+  virtual void visit(const LTLfTrue &){};
+  virtual void visit(const LTLfFalse &){};
+  virtual void visit(const LTLfAtom &){};
+  virtual void visit(const LTLfAnd &){};
+  virtual void visit(const LTLfOr &){};
+  virtual void visit(const LTLfNot &){};
+  virtual void visit(const LTLfNext &){};
+  virtual void visit(const LTLfWeakNext &){};
+  virtual void visit(const LTLfUntil &){};
+  virtual void visit(const LTLfRelease &){};
+  virtual void visit(const LTLfEventually &){};
+  virtual void visit(const LTLfAlways &){};
+
   // callbacks for LDLf
   virtual void visit(const LDLfTrue &){};
   virtual void visit(const LDLfFalse &){};
@@ -51,6 +65,7 @@ public:
   virtual void visit(const QuotedFormula &){};
   virtual void visit(const LDLfF &){};
   virtual void visit(const LDLfT &){};
+  virtual void visit(const LDLfQ &){};
 };
 
 } // namespace whitemech::lydia

@@ -3,20 +3,20 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <cudd/cuddObj.hh>
+#include <cuddObj.hh>
 #include <lydia/logger.hpp>
 #include <lydia/logic/ldlf/base.hpp>
 #include <lydia/logic/pl/base.hpp>
@@ -75,6 +75,7 @@ public:
   void visit(const QuotedFormula &) override{};
   void visit(const LDLfF &) override;
   void visit(const LDLfT &) override;
+  void visit(const LDLfQ &) override;
 
   std::shared_ptr<const PropositionalFormula> apply(const LDLfFormula &b);
 };
@@ -155,6 +156,7 @@ public:
 
   void visit(const LDLfF &) override;
   void visit(const LDLfT &) override;
+  void visit(const LDLfQ &) override;
   std::shared_ptr<const LDLfFormula> apply(const LDLfFormula &f);
   std::shared_ptr<const RegExp> apply(const RegExp &f);
 };

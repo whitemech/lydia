@@ -2,26 +2,40 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/ltlf/base.hpp>
 #include <lydia/logic/pl/base.hpp>
-#include <lydia/to_dfa/delta.hpp>
 #include <lydia/visitor.hpp>
 
 namespace whitemech::lydia {
 void Symbol::accept(Visitor &v) const { v.visit(*this); }
+
+void LTLfTrue::accept(Visitor &v) const { v.visit(*this); }
+void LTLfFalse::accept(Visitor &v) const { v.visit(*this); }
+void LTLfOr::accept(Visitor &v) const { v.visit(*this); }
+void LTLfAnd::accept(Visitor &v) const { v.visit(*this); }
+void LTLfAtom::accept(Visitor &v) const { v.visit(*this); }
+void LTLfNot::accept(Visitor &v) const { v.visit(*this); }
+void LTLfNext::accept(Visitor &v) const { v.visit(*this); }
+void LTLfWeakNext::accept(Visitor &v) const { v.visit(*this); }
+void LTLfUntil::accept(Visitor &v) const { v.visit(*this); }
+void LTLfRelease::accept(Visitor &v) const { v.visit(*this); }
+void LTLfEventually::accept(Visitor &v) const { v.visit(*this); }
+void LTLfAlways::accept(Visitor &v) const { v.visit(*this); }
+
 void LDLfTrue::accept(Visitor &v) const { v.visit(*this); }
 void LDLfFalse::accept(Visitor &v) const { v.visit(*this); }
 void LDLfOr::accept(Visitor &v) const { v.visit(*this); }
@@ -49,6 +63,7 @@ void PropositionalNot::accept(Visitor &v) const { v.visit(*this); }
 
 void LDLfF::accept(Visitor &v) const { v.visit(*this); }
 void LDLfT::accept(Visitor &v) const { v.visit(*this); }
+void LDLfQ::accept(Visitor &v) const { v.visit(*this); }
 void QuotedFormula::accept(Visitor &v) const { v.visit(*this); }
 
 } // namespace whitemech::lydia

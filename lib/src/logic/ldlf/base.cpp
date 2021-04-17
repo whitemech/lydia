@@ -2,16 +2,16 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -430,6 +430,7 @@ int LDLfF::compare_(const Basic &rhs) const {
   assert(is_a<LDLfF>(rhs));
   return arg_->compare(*dynamic_cast<const LDLfF &>(rhs).get_arg());
 }
+
 LDLfT::LDLfT(AstManager &c, const ldlf_ptr &formula)
     : LDLfFormula(c), arg_{formula} {
   this->type_code_ = type_code_id;
@@ -457,6 +458,35 @@ bool LDLfT::is_equal(const Basic &rhs) const {
 int LDLfT::compare_(const Basic &rhs) const {
   assert(is_a<LDLfT>(rhs));
   return arg_->compare(*dynamic_cast<const LDLfT &>(rhs).get_arg());
+}
+
+LDLfQ::LDLfQ(AstManager &c, const ldlf_ptr &formula)
+    : LDLfFormula(c), arg_{formula} {
+  this->type_code_ = type_code_id;
+}
+
+hash_t LDLfQ::compute_hash_() const {
+  hash_t seed = type_code_id;
+  hash_combine<Basic>(seed, *arg_);
+  return seed;
+}
+
+bool LDLfQ::is_canonical(const set_regex &args) const { return true; }
+
+ldlf_ptr LDLfQ::get_arg() const { return this->arg_; }
+
+ldlf_ptr LDLfQ::logical_not() const {
+  return m_ctx->makeLdlfF(this->get_arg()->logical_not());
+}
+
+bool LDLfQ::is_equal(const Basic &rhs) const {
+  return is_a<LDLfQ>(rhs) and
+         eq(*arg_, *dynamic_cast<const LDLfQ &>(rhs).get_arg());
+}
+
+int LDLfQ::compare_(const Basic &rhs) const {
+  assert(is_a<LDLfQ>(rhs));
+  return arg_->compare(*dynamic_cast<const LDLfQ &>(rhs).get_arg());
 }
 
 QuotedFormula::QuotedFormula(basic_ptr formula) : formula{std::move(formula)} {

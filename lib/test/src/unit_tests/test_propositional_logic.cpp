@@ -2,16 +2,16 @@
  * This file is part of Lydia.
  *
  * Lydia is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Lydia is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <catch.hpp>
@@ -20,7 +20,6 @@
 #include <lydia/logic/pl/eval.hpp>
 #include <lydia/logic/pl/models/base.hpp>
 #include <lydia/logic/pl/models/naive.hpp>
-#include <lydia/logic/pl/models/sat.hpp>
 
 namespace whitemech::lydia::Test {
 TEST_CASE("Propositional Logic", "[pl/logic]") {
@@ -288,25 +287,6 @@ TEST_CASE("to cnf", "[pl/cnf]") {
   }
 }
 
-// TEST_CASE("is_sat", "[pl/models]") {
-//  auto context = AstManager{};
-//  auto t = context.makeTrue(true);
-//  auto f = context.makeFalse(false);
-//  auto p = context.makePropAtom("p");
-//  auto q = context.makePropAtom("q");
-//  REQUIRE(is_sat(*t));
-//  REQUIRE(!is_sat(*f));
-//  REQUIRE(is_sat(*p));
-//  REQUIRE(is_sat(*q));
-//  REQUIRE(is_sat(*context.makePropOr({p, q})));
-//  REQUIRE(is_sat(*context.makePropAnd({p, q})));
-//
-//  auto non_sat =
-//      context.makePropAnd({context.makePropOr({p, q}), p->->logical_not(),
-//      q->logical_not()});
-//  REQUIRE(!is_sat(*non_sat));
-//}
-
 struct SetComparator {
   template <typename T, typename U>
   bool operator()(const std::set<T, U> &lhs, const std::set<T, U> &rhs) const {
@@ -324,8 +304,7 @@ TEST_CASE("All models", "[pl/models]") {
   auto false_ = context.makeFalse();
 
   auto model_enumeration_function =
-      GENERATE(all_models<NaiveModelEnumerationStategy>,
-               all_models<SATModelEnumerationStategy>);
+      GENERATE(all_models<NaiveModelEnumerationStategy>);
 
   SECTION("models of true") {
     auto models = model_enumeration_function(*true_);

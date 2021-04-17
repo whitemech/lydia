@@ -1,0 +1,1 @@
+((counter0 <-> initcounter0)) && ((counter1 <-> initcounter1)) && (G (carry0 <-> inc)) && (G (carry1 <-> (counter0 && carry0))) && (G ((X counter0 -> !(counter0 <-> carry0)) && (X !counter0 -> (counter0 <-> carry0)))) && (G ((X counter1 -> !(counter1 <-> carry1)) && (X !counter1 -> (counter1 <-> carry1)))) && ((G ((!inc -> X inc)) -> F (!counter0 && !counter1)))
