@@ -77,8 +77,8 @@ class BDDStrategy;
 
 struct SharedComparator {
   template <typename T>
-  bool operator()(const std::shared_ptr<T> &lhs,
-                  const std::shared_ptr<T> &rhs) const {
+  bool operator()(const std::shared_ptr<T>& lhs,
+                  const std::shared_ptr<T>& rhs) const {
     return (*lhs) < (*rhs);
   }
 };
@@ -94,7 +94,7 @@ typedef std::shared_ptr<const Basic> basic_ptr;
 typedef std::shared_ptr<const PropositionalAtom> atom_ptr;
 typedef std::set<atom_ptr, SharedComparator> set_atoms_ptr;
 typedef std::map<atom_ptr, int, SharedComparator> map_atoms_ptr;
-typedef std::tuple<const DFAState &, const set_atoms_ptr &, const DFAState &>
+typedef std::tuple<const DFAState&, const set_atoms_ptr&, const DFAState&>
     tuple_dfa_transition;
 typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
 typedef std::set<std::shared_ptr<const Basic>, SharedComparator> set_basic;
@@ -132,14 +132,14 @@ typedef std::shared_ptr<abstract_dfa> adfa_ptr;
 
 class not_implemented_error : public std::exception {
 public:
-  const char *what() const noexcept override {
+  const char* what() const noexcept override {
     return "Function not yet implemented.";
   }
 };
 
 struct cmp_set_of_ptr {
   template <typename T, typename U>
-  bool operator()(const std::set<T, U> &a, const std::set<T, U> &b) const {
+  bool operator()(const std::set<T, U>& a, const std::set<T, U>& b) const {
     return unified_compare(a, b) < 0;
   }
 };

@@ -30,7 +30,7 @@ class Ast;
 
 // This is the internal comparison functor for hash-consing AST nodes.
 struct ast_eq_proc {
-  bool operator()(basic_ptr const &b1, basic_ptr const &b2) const {
+  bool operator()(basic_ptr const& b1, basic_ptr const& b2) const {
     return b1->hash() == b2->hash() && b1->compare(*b2) == 0;
   }
 };
@@ -49,7 +49,7 @@ private:
 
   template <typename T, typename = typename std::enable_if<
                             std::is_base_of<Basic, T>::value>::type>
-  std::shared_ptr<T> insert_if_not_available_(const std::shared_ptr<T> &ptr) {
+  std::shared_ptr<T> insert_if_not_available_(const std::shared_ptr<T>& ptr) {
     auto it = table.find(ptr);
     if (it == table.end()) {
       table.insert(ptr);
@@ -62,60 +62,60 @@ private:
 public:
   AstManager() { init(); }
 
-  symbol_ptr makeSymbol(const std::string &name);
+  symbol_ptr makeSymbol(const std::string& name);
 
   prop_ptr makeTrue();
   prop_ptr makeFalse();
   prop_ptr makeBool(bool value);
-  atom_ptr makePropAtom(const std::string &name);
-  atom_ptr makePropAtom(const basic_ptr &ptr);
-  prop_ptr makePropAnd(const set_prop_formulas &args);
-  prop_ptr makePropOr(const set_prop_formulas &args);
-  prop_ptr makePropNot(const prop_ptr &arg);
+  atom_ptr makePropAtom(const std::string& name);
+  atom_ptr makePropAtom(const basic_ptr& ptr);
+  prop_ptr makePropAnd(const set_prop_formulas& args);
+  prop_ptr makePropOr(const set_prop_formulas& args);
+  prop_ptr makePropNot(const prop_ptr& arg);
 
   ltlf_ptr makeLtlfTrue();
   ltlf_ptr makeLtlfFalse();
   ltlf_ptr makeLtlfBool(bool x);
-  ltlf_ptr makeLtlfAtom(const std::string &name);
-  ltlf_ptr makeLtlfAnd(const set_ltlf_formulas &args);
-  ltlf_ptr makeLtlfOr(const set_ltlf_formulas &args);
-  ltlf_ptr makeLtlfNot(const ltlf_ptr &arg);
-  ltlf_ptr makeLtlfNext(const ltlf_ptr &arg);
-  ltlf_ptr makeLtlfWeakNext(const ltlf_ptr &arg);
-  ltlf_ptr makeLtlfUntil(const ltlf_ptr &arg_1, const ltlf_ptr &arg_2);
-  ltlf_ptr makeLtlfRelease(const ltlf_ptr &arg_1, const ltlf_ptr &arg_2);
-  ltlf_ptr makeLtlfEventually(const ltlf_ptr &arg);
-  ltlf_ptr makeLtlfAlways(const ltlf_ptr &arg);
+  ltlf_ptr makeLtlfAtom(const std::string& name);
+  ltlf_ptr makeLtlfAnd(const set_ltlf_formulas& args);
+  ltlf_ptr makeLtlfOr(const set_ltlf_formulas& args);
+  ltlf_ptr makeLtlfNot(const ltlf_ptr& arg);
+  ltlf_ptr makeLtlfNext(const ltlf_ptr& arg);
+  ltlf_ptr makeLtlfWeakNext(const ltlf_ptr& arg);
+  ltlf_ptr makeLtlfUntil(const ltlf_ptr& arg_1, const ltlf_ptr& arg_2);
+  ltlf_ptr makeLtlfRelease(const ltlf_ptr& arg_1, const ltlf_ptr& arg_2);
+  ltlf_ptr makeLtlfEventually(const ltlf_ptr& arg);
+  ltlf_ptr makeLtlfAlways(const ltlf_ptr& arg);
 
   ldlf_ptr makeLdlfTrue();
   ldlf_ptr makeLdlfFalse();
   ldlf_ptr makeLdlfEnd();
   ldlf_ptr makeLdlfBool(bool x);
-  ldlf_ptr makeLdlfAnd(const set_formulas &args);
-  ldlf_ptr makeLdlfOr(const set_formulas &args);
-  ldlf_ptr makeLdlfNot(const ldlf_ptr &arg);
-  ldlf_ptr makeLdlfBox(const regex_ptr &arg_r, const ldlf_ptr &arg);
-  ldlf_ptr makeLdlfDiamond(const regex_ptr &arg_r, const ldlf_ptr &arg_f);
-  ldlf_ptr makeLdlfT(const ldlf_ptr &arg);
-  ldlf_ptr makeLdlfF(const ldlf_ptr &arg);
-  ldlf_ptr makeLdlfQ(const ldlf_ptr &arg);
+  ldlf_ptr makeLdlfAnd(const set_formulas& args);
+  ldlf_ptr makeLdlfOr(const set_formulas& args);
+  ldlf_ptr makeLdlfNot(const ldlf_ptr& arg);
+  ldlf_ptr makeLdlfBox(const regex_ptr& arg_r, const ldlf_ptr& arg);
+  ldlf_ptr makeLdlfDiamond(const regex_ptr& arg_r, const ldlf_ptr& arg_f);
+  ldlf_ptr makeLdlfT(const ldlf_ptr& arg);
+  ldlf_ptr makeLdlfF(const ldlf_ptr& arg);
+  ldlf_ptr makeLdlfQ(const ldlf_ptr& arg);
 
-  regex_ptr makePropRegex(const prop_ptr &ptr);
-  regex_ptr makeSeqRegex(const vec_regex &ptr);
-  regex_ptr makeUnionRegex(const set_regex &ptr);
-  regex_ptr makeStarRegex(const regex_ptr &ptr);
-  regex_ptr makeTestRegex(const ldlf_ptr &ptr);
+  regex_ptr makePropRegex(const prop_ptr& ptr);
+  regex_ptr makeSeqRegex(const vec_regex& ptr);
+  regex_ptr makeUnionRegex(const set_regex& ptr);
+  regex_ptr makeStarRegex(const regex_ptr& ptr);
+  regex_ptr makeTestRegex(const ldlf_ptr& ptr);
 };
 
 class Ast : public Basic {
 protected:
-  AstManager *m_ctx;
+  AstManager* m_ctx;
 
 public:
-  explicit Ast(AstManager &c) : m_ctx(&c) {}
-  Ast(const Ast &s) : m_ctx(s.m_ctx) {}
-  AstManager &ctx() const { return *m_ctx; }
-  friend void check_context(Ast const &a, Ast const &b) {
+  explicit Ast(AstManager& c) : m_ctx(&c) {}
+  Ast(const Ast& s) : m_ctx(s.m_ctx) {}
+  AstManager& ctx() const { return *m_ctx; }
+  friend void check_context(Ast const& a, Ast const& b) {
     assert(a.m_ctx == b.m_ctx);
   };
 };
@@ -123,11 +123,11 @@ public:
 template <typename T, typename caller, typename True, typename False,
           typename Not, typename And, typename Or>
 std::shared_ptr<T>
-and_or(AstManager &context,
-       const std::set<std::shared_ptr<T>, SharedComparator> &s, bool op_x_notx,
-       std::shared_ptr<T> (AstManager::*const &fun_ptr)(bool x)) {
+and_or(AstManager& context,
+       const std::set<std::shared_ptr<T>, SharedComparator>& s, bool op_x_notx,
+       std::shared_ptr<T> (AstManager::*const& fun_ptr)(bool x)) {
   std::set<std::shared_ptr<T>, SharedComparator> args;
-  for (auto &a : s) {
+  for (auto& a : s) {
     // handle the case when a subformula is true
     if (is_a<True>(*a)) {
       if (op_x_notx)
@@ -144,8 +144,8 @@ and_or(AstManager &context,
     }
     // handle the case when a subformula is of the same type of the caller
     else if (is_a<caller>(*a)) {
-      const auto &to_insert = dynamic_cast<const caller &>(*a);
-      const auto &container = to_insert.get_container();
+      const auto& to_insert = dynamic_cast<const caller&>(*a);
+      const auto& container = to_insert.get_container();
       args.insert(container.begin(), container.end());
       continue;
     } else {
@@ -165,14 +165,14 @@ and_or(AstManager &context,
 
 template <typename T, typename caller>
 std::shared_ptr<T>
-flatten_bin_op_set(AstManager &context,
-                   const std::set<std::shared_ptr<T>, SharedComparator> &s) {
+flatten_bin_op_set(AstManager& context,
+                   const std::set<std::shared_ptr<T>, SharedComparator>& s) {
   std::set<std::shared_ptr<T>, SharedComparator> args;
-  for (auto &a : s) {
+  for (auto& a : s) {
     // handle the case when a subformula is of the same type of the caller
     if (is_a<caller>(*a)) {
-      const auto &to_insert = dynamic_cast<const caller &>(*a);
-      const auto &container = to_insert.get_container();
+      const auto& to_insert = dynamic_cast<const caller&>(*a);
+      const auto& container = to_insert.get_container();
       args.insert(container.begin(), container.end());
       continue;
     } else {
@@ -188,15 +188,15 @@ flatten_bin_op_set(AstManager &context,
 
 template <typename T, typename caller>
 std::shared_ptr<T>
-flatten_bin_op_vec(AstManager &context,
-                   const std::vector<std::shared_ptr<T>> &s) {
+flatten_bin_op_vec(AstManager& context,
+                   const std::vector<std::shared_ptr<T>>& s) {
   std::vector<std::shared_ptr<T>> args;
   args.reserve(s.size());
-  for (auto &a : s) {
+  for (auto& a : s) {
     // handle the case when a subformula is of the same type of the caller
     if (is_a<caller>(*a)) {
-      const auto &to_insert = dynamic_cast<const caller &>(*a);
-      const auto &container = to_insert.get_container();
+      const auto& to_insert = dynamic_cast<const caller&>(*a);
+      const auto& container = to_insert.get_container();
       args.insert(args.end(), container.begin(), container.end());
       continue;
     } else {

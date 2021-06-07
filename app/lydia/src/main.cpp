@@ -28,7 +28,7 @@
 
 enum class Logic : int { ldlf, ltlf };
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   whitemech::lydia::Logger logger("main");
   whitemech::lydia::Logger::level(whitemech::lydia::LogLevel::info);
 
@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
   app.add_flag("-p,--print", print_dfa, "Print the DFA.");
 
   std::string graphviz_path;
-  CLI::Option *dot_option =
+  CLI::Option* dot_option =
       app.add_option("-g, --graphviz", graphviz_path,
                      "Output the automaton in Graphviz format.")
           ->check(CLI::NonexistentPath);
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
   Logic logic;
   std::vector<std::pair<std::string, Logic>> map{{"ldlf", Logic::ldlf},
                                                  {"ltlf", Logic::ltlf}};
-  CLI::Option *logic_opt =
+  CLI::Option* logic_opt =
       app.add_option("-l,--logic", logic, "Logic.")
           ->required()
           ->transform(CLI::CheckedTransformer(map, CLI::ignore_case));
@@ -73,8 +73,8 @@ int main(int argc, char **argv) {
   std::string formula;
 
   auto format = app.add_option_group("Input format");
-  CLI::Option *formula_opt = app.add_option("-i,--inline", formula, "Formula.");
-  CLI::Option *file_opt =
+  CLI::Option* formula_opt = app.add_option("-i,--inline", formula, "Formula.");
+  CLI::Option* file_opt =
       app.add_option("-f,--file", filename, "File to formula.")
           ->check(CLI::ExistingFile);
   formula_opt->excludes(file_opt);
@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
 
   std::string part_file;
   bool starting_player_env = false;
-  CLI::Option *part_opt = app.add_option("--part", part_file, "Part file.")
+  CLI::Option* part_opt = app.add_option("--part", part_file, "Part file.")
                               ->check(CLI::ExistingFile);
   app.add_flag("--env", starting_player_env, "Check env realizability.")
       ->needs(part_opt);
@@ -184,12 +184,12 @@ int main(int argc, char **argv) {
     return 0;
   }
 
-  Cudd *mgr = new Cudd();
+  Cudd* mgr = new Cudd();
   bool res = false;
   std::unordered_map<unsigned, BDD> strategy;
 
   // export DFA in MONA format, so it can be used by Syft
-  char *temp_filename = tmpnam(nullptr);
+  char* temp_filename = tmpnam(nullptr);
   std::string temp_filename_string = std::string(temp_filename);
   logger.info("Writing MONA DFA into '{}'...", temp_filename_string);
   my_mona_dfa->export_dfa(temp_filename_string);

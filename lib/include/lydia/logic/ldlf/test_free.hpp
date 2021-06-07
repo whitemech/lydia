@@ -27,15 +27,15 @@ private:
   bool result = false;
 
 public:
-  void visit(const PropositionalRegExp &) override;
-  void visit(const TestRegExp &) override;
-  void visit(const UnionRegExp &) override;
-  void visit(const SequenceRegExp &) override;
-  void visit(const StarRegExp &) override;
+  void visit(const PropositionalRegExp&) override;
+  void visit(const TestRegExp&) override;
+  void visit(const UnionRegExp&) override;
+  void visit(const SequenceRegExp&) override;
+  void visit(const StarRegExp&) override;
 
-  bool apply(const RegExp &r);
+  bool apply(const RegExp& r);
 };
 
-bool is_test_free(const RegExp &r);
+bool is_test_free(const RegExp& r);
 
 } // namespace whitemech::lydia

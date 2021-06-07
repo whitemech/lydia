@@ -23,7 +23,7 @@
 #include <lydia/logic/pl/base.hpp>
 #include <lydia/types.hpp>
 
-static void escape(void *p) { asm volatile("" : : "g"(p) : "memory"); }
+static void escape(void* p) { asm volatile("" : : "g"(p) : "memory"); }
 
 static void clobber() { asm volatile("" : : : "memory"); }
 
@@ -42,7 +42,7 @@ static struct c_unique {
   std::string operator()() { return propositional(current++); }
 } UniquePropositionalSymbol;
 
-static std::string sequence(const int N, const std::string &op,
+static std::string sequence(const int N, const std::string& op,
                             bool with_star = false) {
   auto postfix = with_star ? "*" : "";
   std::string result = UniquePropositionalSymbol() + postfix;

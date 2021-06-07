@@ -289,7 +289,7 @@ TEST_CASE("to cnf", "[pl/cnf]") {
 
 struct SetComparator {
   template <typename T, typename U>
-  bool operator()(const std::set<T, U> &lhs, const std::set<T, U> &rhs) const {
+  bool operator()(const std::set<T, U>& lhs, const std::set<T, U>& rhs) const {
     return unified_compare(lhs, rhs) == -1;
   }
 };

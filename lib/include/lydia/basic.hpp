@@ -85,27 +85,27 @@ public:
   Basic() : hash_{0} {}
 
   //! Delete the copy constructor and assignment
-  Basic(const Basic &) = delete;
+  Basic(const Basic&) = delete;
 
   //! Assignment operator in continuation with above
-  Basic &operator=(const Basic &) = delete;
+  Basic& operator=(const Basic&) = delete;
 
   //! Delete the move constructor and assignment
-  Basic(Basic &&) = delete;
+  Basic(Basic&&) = delete;
 
   //! Assignment operator in continuation with above
-  Basic &operator=(Basic &&) = delete;
+  Basic& operator=(Basic&&) = delete;
 
   // Equality operator
-  virtual bool is_equal(const Basic &o) const = 0;
-  bool operator==(const Basic &o) const { return this->is_equal(o); };
-  bool operator!=(const Basic &o) const { return !(*this == o); };
+  virtual bool is_equal(const Basic& o) const = 0;
+  bool operator==(const Basic& o) const { return this->is_equal(o); };
+  bool operator!=(const Basic& o) const { return !(*this == o); };
 
   //! Comparator operator
-  bool operator<(const Basic &rhs) const { return this->compare(rhs) == -1; };
-  bool operator>(const Basic &rhs) const { return rhs < *this; }
-  bool operator<=(const Basic &rhs) const { return !(*this > rhs); }
-  bool operator>=(const Basic &rhs) const { return !(*this < rhs); }
+  bool operator<(const Basic& rhs) const { return this->compare(rhs) == -1; };
+  bool operator>(const Basic& rhs) const { return rhs < *this; }
+  bool operator<=(const Basic& rhs) const { return !(*this > rhs); }
+  bool operator>=(const Basic& rhs) const { return !(*this < rhs); }
 
   /*!
   Calculates the hash of the given Lydia class.
@@ -132,13 +132,13 @@ public:
    This function assumes that `o` is the same type as `this`. Use ` compare_`
    if you want general comparison.
    */
-  virtual int compare_(const Basic &o) const = 0;
-  int compare(const Basic &o) const;
-  virtual void accept(Visitor &v) const = 0;
+  virtual int compare_(const Basic& o) const = 0;
+  int compare(const Basic& o) const;
+  virtual void accept(Visitor& v) const = 0;
   std::string str() const;
 };
 
-template <class T> void hash_combine(hash_t &seed, const T &v);
+template <class T> void hash_combine(hash_t& seed, const T& v);
 
 // Inline members and functions
 inline hash_t Basic::hash() const {
@@ -148,51 +148,51 @@ inline hash_t Basic::hash() const {
 }
 
 //! \return true if  `a` equal `b`
-inline bool eq(const Basic &a, const Basic &b) {
+inline bool eq(const Basic& a, const Basic& b) {
   if (&a == &b) {
     return true;
   }
   return a.is_equal(b);
 }
 //! \return true if  `a` not equal `b`
-inline bool neq(const Basic &a, const Basic &b) { return not(a.is_equal(b)); }
+inline bool neq(const Basic& a, const Basic& b) { return not(a.is_equal(b)); }
 
 //! Templatised version to check is_a type
-template <class T> inline bool is_a(const Basic &b) {
+template <class T> inline bool is_a(const Basic& b) {
   return T::type_code_id == b.get_type_code();
 }
 
-template <class T> inline bool is_a_sub(const Basic &b) {
-  return dynamic_cast<const T *>(&b) != nullptr;
+template <class T> inline bool is_a_sub(const Basic& b) {
+  return dynamic_cast<const T*>(&b) != nullptr;
 }
 
-inline bool is_same_type(const Basic &a, const Basic &b) {
+inline bool is_same_type(const Basic& a, const Basic& b) {
   return a.get_type_code() == b.get_type_code();
 }
 
 //! Templatised version to combine hash
 template <typename T>
 inline void hash_combine_impl(
-    hash_t &seed, const T &v,
-    typename std::enable_if<std::is_base_of<Basic, T>::value>::type * =
+    hash_t& seed, const T& v,
+    typename std::enable_if<std::is_base_of<Basic, T>::value>::type* =
         nullptr) {
   hash_combine(seed, v.hash());
 }
 
 template <typename T>
 inline void hash_combine_impl(
-    hash_t &seed, const T &v,
-    typename std::enable_if<std::is_integral<T>::value>::type * = nullptr) {
+    hash_t& seed, const T& v,
+    typename std::enable_if<std::is_integral<T>::value>::type* = nullptr) {
   seed ^= hash_t(v) + hash_t(0x9e3779b9) + (seed << 6) + (seed >> 2);
 }
 
-inline void hash_combine_impl(hash_t &seed, const std::string &s) {
-  for (const char &c : s) {
+inline void hash_combine_impl(hash_t& seed, const std::string& s) {
+  for (const char& c : s) {
     hash_combine<hash_t>(seed, static_cast<hash_t>(c));
   }
 }
 
-inline void hash_combine_impl(hash_t &seed, const double &s) {
+inline void hash_combine_impl(hash_t& seed, const double& s) {
   union {
     hash_t h;
     double d;
@@ -202,7 +202,7 @@ inline void hash_combine_impl(hash_t &seed, const double &s) {
   hash_combine(seed, u.h);
 }
 
-template <class T> inline void hash_combine(hash_t &seed, const T &v) {
+template <class T> inline void hash_combine(hash_t& seed, const T& v) {
   hash_combine_impl(seed, v);
 }
 
@@ -212,14 +212,14 @@ template <class T> inline void hash_combine(hash_t &seed, const T &v) {
 namespace std {
 //! Specialise std::hash for Basic. We just call Basic.__hash__()
 template <> struct hash<whitemech::lydia::Basic> {
-  std::size_t operator()(const whitemech::lydia::Basic &b) const {
+  std::size_t operator()(const whitemech::lydia::Basic& b) const {
     return b.hash();
   }
 };
 
 template <> struct hash<std::shared_ptr<whitemech::lydia::Basic>> {
   std::size_t
-  operator()(const std::shared_ptr<whitemech::lydia::Basic> &b) const {
+  operator()(const std::shared_ptr<whitemech::lydia::Basic>& b) const {
     return b->hash();
   }
 };

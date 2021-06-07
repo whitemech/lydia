@@ -29,8 +29,8 @@ mona_dfa::~mona_dfa() { dfaFree(this->dfa_); }
 
 bool mona_dfa::is_final(int state) const { return dfa_->f[state] == 1; }
 
-int mona_dfa::get_successor(int state, const interpretation &symbol) const {
-  bdd_manager *mgr = this->dfa_->bddm;
+int mona_dfa::get_successor(int state, const interpretation& symbol) const {
+  bdd_manager* mgr = this->dfa_->bddm;
   unsigned l, r, index;
   unsigned current_node = dfa_->q[state];
   LOAD_lri(&mgr->node_table[current_node], l, r,
@@ -41,15 +41,15 @@ int mona_dfa::get_successor(int state, const interpretation &symbol) const {
   return l;
 }
 
-void mona_dfa::export_dfa(const std::string &filename) const {
+void mona_dfa::export_dfa(const std::string& filename) const {
   std::vector<char> filename_cstr(filename.c_str(),
                                   filename.c_str() + filename.size() + 1);
-  char **arr = new char *[names.size()];
+  char** arr = new char*[names.size()];
   for (size_t i = 0; i < names.size(); i++) {
     arr[i] = new char[names[i].size() + 1];
     strcpy(arr[i], names[i].c_str());
   }
-  char *orders = new char[names.size()];
+  char* orders = new char[names.size()];
   memset(orders, 2, names.size());
 
   dfaExport(dfa_, filename_cstr.data(), get_nb_variables(), arr, orders);

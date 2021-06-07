@@ -23,10 +23,10 @@ namespace whitemech::lydia::Test {
 
 class Person {
 public:
-  Person(std::string name, const unsigned int &age) noexcept
+  Person(std::string name, const unsigned int& age) noexcept
       : name_{std::move(name)}, age_{age} {}
 
-  friend std::ostream &operator<<(std::ostream &stream, const Person &object) {
+  friend std::ostream& operator<<(std::ostream& stream, const Person& object) {
     stream << "name: " << object.name_ << " age: " << object.age_;
     return stream;
   }

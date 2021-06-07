@@ -27,7 +27,7 @@
 
 namespace whitemech::lydia {
 
-std::shared_ptr<abstract_dfa> BDDStrategy::to_dfa(const LDLfFormula &formula) {
+std::shared_ptr<abstract_dfa> BDDStrategy::to_dfa(const LDLfFormula& formula) {
   auto formula_nnf = to_nnf(formula);
   current_context_ = &formula.ctx();
   set_formulas initial_state_formulas{formula_nnf};
@@ -37,7 +37,7 @@ std::shared_ptr<abstract_dfa> BDDStrategy::to_dfa(const LDLfFormula &formula) {
   // find all atoms
   set_atoms_ptr atoms = find_atoms(*formula_nnf);
   int index = 0;
-  for (const auto &atom : atoms) {
+  for (const auto& atom : atoms) {
     atom2ids[atom] = index;
     id2atoms.push_back(atom);
     index++;
@@ -63,10 +63,10 @@ std::shared_ptr<abstract_dfa> BDDStrategy::to_dfa(const LDLfFormula &formula) {
     vec_dfa_states next_states;
     std::vector<set_atoms_ptr> symbols;
 
-    const auto &next_transitions = this->next_transitions(*current_state);
-    for (const auto &symbol_state : next_transitions) {
-      const auto &next_state = symbol_state.first;
-      const auto &symbol = symbol_state.second;
+    const auto& next_transitions = this->next_transitions(*current_state);
+    for (const auto& symbol_state : next_transitions) {
+      const auto& next_state = symbol_state.first;
+      const auto& symbol = symbol_state.second;
       // update states/transitions
       int next_state_index = 0;
       if (discovered.find(next_state) == discovered.end()) {
@@ -87,16 +87,16 @@ std::shared_ptr<abstract_dfa> BDDStrategy::to_dfa(const LDLfFormula &formula) {
 }
 
 std::vector<std::pair<dfa_state_ptr, CUDD::BDD>>
-BDDStrategy::next_transitions(const DFAState &state) {
+BDDStrategy::next_transitions(const DFAState& state) {
   std::vector<std::pair<dfa_state_ptr, CUDD::BDD>> result;
   std::map<set_atoms_ptr, set_nfa_states, cmp_set_of_ptr> symbol2nfastates;
   set_dfa_states discovered;
   set_nfa_states nfa_states;
   set_atoms_ptr symbol;
   std::map<nfa_state_ptr, CUDD::BDD, SharedComparator> all_transitions;
-  for (const auto &nfa_state : state.states) {
-    const auto &next_transitions = this->next_transitions(*nfa_state);
-    for (const auto &pair : next_transitions) {
+  for (const auto& nfa_state : state.states) {
+    const auto& next_transitions = this->next_transitions(*nfa_state);
+    for (const auto& pair : next_transitions) {
       if (all_transitions.find(pair.first) == all_transitions.end()) {
         all_transitions[pair.first] = automaton->mgr.bddZero();
       }
@@ -111,12 +111,12 @@ BDDStrategy::next_transitions(const DFAState &state) {
     return result;
   size_t nb_combinations = pow(2, N);
   for (size_t i = 0; i < nb_combinations; i++) {
-    const auto &combination = state2bin(i, N);
+    const auto& combination = state2bin(i, N);
     set_nfa_states current_state{};
     CUDD::BDD current_label = automaton->mgr.bddOne();
     for (size_t j = 0; j < combination.size(); j++) {
       bool membership_bit = combination[j] == '1';
-      const auto &state_label = all_transitions_vec[j];
+      const auto& state_label = all_transitions_vec[j];
       current_label *=
           (membership_bit ? state_label.second : !state_label.second);
       if (membership_bit)
@@ -132,11 +132,11 @@ BDDStrategy::next_transitions(const DFAState &state) {
 }
 
 std::map<nfa_state_ptr, CUDD::BDD, SharedComparator>
-BDDStrategy::next_transitions(const NFAState &state) {
+BDDStrategy::next_transitions(const NFAState& state) {
   std::map<nfa_state_ptr, CUDD::BDD, SharedComparator> result;
   set_prop_formulas setPropFormulas;
-  for (const auto &f : state.formulas) {
-    const auto &delta_formula = delta_symbolic(*f, false);
+  for (const auto& f : state.formulas) {
+    const auto& delta_formula = delta_symbolic(*f, false);
     setPropFormulas.insert(delta_formula);
   }
   auto and_ = current_context_->makePropAnd(setPropFormulas);
@@ -145,8 +145,8 @@ BDDStrategy::next_transitions(const NFAState &state) {
     return result;
 
   // compute prime implicants
-  int *cube = nullptr;
-  DdGen *g = Cudd_FirstPrime(mgr.getManager(), successor_fun.getNode(),
+  int* cube = nullptr;
+  DdGen* g = Cudd_FirstPrime(mgr.getManager(), successor_fun.getNode(),
                              successor_fun.getNode(), &cube);
   size_t nb_all_variables =
       automaton->nb_bits + automaton->get_nb_variables() + id2subformula.size();

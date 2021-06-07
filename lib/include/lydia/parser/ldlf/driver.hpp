@@ -34,10 +34,10 @@ namespace whitemech::lydia::parsers::ldlf {
 
 class Driver : public AbstractDriver {
 private:
-  void parse_helper(std::istream &stream);
+  void parse_helper(std::istream& stream);
 
-  LDLfParser *parser = nullptr;
-  LDLfScanner *scanner = nullptr;
+  LDLfParser* parser = nullptr;
+  LDLfScanner* scanner = nullptr;
 
 public:
   ldlf_ptr result;
@@ -54,62 +54,62 @@ public:
    * parse - parse from a file
    * @param filename - valid string with input file
    */
-  void parse(const char *const filename) override;
+  void parse(const char* const filename) override;
 
   /**
    * parse - parse from a c++ input stream
    * @param iss - std::istream&, valid input stream
    */
-  void parse(std::istream &iss);
+  void parse(std::istream& iss);
 
   ldlf_ptr add_LDLfTrue() const;
 
   ldlf_ptr add_LDLfFalse() const;
 
-  ldlf_ptr add_LDLfAnd(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
+  ldlf_ptr add_LDLfAnd(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
 
-  ldlf_ptr add_LDLfOr(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
+  ldlf_ptr add_LDLfOr(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
 
-  ldlf_ptr add_LDLfNot(ldlf_ptr &formula) const;
+  ldlf_ptr add_LDLfNot(ldlf_ptr& formula) const;
 
-  ldlf_ptr add_LDLfDiamond(regex_ptr &regex, ldlf_ptr &formula) const;
+  ldlf_ptr add_LDLfDiamond(regex_ptr& regex, ldlf_ptr& formula) const;
 
-  ldlf_ptr add_LDLfBox(regex_ptr &regex, ldlf_ptr &formula) const;
+  ldlf_ptr add_LDLfBox(regex_ptr& regex, ldlf_ptr& formula) const;
 
-  ldlf_ptr add_LDLfImplication(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
+  ldlf_ptr add_LDLfImplication(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
 
-  ldlf_ptr add_LDLfEquivalence(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
+  ldlf_ptr add_LDLfEquivalence(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
 
   ldlf_ptr add_LDLfEnd() const;
 
   ldlf_ptr add_LDLfLast() const;
 
-  regex_ptr add_PropositionalRegExp(prop_ptr &prop_formula) const;
+  regex_ptr add_PropositionalRegExp(prop_ptr& prop_formula) const;
 
-  regex_ptr add_TestRegExp(ldlf_ptr &formula) const;
+  regex_ptr add_TestRegExp(ldlf_ptr& formula) const;
 
-  regex_ptr add_StarRegExp(regex_ptr &regex) const;
+  regex_ptr add_StarRegExp(regex_ptr& regex) const;
 
-  regex_ptr add_SequenceRegExp(regex_ptr &regex_lhs,
-                               regex_ptr &regex_rhs) const;
+  regex_ptr add_SequenceRegExp(regex_ptr& regex_lhs,
+                               regex_ptr& regex_rhs) const;
 
-  regex_ptr add_UnionRegExp(regex_ptr &regex_lhs, regex_ptr &regex_rhs) const;
+  regex_ptr add_UnionRegExp(regex_ptr& regex_lhs, regex_ptr& regex_rhs) const;
 
-  prop_ptr add_PropositionalBooleanAtom(const bool &flag) const;
+  prop_ptr add_PropositionalBooleanAtom(const bool& flag) const;
 
-  prop_ptr add_PropositionalAtom(std::string &symbol_name) const;
+  prop_ptr add_PropositionalAtom(std::string& symbol_name) const;
 
-  prop_ptr add_PropositionalAnd(prop_ptr &lhs, prop_ptr &rhs) const;
+  prop_ptr add_PropositionalAnd(prop_ptr& lhs, prop_ptr& rhs) const;
 
-  prop_ptr add_PropositionalOr(prop_ptr &lhs, prop_ptr &rhs) const;
+  prop_ptr add_PropositionalOr(prop_ptr& lhs, prop_ptr& rhs) const;
 
-  prop_ptr add_PropositionalNot(prop_ptr &prop_formula) const;
+  prop_ptr add_PropositionalNot(prop_ptr& prop_formula) const;
 
-  prop_ptr add_PropositionalImplication(prop_ptr &lhs, prop_ptr &rhs) const;
+  prop_ptr add_PropositionalImplication(prop_ptr& lhs, prop_ptr& rhs) const;
 
-  prop_ptr add_PropositionalEquivalence(prop_ptr &lhs, prop_ptr &rhs) const;
+  prop_ptr add_PropositionalEquivalence(prop_ptr& lhs, prop_ptr& rhs) const;
 
-  std::ostream &print(std::ostream &stream) const;
+  std::ostream& print(std::ostream& stream) const;
 };
 
 } // namespace whitemech::lydia::parsers::ldlf

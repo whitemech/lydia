@@ -19,23 +19,23 @@
 
 namespace whitemech::lydia {
 
-void interpretation_set_to_vect(const interpretation_set &src,
-                                interpretation &dest) {
+void interpretation_set_to_vect(const interpretation_set& src,
+                                interpretation& dest) {
   std::fill(dest.begin(), dest.end(), 0);
   for (auto variable : src) {
     dest[variable] = 1;
   }
 }
 
-void dfa_to_graphviz(const abstract_dfa &automaton,
-                     const std::string &output_filename,
-                     const std::string &format) {
-  Agraph_t *g;
-  GVC_t *gvc;
+void dfa_to_graphviz(const abstract_dfa& automaton,
+                     const std::string& output_filename,
+                     const std::string& format) {
+  Agraph_t* g;
+  GVC_t* gvc;
   Agnode_t *n, *m;
-  Agedge_t *e;
-  Agsym_t *a;
-  FILE *file_ptr;
+  Agedge_t* e;
+  Agsym_t* a;
+  FILE* file_ptr;
   file_ptr = fopen(output_filename.data(), "w");
   if (file_ptr == nullptr) {
     perror("Error opening file");
@@ -71,7 +71,7 @@ void dfa_to_graphviz(const abstract_dfa &automaton,
     if (automaton.is_final(state)) {
       agsafeset(n, strdup("shape"), strdup("doublecircle"), strdup(""));
     }
-    for (const interpretation_set &set_symbol : all_symbols) {
+    for (const interpretation_set& set_symbol : all_symbols) {
       interpretation_set_to_vect(set_symbol, symbol);
       int successor = automaton.get_successor(state, symbol);
       if (discovered.find(successor) == discovered.end()) {
@@ -97,23 +97,23 @@ void dfa_to_graphviz(const abstract_dfa &automaton,
   gvFreeContext(gvc);
 }
 
-void dumpdot(const CUDD::Cudd &mgr, const CUDD::BDD &b,
-             const std::vector<const char *> &inames,
-             const std::string &filename) {
-  FILE *fp = fopen(filename.c_str(), "w");
+void dumpdot(const CUDD::Cudd& mgr, const CUDD::BDD& b,
+             const std::vector<const char*>& inames,
+             const std::string& filename) {
+  FILE* fp = fopen(filename.c_str(), "w");
   std::vector<CUDD::BDD> single(1);
   single[0] = b;
   mgr.DumpDot(single, inames.data(), nullptr, fp);
   fclose(fp);
 }
 
-void bdd2dot(const dfa &automaton, const std::vector<std::string> &names,
-             const std::string &directory) {
+void bdd2dot(const dfa& automaton, const std::vector<std::string>& names,
+             const std::string& directory) {
   const auto size = automaton.root_bdds.size();
-  std::vector<const char *> inames;
+  std::vector<const char*> inames;
   inames.reserve(names.size());
   std::transform(names.begin(), names.end(), std::back_inserter(inames),
-                 [](const std::string &s) { return s.c_str(); });
+                 [](const std::string& s) { return s.c_str(); });
   for (int i = 0; i < size; i++) {
     std::string filename = directory + "/" + std::to_string(i);
     dumpdot(automaton.mgr, automaton.root_bdds[i], inames, filename);
@@ -121,7 +121,7 @@ void bdd2dot(const dfa &automaton, const std::vector<std::string> &names,
   }
 }
 
-void dfa_to_bdds(const dfa &automaton, const std::string &directory_path) {
+void dfa_to_bdds(const dfa& automaton, const std::string& directory_path) {
   auto names = std::vector<std::string>();
   names.reserve(automaton.nb_bits + automaton.get_nb_variables());
   // populate bit names

@@ -27,21 +27,21 @@
 
 namespace whitemech::lydia {
 
-std::vector<std::string> split(const std::string &input,
-                               const std::string &regex);
+std::vector<std::string> split(const std::string& input,
+                               const std::string& regex);
 
-std::string to_upper_case(const std::string &);
+std::string to_upper_case(const std::string&);
 
 bool strfind(std::string str, std::string target);
 
-void print(std::vector<std::string> &v);
+void print(std::vector<std::string>& v);
 
-std::string print_vect_int(std::vector<int> &v);
+std::string print_vect_int(std::vector<int>& v);
 
-std::string print_vec(std::vector<item> &v);
+std::string print_vec(std::vector<item>& v);
 
-std::string join(const std::vector<std::string> &elements,
-                 const char *delim = ", ");
+std::string join(const std::vector<std::string>& elements,
+                 const char* delim = ", ");
 
 /*!
  * Transform an integer in its binary representation.
@@ -60,6 +60,6 @@ std::string state2bin(int n, int nb_fill_bits = -1, bool increasing = false);
 /*
  * From interpretation to symbol
  */
-std::string interpretation2string(const interpretation &);
+std::string interpretation2string(const interpretation&);
 
 } // namespace whitemech::lydia

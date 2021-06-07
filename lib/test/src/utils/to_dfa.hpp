@@ -38,9 +38,9 @@ namespace whitemech::lydia {
 
 template <class Tuple,
           class T = std::decay_t<std::tuple_element_t<0, std::decay_t<Tuple>>>>
-std::vector<T> to_vector(Tuple &&tuple) {
+std::vector<T> to_vector(Tuple&& tuple) {
   return std::apply(
-      [](auto &&... elems) {
+      [](auto&&... elems) {
         return std::vector<T>{std::forward<decltype(elems)>(elems)...};
       },
       std::forward<Tuple>(tuple));
@@ -49,10 +49,10 @@ std::vector<T> to_vector(Tuple &&tuple) {
 // function generator:
 inline std::string propositional(int i) { return "p_" + std::to_string(i); }
 
-static trace to_trace(const std::vector<std::string> &trace_) {
+static trace to_trace(const std::vector<std::string>& trace_) {
   trace t;
   t.reserve(trace_.size());
-  for (const auto &s : trace_) {
+  for (const auto& s : trace_) {
     interpretation p;
     for (int i = s.size() - 1; i >= 0; --i) {
       p.push_back(s[i] - 48);
@@ -62,8 +62,8 @@ static trace to_trace(const std::vector<std::string> &trace_) {
   return t;
 }
 
-static bool verify(const abstract_dfa &automaton,
-                   const std::vector<std::string> &trace_, bool expected) {
+static bool verify(const abstract_dfa& automaton,
+                   const std::vector<std::string>& trace_, bool expected) {
   return automaton.accepts(to_trace(trace_)) == expected;
 }
 
@@ -71,7 +71,7 @@ typedef bool (*boolean_condition)(bool a, bool b);
 static boolean_condition equal = [](bool a, bool b) { return a == b; };
 static boolean_condition not_equal = [](bool a, bool b) { return a != b; };
 
-static interpretation from_interpretation_set(const interpretation_set &s,
+static interpretation from_interpretation_set(const interpretation_set& s,
                                               int nb_prop) {
   interpretation result(nb_prop);
   result.reserve(nb_prop);
@@ -96,7 +96,7 @@ from_trace_set(std::vector<interpretation_set> vector, int prop);
 
 template <int length>
 static bool compare(
-    const abstract_dfa &automaton_1, const abstract_dfa &automaton_2,
+    const abstract_dfa& automaton_1, const abstract_dfa& automaton_2,
     int nb_prop, boolean_condition bc = [](bool a, bool b) { return a == b; }) {
   if (automaton_1.get_nb_variables() != automaton_2.get_nb_variables())
     return false;
@@ -104,13 +104,13 @@ static bool compare(
   std::vector<int> full_interpretation;
   full_interpretation.reserve(nb_prop);
   std::iota(full_interpretation.begin(), full_interpretation.end(), 0);
-  const auto &powerset = iter::powerset(full_interpretation);
+  const auto& powerset = iter::powerset(full_interpretation);
   std::vector<interpretation_set> all_interpretations;
-  for (auto &&st : powerset) {
+  for (auto&& st : powerset) {
     all_interpretations.emplace_back(std::begin(st), std::end(st));
   }
 
-  for (const auto &trace_ : iter::product<length>(all_interpretations)) {
+  for (const auto& trace_ : iter::product<length>(all_interpretations)) {
     std::vector<interpretation_set> current_trace_set = to_vector(trace_);
     std::vector<interpretation> current_trace =
         from_trace_set(current_trace_set, nb_prop);
@@ -126,24 +126,24 @@ static std::vector<interpretation>
 from_trace_set(std::vector<interpretation_set> vector, int prop) {
   std::vector<interpretation> result;
   result.reserve(vector.size());
-  for (const auto &v : vector) {
+  for (const auto& v : vector) {
     result.push_back(from_interpretation_set(v, prop));
   }
   return result;
 }
 
 template <typename Parser = parsers::ldlf::Driver>
-static adfa_ptr to_dfa_from_formula_string(const std::string &f, Strategy &s) {
+static adfa_ptr to_dfa_from_formula_string(const std::string& f, Strategy& s) {
   auto driver = Parser();
   std::stringstream ldlf_formula_stream(f);
   driver.parse(ldlf_formula_stream);
-  const auto &formula = *driver.result;
+  const auto& formula = *driver.result;
   auto result = to_dfa_with_strategy(formula, s);
   return result;
 }
 
-static adfa_ptr to_dfa_from_formula_file(const std::filesystem::path &path,
-                                         Strategy &s) {
+static adfa_ptr to_dfa_from_formula_file(const std::filesystem::path& path,
+                                         Strategy& s) {
   std::ifstream t(path.string());
   std::stringstream buffer;
   buffer << t.rdbuf();
@@ -152,29 +152,29 @@ static adfa_ptr to_dfa_from_formula_file(const std::filesystem::path &path,
 
 struct StrategyGenerator
     : public Catch::Generators::IGenerator<
-          std::function<std::shared_ptr<Strategy>(const CUDD::Cudd &)>> {
+          std::function<std::shared_ptr<Strategy>(const CUDD::Cudd&)>> {
 public:
   int i = 0;
-  std::vector<std::function<std::shared_ptr<Strategy>(const CUDD::Cudd &)>>
+  std::vector<std::function<std::shared_ptr<Strategy>(const CUDD::Cudd&)>>
       factories;
   StrategyGenerator();
   bool next() override;
   [[nodiscard]] std::function<
-      std::shared_ptr<Strategy>(const CUDD::Cudd &)> const &
+      std::shared_ptr<Strategy>(const CUDD::Cudd&)> const&
   get() const override;
 
-  static std::shared_ptr<Strategy> make_compositional(const CUDD::Cudd &mgr) {
+  static std::shared_ptr<Strategy> make_compositional(const CUDD::Cudd& mgr) {
     return std::make_shared<CompositionalStrategy>();
   }
-  static std::shared_ptr<Strategy> make_bdd(const CUDD::Cudd &mgr) {
+  static std::shared_ptr<Strategy> make_bdd(const CUDD::Cudd& mgr) {
     return std::make_shared<BDDStrategy>(mgr, 20);
   }
-  static std::shared_ptr<Strategy> make_naive(const CUDD::Cudd &mgr) {
+  static std::shared_ptr<Strategy> make_naive(const CUDD::Cudd& mgr) {
     return std::make_shared<NaiveStrategy>(CUDD::Cudd(), 20);
   }
 };
 Catch::Generators::GeneratorWrapper<
-    std::function<std::shared_ptr<Strategy>(const CUDD::Cudd &)>>
+    std::function<std::shared_ptr<Strategy>(const CUDD::Cudd&)>>
 strategies();
 
 } // namespace whitemech::lydia

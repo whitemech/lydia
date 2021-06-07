@@ -29,7 +29,7 @@
 
 namespace whitemech::lydia {
 
-auto create_spdlog(const std::string &logger_name) {
+auto create_spdlog(const std::string& logger_name) {
 #ifdef _WIN32
   auto color_sink = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
 #else

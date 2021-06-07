@@ -56,12 +56,12 @@ public:
    */
   vec_bdd bddvars;
 
-  const CUDD::Cudd &mgr;
+  const CUDD::Cudd& mgr;
 
-  dfa(const dfa &) = delete;
-  dfa &operator=(const dfa &) = delete;
-  dfa(dfa &&) = delete;
-  dfa &operator=(dfa &&) = delete;
+  dfa(const dfa&) = delete;
+  dfa& operator=(const dfa&) = delete;
+  dfa(dfa&&) = delete;
+  dfa& operator=(dfa&&) = delete;
 
   /*!
    * Initialize the DFA from scratch.
@@ -87,7 +87,7 @@ public:
    * @param nb_bits the maximum number of bits available.
    * @param nb_variables the number of variables to be used.
    */
-  dfa(const CUDD::Cudd &mgr, int nb_bits, int nb_variables);
+  dfa(const CUDD::Cudd& mgr, int nb_bits, int nb_variables);
 
   /*
    *
@@ -110,9 +110,9 @@ public:
    * @param behaviour the MONA behaviours
    * @param mona_bdd_nodes the shared multi-terminal BDD nodes (MONA DFA)
    */
-  dfa(const CUDD::Cudd &mgr, const std::vector<std::string> &variables,
-      int nb_states, int initial_state, const std::vector<int> &final_states,
-      const std::vector<int> &behaviour, std::vector<item> &mona_bdd_nodes);
+  dfa(const CUDD::Cudd& mgr, const std::vector<std::string>& variables,
+      int nb_states, int initial_state, const std::vector<int>& final_states,
+      const std::vector<int>& behaviour, std::vector<item>& mona_bdd_nodes);
 
   static Logger logger;
 
@@ -132,7 +132,7 @@ public:
    * @param filename path to the MONA DFA file.
    * @return a raw pointer to a DFA.
    */
-  static dfa read_from_file(const std::string &filename, const CUDD::Cudd &mgr);
+  static dfa read_from_file(const std::string& filename, const CUDD::Cudd& mgr);
 
   /*!
    * Check whether a word of propositional interpretations
@@ -142,15 +142,15 @@ public:
    *
    * @return true if the word is accepted, false otherwise.
    */
-  bool accepts(const trace &word) const override;
+  bool accepts(const trace& word) const override;
 
   int get_initial_state() const override { return initial_state; };
   int get_nb_states() const override { return nb_states; };
   int get_nb_variables() const override { return nb_variables; };
-  int get_successor(int state, const interpretation &symbol) const override;
-  int get_successor(int state, const interpretation_set &symbol) const override;
+  int get_successor(int state, const interpretation& symbol) const override;
+  int get_successor(int state, const interpretation_set& symbol) const override;
 
-  CUDD::BDD get_symbol(const interpretation_map &) const;
+  CUDD::BDD get_symbol(const interpretation_map&) const;
 
   bool is_final(int state) const override;
 
@@ -190,7 +190,7 @@ public:
    *    greater or equal than nb_variables, are interpreted as "don't care".
    * @param to the ending DFA state
    */
-  void add_transition(int from, const interpretation_map &symbol,
+  void add_transition(int from, const interpretation_map& symbol,
                       int to) override;
 
   /*!
@@ -200,7 +200,7 @@ public:
    * If @dont_care is true (default), the missing variables are considered
    * "don't care" variables. Otherwise, they are considered explicitly false.
    */
-  void add_transition(int from, const interpretation &symbol, int to,
+  void add_transition(int from, const interpretation& symbol, int to,
                       bool dont_care = true) override;
 
   /*!
@@ -210,16 +210,16 @@ public:
    * If @dont_care is true (default), the missing variables are considered
    * "don't care" variables. Otherwise, they are considered explicitly false.
    */
-  void add_transition(int from, const interpretation_set &symbol, int to,
+  void add_transition(int from, const interpretation_set& symbol, int to,
                       bool dont_care = true) override;
 
   CUDD::BDD prop2bddvar(int index, bool v) const;
 
 protected:
 private:
-  void get_successor(const std::vector<int> &state,
-                     const interpretation &symbol, std::vector<int> &next_state,
-                     std::vector<int> &extended_symbol) const;
+  void get_successor(const std::vector<int>& state,
+                     const interpretation& symbol, std::vector<int>& next_state,
+                     std::vector<int>& extended_symbol) const;
 
   /*!
    * Given the index, try to get a BDD. If not present yet, create it.
@@ -236,8 +236,8 @@ private:
    * @return the list of BDDs.
    */
   vec_bdd try_get(int index,
-                  const std::vector<std::vector<int>> &mona_bdd_nodes,
-                  std::vector<vec_bdd> &tBDD);
+                  const std::vector<std::vector<int>>& mona_bdd_nodes,
+                  std::vector<vec_bdd>& tBDD);
 
   /*!
    * Return positive or negative BDD variable from index.
@@ -264,8 +264,8 @@ private:
    * @param mona_bdd_nodes MONA BDDs specifications.
    */
   void
-  construct_bdd_from_mona(const std::vector<std::vector<int>> &mona_bdd_nodes,
-                          const std::vector<int> &behaviour,
-                          const std::vector<int> &final_states);
+  construct_bdd_from_mona(const std::vector<std::vector<int>>& mona_bdd_nodes,
+                          const std::vector<int>& behaviour,
+                          const std::vector<int>& final_states);
 };
 } // namespace whitemech::lydia

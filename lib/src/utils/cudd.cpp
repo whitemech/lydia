@@ -21,11 +21,11 @@
 
 namespace whitemech::lydia {
 
-std::vector<std::vector<uint8_t>> get_primes(const CUDD::BDD &f,
+std::vector<std::vector<uint8_t>> get_primes(const CUDD::BDD& f,
                                              int nb_variables) {
   std::vector<std::vector<uint8_t>> primes;
-  int *cube = nullptr;
-  DdGen *g = Cudd_FirstPrime(f.manager(), f.getNode(), f.getNode(), &cube);
+  int* cube = nullptr;
+  DdGen* g = Cudd_FirstPrime(f.manager(), f.getNode(), f.getNode(), &cube);
   if (g != nullptr) {
     do {
       primes.emplace_back(std::vector<uint8_t>(cube, cube + nb_variables));
@@ -34,12 +34,12 @@ std::vector<std::vector<uint8_t>> get_primes(const CUDD::BDD &f,
   }
   return primes;
 }
-std::vector<std::vector<uint8_t>> get_cubes(const CUDD::BDD &f,
+std::vector<std::vector<uint8_t>> get_cubes(const CUDD::BDD& f,
                                             int nb_variables) {
   std::vector<std::vector<uint8_t>> cubes;
-  int *cube = nullptr;
+  int* cube = nullptr;
   CUDD_VALUE_TYPE value;
-  DdGen *g = Cudd_FirstCube(f.manager(), f.getNode(), &cube, &value);
+  DdGen* g = Cudd_FirstCube(f.manager(), f.getNode(), &cube, &value);
   if (g != nullptr) {
     do {
       cubes.emplace_back(std::vector<uint8_t>(cube, cube + nb_variables));

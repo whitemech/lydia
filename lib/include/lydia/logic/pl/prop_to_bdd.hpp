@@ -25,7 +25,7 @@ namespace whitemech::lydia {
 class PropToBDDVisitor : public Visitor {
 private:
 protected:
-  CUDD::Cudd *mgr;
+  CUDD::Cudd* mgr;
   bool initialized = false;
   std::map<atom_ptr, size_t, SharedComparator> atom2id;
   std::vector<atom_ptr> id2atom;
@@ -33,8 +33,8 @@ protected:
 public:
   CUDD::BDD result;
 
-  explicit PropToBDDVisitor(CUDD::Cudd &mgr,
-                            const std::vector<atom_ptr> &id2atom_)
+  explicit PropToBDDVisitor(CUDD::Cudd& mgr,
+                            const std::vector<atom_ptr>& id2atom_)
       : mgr{&mgr}, initialized{false} {
     id2atom = id2atom_;
     for (size_t i = 0; i < id2atom_.size(); ++i) {
@@ -42,7 +42,7 @@ public:
       mgr.bddVar(i);
     }
   };
-  explicit PropToBDDVisitor(const std::vector<atom_ptr> &id2atom_) {
+  explicit PropToBDDVisitor(const std::vector<atom_ptr>& id2atom_) {
     mgr = new CUDD::Cudd();
     initialized = true;
     id2atom = id2atom_;
@@ -57,14 +57,14 @@ public:
   }
 
   // callbacks for propositional logic
-  void visit(const PropositionalTrue &) override;
-  void visit(const PropositionalFalse &) override;
-  void visit(const PropositionalAtom &) override;
-  void visit(const PropositionalAnd &) override;
-  void visit(const PropositionalOr &) override;
-  void visit(const PropositionalNot &) override;
+  void visit(const PropositionalTrue&) override;
+  void visit(const PropositionalFalse&) override;
+  void visit(const PropositionalAtom&) override;
+  void visit(const PropositionalAnd&) override;
+  void visit(const PropositionalOr&) override;
+  void visit(const PropositionalNot&) override;
 
-  CUDD::BDD apply(const PropositionalFormula &f);
+  CUDD::BDD apply(const PropositionalFormula& f);
 };
 
 } // namespace whitemech::lydia

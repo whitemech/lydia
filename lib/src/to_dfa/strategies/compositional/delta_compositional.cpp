@@ -27,54 +27,54 @@ namespace whitemech::lydia {
 
 Logger DeltaCompositionalVisitor::logger = Logger("delta");
 
-void DeltaCompositionalVisitor::visit(const LDLfTrue &x) {
+void DeltaCompositionalVisitor::visit(const LDLfTrue& x) {
   result = mgr.bddOne();
 }
-void DeltaCompositionalVisitor::visit(const LDLfFalse &x) {
+void DeltaCompositionalVisitor::visit(const LDLfFalse& x) {
   result = mgr.bddZero();
 }
 
-void DeltaCompositionalVisitor::visit(const LDLfNot &b) {
+void DeltaCompositionalVisitor::visit(const LDLfNot& b) {
   DeltaCompositionalVisitor::logger.error(
       "Delta function should not be called with a not.");
   assert(false);
 }
 
-void DeltaCompositionalVisitor::visit(const LDLfAnd &x) {
+void DeltaCompositionalVisitor::visit(const LDLfAnd& x) {
   auto container = x.get_container();
   set_prop_formulas new_container;
   CUDD::BDD tmp = mgr.bddOne();
-  for (auto &a : container) {
+  for (auto& a : container) {
     tmp *= apply(*a);
   }
   result = tmp;
 }
 
-void DeltaCompositionalVisitor::visit(const LDLfOr &x) {
+void DeltaCompositionalVisitor::visit(const LDLfOr& x) {
   auto container = x.get_container();
   set_prop_formulas new_container;
   CUDD::BDD tmp = mgr.bddZero();
-  for (auto &a : container) {
+  for (auto& a : container) {
     tmp += apply(*a);
   }
   result = tmp;
 }
 
-void DeltaCompositionalVisitor::visit(const LDLfDiamond &f) {
+void DeltaCompositionalVisitor::visit(const LDLfDiamond& f) {
   auto old_formula = formula;
   formula = f.get_formula();
   result = apply(*f.get_regex());
   formula = old_formula;
 }
 
-void DeltaCompositionalVisitor::visit(const LDLfBox &f) {
+void DeltaCompositionalVisitor::visit(const LDLfBox& f) {
   DeltaCompositionalVisitor::logger.error(
       "Delta function should not be called with a box formula.");
   assert(false);
 }
 
 void DeltaCompositionalVisitor::add_variable_if_not_present_(
-    const basic_ptr &f) {
+    const basic_ptr& f) {
   if (subformula2id.find(f) == subformula2id.end()) {
     size_t id = subformula2id.size();
     CUDD::BDD var = mgr.bddVar(id);
@@ -84,13 +84,13 @@ void DeltaCompositionalVisitor::add_variable_if_not_present_(
   }
 }
 
-CUDD::BDD DeltaCompositionalVisitor::get_var_(const basic_ptr &f) {
+CUDD::BDD DeltaCompositionalVisitor::get_var_(const basic_ptr& f) {
   size_t id = subformula2id[f];
   CUDD::BDD var = subformula_bddvars[id];
   return var;
 }
 
-void DeltaCompositionalVisitor::visit(const PropositionalRegExp &r) {
+void DeltaCompositionalVisitor::visit(const PropositionalRegExp& r) {
   auto prop = r.get_arg();
   auto regex = std::static_pointer_cast<const RegExp>(r.shared_from_this());
 
@@ -104,7 +104,7 @@ void DeltaCompositionalVisitor::visit(const PropositionalRegExp &r) {
   result = var;
 }
 
-void DeltaCompositionalVisitor::visit(const TestRegExp &r) {
+void DeltaCompositionalVisitor::visit(const TestRegExp& r) {
   auto regex = r.shared_from_this();
   add_variable_if_not_present_(regex);
   CUDD::BDD test_var = get_var_(regex);
@@ -112,17 +112,17 @@ void DeltaCompositionalVisitor::visit(const TestRegExp &r) {
   result = test_var & body_var;
 }
 
-void DeltaCompositionalVisitor::visit(const UnionRegExp &r) {
+void DeltaCompositionalVisitor::visit(const UnionRegExp& r) {
   set_prop_formulas args;
   CUDD::BDD tmp = mgr.bddZero();
-  for (const auto &regex : r.get_container()) {
+  for (const auto& regex : r.get_container()) {
     auto new_f = r.ctx().makeLdlfDiamond(regex, formula);
     tmp += apply(*new_f);
   }
   result = tmp;
 }
 
-void DeltaCompositionalVisitor::visit(const SequenceRegExp &r) {
+void DeltaCompositionalVisitor::visit(const SequenceRegExp& r) {
   const regex_ptr head = r.get_container().front();
   regex_ptr tail;
   if (r.get_container().size() == 2) {
@@ -135,7 +135,7 @@ void DeltaCompositionalVisitor::visit(const SequenceRegExp &r) {
   result = apply(*r.ctx().makeLdlfDiamond(head, ldlf_tail));
 }
 
-void DeltaCompositionalVisitor::visit(const StarRegExp &r) {
+void DeltaCompositionalVisitor::visit(const StarRegExp& r) {
   auto regex = std::static_pointer_cast<const RegExp>(r.shared_from_this());
   auto phi = apply(*formula);
   auto next = r.ctx().makeLdlfDiamond(regex, formula);
@@ -144,22 +144,22 @@ void DeltaCompositionalVisitor::visit(const StarRegExp &r) {
   result = phi | phi2;
 }
 
-void DeltaCompositionalVisitor::visit(const LDLfF &f) {
+void DeltaCompositionalVisitor::visit(const LDLfF& f) {
   result = mgr.bddZero();
 }
-void DeltaCompositionalVisitor::visit(const LDLfT &f) { result = mgr.bddOne(); }
-void DeltaCompositionalVisitor::visit(const LDLfQ &f) {
+void DeltaCompositionalVisitor::visit(const LDLfT& f) { result = mgr.bddOne(); }
+void DeltaCompositionalVisitor::visit(const LDLfQ& f) {
   auto atom = f.shared_from_this();
   add_variable_if_not_present_(atom);
   result = get_var_(atom);
 }
 
-CUDD::BDD DeltaCompositionalVisitor::apply(const RegExp &r) {
+CUDD::BDD DeltaCompositionalVisitor::apply(const RegExp& r) {
   r.accept(*this);
   return result;
 }
 
-CUDD::BDD DeltaCompositionalVisitor::apply(const LDLfFormula &f) {
+CUDD::BDD DeltaCompositionalVisitor::apply(const LDLfFormula& f) {
   auto old_formula = formula;
   f.accept(*this);
   formula = old_formula;

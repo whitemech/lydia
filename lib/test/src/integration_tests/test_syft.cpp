@@ -29,7 +29,7 @@ static const auto ROOT = std::filesystem::path("..") / ".." / "..";
 static const auto DATASETS_ROOT =
     ROOT / "lib" / "test" / "src" / "assets" / "datasets";
 
-int find_sink(DFA *M) {
+int find_sink(DFA* M) {
   int i;
   for (i = 0; i < M->ns; i++) {
     if (bdd_is_leaf(M->bddm, M->q[i]) &&
@@ -39,7 +39,7 @@ int find_sink(DFA *M) {
   return -1;
 }
 
-static void visit_leaves(bdd_manager *bddm, unsigned p) {
+static void visit_leaves(bdd_manager* bddm, unsigned p) {
   bool is_leaf = bdd_is_leaf(bddm, p);
   bool is_marked = bdd_mark(bddm, p);
   if (is_leaf and not is_marked) {
@@ -47,7 +47,7 @@ static void visit_leaves(bdd_manager *bddm, unsigned p) {
     unsigned old_left, old_right;
     unsigned new_first, actual_new_left, actual_new_right;
     unsigned old_leaf_value = bdd_leaf_value(bddm, p);
-    bdd_record *leaf = &bddm->node_table[p];
+    bdd_record* leaf = &bddm->node_table[p];
     LOAD_lr(leaf, old_left, old_right) new_first = old_leaf_value - 1;
     new_first = new_first << 8;
     new_first |= (old_right >> 16) & 0xff;
@@ -63,9 +63,9 @@ static void visit_leaves(bdd_manager *bddm, unsigned p) {
   }
 }
 
-DFA *remove_zero_state(DFA *automaton) {
+DFA* remove_zero_state(DFA* automaton) {
   // TODO free memory of BDD nodes from zero state!
-  DFA *tmp = dfaCopy(automaton);
+  DFA* tmp = dfaCopy(automaton);
   if (tmp->ns == 1) {
     return tmp;
   }
@@ -87,8 +87,8 @@ DFA *remove_zero_state(DFA *automaton) {
 }
 
 std::shared_ptr<abstract_dfa> load_mona_dfa(std::filesystem::path filepath) {
-  char **names;
-  int *orders;
+  char** names;
+  int* orders;
   int index;
   std::string filename = filepath.filename().string();
   std::string output = "output.dfa";
@@ -107,21 +107,21 @@ std::shared_ptr<abstract_dfa> load_mona_dfa(std::filesystem::path filepath) {
   return std::make_shared<mona_dfa>(dfa, names_vector);
 }
 
-static void _dataset_test(const std::filesystem::path &dataset_path) {
+static void _dataset_test(const std::filesystem::path& dataset_path) {
   log.info("Processing dataset " + dataset_path.string());
   const auto mona_dataset = dataset_path / "mona";
   const auto lydia_dataset = dataset_path / "lydia";
 
   std::filesystem::directory_iterator it(mona_dataset);
-  for (const auto &datapath : it) {
+  for (const auto& datapath : it) {
     log.info("Processing file " + dataset_path.string());
     const auto strategy = std::make_shared<CompositionalStrategy>();
     const auto filename = datapath.path().filename().stem().string();
     const auto mona_file = mona_dataset / fmt::format("{}.mona", filename);
     const auto lydia_file = lydia_dataset / fmt::format("{}.ldlf", filename);
-    DFA *prop_true = dfaPropositionalTrue();
-    DFA *ldlf_true = dfaLDLfTrue();
-    DFA *at_least_one_step =
+    DFA* prop_true = dfaPropositionalTrue();
+    DFA* ldlf_true = dfaLDLfTrue();
+    DFA* at_least_one_step =
         dfaLDLfDiamondProp(prop_true, ldlf_true, 0, nullptr);
     dfaFree(prop_true);
     dfaFree(ldlf_true);

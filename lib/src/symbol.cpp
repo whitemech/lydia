@@ -26,16 +26,16 @@ Symbol::Symbol(std::string name) : name_{std::move(name)} {
   this->type_code_ = type_code_id;
 }
 
-bool Symbol::is_equal(const Basic &o) const {
+bool Symbol::is_equal(const Basic& o) const {
   if (is_a<Symbol>(o))
     // TODO: check symengine_casts.h
-    return name_ == dynamic_cast<const Symbol &>(o).name_;
+    return name_ == dynamic_cast<const Symbol&>(o).name_;
   return false;
 }
 
-int Symbol::compare_(const Basic &o) const {
+int Symbol::compare_(const Basic& o) const {
   assert(is_a<Symbol>(o));
-  const auto &s = dynamic_cast<const Symbol &>(o);
+  const auto& s = dynamic_cast<const Symbol&>(o);
   if (name_ == s.name_)
     return 0;
   return name_ < s.name_ ? -1 : 1;
