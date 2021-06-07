@@ -30,15 +30,15 @@ namespace whitemech::lydia {
 
 class NaiveStrategy : public Strategy {
 private:
-  AstManager *current_context;
-  const CUDD::Cudd &mgr;
+  AstManager* current_context;
+  const CUDD::Cudd& mgr;
   const size_t max_nb_bits;
 
 public:
-  explicit NaiveStrategy(const CUDD::Cudd &mgr, uint32_t max_nb_bits = 10)
+  explicit NaiveStrategy(const CUDD::Cudd& mgr, uint32_t max_nb_bits = 10)
       : mgr{mgr}, max_nb_bits{max_nb_bits} {};
 
-  std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula) override;
+  std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula& formula) override;
 
   /*!
    * Compute the next state, given a propositional interpretation.
@@ -49,8 +49,8 @@ public:
    * @param i the propositional interpretation (a set of propositional atoms).
    * @return the next DFA state.
    */
-  static dfa_state_ptr next_state(const DFAState &state,
-                                  const set_atoms_ptr &i);
+  static dfa_state_ptr next_state(const DFAState& state,
+                                  const set_atoms_ptr& i);
 
   /*!
    * Compute the next states, given a propositional interpretation.
@@ -61,8 +61,8 @@ public:
    * @param i the propositional interpretation (a set of propositional atoms).
    * @return the next NFA states.
    */
-  static set_nfa_states next_states(const NFAState &state,
-                                    const set_atoms_ptr &i);
+  static set_nfa_states next_states(const NFAState& state,
+                                    const set_atoms_ptr& i);
 };
 
 } // namespace whitemech::lydia

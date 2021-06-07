@@ -37,23 +37,11 @@ TEST_CASE("Driver LDLf Boolean Atoms", "[parser][ldlf]") {
     auto parsedBoolTrue = driver.result;
     REQUIRE(*parsedBoolTrue == *actualBoolTrue);
   }
-  SECTION("test parsing TT") {
-    std::istringstream tt_maiusc("TT");
-    driver.parse(tt_maiusc);
-    auto parsedBoolTrue_MAIUSC = driver.result;
-    REQUIRE(*parsedBoolTrue_MAIUSC == *actualBoolTrue);
-  }
   SECTION("test parsing ff") {
     std::istringstream ff("ff");
     driver.parse(ff);
     auto parsedBoolFalse = driver.result;
     REQUIRE(*parsedBoolFalse == *actualBoolFalse);
-  }
-  SECTION("test parsing FF") {
-    std::istringstream ff_maiusc("FF");
-    driver.parse(ff_maiusc);
-    auto parsedBoolFalse_MAIUSC = driver.result;
-    REQUIRE(*parsedBoolFalse_MAIUSC == *actualBoolFalse);
   }
 }
 
@@ -261,18 +249,18 @@ TEST_CASE("Driver LDLfTemporal", "[parser][ldlf]") {
     auto parsedDiamond = driver.result;
     REQUIRE(*parsedDiamond == *actualDiamond_prop_re_tt);
   }
-  SECTION("test parsing <0>tt") {
-    std::istringstream a_tt("<0>tt");
+  SECTION("test parsing <false>tt") {
+    std::istringstream a_tt("<false>tt");
     driver.parse(a_tt);
     auto parsedDiamond = driver.result;
-    REQUIRE(*dynamic_cast<const LDLfDiamond &>(*parsedDiamond).get_regex() ==
+    REQUIRE(*dynamic_cast<const LDLfDiamond&>(*parsedDiamond).get_regex() ==
             *ptr_prop_re_false);
   }
-  SECTION("test parsing <1>tt") {
-    std::istringstream a_tt("<1>tt");
+  SECTION("test parsing <true>tt") {
+    std::istringstream a_tt("<true>tt");
     driver.parse(a_tt);
     auto parsedDiamond = driver.result;
-    REQUIRE(*dynamic_cast<const LDLfDiamond &>(*parsedDiamond).get_regex() ==
+    REQUIRE(*dynamic_cast<const LDLfDiamond&>(*parsedDiamond).get_regex() ==
             *ptr_prop_re_true);
   }
   SECTION("test parsing <a;b;c>tt") {

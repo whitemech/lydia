@@ -27,12 +27,12 @@ namespace whitemech::lydia {
 class NaiveModelEnumerationStategy : public ModelEnumerationStrategy {
 
 public:
-  std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f) {
+  std::vector<set_atoms_ptr> all_models(const PropositionalFormula& f) {
     std::vector<set_atoms_ptr> models;
     auto all_atoms = find_atoms(f);
     std::vector<set_atoms_ptr> all_interpretations =
         powerset<atom_ptr, SharedComparator>(all_atoms);
-    for (set_atoms_ptr &interpretation : all_interpretations) {
+    for (set_atoms_ptr& interpretation : all_interpretations) {
       if (eval(f, interpretation)) {
         models.push_back(interpretation);
       }

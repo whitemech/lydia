@@ -19,11 +19,11 @@
 
 namespace whitemech::lydia {
 
-void EvalVisitor::visit(const PropositionalTrue &) { result = true; }
-void EvalVisitor::visit(const PropositionalFalse &) { result = false; }
+void EvalVisitor::visit(const PropositionalTrue&) { result = true; }
+void EvalVisitor::visit(const PropositionalFalse&) { result = false; }
 
-void EvalVisitor::visit(const PropositionalAtom &a) {
-  for (const auto &x : interpretation) {
+void EvalVisitor::visit(const PropositionalAtom& a) {
+  for (const auto& x : interpretation) {
     if (*x == a) {
       result = true;
       return;
@@ -32,13 +32,13 @@ void EvalVisitor::visit(const PropositionalAtom &a) {
   result = false;
 }
 
-void EvalVisitor::visit(const PropositionalNot &a) {
+void EvalVisitor::visit(const PropositionalNot& a) {
   result = not apply(*a.get_arg());
 }
 
-void EvalVisitor::visit(const PropositionalAnd &a) {
+void EvalVisitor::visit(const PropositionalAnd& a) {
   result = true;
-  for (const auto &subformula : a.get_container()) {
+  for (const auto& subformula : a.get_container()) {
     if (!apply(*subformula)) {
       result = false;
       return;
@@ -46,9 +46,9 @@ void EvalVisitor::visit(const PropositionalAnd &a) {
   }
 }
 
-void EvalVisitor::visit(const PropositionalOr &a) {
+void EvalVisitor::visit(const PropositionalOr& a) {
   result = false;
-  for (const auto &subformula : a.get_container()) {
+  for (const auto& subformula : a.get_container()) {
     if (apply(*subformula)) {
       result = true;
       return;
@@ -56,12 +56,12 @@ void EvalVisitor::visit(const PropositionalOr &a) {
   }
 }
 
-bool EvalVisitor::apply(const PropositionalFormula &b) {
+bool EvalVisitor::apply(const PropositionalFormula& b) {
   b.accept(*this);
   return result;
 }
 
-bool eval(const PropositionalFormula &f, const set_atoms_ptr &interpretation) {
+bool eval(const PropositionalFormula& f, const set_atoms_ptr& interpretation) {
   EvalVisitor evalVisitor{interpretation};
   return evalVisitor.apply(f);
 }

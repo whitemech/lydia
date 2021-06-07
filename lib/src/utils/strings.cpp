@@ -23,15 +23,15 @@
 
 namespace whitemech::lydia {
 
-std::vector<std::string> split(const std::string &input,
-                               const std::string &regex) {
+std::vector<std::string> split(const std::string& input,
+                               const std::string& regex) {
   // passing -1 as the submatch index parameter performs splitting
   std::regex re(regex);
   std::sregex_token_iterator first{input.begin(), input.end(), re, -1}, last;
   return {first, last};
 }
 
-std::string to_upper_case(const std::string &s) {
+std::string to_upper_case(const std::string& s) {
   std::string result(s);
   std::transform(s.begin(), s.end(), result.begin(), ::toupper);
   return result;
@@ -42,13 +42,13 @@ bool strfind(std::string str, std::string target) {
   return found != std::string::npos;
 }
 
-void print(std::vector<std::string> &v) {
+void print(std::vector<std::string>& v) {
   for (size_t n = 0; n < v.size(); n++)
     std::cout << v[n] << " ";
   std::cout << std::endl;
 }
 
-std::string print_vect_int(std::vector<int> &v) {
+std::string print_vect_int(std::vector<int>& v) {
   std::string result = "{";
   for (size_t n = 0; n < v.size(); n++)
     result += std::to_string(v[n]) + ", ";
@@ -56,7 +56,7 @@ std::string print_vect_int(std::vector<int> &v) {
   return result;
 }
 
-std::string print_vec(std::vector<item> &v) {
+std::string print_vec(std::vector<item>& v) {
   std::string result = "{";
   for (size_t n = 0; n < v.size(); n++)
     result += print_vect_int(v[n]) + ", ";
@@ -71,7 +71,7 @@ std::string print_vec(std::vector<item> &v) {
  * @param delim the delimiter
  * @return the joined string.
  */
-std::string join(const std::vector<std::string> &elements, const char *delim) {
+std::string join(const std::vector<std::string>& elements, const char* delim) {
   std::ostringstream s;
   std::copy(elements.begin(), elements.end(),
             std::ostream_iterator<std::string>(s, delim));
@@ -101,7 +101,7 @@ std::string state2bin(int n, int nb_fill_bits, bool increasing) {
   return res;
 }
 
-std::string interpretation2string(const interpretation &v) {
+std::string interpretation2string(const interpretation& v) {
   std::stringstream ss;
   for (int i : v)
     ss << i;

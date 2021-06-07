@@ -26,25 +26,24 @@ bool StrategyGenerator::next() { return ++i < factories.size(); }
 // Precondition:
 // The generator is either freshly constructed or the last call to next()
 // returned true
-std::function<std::shared_ptr<Strategy>(const CUDD::Cudd &)> const &
+std::function<std::shared_ptr<Strategy>(const CUDD::Cudd&)> const&
 StrategyGenerator::get() const {
   return factories.at(i);
 }
 
 StrategyGenerator::StrategyGenerator() {
   factories =
-      std::vector<std::function<std::shared_ptr<Strategy>(const CUDD::Cudd &)>>(
-          {
-              StrategyGenerator::make_bdd,
-              StrategyGenerator::make_compositional,
-          });
+      std::vector<std::function<std::shared_ptr<Strategy>(const CUDD::Cudd&)>>({
+          StrategyGenerator::make_bdd,
+          StrategyGenerator::make_compositional,
+      });
 }
 
 Catch::Generators::GeneratorWrapper<
-    std::function<std::shared_ptr<Strategy>(const CUDD::Cudd &)>>
+    std::function<std::shared_ptr<Strategy>(const CUDD::Cudd&)>>
 strategies() {
   return Catch::Generators::GeneratorWrapper<
-      std::function<std::shared_ptr<Strategy>(const CUDD::Cudd &)>>(
+      std::function<std::shared_ptr<Strategy>(const CUDD::Cudd&)>>(
       std::make_unique<StrategyGenerator>());
 }
 

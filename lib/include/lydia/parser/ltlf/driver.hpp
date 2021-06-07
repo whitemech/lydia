@@ -33,10 +33,10 @@ namespace whitemech::lydia::parsers::ltlf {
 
 class LTLfDriver : public AbstractDriver {
 private:
-  void parse_helper(std::istream &stream);
+  void parse_helper(std::istream& stream);
 
-  LTLfParser *parser = nullptr;
-  LTLfScanner *scanner = nullptr;
+  LTLfParser* parser = nullptr;
+  LTLfScanner* scanner = nullptr;
 
 public:
   ldlf_ptr result;
@@ -53,31 +53,34 @@ public:
    * parse - parse from a file
    * @param filename - valid string with input file
    */
-  void parse(const char *const filename) override;
+  void parse(const char* const filename) override;
 
   /**
    * parse - parse from a c++ input stream
    * @param is - std::istream&, valid input stream
    */
-  void parse(std::istream &iss);
+  void parse(std::istream& iss);
 
   ldlf_ptr add_LTLfTrue() const;
   ldlf_ptr add_LTLfFalse() const;
   ldlf_ptr add_LTLfAtom(std::string s) const;
-  ldlf_ptr add_LTLfAnd(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
-  ldlf_ptr add_LTLfOr(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
-  ldlf_ptr add_LTLfNot(ldlf_ptr &formula) const;
-  ldlf_ptr add_LTLfNext(ldlf_ptr &formula) const;
-  ldlf_ptr add_LTLfWeakNext(ldlf_ptr &formula) const;
-  ldlf_ptr add_LTLfEventually(ldlf_ptr &formula) const;
-  ldlf_ptr add_LTLfAlways(ldlf_ptr &formula) const;
-  ldlf_ptr add_LTLfUntil(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
-  ldlf_ptr add_LTLfRelease(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
-  ldlf_ptr add_LTLfImplication(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
-  ldlf_ptr add_LTLfEquivalence(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
+  ldlf_ptr add_LTLfAnd(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
+  ldlf_ptr add_LTLfOr(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
+  ldlf_ptr add_LTLfNot(ldlf_ptr& formula) const;
+  ldlf_ptr add_LTLfNext(ldlf_ptr& formula) const;
+  ldlf_ptr add_LTLfWeakNext(ldlf_ptr& formula) const;
+  ldlf_ptr add_LTLfEventually(ldlf_ptr& formula) const;
+  ldlf_ptr add_LTLfAlways(ldlf_ptr& formula) const;
+  ldlf_ptr add_LTLfUntil(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
+  ldlf_ptr add_LTLfRelease(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
+  ldlf_ptr add_LTLfImplication(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
+  ldlf_ptr add_LTLfEquivalence(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
   ldlf_ptr add_LTLfLast() const;
+  ldlf_ptr add_LTLfEnd() const;
+  ldlf_ptr add_LTLfPropTrue() const;
+  ldlf_ptr add_LTLfPropFalse() const;
 
-  std::ostream &print(std::ostream &stream) const;
+  std::ostream& print(std::ostream& stream) const;
 };
 
 } // namespace whitemech::lydia::parsers::ltlf

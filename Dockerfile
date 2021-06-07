@@ -1,5 +1,5 @@
 FROM ubuntu:20.04
-LABEL version="0.1.0"
+LABEL version="0.1.1"
 LABEL authors="Marco Favorito <favorito@diag.uniroma1.it>"
 LABEL contributors="Francesco Fuggitti <fuggitti@diag.uniroma1.it>"
 LABEL description="A Docker image to build the Lydia project."
@@ -64,7 +64,7 @@ RUN wget https://github.com/whitemech/cudd/releases/download/v${CUDD_VERSION}/cu
     tar -xf cudd_${CUDD_VERSION}_linux-amd64.tar.gz &&\
     cd cudd_${CUDD_VERSION}_linux-amd64 &&\
     cp -P lib/* /usr/local/lib/ &&\
-    cp -Pr include/cudd/* /usr/local/include/ &&\
+    cp -Pr include/* /usr/local/include/ &&\
     rm -rf cudd_${CUDD_VERSION}_linux-amd64*
 
 # Install MONA

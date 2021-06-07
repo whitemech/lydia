@@ -27,9 +27,9 @@ namespace whitemech::lydia {
 
 typedef std::pair<prop_ptr, ldlf_ptr> transition;
 
-DFA *remove_unreachable_states(DFA *arg) {
-  DFA *result;
-  DFA *tmp = dfaLDLfTrue();
+DFA* remove_unreachable_states(DFA* arg) {
+  DFA* result;
+  DFA* tmp = dfaLDLfTrue();
   result = dfaProduct(arg, tmp, dfaAND);
   dfaFree(tmp);
   tmp = dfaMinimize(result);
@@ -38,7 +38,7 @@ DFA *remove_unreachable_states(DFA *arg) {
   return result;
 }
 
-DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
+DFA* CompositionalStrategy::star(const RegExp& r, DFA* body) {
   if (!is_a<StarRegExp>(r)) {
     throw std::invalid_argument("Only star regex allowed.");
   }
@@ -56,7 +56,7 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
   size_t max_or_bits = 0;
   std::map<ldlf_ptr, size_t, SharedComparator> test2id;
   std::vector<ldlf_ptr> id2test;
-  std::vector<DFA *> test_formula_to_dfa;
+  std::vector<DFA*> test_formula_to_dfa;
 
   // build the entire graph first, used later to build the automaton.
   size_t next_state_index = 1;
@@ -90,7 +90,7 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
         get_primes(result, visitor.id2subformula.size());
 
     std::vector<std::vector<transition>> existential_transitions;
-    for (const auto &prime : primes) {
+    for (const auto& prime : primes) {
       std::vector<transition> universal_transitions;
       for (size_t i = 0; i < prime.size(); i++) {
         if (prime[i] == 1) {
@@ -147,10 +147,10 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
   }
 
   test_formula_to_dfa.resize(test2id.size());
-  for (const auto &pair : test2id) {
-    const auto &test_expr = pair.first;
+  for (const auto& pair : test2id) {
+    const auto& test_expr = pair.first;
     auto compose_visitor = ComposeDFAVisitor(*this);
-    DFA *tmp = compose_visitor.apply(*test_expr);
+    DFA* tmp = compose_visitor.apply(*test_expr);
     test_formula_to_dfa[pair.second] = tmp;
   }
 
@@ -172,7 +172,7 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
   // sum the other states
   new_ns += body->ns;
   std::for_each(test_formula_to_dfa.begin(), test_formula_to_dfa.end(),
-                [&new_ns](const auto &dfa_ptr) { new_ns += dfa_ptr->ns; });
+                [&new_ns](const auto& dfa_ptr) { new_ns += dfa_ptr->ns; });
   // for the sink
   new_ns += 2;
   auto accepting_sink = new_ns - 2;
@@ -208,7 +208,7 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
   dfaSetup(new_ns, new_indices.size(), new_indices.data());
   size_t state_id;
   std::vector<std::vector<transition>> next_transitions;
-  for (const auto &state_transitions_pair : transitions_by_state) {
+  for (const auto& state_transitions_pair : transitions_by_state) {
     std::vector<std::pair<int, std::string>> exceptions;
     std::tie(state_id, next_transitions) = state_transitions_pair;
     size_t nb_or_bits = ceil(log2(next_transitions.size()));
@@ -233,7 +233,7 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
           size_t offset = offsets[index];
           auto next_subtransitions =
               test_initial_state_outgoing_transitions[index];
-          for (const auto &subtransition : next_subtransitions) {
+          for (const auto& subtransition : next_subtransitions) {
             const auto next_subautomaton_state = subtransition.first + offset;
             auto guard = subtransition.second + auxiliary_or_and_guard;
             exceptions.emplace_back(next_subautomaton_state, guard);
@@ -241,11 +241,11 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
         } else {
           auto prop_bdd = prop_to_bdd_visitor.apply(*prop);
           const auto prop_cubes = get_cubes(prop_bdd, this->id2atoms.size());
-          for (const auto &cube : prop_cubes) {
+          for (const auto& cube : prop_cubes) {
             std::vector<int> cube_int(cube.begin(), cube.end());
             std::vector<char> cube_guard(cube_int.size());
             std::transform(cube_int.begin(), cube_int.end(), cube_guard.begin(),
-                           [](const int &c) {
+                           [](const int& c) {
                              return c == 0 ? '0' : (c == 1 ? '1' : 'X');
                            });
             std::string cube_string(cube_guard.begin(), cube_guard.end());
@@ -271,7 +271,7 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
 
     // finally alloc exceptions
     dfaAllocExceptions(exceptions.size());
-    for (auto &exception : exceptions) {
+    for (auto& exception : exceptions) {
       dfaStoreException(exception.first, exception.second.data());
     }
 
@@ -286,7 +286,7 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
   auto auxiliary_guard_x = std::string(max_or_bits + max_and_bits, 'X');
   // copy all the other automata
   for (size_t automaton_id = 0; automaton_id < offsets.size(); automaton_id++) {
-    DFA *subautomaton = automaton_id == id2test.size()
+    DFA* subautomaton = automaton_id == id2test.size()
                             ? body
                             : test_formula_to_dfa[automaton_id];
     int current_offset = offsets[automaton_id];
@@ -304,7 +304,7 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
       int nb_transitions = transitions.size();
       statuses += is_current_state_final ? "+" : "-";
       dfaAllocExceptions(nb_transitions);
-      for (const auto &p : transitions) {
+      for (const auto& p : transitions) {
         std::tie(next_state, next_guard) = p;
         dfaStoreException(next_state + current_offset,
                           next_guard.append(auxiliary_guard_x).data());
@@ -324,8 +324,8 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
   dfaStoreState(rejecting_sink);
   statuses += "-";
 
-  DFA *result = dfaBuild(statuses.data());
-  DFA *tmp = dfaMinimize(result);
+  DFA* result = dfaBuild(statuses.data());
+  DFA* tmp = dfaMinimize(result);
   dfaFree(result);
   result = remove_unreachable_states(tmp);
   dfaFree(tmp);
@@ -353,7 +353,7 @@ DFA *CompositionalStrategy::star(const RegExp &r, DFA *body) {
 
   // free test DFAs
   std::for_each(test_formula_to_dfa.begin(), test_formula_to_dfa.end(),
-                [](const auto &dfa_ptr) { dfaFree(dfa_ptr); });
+                [](const auto& dfa_ptr) { dfaFree(dfa_ptr); });
 
   return result;
 }

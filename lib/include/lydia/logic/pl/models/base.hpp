@@ -37,11 +37,11 @@ public:
    * @return the set of the models of a formula
    */
   virtual std::vector<set_atoms_ptr>
-  all_models(const PropositionalFormula &f) = 0;
+  all_models(const PropositionalFormula& f) = 0;
 };
 
 template <class T>
-std::vector<set_atoms_ptr> all_models(const PropositionalFormula &f) {
+std::vector<set_atoms_ptr> all_models(const PropositionalFormula& f) {
   T s = T();
   return s.all_models(f);
 }

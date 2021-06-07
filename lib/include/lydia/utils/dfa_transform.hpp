@@ -27,11 +27,11 @@
 
 namespace whitemech::lydia {
 
-void dfa_to_graphviz(const abstract_dfa &automaton,
-                     const std::string &output_filename,
-                     const std::string &format = "svg");
+void dfa_to_graphviz(const abstract_dfa& automaton,
+                     const std::string& output_filename,
+                     const std::string& format = "svg");
 
-void dfa_to_bdds(const dfa &automaton, const std::string &directory = "./");
+void dfa_to_bdds(const dfa& automaton, const std::string& directory = "./");
 
 /*!
  * Dump the BDDs (one for each bit of the state space).
@@ -47,10 +47,10 @@ void dfa_to_bdds(const dfa &automaton, const std::string &directory = "./");
  *
  * @param directory the directory in which to print the BDDs in DOT format.
  */
-void bdd2dot(const dfa &automaton, const std::vector<std::string> &names,
-             const std::string &directory);
-void dumpdot(const CUDD::Cudd &mgr, const CUDD::BDD &b,
-             const std::vector<const char *> &inames,
-             const std::string &filename);
+void bdd2dot(const dfa& automaton, const std::vector<std::string>& names,
+             const std::string& directory);
+void dumpdot(const CUDD::Cudd& mgr, const CUDD::BDD& b,
+             const std::vector<const char*>& inames,
+             const std::string& filename);
 
 } // namespace whitemech::lydia

@@ -27,8 +27,8 @@ namespace whitemech::lydia {
 
 class DeltaCompositionalVisitor : public Visitor {
 private:
-  void add_variable_if_not_present_(const basic_ptr &f);
-  CUDD::BDD get_var_(const basic_ptr &f);
+  void add_variable_if_not_present_(const basic_ptr& f);
+  CUDD::BDD get_var_(const basic_ptr& f);
 
 protected:
 public:
@@ -42,42 +42,42 @@ public:
 
   static Logger logger;
   DeltaCompositionalVisitor() : mgr{CUDD::Cudd()} {};
-  DeltaCompositionalVisitor(const CUDD::Cudd &mgr) : mgr{mgr} {}
+  DeltaCompositionalVisitor(const CUDD::Cudd& mgr) : mgr{mgr} {}
 
   // callbacks for LDLf
-  void visit(const Symbol &) override{};
-  void visit(const LDLfTrue &) override;
-  void visit(const LDLfFalse &) override;
-  void visit(const LDLfAnd &) override;
-  void visit(const LDLfOr &) override;
-  void visit(const LDLfNot &) override;
-  void visit(const LDLfDiamond &) override;
-  void visit(const LDLfBox &) override;
+  void visit(const Symbol&) override{};
+  void visit(const LDLfTrue&) override;
+  void visit(const LDLfFalse&) override;
+  void visit(const LDLfAnd&) override;
+  void visit(const LDLfOr&) override;
+  void visit(const LDLfNot&) override;
+  void visit(const LDLfDiamond&) override;
+  void visit(const LDLfBox&) override;
 
   // callbacks for regular expressions
-  void visit(const PropositionalRegExp &) override;
-  void visit(const TestRegExp &) override;
-  void visit(const UnionRegExp &) override;
-  void visit(const SequenceRegExp &) override;
-  void visit(const StarRegExp &) override;
+  void visit(const PropositionalRegExp&) override;
+  void visit(const TestRegExp&) override;
+  void visit(const UnionRegExp&) override;
+  void visit(const SequenceRegExp&) override;
+  void visit(const StarRegExp&) override;
 
   // callbacks for propositional logic
-  void visit(const PropositionalTrue &) override{};
-  void visit(const PropositionalFalse &) override{};
-  void visit(const PropositionalAtom &) override{};
-  void visit(const PropositionalAnd &) override{};
-  void visit(const PropositionalOr &) override{};
-  void visit(const PropositionalNot &) override{};
+  void visit(const PropositionalTrue&) override{};
+  void visit(const PropositionalFalse&) override{};
+  void visit(const PropositionalAtom&) override{};
+  void visit(const PropositionalAnd&) override{};
+  void visit(const PropositionalOr&) override{};
+  void visit(const PropositionalNot&) override{};
 
-  void visit(const QuotedFormula &) override{};
-  void visit(const LDLfF &) override;
-  void visit(const LDLfT &) override;
-  void visit(const LDLfQ &) override;
+  void visit(const QuotedFormula&) override{};
+  void visit(const LDLfF&) override;
+  void visit(const LDLfT&) override;
+  void visit(const LDLfQ&) override;
 
-  CUDD::BDD apply(const LDLfFormula &f);
-  CUDD::BDD apply(const RegExp &r);
+  CUDD::BDD apply(const LDLfFormula& f);
+  CUDD::BDD apply(const RegExp& r);
 };
 
-CUDD::BDD delta_compositional(const LDLfFormula &);
+CUDD::BDD delta_compositional(const LDLfFormula&);
 
 } // namespace whitemech::lydia

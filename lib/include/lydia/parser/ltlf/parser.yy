@@ -58,6 +58,9 @@ namespace whitemech::lydia::parsers::ltlf {
 %token                  RPAR
 %token                  TRUE_
 %token                  FALSE_
+%token                  TT
+%token                  FF
+%token                  END
 %token                  LAST
 %token                  SYMBOL
 %token                  NEWLINE
@@ -96,9 +99,12 @@ ltlf_formula: ltlf_formula EQUIVALENCE ltlf_formula                             
             | WEAK_NEXT ltlf_formula                                                    { $$ = d.add_LTLfWeakNext($2); }
             | NEXT ltlf_formula                                                         { $$ = d.add_LTLfNext($2); }
             | NOT ltlf_formula                                                          { $$ = d.add_LTLfNot($2); }
+            | TT                                                                        { $$ = d.add_LTLfTrue(); }
+            | FF                                                                        { $$ = d.add_LTLfFalse(); }
+            | END                                                                       { $$ = d.add_LTLfEnd(); }
             | LAST                                                                      { $$ = d.add_LTLfLast(); }
-            | FALSE_                                                                    { $$ = d.add_LTLfFalse(); }
-            | TRUE_                                                                     { $$ = d.add_LTLfTrue(); }
+            | FALSE_                                                                    { $$ = d.add_LTLfPropFalse(); }
+            | TRUE_                                                                     { $$ = d.add_LTLfPropTrue(); }
             | SYMBOL                                                                    { $$ = d.add_LTLfAtom($1); }
             ;
 

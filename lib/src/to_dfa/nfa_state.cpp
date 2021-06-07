@@ -22,21 +22,21 @@
 
 namespace whitemech::lydia {
 
-bool NFAState::is_equal(const Basic &rhs) const {
+bool NFAState::is_equal(const Basic& rhs) const {
   return is_a<NFAState>(rhs) and
          unified_eq(this->formulas,
-                    dynamic_cast<const NFAState &>(rhs).formulas);
+                    dynamic_cast<const NFAState&>(rhs).formulas);
 }
 
-int NFAState::compare_(const Basic &rhs) const {
+int NFAState::compare_(const Basic& rhs) const {
   assert(is_a<NFAState>(rhs));
   return unified_compare(this->formulas,
-                         dynamic_cast<const NFAState &>(rhs).formulas);
+                         dynamic_cast<const NFAState&>(rhs).formulas);
 }
 
 hash_t NFAState::compute_hash_() const {
   hash_t seed = type_code_id;
-  for (const auto &a : formulas)
+  for (const auto& a : formulas)
     hash_combine<Basic>(seed, *a);
   return seed;
 }
@@ -44,7 +44,7 @@ hash_t NFAState::compute_hash_() const {
 bool NFAState::is_final() const {
   // This will be put in conjunction with other formulas
   vec_prop_formulas args{context.makeTrue(), context.makeTrue()};
-  for (const auto &formula : formulas) {
+  for (const auto& formula : formulas) {
     args.push_back(delta(*formula));
   }
   auto conjunction =

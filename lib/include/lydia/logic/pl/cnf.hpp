@@ -28,24 +28,24 @@ protected:
 
 public:
   // callbacks for propositional logic
-  void visit(const PropositionalTrue &) override;
-  void visit(const PropositionalFalse &) override;
-  void visit(const PropositionalAtom &) override;
-  void visit(const PropositionalAnd &) override;
-  void visit(const PropositionalOr &) override;
-  void visit(const PropositionalNot &) override;
+  void visit(const PropositionalTrue&) override;
+  void visit(const PropositionalFalse&) override;
+  void visit(const PropositionalAtom&) override;
+  void visit(const PropositionalAnd&) override;
+  void visit(const PropositionalOr&) override;
+  void visit(const PropositionalNot&) override;
 
-  void visit(const QuotedFormula &) override{};
-  void visit(const LDLfF &) override{};
-  void visit(const LDLfT &) override{};
+  void visit(const QuotedFormula&) override{};
+  void visit(const LDLfF&) override{};
+  void visit(const LDLfT&) override{};
 
-  prop_ptr apply(const PropositionalFormula &b);
+  prop_ptr apply(const PropositionalFormula& b);
 };
 
 set_prop_formulas to_container(prop_ptr p);
-prop_ptr to_cnf(const PropositionalFormula &);
+prop_ptr to_cnf(const PropositionalFormula&);
 
 std::vector<std::vector<PropositionalAtom>>
-to_clauses(const PropositionalFormula &cnf_f);
+to_clauses(const PropositionalFormula& cnf_f);
 
 } // namespace whitemech::lydia

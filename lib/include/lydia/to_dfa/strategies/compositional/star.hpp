@@ -21,7 +21,7 @@
 
 namespace whitemech::lydia {
 
-DFA *star(const RegExp &regex, DFA *body, const std::vector<int> &indices,
-          const std::vector<atom_ptr> &id2atoms);
+DFA* star(const RegExp& regex, DFA* body, const std::vector<int>& indices,
+          const std::vector<atom_ptr>& id2atoms);
 
 }

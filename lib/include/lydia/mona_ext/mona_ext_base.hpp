@@ -32,40 +32,40 @@ extern "C" {
 #include <mona/mem.h>
 }
 
-DFA *dfaUniversalProject(DFA *a, unsigned var_index);
+DFA* dfaUniversalProject(DFA* a, unsigned var_index);
 
 namespace whitemech::lydia {
 
-DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices);
+DFA* dfa_concatenate(DFA* a, DFA* b, int n, int* indices);
 
-DFA *dfa_closure(DFA *a, int n, int *indices);
+DFA* dfa_closure(DFA* a, int n, int* indices);
 
-DFA *only_empty();
+DFA* only_empty();
 
-DFA *dfa_accept_empty(DFA *x);
+DFA* dfa_accept_empty(DFA* x);
 
 std::string get_path_guard(int n, trace_descr tp);
 
-DFA *dfaLDLfTrue();
+DFA* dfaLDLfTrue();
 
-DFA *dfaLDLfFalse();
+DFA* dfaLDLfFalse();
 
-DFA *dfaNext(int a, bool is_positive = true);
+DFA* dfaNext(int a, bool is_positive = true);
 
-DFA *dfaLDLfDiamondProp(DFA *prop_regex, DFA *body, int var, int *indices);
+DFA* dfaLDLfDiamondProp(DFA* prop_regex, DFA* body, int var, int* indices);
 
-DFA *dfaLDLfEnd(int var, int *indices);
+DFA* dfaLDLfEnd(int var, int* indices);
 
-DFA *dfaPropositionalTrue();
+DFA* dfaPropositionalTrue();
 
-bool is_sink(DFA *automaton, bool is_positive = true);
+bool is_sink(DFA* automaton, bool is_positive = true);
 
-void print_mona_dfa(DFA *a, const std::string &name, int num = 1);
+void print_mona_dfa(DFA* a, const std::string& name, int num = 1);
 
-void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
-                            std::ostream &o = std::cout);
+void dfaPrintGraphvizToFile(DFA* a, int no_free_vars, unsigned* offsets,
+                            std::ostream& o = std::cout);
 
-void dfaPrint(DFA *a, int no_free_vars, std::vector<std::string> free_variables,
-              unsigned *offsets, std::ostream &o = std::cout);
+void dfaPrint(DFA* a, int no_free_vars, std::vector<std::string> free_variables,
+              unsigned* offsets, std::ostream& o = std::cout);
 
 } // namespace whitemech::lydia

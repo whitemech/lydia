@@ -28,12 +28,12 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_Symbol;
-  void accept(Visitor &v) const override;
+  void accept(Visitor& v) const override;
 
   //! Symbol Constructor
   explicit Symbol(std::string name);
 
-  inline const std::string &get_name() const { return name_; }
+  inline const std::string& get_name() const { return name_; }
 
   //! \return Size of the hash
   hash_t compute_hash_() const override;
@@ -42,15 +42,15 @@ public:
    * \param o - Object to be compared with
    * \return whether the two objects are equal
    * */
-  bool is_equal(const Basic &o) const override;
+  bool is_equal(const Basic& o) const override;
 
   /*! Comparison operator
    * \param o - Object to be compared with
    * \return `0` if equal, `-1` , `1` according to string compare
    * */
-  int compare_(const Basic &o) const override;
+  int compare_(const Basic& o) const override;
 };
 
 //! inline version to return `Symbol`
-inline Symbol symbol(const std::string &name) { return Symbol(name); }
+inline Symbol symbol(const std::string& name) { return Symbol(name); }
 } // namespace whitemech::lydia

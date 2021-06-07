@@ -19,11 +19,11 @@
 
 namespace whitemech::lydia {
 
-DFAState::DFAState(AstManager &context, set_nfa_states states)
+DFAState::DFAState(AstManager& context, set_nfa_states states)
     : context{context}, states{std::move(states)} {
   type_code_ = type_code_id;
 }
-DFAState::DFAState(AstManager &context, const set_formulas &formulas)
+DFAState::DFAState(AstManager& context, const set_formulas& formulas)
     : context{context}, states{set_nfa_states{
                             std::make_shared<NFAState>(context, formulas)}} {
   type_code_ = type_code_id;
@@ -31,24 +31,24 @@ DFAState::DFAState(AstManager &context, const set_formulas &formulas)
 
 hash_t DFAState::compute_hash_() const {
   hash_t seed = type_code_id;
-  for (const auto &a : states)
+  for (const auto& a : states)
     hash_combine<Basic>(seed, *a);
   return seed;
 }
 
-int DFAState::compare_(const Basic &rhs) const {
+int DFAState::compare_(const Basic& rhs) const {
   assert(is_a<DFAState>(rhs));
   return unified_compare(this->states,
-                         dynamic_cast<const DFAState &>(rhs).states);
+                         dynamic_cast<const DFAState&>(rhs).states);
 }
 
-bool DFAState::is_equal(const Basic &rhs) const {
+bool DFAState::is_equal(const Basic& rhs) const {
   return is_a<DFAState>(rhs) and
-         unified_eq(this->states, dynamic_cast<const DFAState &>(rhs).states);
+         unified_eq(this->states, dynamic_cast<const DFAState&>(rhs).states);
 }
 
 bool DFAState::is_final() const {
-  for (const auto &nfa_state : states) {
+  for (const auto& nfa_state : states) {
     if (nfa_state->is_final())
       return true;
   }
