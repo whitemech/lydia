@@ -37,10 +37,10 @@ using token = whitemech::lydia::parsers::ltlf::LTLfParser::token;
 "("                         { return token::LPAR; }
 ")"                         { return token::RPAR; }
 
-"X"                         { return token::NEXT; }
-"W"                         { return token::WEAK_NEXT; }
+"X[!]"                      { return token::NEXT; }
+"X"                         { return token::WEAK_NEXT; }
 "U"                         { return token::UNTIL; }
-"R"                         { return token::RELEASE; }
+"R"|"V"                     { return token::RELEASE; }
 "F"                         { return token::EVENTUALLY; }
 "G"                         { return token::ALWAYS; }
 
@@ -52,12 +52,16 @@ using token = whitemech::lydia::parsers::ltlf::LTLfParser::token;
 
 "!"|"~"                     { return token::NOT; }
 
-"true"|"TRUE"|"True"|"1"    { return token::TRUE_; }
-"false"|"FALSE"|"False"|"0" { return token::FALSE_; }
+"tt"                        { return token::TT; }
+"ff"                        { return token::FF; }
 
-"last"|"LAST"|"Last"        { return token::LAST; }
+"true"                      { return token::TRUE_; }
+"false"                     { return token::FALSE_; }
 
-[a-zA-Z_][a-zA-Z0-9_]*|("[a-zA-Z0-9_]+") {
+"last"                      { return token::LAST; }
+"end"                       { return token::END; }
+
+[a-z_][a-z0-9_]*|("\w+") {
                                 yylval->symbol_name = yytext;
                                 return token::SYMBOL;
                             }
