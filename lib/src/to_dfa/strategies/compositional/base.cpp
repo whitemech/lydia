@@ -22,41 +22,41 @@
 
 namespace whitemech::lydia {
 
-DFA *ComposeDFAVisitor::apply(const LDLfFormula &f) {
+DFA* ComposeDFAVisitor::apply(const LDLfFormula& f) {
   result = nullptr;
   f.accept(*this);
   return result;
 }
-DFA *ComposeDFARegexVisitor::apply(const RegExp &f) {
+DFA* ComposeDFARegexVisitor::apply(const RegExp& f) {
   result = nullptr;
   f.accept(*this);
   return result;
 }
-DFA *ComposeDFARegexVisitor::apply(const PropositionalFormula &f) {
+DFA* ComposeDFARegexVisitor::apply(const PropositionalFormula& f) {
   result = nullptr;
   f.accept(*this);
   return result;
 }
 
 std::shared_ptr<abstract_dfa>
-CompositionalStrategy::to_dfa(const LDLfFormula &formula) {
+CompositionalStrategy::to_dfa(const LDLfFormula& formula) {
   reset();
   auto formula_nnf = to_nnf(formula);
   auto atoms_set = find_atoms(*formula_nnf);
   auto names = std::vector<std::string>();
   names.reserve(atoms_set.size());
-  for (const auto &atom : atoms_set) {
+  for (const auto& atom : atoms_set) {
     names.push_back(atom->str());
   }
   auto result = to_dfa_internal(*formula_nnf, atoms_set);
   return std::make_shared<mona_dfa>(result, names);
 }
 
-DFA *CompositionalStrategy::to_dfa_internal(const LDLfFormula &f,
+DFA* CompositionalStrategy::to_dfa_internal(const LDLfFormula& f,
                                             set_atoms_ptr atoms_set) {
   int index = 0;
   atoms = std::move(atoms_set);
-  for (const auto &atom : atoms) {
+  for (const auto& atom : atoms) {
     atom2ids[atom] = index;
     id2atoms.push_back(atom);
     index++;
@@ -75,29 +75,29 @@ void CompositionalStrategy::reset() {
   indices = std::vector<int>{};
 }
 
-void ComposeDFAVisitor::visit(const LDLfTrue &f) { result = dfaLDLfTrue(); }
-void ComposeDFAVisitor::visit(const LDLfFalse &f) { result = dfaLDLfFalse(); }
+void ComposeDFAVisitor::visit(const LDLfTrue& f) { result = dfaLDLfTrue(); }
+void ComposeDFAVisitor::visit(const LDLfFalse& f) { result = dfaLDLfFalse(); }
 
-void ComposeDFAVisitor::visit(const LDLfAnd &f) {
+void ComposeDFAVisitor::visit(const LDLfAnd& f) {
   result = dfa_and_or<const LDLfFormula, dfaLDLfTrue, dfaAND, false>(
       f.get_container(), *this);
 }
 
-void ComposeDFAVisitor::visit(const LDLfOr &f) {
+void ComposeDFAVisitor::visit(const LDLfOr& f) {
   result = dfa_and_or<const LDLfFormula, dfaLDLfFalse, dfaOR, true>(
       f.get_container(), *this);
 }
 
-void ComposeDFAVisitor::visit(const LDLfNot &f) {
-  DFA *tmp = apply(*f.get_arg());
+void ComposeDFAVisitor::visit(const LDLfNot& f) {
+  DFA* tmp = apply(*f.get_arg());
   dfaNegation(tmp);
   result = dfaMinimize(tmp);
   dfaFree(tmp);
 }
 
-void ComposeDFAVisitor::visit(const LDLfDiamond &f) {
+void ComposeDFAVisitor::visit(const LDLfDiamond& f) {
   bool old_is_diamond = is_diamond;
-  DFA *old_current_body_dfa = current_body_dfa_;
+  DFA* old_current_body_dfa = current_body_dfa_;
   is_diamond = true;
   current_body_dfa_ = apply(*f.get_formula());
 
@@ -108,9 +108,9 @@ void ComposeDFAVisitor::visit(const LDLfDiamond &f) {
   current_body_dfa_ = old_current_body_dfa;
 }
 
-void ComposeDFAVisitor::visit(const LDLfBox &f) {
+void ComposeDFAVisitor::visit(const LDLfBox& f) {
   bool old_is_diamond = is_diamond;
-  DFA *old_current_body_dfa = current_body_dfa_;
+  DFA* old_current_body_dfa = current_body_dfa_;
   is_diamond = false;
   current_body_dfa_ = apply(*f.get_formula());
 
@@ -121,13 +121,13 @@ void ComposeDFAVisitor::visit(const LDLfBox &f) {
   current_body_dfa_ = old_current_body_dfa;
 }
 
-void ComposeDFARegexVisitor::visit(const UnionRegExp &r) {
-  DFA *tmp1;
-  DFA *tmp2;
-  DFA *tmp3;
-  DFA *final = is_diamond ? dfaLDLfFalse() : dfaLDLfTrue();
+void ComposeDFARegexVisitor::visit(const UnionRegExp& r) {
+  DFA* tmp1;
+  DFA* tmp2;
+  DFA* tmp3;
+  DFA* final = is_diamond ? dfaLDLfFalse() : dfaLDLfTrue();
   auto op = is_diamond ? dfaOR : dfaAND;
-  for (const auto &x : r.get_container()) {
+  for (const auto& x : r.get_container()) {
     tmp1 = final;
     tmp2 = apply(*x);
     tmp3 = dfaProduct(tmp1, tmp2, op);
@@ -141,11 +141,11 @@ void ComposeDFARegexVisitor::visit(const UnionRegExp &r) {
   result = final;
 }
 
-void ComposeDFARegexVisitor::visit(const SequenceRegExp &r) {
-  DFA *old_formula = current_formula_;
+void ComposeDFARegexVisitor::visit(const SequenceRegExp& r) {
+  DFA* old_formula = current_formula_;
   auto subregexes = r.get_container();
-  DFA *final = nullptr;
-  DFA *tmp;
+  DFA* final = nullptr;
+  DFA* tmp;
 
   for (auto it = subregexes.rbegin(); it != subregexes.rend(); it++) {
     tmp = apply(**it);
@@ -159,7 +159,7 @@ void ComposeDFARegexVisitor::visit(const SequenceRegExp &r) {
   current_formula_ = old_formula;
 }
 
-void ComposeDFARegexVisitor::visit(const StarRegExp &r) {
+void ComposeDFARegexVisitor::visit(const StarRegExp& r) {
   if (is_test_free(r) or is_atomic_until_test_(*r.get_arg())) {
     test_free_star_(r);
   } else {
@@ -167,16 +167,16 @@ void ComposeDFARegexVisitor::visit(const StarRegExp &r) {
   }
 }
 
-void ComposeDFARegexVisitor::test_free_star_(const StarRegExp &r) {
-  DFA *tmp;
-  DFA *body = dfaCopy(current_formula_);
+void ComposeDFARegexVisitor::test_free_star_(const StarRegExp& r) {
+  DFA* tmp;
+  DFA* body = dfaCopy(current_formula_);
 
   auto visitor = ComposeDFAVisitor(cs);
-  DFA *regex = visitor.apply(
+  DFA* regex = visitor.apply(
       *r.ctx().makeLdlfDiamond(r.get_arg(), r.ctx().makeLdlfEnd()));
 
-  DFA *regex_or_empty = dfa_accept_empty(regex);
-  DFA *star = dfa_closure(regex_or_empty, cs.indices.size(), cs.indices.data());
+  DFA* regex_or_empty = dfa_accept_empty(regex);
+  DFA* star = dfa_closure(regex_or_empty, cs.indices.size(), cs.indices.data());
   if (not is_diamond) {
     dfaNegation(body);
   }
@@ -192,12 +192,12 @@ void ComposeDFARegexVisitor::test_free_star_(const StarRegExp &r) {
   dfaFree(body);
 }
 
-void ComposeDFARegexVisitor::general_star_(const StarRegExp &r) {
-  DFA *body = dfaCopy(current_formula_);
+void ComposeDFARegexVisitor::general_star_(const StarRegExp& r) {
+  DFA* body = dfaCopy(current_formula_);
   if (not is_diamond) {
     dfaNegation(body);
   }
-  DFA *tmp = cs.star(r, body);
+  DFA* tmp = cs.star(r, body);
   if (not is_diamond) {
     dfaNegation(tmp);
   }
@@ -206,26 +206,26 @@ void ComposeDFARegexVisitor::general_star_(const StarRegExp &r) {
   dfaFree(body);
 }
 
-void ComposeDFARegexVisitor::visit(const TestRegExp &r) {
+void ComposeDFARegexVisitor::visit(const TestRegExp& r) {
   auto op = is_diamond ? dfaAND : dfaIMPL;
-  DFA *tmp;
+  DFA* tmp;
   auto visitor = ComposeDFAVisitor(cs);
-  DFA *regex_dfa = visitor.apply(*r.get_arg());
+  DFA* regex_dfa = visitor.apply(*r.get_arg());
   tmp = dfaProduct(regex_dfa, current_formula_, op);
   result = dfaMinimize(tmp);
   dfaFree(regex_dfa);
   dfaFree(tmp);
 }
 
-void ComposeDFARegexVisitor::visit(const PropositionalRegExp &r) {
-  DFA *regex = apply(*r.get_arg());
-  DFA *body = current_formula_;
+void ComposeDFARegexVisitor::visit(const PropositionalRegExp& r) {
+  DFA* regex = apply(*r.get_arg());
+  DFA* body = current_formula_;
 
   if (is_diamond) {
     result =
         dfaLDLfDiamondProp(regex, body, cs.indices.size(), cs.indices.data());
   } else {
-    DFA *tmp = dfaCopy(body);
+    DFA* tmp = dfaCopy(body);
     dfaNegation(tmp);
     result =
         dfaLDLfDiamondProp(regex, tmp, cs.indices.size(), cs.indices.data());
@@ -235,31 +235,31 @@ void ComposeDFARegexVisitor::visit(const PropositionalRegExp &r) {
   dfaFree(regex);
 }
 
-void ComposeDFARegexVisitor::visit(const PropositionalTrue &f) {
+void ComposeDFARegexVisitor::visit(const PropositionalTrue& f) {
   result = dfaPropositionalTrue();
 }
-void ComposeDFARegexVisitor::visit(const PropositionalFalse &f) {
+void ComposeDFARegexVisitor::visit(const PropositionalFalse& f) {
   result = dfaLDLfFalse();
 }
 
-void ComposeDFARegexVisitor::visit(const PropositionalAtom &f) {
+void ComposeDFARegexVisitor::visit(const PropositionalAtom& f) {
   int atom_index =
       cs.atom2ids[std::static_pointer_cast<const PropositionalAtom>(
           f.shared_from_this())];
   result = dfaNext(atom_index, true);
 }
 
-void ComposeDFARegexVisitor::visit(const PropositionalAnd &f) {
+void ComposeDFARegexVisitor::visit(const PropositionalAnd& f) {
   result = dfa_and_or<const PropositionalFormula, dfaLDLfTrue, dfaAND, false>(
       f.get_container(), *this);
 }
 
-void ComposeDFARegexVisitor::visit(const PropositionalOr &f) {
+void ComposeDFARegexVisitor::visit(const PropositionalOr& f) {
   result = dfa_and_or<const PropositionalFormula, dfaLDLfFalse, dfaOR, true>(
       f.get_container(), *this);
 }
 
-void ComposeDFARegexVisitor::visit(const PropositionalNot &f) {
+void ComposeDFARegexVisitor::visit(const PropositionalNot& f) {
   assert(f.get_arg()->type_code_ == TypeID::t_PropositionalAtom);
   int atom_index =
       cs.atom2ids[std::static_pointer_cast<const PropositionalAtom>(
@@ -273,11 +273,11 @@ ComposeDFARegexVisitor::~ComposeDFARegexVisitor() {
   }
 }
 
-bool ComposeDFARegexVisitor::is_atomic_until_test_(const RegExp &r) {
+bool ComposeDFARegexVisitor::is_atomic_until_test_(const RegExp& r) {
   if (!is_a<SequenceRegExp>(r))
     return false;
 
-  auto seq_regex = dynamic_cast<const SequenceRegExp &>(r);
+  auto seq_regex = dynamic_cast<const SequenceRegExp&>(r);
   if (seq_regex.get_container().size() != 2)
     return false;
 
@@ -288,8 +288,8 @@ bool ComposeDFARegexVisitor::is_atomic_until_test_(const RegExp &r) {
       !is_a<PropositionalRegExp>(*second_regex))
     return false;
 
-  auto test_regex = dynamic_cast<const TestRegExp &>(*first_regex);
-  auto prop_regex = dynamic_cast<const PropositionalRegExp &>(*second_regex);
+  auto test_regex = dynamic_cast<const TestRegExp&>(*first_regex);
+  auto prop_regex = dynamic_cast<const PropositionalRegExp&>(*second_regex);
 
   if (!is_a<LDLfDiamond>(*test_regex.get_arg()) ||
       !is_a<PropositionalTrue>(*prop_regex.get_arg())) {
@@ -297,7 +297,7 @@ bool ComposeDFARegexVisitor::is_atomic_until_test_(const RegExp &r) {
   }
 
   auto diamond_formula =
-      dynamic_cast<const LDLfDiamond &>(*test_regex.get_arg());
+      dynamic_cast<const LDLfDiamond&>(*test_regex.get_arg());
   auto regex = diamond_formula.get_regex();
   auto formula = diamond_formula.get_formula();
   return is_a<PropositionalRegExp>(*regex) and is_a<LDLfTrue>(*formula);

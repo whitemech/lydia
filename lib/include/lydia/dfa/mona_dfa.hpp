@@ -37,41 +37,41 @@ private:
   int nb_variables_;
 
 public:
-  DFA *dfa_;
+  DFA* dfa_;
   std::vector<std::string> names;
   std::vector<unsigned> indices;
 
-  mona_dfa(DFA *dfa, int nb_variables)
+  mona_dfa(DFA* dfa, int nb_variables)
       : dfa_{dfa}, nb_variables_{nb_variables} {
     indices = std::vector<unsigned>(nb_variables);
     std::iota(indices.begin(), indices.end(), 0);
     names = std::vector<std::string>(nb_variables);
     std::iota(names.begin(), names.end(), "0");
   }
-  mona_dfa(DFA *dfa, const std::vector<std::string> &names)
+  mona_dfa(DFA* dfa, const std::vector<std::string>& names)
       : dfa_{dfa}, nb_variables_{(int)names.size()}, names{names} {
     indices = std::vector<unsigned>(names.size());
     std::iota(indices.begin(), indices.end(), 0);
   }
   ~mona_dfa();
 
-  DFA *get_dfa() { return dfa_; }
+  DFA* get_dfa() { return dfa_; }
 
   int get_initial_state() const override;
   int get_nb_states() const override;
   int get_nb_variables() const override;
 
-  bool accepts(const trace &word) const override {
+  bool accepts(const trace& word) const override {
     int current_state = get_initial_state();
-    for (const auto &symbol : word) {
+    for (const auto& symbol : word) {
       current_state = get_successor(current_state, symbol);
     }
     return is_final(current_state);
   };
 
-  int get_successor(int state, const interpretation &symbol) const override;
+  int get_successor(int state, const interpretation& symbol) const override;
   int get_successor(int state,
-                    const interpretation_set &symbol) const override{};
+                    const interpretation_set& symbol) const override{};
 
   bool is_final(int state) const override;
 
@@ -81,16 +81,16 @@ public:
 
   void set_final_state(int state, bool is_final = true) override{};
 
-  void add_transition(int from, const interpretation_map &symbol,
+  void add_transition(int from, const interpretation_map& symbol,
                       int to) override{};
 
-  void add_transition(int from, const interpretation &symbol, int to,
+  void add_transition(int from, const interpretation& symbol, int to,
                       bool dont_care = true) override{};
 
-  void add_transition(int from, const interpretation_set &symbol, int to,
+  void add_transition(int from, const interpretation_set& symbol, int to,
                       bool dont_care = true) override{};
 
-  void export_dfa(const std::string &filename) const;
+  void export_dfa(const std::string& filename) const;
 };
 
 } // namespace whitemech::lydia

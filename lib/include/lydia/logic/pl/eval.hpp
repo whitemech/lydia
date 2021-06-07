@@ -24,23 +24,23 @@ class EvalVisitor : public Visitor {
 private:
 protected:
   bool result{};
-  const set_atoms_ptr &interpretation;
+  const set_atoms_ptr& interpretation;
 
 public:
-  explicit EvalVisitor(const set_atoms_ptr &interpretation)
+  explicit EvalVisitor(const set_atoms_ptr& interpretation)
       : interpretation{interpretation} {};
 
   // callbacks for propositional logic
-  void visit(const PropositionalTrue &) override;
-  void visit(const PropositionalFalse &) override;
-  void visit(const PropositionalAtom &) override;
-  void visit(const PropositionalAnd &) override;
-  void visit(const PropositionalOr &) override;
-  void visit(const PropositionalNot &) override;
+  void visit(const PropositionalTrue&) override;
+  void visit(const PropositionalFalse&) override;
+  void visit(const PropositionalAtom&) override;
+  void visit(const PropositionalAnd&) override;
+  void visit(const PropositionalOr&) override;
+  void visit(const PropositionalNot&) override;
 
-  void visit(const QuotedFormula &) override{};
+  void visit(const QuotedFormula&) override{};
 
-  bool apply(const PropositionalFormula &b);
+  bool apply(const PropositionalFormula& b);
 };
 
 /*!
@@ -50,6 +50,6 @@ public:
  *                     | Atoms that are not members are considered false.
  * @return true if the formula is true in the interpretation, false otherwise.
  */
-bool eval(const PropositionalFormula &, const set_atoms_ptr &interpretation);
+bool eval(const PropositionalFormula&, const set_atoms_ptr& interpretation);
 
 } // namespace whitemech::lydia

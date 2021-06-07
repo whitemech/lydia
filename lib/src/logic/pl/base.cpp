@@ -28,12 +28,12 @@ hash_t PropositionalTrue::compute_hash_() const {
   return seed;
 }
 
-int PropositionalTrue::compare_(const Basic &rhs) const {
+int PropositionalTrue::compare_(const Basic& rhs) const {
   assert(is_a<PropositionalTrue>(rhs));
   return 0;
 }
 
-bool PropositionalTrue::is_equal(const Basic &rhs) const {
+bool PropositionalTrue::is_equal(const Basic& rhs) const {
   return is_a<PropositionalTrue>(rhs);
 };
 
@@ -46,12 +46,12 @@ hash_t PropositionalFalse::compute_hash_() const {
   return seed;
 }
 
-int PropositionalFalse::compare_(const Basic &rhs) const {
+int PropositionalFalse::compare_(const Basic& rhs) const {
   assert(is_a<PropositionalFalse>(rhs));
   return 0;
 }
 
-bool PropositionalFalse::is_equal(const Basic &rhs) const {
+bool PropositionalFalse::is_equal(const Basic& rhs) const {
   return is_a<PropositionalFalse>(rhs);
 }
 
@@ -59,13 +59,13 @@ prop_ptr PropositionalFalse::logical_not() const {
   return this->m_ctx->makeTrue();
 }
 
-PropositionalAtom::PropositionalAtom(AstManager &c,
+PropositionalAtom::PropositionalAtom(AstManager& c,
                                      std::shared_ptr<const Basic> p)
     : PropositionalFormula(c), symbol{std::move(p)} {
   this->type_code_ = type_code_id;
 }
 
-PropositionalAtom::PropositionalAtom(AstManager &c, const std::string &name)
+PropositionalAtom::PropositionalAtom(AstManager& c, const std::string& name)
     : PropositionalFormula(c), symbol(c.makeSymbol(name)) {
   this->type_code_ = type_code_id;
 }
@@ -74,16 +74,16 @@ hash_t PropositionalAtom::compute_hash_() const {
   return this->symbol->compute_hash_();
 }
 
-int PropositionalAtom::compare_(const Basic &rhs) const {
+int PropositionalAtom::compare_(const Basic& rhs) const {
   assert(is_a<PropositionalAtom>(rhs));
   return this->symbol->compare(
-      *dynamic_cast<const PropositionalAtom &>(rhs).symbol);
+      *dynamic_cast<const PropositionalAtom&>(rhs).symbol);
 }
 
-bool PropositionalAtom::is_equal(const Basic &rhs) const {
+bool PropositionalAtom::is_equal(const Basic& rhs) const {
   return is_a<PropositionalAtom>(rhs) and
          this->symbol->is_equal(
-             *dynamic_cast<const PropositionalAtom &>(rhs).symbol);
+             *dynamic_cast<const PropositionalAtom&>(rhs).symbol);
 }
 
 prop_ptr PropositionalAtom::logical_not() const {
@@ -91,7 +91,7 @@ prop_ptr PropositionalAtom::logical_not() const {
   return m_ctx->makePropNot(ptr);
 }
 
-PropositionalAnd::PropositionalAnd(AstManager &c, const set_prop_formulas &s)
+PropositionalAnd::PropositionalAnd(AstManager& c, const set_prop_formulas& s)
     : PropositionalFormula(c), container_{s} {
   this->type_code_ = type_code_id;
   assert(is_canonical(s));
@@ -99,7 +99,7 @@ PropositionalAnd::PropositionalAnd(AstManager &c, const set_prop_formulas &s)
 
 hash_t PropositionalAnd::compute_hash_() const {
   hash_t seed = TypeID::t_PropositionalAnd;
-  for (const auto &a : container_)
+  for (const auto& a : container_)
     hash_combine<Basic>(seed, *a);
   return seed;
 }
@@ -109,16 +109,16 @@ vec_prop_formulas PropositionalAnd::get_args() const {
   return v;
 }
 
-bool PropositionalAnd::is_equal(const Basic &o) const {
+bool PropositionalAnd::is_equal(const Basic& o) const {
   return is_a<PropositionalAnd>(o) and
          unified_eq(container_,
-                    dynamic_cast<const PropositionalAnd &>(o).get_container());
+                    dynamic_cast<const PropositionalAnd&>(o).get_container());
 }
 
-int PropositionalAnd::compare_(const Basic &o) const {
+int PropositionalAnd::compare_(const Basic& o) const {
   assert(is_a<PropositionalAnd>(o));
   return unified_compare(
-      container_, dynamic_cast<const PropositionalAnd &>(o).get_container());
+      container_, dynamic_cast<const PropositionalAnd&>(o).get_container());
 }
 
 set_prop_formulas PropositionalAnd::get_container() const { return container_; }
@@ -126,20 +126,20 @@ set_prop_formulas PropositionalAnd::get_container() const { return container_; }
 prop_ptr PropositionalAnd::logical_not() const {
   auto container = this->get_container();
   set_prop_formulas cont;
-  for (auto &a : container) {
+  for (auto& a : container) {
     cont.insert(a->logical_not());
   }
   return m_ctx->makePropOr(cont);
 }
 
-PropositionalOr::PropositionalOr(AstManager &c, const set_prop_formulas &s)
+PropositionalOr::PropositionalOr(AstManager& c, const set_prop_formulas& s)
     : PropositionalFormula(c), container_{s} {
   this->type_code_ = type_code_id;
 }
 
 hash_t PropositionalOr::compute_hash_() const {
   hash_t seed = TypeID::t_PropositionalOr;
-  for (const auto &a : container_)
+  for (const auto& a : container_)
     hash_combine<Basic>(seed, *a);
   return seed;
 }
@@ -149,19 +149,19 @@ vec_prop_formulas PropositionalOr::get_args() const {
   return v;
 }
 
-bool PropositionalOr::is_equal(const Basic &o) const {
+bool PropositionalOr::is_equal(const Basic& o) const {
   return is_a<PropositionalOr>(o) and
          unified_eq(container_,
-                    dynamic_cast<const PropositionalOr &>(o).get_container());
+                    dynamic_cast<const PropositionalOr&>(o).get_container());
 }
 
-int PropositionalOr::compare_(const Basic &o) const {
+int PropositionalOr::compare_(const Basic& o) const {
   assert(is_a<PropositionalOr>(o));
   return unified_compare(
-      container_, dynamic_cast<const PropositionalOr &>(o).get_container());
+      container_, dynamic_cast<const PropositionalOr&>(o).get_container());
 }
 
-bool PropositionalOr::is_canonical(const set_prop_formulas &container_) {
+bool PropositionalOr::is_canonical(const set_prop_formulas& container_) {
   // TODO do some checks on the arguments
   return true;
 }
@@ -171,14 +171,14 @@ set_prop_formulas PropositionalOr::get_container() const { return container_; }
 prop_ptr PropositionalOr::logical_not() const {
   auto container = this->get_container();
   set_prop_formulas cont;
-  for (auto &a : container) {
+  for (auto& a : container) {
     cont.insert(a->logical_not());
   }
   return m_ctx->makePropAnd(cont);
 }
 
 PropositionalNot::PropositionalNot(
-    AstManager &c, const std::shared_ptr<const PropositionalFormula> &in)
+    AstManager& c, const std::shared_ptr<const PropositionalFormula>& in)
     : PropositionalFormula(c), arg_{in} {
   this->type_code_ = type_code_id;
   assert(is_canonical(*in));
@@ -196,14 +196,14 @@ vec_basic PropositionalNot::get_args() const {
   return v;
 }
 
-bool PropositionalNot::is_equal(const Basic &o) const {
+bool PropositionalNot::is_equal(const Basic& o) const {
   return is_a<PropositionalNot>(o) and
-         eq(*arg_, *dynamic_cast<const PropositionalNot &>(o).get_arg());
+         eq(*arg_, *dynamic_cast<const PropositionalNot&>(o).get_arg());
 }
 
-int PropositionalNot::compare_(const Basic &o) const {
+int PropositionalNot::compare_(const Basic& o) const {
   assert(is_a<PropositionalNot>(o));
-  return arg_->compare(*dynamic_cast<const PropositionalNot &>(o).get_arg());
+  return arg_->compare(*dynamic_cast<const PropositionalNot&>(o).get_arg());
 }
 
 std::shared_ptr<const PropositionalFormula> PropositionalNot::get_arg() const {

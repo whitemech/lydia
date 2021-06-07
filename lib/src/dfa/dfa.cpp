@@ -25,7 +25,7 @@ namespace whitemech::lydia {
 
 Logger dfa::logger = Logger("dfa");
 
-dfa::dfa(const CUDD::Cudd &mgr, int nb_bits, int nb_variables)
+dfa::dfa(const CUDD::Cudd& mgr, int nb_bits, int nb_variables)
     : mgr{mgr}, nb_bits{nb_bits}, nb_states{1}, initial_state{0},
       nb_variables{nb_variables} {
 
@@ -70,8 +70,8 @@ CUDD::BDD dfa::prop2bddvar(int index, bool v) const {
 }
 
 void dfa::construct_bdd_from_mona(
-    const std::vector<std::vector<int>> &mona_bdd_nodes,
-    const std::vector<int> &behaviour, const std::vector<int> &final_states) {
+    const std::vector<std::vector<int>>& mona_bdd_nodes,
+    const std::vector<int>& behaviour, const std::vector<int>& final_states) {
   // Create all the variables, the ones for the bits of the states and the ones
   // for the variables.
   auto tBDD = std::vector<vec_bdd>(mona_bdd_nodes.size());
@@ -137,8 +137,8 @@ CUDD::BDD dfa::state2bdd(int s) {
 }
 
 vec_bdd dfa::try_get(int index,
-                     const std::vector<std::vector<int>> &mona_bdd_nodes,
-                     std::vector<vec_bdd> &tBDD) {
+                     const std::vector<std::vector<int>>& mona_bdd_nodes,
+                     std::vector<vec_bdd>& tBDD) {
   if (!tBDD[index].empty())
     return tBDD[index];
   vec_bdd b;
@@ -184,7 +184,7 @@ vec_bdd dfa::try_get(int index,
   }
 }
 
-dfa dfa::read_from_file(const std::string &filename, const CUDD::Cudd &mgr) {
+dfa dfa::read_from_file(const std::string& filename, const CUDD::Cudd& mgr) {
   int nb_variables = -1;
   std::vector<std::string> variables;
   int nb_states = -1;
@@ -277,9 +277,9 @@ dfa dfa::read_from_file(const std::string &filename, const CUDD::Cudd &mgr) {
              mona_bdd_nodes);
 }
 
-dfa::dfa(const CUDD::Cudd &mgr, const std::vector<std::string> &variables,
-         int nb_states, int initial_state, const std::vector<int> &final_states,
-         const std::vector<int> &behaviour, std::vector<item> &mona_bdd_nodes)
+dfa::dfa(const CUDD::Cudd& mgr, const std::vector<std::string>& variables,
+         int nb_states, int initial_state, const std::vector<int>& final_states,
+         const std::vector<int>& behaviour, std::vector<item>& mona_bdd_nodes)
     : mgr{mgr} {
   this->nb_variables = variables.size();
   this->nb_states = nb_states;
@@ -289,7 +289,7 @@ dfa::dfa(const CUDD::Cudd &mgr, const std::vector<std::string> &variables,
   construct_bdd_from_mona(mona_bdd_nodes, behaviour, final_states);
 }
 
-bool dfa::accepts(const trace &word) const {
+bool dfa::accepts(const trace& word) const {
   //  we preallocate the vector for performance purposes
   std::vector<int> extended_symbol = std::vector<int>(nb_bits + nb_variables);
   std::vector<int> next_state = std::vector<int>(nb_bits);
@@ -301,7 +301,7 @@ bool dfa::accepts(const trace &word) const {
     next_state[i] = (int)(initial_state_bits[i] == '1');
 
   // start the evaluation loop, until the end of the word
-  for (const auto &symbol : word) {
+  for (const auto& symbol : word) {
     current_state = next_state;
     get_successor(current_state, symbol, next_state, extended_symbol);
   }
@@ -342,7 +342,7 @@ void dfa::set_final_state(int state, bool is_final) {
   finalstatesBDD += (is_final ? tmp : !tmp);
 }
 
-void dfa::add_transition(int from, const interpretation_map &symbol, int to) {
+void dfa::add_transition(int from, const interpretation_map& symbol, int to) {
   if (from >= nb_states)
     throw std::invalid_argument("'from' state is not in the set of states.");
   if (to >= nb_states)
@@ -368,13 +368,13 @@ void dfa::add_transition(int from, const interpretation_map &symbol, int to) {
   }
 }
 
-void dfa::add_transition(int from, const interpretation &symbol, int to,
+void dfa::add_transition(int from, const interpretation& symbol, int to,
                          bool dont_care) {
   interpretation_set s{symbol.begin(), symbol.end()};
   add_transition(from, s, to, dont_care);
 }
 
-void dfa::add_transition(int from, const interpretation_set &symbol, int to,
+void dfa::add_transition(int from, const interpretation_set& symbol, int to,
                          bool dont_care) {
   std::map<int, bool> new_symbol;
   if (dont_care) {
@@ -388,7 +388,7 @@ void dfa::add_transition(int from, const interpretation_set &symbol, int to,
   add_transition(from, new_symbol, to);
 }
 
-int dfa::get_successor(int state, const interpretation &symbol) const {
+int dfa::get_successor(int state, const interpretation& symbol) const {
   std::vector<int> current_state = std::vector<int>(nb_bits);
   std::vector<int> next_state(nb_bits);
   std::vector<int> extended_symbol(nb_bits + nb_variables);
@@ -403,10 +403,10 @@ int dfa::get_successor(int state, const interpretation &symbol) const {
   return result;
 }
 
-void dfa::get_successor(const std::vector<int> &state,
-                        const interpretation &symbol,
-                        std::vector<int> &next_state,
-                        std::vector<int> &extended_symbol) const {
+void dfa::get_successor(const std::vector<int>& state,
+                        const interpretation& symbol,
+                        std::vector<int>& next_state,
+                        std::vector<int>& extended_symbol) const {
   auto offset = nb_bits;
   // set state bits part
   for (int i = 0; i < nb_bits; i++)
@@ -416,15 +416,15 @@ void dfa::get_successor(const std::vector<int> &state,
     extended_symbol[offset + i] = symbol[i];
 
   // compute next state
-  int *extended_symbol_data = extended_symbol.data();
+  int* extended_symbol_data = extended_symbol.data();
   for (int i = 0; i < root_bdds.size(); i++) {
     next_state[i] = (int)root_bdds[i].Eval(extended_symbol_data).IsOne();
   }
 }
 
-int dfa::get_successor(int state, const interpretation_set &symbol) const {
+int dfa::get_successor(int state, const interpretation_set& symbol) const {
   interpretation vec_symbol(nb_variables, 0);
-  for (const int &variable : symbol) {
+  for (const int& variable : symbol) {
     vec_symbol[variable] = 1;
   }
   return get_successor(state, vec_symbol);
@@ -435,9 +435,9 @@ bool dfa::is_final(int state) const {
   return finalstatesBDD.Eval(state_as_binary_vect.data()).IsOne();
 }
 
-CUDD::BDD dfa::get_symbol(const interpretation_map &i) const {
+CUDD::BDD dfa::get_symbol(const interpretation_map& i) const {
   CUDD::BDD tmp = mgr.bddOne();
-  for (const auto &pair : i) {
+  for (const auto& pair : i) {
     tmp = tmp * var2bddvar(nb_bits + pair.first, pair.second);
   }
   return tmp;

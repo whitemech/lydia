@@ -25,16 +25,16 @@ namespace whitemech::lydia::parsers::ldlf {
 class LDLfScanner : public ldlfFlexLexer {
 public:
   /* yyval ptr */
-  whitemech::lydia::parsers::ldlf::LDLf_YYSTYPE *yylval = nullptr;
+  whitemech::lydia::parsers::ldlf::LDLf_YYSTYPE* yylval = nullptr;
 
-  explicit LDLfScanner(std::istream *in) : ldlfFlexLexer(in){};
+  explicit LDLfScanner(std::istream* in) : ldlfFlexLexer(in){};
   virtual ~LDLfScanner(){};
 
   // get rid of override virtual function warning
   using FlexLexer::yylex;
 
-  virtual int yylex(whitemech::lydia::parsers::ldlf::LDLf_YYSTYPE *lval,
-                    LDLfParser::location_type *location);
+  virtual int yylex(whitemech::lydia::parsers::ldlf::LDLf_YYSTYPE* lval,
+                    LDLfParser::location_type* location);
   // YY_DECL defined in lexer.l
   // Method body created by flex in lexer.yy.cc
 };

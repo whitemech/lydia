@@ -26,20 +26,20 @@ namespace whitemech::lydia {
 class PropositionalFormula : public Ast {
 public:
   virtual prop_ptr logical_not() const = 0;
-  explicit PropositionalFormula(AstManager &c) : Ast(c) {}
+  explicit PropositionalFormula(AstManager& c) : Ast(c) {}
   virtual set_prop_formulas get_container() const = 0;
 };
 
 class PropositionalTrue : public PropositionalFormula {
 public:
   const static TypeID type_code_id = TypeID::t_PropositionalTrue;
-  explicit PropositionalTrue(AstManager &c) : PropositionalFormula(c) {
+  explicit PropositionalTrue(AstManager& c) : PropositionalFormula(c) {
     this->type_code_ = type_code_id;
   }
-  void accept(Visitor &v) const override;
+  void accept(Visitor& v) const override;
   hash_t compute_hash_() const override;
-  int compare_(const Basic &rhs) const override;
-  bool is_equal(const Basic &rhs) const override;
+  int compare_(const Basic& rhs) const override;
+  bool is_equal(const Basic& rhs) const override;
   prop_ptr logical_not() const override;
   set_prop_formulas get_container() const override {
     return set_prop_formulas{};
@@ -49,13 +49,13 @@ public:
 class PropositionalFalse : public PropositionalFormula {
 public:
   const static TypeID type_code_id = TypeID::t_PropositionalFalse;
-  explicit PropositionalFalse(AstManager &c) : PropositionalFormula(c) {
+  explicit PropositionalFalse(AstManager& c) : PropositionalFormula(c) {
     this->type_code_ = type_code_id;
   }
-  void accept(Visitor &v) const override;
+  void accept(Visitor& v) const override;
   hash_t compute_hash_() const override;
-  int compare_(const Basic &rhs) const override;
-  bool is_equal(const Basic &rhs) const override;
+  int compare_(const Basic& rhs) const override;
+  bool is_equal(const Basic& rhs) const override;
   prop_ptr logical_not() const override;
   set_prop_formulas get_container() const override {
     return set_prop_formulas{};
@@ -72,12 +72,12 @@ public:
   // QuotedFormula.
   // TODO: use variant
   const basic_ptr symbol;
-  explicit PropositionalAtom(AstManager &c, const std::string &);
-  explicit PropositionalAtom(AstManager &c, basic_ptr p);
-  void accept(Visitor &v) const override;
+  explicit PropositionalAtom(AstManager& c, const std::string&);
+  explicit PropositionalAtom(AstManager& c, basic_ptr p);
+  void accept(Visitor& v) const override;
   hash_t compute_hash_() const override;
-  int compare_(const Basic &rhs) const override;
-  bool is_equal(const Basic &rhs) const override;
+  int compare_(const Basic& rhs) const override;
+  bool is_equal(const Basic& rhs) const override;
   prop_ptr logical_not() const override;
   // TODO find a proper solution. Either:
   //   - enable_shared_from_this
@@ -95,13 +95,13 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_PropositionalAnd;
-  void accept(Visitor &v) const override;
-  explicit PropositionalAnd(AstManager &c, const set_prop_formulas &s);
-  bool is_canonical(const set_prop_formulas &) { return true; };
+  void accept(Visitor& v) const override;
+  explicit PropositionalAnd(AstManager& c, const set_prop_formulas& s);
+  bool is_canonical(const set_prop_formulas&) { return true; };
   hash_t compute_hash_() const override;
   virtual vec_prop_formulas get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
   set_prop_formulas get_container() const override;
   prop_ptr logical_not() const override;
 };
@@ -112,13 +112,13 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_PropositionalOr;
-  void accept(Visitor &v) const override;
-  explicit PropositionalOr(AstManager &c, const set_prop_formulas &s);
-  bool is_canonical(const set_prop_formulas &container_);
+  void accept(Visitor& v) const override;
+  explicit PropositionalOr(AstManager& c, const set_prop_formulas& s);
+  bool is_canonical(const set_prop_formulas& container_);
   hash_t compute_hash_() const override;
   virtual vec_prop_formulas get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
   set_prop_formulas get_container() const override;
   prop_ptr logical_not() const override;
 };
@@ -129,13 +129,13 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_PropositionalNot;
-  void accept(Visitor &v) const override;
-  explicit PropositionalNot(AstManager &c, const prop_ptr &in);
-  bool is_canonical(const PropositionalFormula &s) { return true; };
+  void accept(Visitor& v) const override;
+  explicit PropositionalNot(AstManager& c, const prop_ptr& in);
+  bool is_canonical(const PropositionalFormula& s) { return true; };
   hash_t compute_hash_() const override;
   virtual vec_basic get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
   std::shared_ptr<const PropositionalFormula> get_arg() const;
   prop_ptr logical_not() const override;
   set_prop_formulas get_container() const override;

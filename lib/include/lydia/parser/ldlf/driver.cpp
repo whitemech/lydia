@@ -29,7 +29,7 @@ Driver::~Driver() {
   parser = nullptr;
 }
 
-void Driver::parse(const char *const filename) {
+void Driver::parse(const char* const filename) {
   assert(filename != nullptr);
   std::ifstream in_file(filename);
   if (!in_file.good()) {
@@ -38,18 +38,18 @@ void Driver::parse(const char *const filename) {
   parse_helper(in_file);
 }
 
-void Driver::parse(std::istream &stream) {
+void Driver::parse(std::istream& stream) {
   if (!stream.good() && stream.eof()) {
     return;
   }
   parse_helper(stream);
 }
 
-void Driver::parse_helper(std::istream &stream) {
+void Driver::parse_helper(std::istream& stream) {
   delete (scanner);
   try {
     scanner = new LDLfScanner(&stream);
-  } catch (std::bad_alloc &ba) {
+  } catch (std::bad_alloc& ba) {
     std::cerr << "Failed to allocate scanner: (" << ba.what()
               << "), exiting!\n";
     exit(EXIT_FAILURE);
@@ -58,7 +58,7 @@ void Driver::parse_helper(std::istream &stream) {
   delete (parser);
   try {
     parser = new LDLfParser((*scanner) /* scanner */, (*this) /* driver */);
-  } catch (std::bad_alloc &ba) {
+  } catch (std::bad_alloc& ba) {
     std::cerr << "Failed to allocate parser: (" << ba.what() << "), exiting!\n";
     exit(EXIT_FAILURE);
   }
@@ -78,39 +78,39 @@ std::shared_ptr<const LDLfFormula> Driver::add_LDLfFalse() const {
 }
 
 std::shared_ptr<const LDLfFormula>
-Driver::add_LDLfAnd(std::shared_ptr<const LDLfFormula> &lhs,
-                    std::shared_ptr<const LDLfFormula> &rhs) const {
+Driver::add_LDLfAnd(std::shared_ptr<const LDLfFormula>& lhs,
+                    std::shared_ptr<const LDLfFormula>& rhs) const {
   set_formulas children = set_formulas({lhs, rhs});
   return context->makeLdlfAnd(children);
 }
 
 std::shared_ptr<const LDLfFormula>
-Driver::add_LDLfOr(std::shared_ptr<const LDLfFormula> &lhs,
-                   std::shared_ptr<const LDLfFormula> &rhs) const {
+Driver::add_LDLfOr(std::shared_ptr<const LDLfFormula>& lhs,
+                   std::shared_ptr<const LDLfFormula>& rhs) const {
   set_formulas children = set_formulas({lhs, rhs});
   return context->makeLdlfOr(children);
 }
 
 std::shared_ptr<const LDLfFormula>
-Driver::add_LDLfNot(std::shared_ptr<const LDLfFormula> &formula) const {
+Driver::add_LDLfNot(std::shared_ptr<const LDLfFormula>& formula) const {
   return context->makeLdlfNot(formula);
 }
 
 std::shared_ptr<const LDLfFormula>
-Driver::add_LDLfDiamond(std::shared_ptr<const RegExp> &regex,
-                        std::shared_ptr<const LDLfFormula> &formula) const {
+Driver::add_LDLfDiamond(std::shared_ptr<const RegExp>& regex,
+                        std::shared_ptr<const LDLfFormula>& formula) const {
   return context->makeLdlfDiamond(regex, formula);
 }
 
 std::shared_ptr<const LDLfFormula>
-Driver::add_LDLfBox(std::shared_ptr<const RegExp> &regex,
-                    std::shared_ptr<const LDLfFormula> &formula) const {
+Driver::add_LDLfBox(std::shared_ptr<const RegExp>& regex,
+                    std::shared_ptr<const LDLfFormula>& formula) const {
   return context->makeLdlfBox(regex, formula);
 }
 
 std::shared_ptr<const LDLfFormula>
-Driver::add_LDLfImplication(std::shared_ptr<const LDLfFormula> &lhs,
-                            std::shared_ptr<const LDLfFormula> &rhs) const {
+Driver::add_LDLfImplication(std::shared_ptr<const LDLfFormula>& lhs,
+                            std::shared_ptr<const LDLfFormula>& rhs) const {
   // (not lhs) OR rhs
   auto ptr_not_lhs = context->makeLdlfNot(lhs);
   set_formulas children = set_formulas({ptr_not_lhs, rhs});
@@ -118,8 +118,8 @@ Driver::add_LDLfImplication(std::shared_ptr<const LDLfFormula> &lhs,
 }
 
 std::shared_ptr<const LDLfFormula>
-Driver::add_LDLfEquivalence(std::shared_ptr<const LDLfFormula> &lhs,
-                            std::shared_ptr<const LDLfFormula> &rhs) const {
+Driver::add_LDLfEquivalence(std::shared_ptr<const LDLfFormula>& lhs,
+                            std::shared_ptr<const LDLfFormula>& rhs) const {
   // (lhs IMPLIES rhs) AND (rhs IMPLIES lhs)
   auto ptr_left_implication = this->add_LDLfImplication(lhs, rhs);
   auto ptr_right_implication = this->add_LDLfImplication(rhs, lhs);
@@ -142,36 +142,36 @@ std::shared_ptr<const LDLfFormula> Driver::add_LDLfLast() const {
 }
 
 std::shared_ptr<const RegExp> Driver::add_PropositionalRegExp(
-    std::shared_ptr<const PropositionalFormula> &prop_formula) const {
+    std::shared_ptr<const PropositionalFormula>& prop_formula) const {
   return context->makePropRegex(prop_formula);
 }
 
 std::shared_ptr<const RegExp>
-Driver::add_TestRegExp(std::shared_ptr<const LDLfFormula> &formula) const {
+Driver::add_TestRegExp(std::shared_ptr<const LDLfFormula>& formula) const {
   return context->makeTestRegex(formula);
 }
 
 std::shared_ptr<const RegExp>
-Driver::add_StarRegExp(std::shared_ptr<const RegExp> &regex) const {
+Driver::add_StarRegExp(std::shared_ptr<const RegExp>& regex) const {
   return context->makeStarRegex(regex);
 }
 
 std::shared_ptr<const RegExp>
-Driver::add_SequenceRegExp(std::shared_ptr<const RegExp> &regex_lhs,
-                           std::shared_ptr<const RegExp> &regex_rhs) const {
+Driver::add_SequenceRegExp(std::shared_ptr<const RegExp>& regex_lhs,
+                           std::shared_ptr<const RegExp>& regex_rhs) const {
   vec_regex children = vec_regex({regex_lhs, regex_rhs});
   return context->makeSeqRegex(children);
 }
 
 std::shared_ptr<const RegExp>
-Driver::add_UnionRegExp(std::shared_ptr<const RegExp> &regex_lhs,
-                        std::shared_ptr<const RegExp> &regex_rhs) const {
+Driver::add_UnionRegExp(std::shared_ptr<const RegExp>& regex_lhs,
+                        std::shared_ptr<const RegExp>& regex_rhs) const {
   set_regex children = set_regex({regex_lhs, regex_rhs});
   return context->makeUnionRegex(children);
 }
 
 std::shared_ptr<const PropositionalFormula>
-Driver::add_PropositionalBooleanAtom(const bool &flag) const {
+Driver::add_PropositionalBooleanAtom(const bool& flag) const {
   if (flag) {
     return context->makeTrue();
   }
@@ -179,33 +179,33 @@ Driver::add_PropositionalBooleanAtom(const bool &flag) const {
 }
 
 std::shared_ptr<const PropositionalFormula>
-Driver::add_PropositionalAtom(std::string &symbol_name) const {
+Driver::add_PropositionalAtom(std::string& symbol_name) const {
   return context->makePropAtom(symbol_name);
 }
 
 std::shared_ptr<const PropositionalFormula> Driver::add_PropositionalAnd(
-    std::shared_ptr<const PropositionalFormula> &lhs,
-    std::shared_ptr<const PropositionalFormula> &rhs) const {
+    std::shared_ptr<const PropositionalFormula>& lhs,
+    std::shared_ptr<const PropositionalFormula>& rhs) const {
   set_prop_formulas children = set_prop_formulas({lhs, rhs});
   return context->makePropAnd(children);
 }
 
 std::shared_ptr<const PropositionalFormula> Driver::add_PropositionalOr(
-    std::shared_ptr<const PropositionalFormula> &lhs,
-    std::shared_ptr<const PropositionalFormula> &rhs) const {
+    std::shared_ptr<const PropositionalFormula>& lhs,
+    std::shared_ptr<const PropositionalFormula>& rhs) const {
   set_prop_formulas children = set_prop_formulas({lhs, rhs});
   return context->makePropOr(children);
 }
 
 std::shared_ptr<const PropositionalFormula> Driver::add_PropositionalNot(
-    std::shared_ptr<const PropositionalFormula> &prop_formula) const {
+    std::shared_ptr<const PropositionalFormula>& prop_formula) const {
   return context->makePropNot(prop_formula);
 }
 
 std::shared_ptr<const PropositionalFormula>
 Driver::add_PropositionalImplication(
-    std::shared_ptr<const PropositionalFormula> &lhs,
-    std::shared_ptr<const PropositionalFormula> &rhs) const {
+    std::shared_ptr<const PropositionalFormula>& lhs,
+    std::shared_ptr<const PropositionalFormula>& rhs) const {
   // (not lhs) OR rhs
   auto ptr_not_lhs = context->makePropNot(lhs);
   set_prop_formulas children = set_prop_formulas({ptr_not_lhs, rhs});
@@ -214,8 +214,8 @@ Driver::add_PropositionalImplication(
 
 std::shared_ptr<const PropositionalFormula>
 Driver::add_PropositionalEquivalence(
-    std::shared_ptr<const PropositionalFormula> &lhs,
-    std::shared_ptr<const PropositionalFormula> &rhs) const {
+    std::shared_ptr<const PropositionalFormula>& lhs,
+    std::shared_ptr<const PropositionalFormula>& rhs) const {
   // (lhs IMPLIES rhs) AND (rhs IMPLIES lhs)
   auto ptr_left_implication = this->add_PropositionalImplication(lhs, rhs);
   auto ptr_right_implication = this->add_PropositionalImplication(rhs, lhs);
@@ -224,7 +224,7 @@ Driver::add_PropositionalEquivalence(
   return context->makePropAnd(children);
 }
 
-std::ostream &Driver::print(std::ostream &stream) const {
+std::ostream& Driver::print(std::ostream& stream) const {
   stream << this->result->str() << "\n";
   return (stream);
 }

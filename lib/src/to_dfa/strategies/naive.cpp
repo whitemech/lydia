@@ -22,7 +22,7 @@
 namespace whitemech::lydia {
 
 std::shared_ptr<abstract_dfa>
-NaiveStrategy::to_dfa(const LDLfFormula &formula) {
+NaiveStrategy::to_dfa(const LDLfFormula& formula) {
   //  build initial state of the DFA.
   auto formula_nnf = to_nnf(formula);
   current_context = &formula_nnf->ctx();
@@ -34,7 +34,7 @@ NaiveStrategy::to_dfa(const LDLfFormula &formula) {
   set_atoms_ptr atoms = find_atoms(*formula_nnf);
   map_atoms_ptr atom2index;
   int index = 0;
-  for (const auto &atom : atoms)
+  for (const auto& atom : atoms)
     atom2index[atom] = index++;
   auto all_interpretations = powerset<atom_ptr, SharedComparator>(atoms);
 
@@ -63,7 +63,7 @@ NaiveStrategy::to_dfa(const LDLfFormula &formula) {
      *       improvement: delta function returns a list of possible successors
      *                    (no interpretation to provide)
      */
-    for (const auto &i : all_interpretations) {
+    for (const auto& i : all_interpretations) {
       const dfa_state_ptr next_state =
           NaiveStrategy::next_state(*current_state, i);
       // update states/transitions
@@ -80,7 +80,7 @@ NaiveStrategy::to_dfa(const LDLfFormula &formula) {
       }
 
       interpretation_set x{};
-      for (const atom_ptr &atom : i)
+      for (const atom_ptr& atom : i)
         x.insert(atom2index[atom]);
       automaton->add_transition(current_state_index, x, next_state_index,
                                 false);
@@ -90,21 +90,21 @@ NaiveStrategy::to_dfa(const LDLfFormula &formula) {
   return automaton;
 }
 
-dfa_state_ptr NaiveStrategy::next_state(const DFAState &state,
-                                        const set_atoms_ptr &i) {
+dfa_state_ptr NaiveStrategy::next_state(const DFAState& state,
+                                        const set_atoms_ptr& i) {
   set_nfa_states successor_nfa_states;
-  for (const auto &nfa_state : state.states) {
+  for (const auto& nfa_state : state.states) {
     auto successors = NaiveStrategy::next_states(*nfa_state, i);
     successor_nfa_states.insert(successors.begin(), successors.end());
   }
   return std::make_shared<DFAState>(state.context, successor_nfa_states);
 }
 
-set_nfa_states NaiveStrategy::next_states(const NFAState &state,
-                                          const set_atoms_ptr &i) {
+set_nfa_states NaiveStrategy::next_states(const NFAState& state,
+                                          const set_atoms_ptr& i) {
   // This will be put in conjunction with o ther formulas
   vec_prop_formulas args{state.context.makeTrue(), state.context.makeTrue()};
-  for (const auto &formula : state.formulas) {
+  for (const auto& formula : state.formulas) {
     args.push_back(delta(*formula, i));
   }
   auto conjunction =
@@ -112,12 +112,12 @@ set_nfa_states NaiveStrategy::next_states(const NFAState &state,
 
   set_nfa_states result;
   auto models = all_models<NaiveModelEnumerationStategy>(*conjunction);
-  for (const auto &model : models) {
+  for (const auto& model : models) {
     set_formulas tmp;
-    for (const auto &atom : model) {
+    for (const auto& atom : model) {
       assert(is_a<QuotedFormula>(*atom->symbol));
       basic_ptr tmp_ptr =
-          dynamic_cast<const QuotedFormula &>(*atom->symbol).formula;
+          dynamic_cast<const QuotedFormula&>(*atom->symbol).formula;
       tmp.insert(std::static_pointer_cast<const LDLfFormula>(tmp_ptr));
     }
     result.emplace(std::make_shared<NFAState>(state.context, tmp));

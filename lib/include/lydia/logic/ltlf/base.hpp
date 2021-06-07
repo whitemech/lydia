@@ -29,35 +29,35 @@ class RegExp;
 
 class LTLfFormula : public Ast {
 public:
-  explicit LTLfFormula(AstManager &c) : Ast(c) {}
+  explicit LTLfFormula(AstManager& c) : Ast(c) {}
   virtual ltlf_ptr logical_not() const = 0;
 };
 
 class LTLfTrue : public LTLfFormula {
 public:
   const static TypeID type_code_id = TypeID::t_LTLfTrue;
-  explicit LTLfTrue(AstManager &c) : LTLfFormula(c) {
+  explicit LTLfTrue(AstManager& c) : LTLfFormula(c) {
     type_code_ = type_code_id;
   }
-  void accept(Visitor &v) const override;
+  void accept(Visitor& v) const override;
   hash_t compute_hash_() const override;
   virtual vec_ltlf_formulas get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
   ltlf_ptr logical_not() const override;
 };
 
 class LTLfFalse : public LTLfFormula {
 public:
   const static TypeID type_code_id = TypeID::t_LTLfFalse;
-  explicit LTLfFalse(AstManager &c) : LTLfFormula(c) {
+  explicit LTLfFalse(AstManager& c) : LTLfFormula(c) {
     type_code_ = type_code_id;
   }
-  void accept(Visitor &v) const override;
+  void accept(Visitor& v) const override;
   hash_t compute_hash_() const override;
   virtual vec_ltlf_formulas get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
   ltlf_ptr logical_not() const override;
 };
 
@@ -65,12 +65,12 @@ class LTLfAtom : public LTLfFormula {
 public:
   const static TypeID type_code_id = TypeID::t_LTLfAtom;
   const symbol_ptr symbol;
-  explicit LTLfAtom(AstManager &c, const std::string &);
-  explicit LTLfAtom(AstManager &c, const symbol_ptr &p);
-  void accept(Visitor &v) const override;
+  explicit LTLfAtom(AstManager& c, const std::string&);
+  explicit LTLfAtom(AstManager& c, const symbol_ptr& p);
+  void accept(Visitor& v) const override;
   hash_t compute_hash_() const override;
-  int compare_(const Basic &rhs) const override;
-  bool is_equal(const Basic &rhs) const override;
+  int compare_(const Basic& rhs) const override;
+  bool is_equal(const Basic& rhs) const override;
   ltlf_ptr logical_not() const override;
   set_ltlf_formulas get_container() const {
     return set_ltlf_formulas{
@@ -84,14 +84,14 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_LTLfAnd;
-  void accept(Visitor &v) const override;
-  explicit LTLfAnd(AstManager &c, const set_ltlf_formulas &s);
-  bool is_canonical(const set_ltlf_formulas &container_) const;
+  void accept(Visitor& v) const override;
+  explicit LTLfAnd(AstManager& c, const set_ltlf_formulas& s);
+  bool is_canonical(const set_ltlf_formulas& container_) const;
   hash_t compute_hash_() const override;
   virtual vec_ltlf_formulas get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
-  const set_ltlf_formulas &get_container() const;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
+  const set_ltlf_formulas& get_container() const;
   ltlf_ptr logical_not() const override;
 };
 
@@ -101,14 +101,14 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_LTLfOr;
-  void accept(Visitor &v) const override;
-  explicit LTLfOr(AstManager &c, const set_ltlf_formulas &s);
-  bool is_canonical(const set_ltlf_formulas &container_) const;
+  void accept(Visitor& v) const override;
+  explicit LTLfOr(AstManager& c, const set_ltlf_formulas& s);
+  bool is_canonical(const set_ltlf_formulas& container_) const;
   hash_t compute_hash_() const override;
   virtual vec_ltlf_formulas get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
-  const set_ltlf_formulas &get_container() const;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
+  const set_ltlf_formulas& get_container() const;
   ltlf_ptr logical_not() const override;
 };
 
@@ -118,13 +118,13 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_LTLfNot;
-  void accept(Visitor &v) const override;
-  explicit LTLfNot(AstManager &c, const ltlf_ptr &in);
-  bool is_canonical(const LTLfFormula &s) const;
+  void accept(Visitor& v) const override;
+  explicit LTLfNot(AstManager& c, const ltlf_ptr& in);
+  bool is_canonical(const LTLfFormula& s) const;
   hash_t compute_hash_() const override;
   virtual vec_basic get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
   ltlf_ptr get_arg() const;
   ltlf_ptr logical_not() const override;
 };
@@ -135,13 +135,13 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_LTLfNext;
-  void accept(Visitor &v) const override;
-  explicit LTLfNext(AstManager &c, const ltlf_ptr &in);
-  bool is_canonical(const LTLfFormula &s) const;
+  void accept(Visitor& v) const override;
+  explicit LTLfNext(AstManager& c, const ltlf_ptr& in);
+  bool is_canonical(const LTLfFormula& s) const;
   hash_t compute_hash_() const override;
   virtual vec_basic get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
   ltlf_ptr get_arg() const;
   ltlf_ptr logical_not() const override;
 };
@@ -152,13 +152,13 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_LTLfWeakNext;
-  void accept(Visitor &v) const override;
-  explicit LTLfWeakNext(AstManager &c, const ltlf_ptr &in);
-  bool is_canonical(const LTLfFormula &s) const;
+  void accept(Visitor& v) const override;
+  explicit LTLfWeakNext(AstManager& c, const ltlf_ptr& in);
+  bool is_canonical(const LTLfFormula& s) const;
   hash_t compute_hash_() const override;
   virtual vec_basic get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
   ltlf_ptr get_arg() const;
   ltlf_ptr logical_not() const override;
 };
@@ -171,15 +171,15 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_LTLfUntil;
-  void accept(Visitor &v) const override;
-  explicit LTLfUntil(AstManager &c, const ltlf_ptr &arg_1,
-                     const ltlf_ptr &arg_2);
-  bool is_canonical(const set_ltlf_formulas &container_) const;
+  void accept(Visitor& v) const override;
+  explicit LTLfUntil(AstManager& c, const ltlf_ptr& arg_1,
+                     const ltlf_ptr& arg_2);
+  bool is_canonical(const set_ltlf_formulas& container_) const;
   hash_t compute_hash_() const override;
   virtual vec_ltlf_formulas get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
-  const set_ltlf_formulas &get_container() const;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
+  const set_ltlf_formulas& get_container() const;
   ltlf_ptr logical_not() const override;
 };
 
@@ -191,15 +191,15 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_LTLfRelease;
-  void accept(Visitor &v) const override;
-  explicit LTLfRelease(AstManager &c, const ltlf_ptr &arg_1,
-                       const ltlf_ptr &arg_2);
-  bool is_canonical(const set_ltlf_formulas &container_) const;
+  void accept(Visitor& v) const override;
+  explicit LTLfRelease(AstManager& c, const ltlf_ptr& arg_1,
+                       const ltlf_ptr& arg_2);
+  bool is_canonical(const set_ltlf_formulas& container_) const;
   hash_t compute_hash_() const override;
   virtual vec_ltlf_formulas get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
-  const set_ltlf_formulas &get_container() const;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
+  const set_ltlf_formulas& get_container() const;
   ltlf_ptr logical_not() const override;
 };
 
@@ -209,13 +209,13 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_LTLfEventually;
-  void accept(Visitor &v) const override;
-  explicit LTLfEventually(AstManager &c, const ltlf_ptr &in);
-  bool is_canonical(const LTLfFormula &s) const;
+  void accept(Visitor& v) const override;
+  explicit LTLfEventually(AstManager& c, const ltlf_ptr& in);
+  bool is_canonical(const LTLfFormula& s) const;
   hash_t compute_hash_() const override;
   virtual vec_basic get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
   ltlf_ptr get_arg() const;
   ltlf_ptr logical_not() const override;
 };
@@ -226,13 +226,13 @@ private:
 
 public:
   const static TypeID type_code_id = TypeID::t_LTLfAlways;
-  void accept(Visitor &v) const override;
-  explicit LTLfAlways(AstManager &c, const ltlf_ptr &in);
-  bool is_canonical(const LTLfFormula &s) const;
+  void accept(Visitor& v) const override;
+  explicit LTLfAlways(AstManager& c, const ltlf_ptr& in);
+  bool is_canonical(const LTLfFormula& s) const;
   hash_t compute_hash_() const override;
   virtual vec_basic get_args() const;
-  bool is_equal(const Basic &o) const override;
-  int compare_(const Basic &o) const override;
+  bool is_equal(const Basic& o) const override;
+  int compare_(const Basic& o) const override;
   ltlf_ptr get_arg() const;
   ltlf_ptr logical_not() const override;
 };

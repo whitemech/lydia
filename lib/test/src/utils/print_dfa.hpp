@@ -19,8 +19,8 @@
 #include <lydia/utils/dfa_transform.hpp>
 namespace whitemech::lydia {
 
-static void print_dfa(const abstract_dfa &automaton, const std::string &name,
-                      const std::string &format = "svg") {
+static void print_dfa(const abstract_dfa& automaton, const std::string& name,
+                      const std::string& format = "svg") {
   dfa_to_graphviz(automaton, name + "." + format, format);
 }
 } // namespace whitemech::lydia

@@ -38,79 +38,79 @@ public:
   explicit DeltaSymbolicVisitor(bool epsilon = false) : epsilon{epsilon} {}
 
   // callbacks for LDLf
-  void visit(const Symbol &) override{};
-  void visit(const LDLfTrue &) override;
-  void visit(const LDLfFalse &) override;
-  void visit(const LDLfAnd &) override;
-  void visit(const LDLfOr &) override;
-  void visit(const LDLfNot &) override;
-  void visit(const LDLfDiamond &) override;
-  void visit(const LDLfBox &) override;
+  void visit(const Symbol&) override{};
+  void visit(const LDLfTrue&) override;
+  void visit(const LDLfFalse&) override;
+  void visit(const LDLfAnd&) override;
+  void visit(const LDLfOr&) override;
+  void visit(const LDLfNot&) override;
+  void visit(const LDLfDiamond&) override;
+  void visit(const LDLfBox&) override;
 
   // callbacks for regular expressions
-  void visit(const PropositionalRegExp &) override{};
-  void visit(const TestRegExp &) override{};
-  void visit(const UnionRegExp &) override{};
-  void visit(const SequenceRegExp &) override{};
-  void visit(const StarRegExp &) override{};
+  void visit(const PropositionalRegExp&) override{};
+  void visit(const TestRegExp&) override{};
+  void visit(const UnionRegExp&) override{};
+  void visit(const SequenceRegExp&) override{};
+  void visit(const StarRegExp&) override{};
 
   // callbacks for propositional logic
-  void visit(const PropositionalTrue &) override{};
-  void visit(const PropositionalFalse &) override{};
-  void visit(const PropositionalAtom &) override{};
-  void visit(const PropositionalAnd &) override{};
-  void visit(const PropositionalOr &) override{};
-  void visit(const PropositionalNot &) override{};
+  void visit(const PropositionalTrue&) override{};
+  void visit(const PropositionalFalse&) override{};
+  void visit(const PropositionalAtom&) override{};
+  void visit(const PropositionalAnd&) override{};
+  void visit(const PropositionalOr&) override{};
+  void visit(const PropositionalNot&) override{};
 
-  void visit(const QuotedFormula &) override{};
-  void visit(const LDLfF &) override;
-  void visit(const LDLfT &) override;
+  void visit(const QuotedFormula&) override{};
+  void visit(const LDLfF&) override;
+  void visit(const LDLfT&) override;
 
-  std::shared_ptr<const PropositionalFormula> apply(const LDLfFormula &b);
+  std::shared_ptr<const PropositionalFormula> apply(const LDLfFormula& b);
 };
 
 class DeltaSymbolicDiamondRegExpVisitor : Visitor {
 protected:
   std::shared_ptr<const PropositionalFormula> result;
-  const LDLfTemporal &formula;
+  const LDLfTemporal& formula;
   bool epsilon;
 
 public:
-  explicit DeltaSymbolicDiamondRegExpVisitor(const LDLfTemporal &formula,
+  explicit DeltaSymbolicDiamondRegExpVisitor(const LDLfTemporal& formula,
                                              bool epsilon)
       : formula{std::move(formula)}, epsilon{epsilon} {};
 
   // callbacks for regular expressions
-  void visit(const PropositionalRegExp &) override;
-  void visit(const TestRegExp &) override;
-  void visit(const UnionRegExp &) override;
-  void visit(const SequenceRegExp &) override;
-  void visit(const StarRegExp &) override;
+  void visit(const PropositionalRegExp&) override;
+  void visit(const TestRegExp&) override;
+  void visit(const UnionRegExp&) override;
+  void visit(const SequenceRegExp&) override;
+  void visit(const StarRegExp&) override;
 
-  std::shared_ptr<const PropositionalFormula> apply(const RegExp &b);
+  std::shared_ptr<const PropositionalFormula> apply(const RegExp& b);
 };
 
 class DeltaSymbolicBoxRegExpVisitor : Visitor {
 protected:
   std::shared_ptr<const PropositionalFormula> result;
-  const LDLfTemporal &formula;
+  const LDLfTemporal& formula;
   const set_atoms_ptr prop_interpretation;
   bool epsilon;
 
 public:
-  explicit DeltaSymbolicBoxRegExpVisitor(const LDLfTemporal &formula,
+  explicit DeltaSymbolicBoxRegExpVisitor(const LDLfTemporal& formula,
                                          bool epsilon)
       : formula{std::move(formula)}, epsilon{epsilon} {};
   // callbacks for regular expressions
-  void visit(const PropositionalRegExp &) override;
-  void visit(const TestRegExp &) override;
-  void visit(const UnionRegExp &) override;
-  void visit(const SequenceRegExp &) override;
-  void visit(const StarRegExp &) override;
-  std::shared_ptr<const PropositionalFormula> apply(const RegExp &b);
+  void visit(const PropositionalRegExp&) override;
+  void visit(const TestRegExp&) override;
+  void visit(const UnionRegExp&) override;
+  void visit(const SequenceRegExp&) override;
+  void visit(const StarRegExp&) override;
+  std::shared_ptr<const PropositionalFormula> apply(const RegExp& b);
 };
 
 std::shared_ptr<const PropositionalFormula>
-delta_symbolic(const LDLfFormula &, bool epsilon = false);
+delta_symbolic(const LDLfFormula&, bool epsilon = false);
 
 } // namespace whitemech::lydia

@@ -21,49 +21,49 @@
 #include <lydia/visitor.hpp>
 
 namespace whitemech::lydia {
-void Symbol::accept(Visitor &v) const { v.visit(*this); }
+void Symbol::accept(Visitor& v) const { v.visit(*this); }
 
-void LTLfTrue::accept(Visitor &v) const { v.visit(*this); }
-void LTLfFalse::accept(Visitor &v) const { v.visit(*this); }
-void LTLfOr::accept(Visitor &v) const { v.visit(*this); }
-void LTLfAnd::accept(Visitor &v) const { v.visit(*this); }
-void LTLfAtom::accept(Visitor &v) const { v.visit(*this); }
-void LTLfNot::accept(Visitor &v) const { v.visit(*this); }
-void LTLfNext::accept(Visitor &v) const { v.visit(*this); }
-void LTLfWeakNext::accept(Visitor &v) const { v.visit(*this); }
-void LTLfUntil::accept(Visitor &v) const { v.visit(*this); }
-void LTLfRelease::accept(Visitor &v) const { v.visit(*this); }
-void LTLfEventually::accept(Visitor &v) const { v.visit(*this); }
-void LTLfAlways::accept(Visitor &v) const { v.visit(*this); }
+void LTLfTrue::accept(Visitor& v) const { v.visit(*this); }
+void LTLfFalse::accept(Visitor& v) const { v.visit(*this); }
+void LTLfOr::accept(Visitor& v) const { v.visit(*this); }
+void LTLfAnd::accept(Visitor& v) const { v.visit(*this); }
+void LTLfAtom::accept(Visitor& v) const { v.visit(*this); }
+void LTLfNot::accept(Visitor& v) const { v.visit(*this); }
+void LTLfNext::accept(Visitor& v) const { v.visit(*this); }
+void LTLfWeakNext::accept(Visitor& v) const { v.visit(*this); }
+void LTLfUntil::accept(Visitor& v) const { v.visit(*this); }
+void LTLfRelease::accept(Visitor& v) const { v.visit(*this); }
+void LTLfEventually::accept(Visitor& v) const { v.visit(*this); }
+void LTLfAlways::accept(Visitor& v) const { v.visit(*this); }
 
-void LDLfTrue::accept(Visitor &v) const { v.visit(*this); }
-void LDLfFalse::accept(Visitor &v) const { v.visit(*this); }
-void LDLfOr::accept(Visitor &v) const { v.visit(*this); }
-void LDLfAnd::accept(Visitor &v) const { v.visit(*this); }
-void LDLfNot::accept(Visitor &v) const { v.visit(*this); }
-void LDLfDiamond::accept(Visitor &v) const { v.visit(*this); }
-void LDLfBox::accept(Visitor &v) const { v.visit(*this); }
+void LDLfTrue::accept(Visitor& v) const { v.visit(*this); }
+void LDLfFalse::accept(Visitor& v) const { v.visit(*this); }
+void LDLfOr::accept(Visitor& v) const { v.visit(*this); }
+void LDLfAnd::accept(Visitor& v) const { v.visit(*this); }
+void LDLfNot::accept(Visitor& v) const { v.visit(*this); }
+void LDLfDiamond::accept(Visitor& v) const { v.visit(*this); }
+void LDLfBox::accept(Visitor& v) const { v.visit(*this); }
 
-void PropositionalRegExp::accept(Visitor &v) const { v.visit(*this); }
-void TestRegExp::accept(Visitor &v) const { v.visit(*this); }
-void UnionRegExp::accept(Visitor &v) const { v.visit(*this); }
-void SequenceRegExp::accept(Visitor &v) const { v.visit(*this); }
-void StarRegExp::accept(Visitor &v) const { v.visit(*this); }
+void PropositionalRegExp::accept(Visitor& v) const { v.visit(*this); }
+void TestRegExp::accept(Visitor& v) const { v.visit(*this); }
+void UnionRegExp::accept(Visitor& v) const { v.visit(*this); }
+void SequenceRegExp::accept(Visitor& v) const { v.visit(*this); }
+void StarRegExp::accept(Visitor& v) const { v.visit(*this); }
 
 // TODO add other accept methods
 
-void PropositionalTrue::accept(Visitor &v) const { v.visit(*this); }
+void PropositionalTrue::accept(Visitor& v) const { v.visit(*this); }
 
-void PropositionalFalse::accept(Visitor &v) const { v.visit(*this); }
-void PropositionalAtom::accept(Visitor &v) const { v.visit(*this); }
+void PropositionalFalse::accept(Visitor& v) const { v.visit(*this); }
+void PropositionalAtom::accept(Visitor& v) const { v.visit(*this); }
 
-void PropositionalAnd::accept(Visitor &v) const { v.visit(*this); }
-void PropositionalOr::accept(Visitor &v) const { v.visit(*this); }
-void PropositionalNot::accept(Visitor &v) const { v.visit(*this); }
+void PropositionalAnd::accept(Visitor& v) const { v.visit(*this); }
+void PropositionalOr::accept(Visitor& v) const { v.visit(*this); }
+void PropositionalNot::accept(Visitor& v) const { v.visit(*this); }
 
-void LDLfF::accept(Visitor &v) const { v.visit(*this); }
-void LDLfT::accept(Visitor &v) const { v.visit(*this); }
-void LDLfQ::accept(Visitor &v) const { v.visit(*this); }
-void QuotedFormula::accept(Visitor &v) const { v.visit(*this); }
+void LDLfF::accept(Visitor& v) const { v.visit(*this); }
+void LDLfT::accept(Visitor& v) const { v.visit(*this); }
+void LDLfQ::accept(Visitor& v) const { v.visit(*this); }
+void QuotedFormula::accept(Visitor& v) const { v.visit(*this); }
 
 } // namespace whitemech::lydia

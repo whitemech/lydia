@@ -19,27 +19,27 @@
 
 namespace whitemech::lydia {
 
-void CNFTransformer::visit(const PropositionalTrue &f) {
+void CNFTransformer::visit(const PropositionalTrue& f) {
   result = f.ctx().makeTrue();
 }
 
-void CNFTransformer::visit(const PropositionalFalse &f) {
+void CNFTransformer::visit(const PropositionalFalse& f) {
   result = f.ctx().makeFalse();
 }
 
-void CNFTransformer::visit(const PropositionalAtom &f) {
+void CNFTransformer::visit(const PropositionalAtom& f) {
   result =
       std::static_pointer_cast<const PropositionalAtom>(f.shared_from_this());
 }
 
-void CNFTransformer::visit(const PropositionalAnd &f) {
+void CNFTransformer::visit(const PropositionalAnd& f) {
   set_prop_formulas args;
-  for (const auto &subformula : f.get_container()) {
+  for (const auto& subformula : f.get_container()) {
     auto subformula_cnf = apply(*subformula);
     if (is_a<PropositionalAnd>(*subformula_cnf)) {
-      const auto &to_insert =
-          dynamic_cast<const PropositionalAnd &>(*subformula_cnf);
-      const auto &container = to_insert.get_container();
+      const auto& to_insert =
+          dynamic_cast<const PropositionalAnd&>(*subformula_cnf);
+      const auto& container = to_insert.get_container();
       args.insert(container.begin(), container.end());
     } else {
       args.insert(subformula_cnf);
@@ -48,7 +48,7 @@ void CNFTransformer::visit(const PropositionalAnd &f) {
   result = f.ctx().makePropAnd(args);
 }
 
-void CNFTransformer::visit(const PropositionalOr &f) {
+void CNFTransformer::visit(const PropositionalOr& f) {
   set_prop_formulas args;
   auto container = f.get_container();
   auto first = apply(**container.begin());
@@ -75,8 +75,8 @@ void CNFTransformer::visit(const PropositionalOr &f) {
     tail_container = to_container(tail);
   }
 
-  for (const auto &x : first_container) {
-    for (const auto &y : tail_container) {
+  for (const auto& x : first_container) {
+    for (const auto& y : tail_container) {
       args.insert(f.ctx().makePropOr(set_prop_formulas{x, y}));
     }
   }
@@ -84,8 +84,8 @@ void CNFTransformer::visit(const PropositionalOr &f) {
   result = f.ctx().makePropAnd(args);
 }
 
-void CNFTransformer::visit(const PropositionalNot &f) {
-  auto &arg = *f.get_arg();
+void CNFTransformer::visit(const PropositionalNot& f) {
+  auto& arg = *f.get_arg();
   if (is_a<PropositionalAtom>(arg) or is_a<PropositionalTrue>(arg) or
       is_a<PropositionalFalse>(arg)) {
     result = arg.logical_not();
@@ -95,19 +95,19 @@ void CNFTransformer::visit(const PropositionalNot &f) {
 
 set_prop_formulas to_container(prop_ptr p) {
   if (is_a<PropositionalAnd>(*p)) {
-    return dynamic_cast<const PropositionalAnd &>(*p).get_container();
+    return dynamic_cast<const PropositionalAnd&>(*p).get_container();
   } else if (is_a<PropositionalOr>(*p)) {
-    return dynamic_cast<const PropositionalOr &>(*p).get_container();
+    return dynamic_cast<const PropositionalOr&>(*p).get_container();
   } else {
     return set_prop_formulas({prop_ptr(p)});
   }
 }
 
-prop_ptr CNFTransformer::apply(const PropositionalFormula &b) {
+prop_ptr CNFTransformer::apply(const PropositionalFormula& b) {
   b.accept(*this);
   return result;
 }
-prop_ptr to_cnf(const PropositionalFormula &f) {
+prop_ptr to_cnf(const PropositionalFormula& f) {
   auto visitor = CNFTransformer();
   return visitor.apply(f);
 }

@@ -20,7 +20,7 @@
 
 namespace whitemech::lydia {
 
-int Basic::compare(const Basic &o) const {
+int Basic::compare(const Basic& o) const {
   auto a = this->get_type_code();
   auto b = o.get_type_code();
   if (a == b) {

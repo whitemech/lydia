@@ -22,13 +22,13 @@
 
 #include <lydia/mona_ext/mona_ext_base.hpp>
 
-static bdd_manager *bddm_res;
+static bdd_manager* bddm_res;
 
 #define SET_BDD_NOT_CALCULATED (unsigned)-1
 
 struct set {
   int size;
-  int *elements;
+  int* elements;
   unsigned sq;          /* bddm->SEQUENTIAL_LIST(roots)[sq]  is the
                             BDD node of the subset state; if equal
                             SET_BDD_NOT_CALCULATED then not calculated yet */
@@ -37,20 +37,20 @@ struct set {
 };
 
 static int n_ssets;
-static struct set *ssets;
+static struct set* ssets;
 static int next_sset;
 static hash_tab htbl_set;
 
 void init_ssets(int sz) {
   n_ssets = sz;
-  ssets = static_cast<set *>(mem_alloc((sizeof *ssets) * sz));
+  ssets = static_cast<set*>(mem_alloc((sizeof *ssets) * sz));
   next_sset = 0;
 }
 
-int make_sset(int sz, int *elem, unsigned sq, int d1, int d2) {
+int make_sset(int sz, int* elem, unsigned sq, int d1, int d2) {
   if (next_sset == n_ssets) {
-    struct set *new_ssets =
-        static_cast<set *>(mem_alloc((sizeof *ssets) * n_ssets * 2));
+    struct set* new_ssets =
+        static_cast<set*>(mem_alloc((sizeof *ssets) * n_ssets * 2));
 
     mem_copy(new_ssets, ssets, (sizeof *new_ssets) * n_ssets);
     mem_free(ssets);
@@ -64,7 +64,7 @@ int make_sset(int sz, int *elem, unsigned sq, int d1, int d2) {
   ssets[next_sset].decomp2 = d2;
   ssets[next_sset].permanent = -1;
   insert_in_hash_tab(htbl_set, (long)elem, 0,
-                     (void *)(uintptr_t)(next_sset + 1));
+                     (void*)(uintptr_t)(next_sset + 1));
   /* htbl maps to ++id, since 0 = not_found */
 
   return (next_sset++);
@@ -72,10 +72,10 @@ int make_sset(int sz, int *elem, unsigned sq, int d1, int d2) {
 
 struct sslist_ {
   int sset_id;
-  struct sslist_ *next;
+  struct sslist_* next;
 };
 
-typedef struct sslist_ *sslist;
+typedef struct sslist_* sslist;
 
 sslist new_sslist(int si, sslist nxt) {
   sslist sl = static_cast<sslist>(mem_alloc(sizeof *sl));
@@ -92,17 +92,17 @@ static sslist lst, lh, lt;
 /* Fn to create pairs */
 unsigned proj_term1(unsigned state1, unsigned state2) {
   int res;
-  int *s;
+  int* s;
   int size;
 
   if (state1 == state2) {
     size = 1;
-    s = static_cast<int *>(mem_alloc((sizeof *s) * 2));
+    s = static_cast<int*>(mem_alloc((sizeof *s) * 2));
     s[0] = state1;
     s[1] = -1;
   } else {
     size = 2;
-    s = static_cast<int *>(mem_alloc((sizeof *s) * 3));
+    s = static_cast<int*>(mem_alloc((sizeof *s) * 3));
     if (state1 < state2) {
       s[0] = state1;
       s[1] = state2;
@@ -128,12 +128,12 @@ unsigned proj_term1(unsigned state1, unsigned state2) {
 /* Fn to union leaves */
 bdd_ptr proj_term2(unsigned set_index1, unsigned set_index2) {
   int res;
-  int *s;
+  int* s;
   struct set *ss1, *ss2;
   int *e1, *e2, *e3;
   ss1 = &(ssets[set_index1]);
   ss2 = &(ssets[set_index2]);
-  s = static_cast<int *>(mem_alloc((ss1->size + ss2->size + 1) * (sizeof *s)));
+  s = static_cast<int*>(mem_alloc((ss1->size + ss2->size + 1) * (sizeof *s)));
 
   /* Union the sets */
   for (e1 = ss1->elements, e2 = ss2->elements, e3 = s;
@@ -195,9 +195,9 @@ unsigned eval_bdd(int ss) {
   return (ssets[ss].sq);
 }
 
-DFA *dfaUniversalProject(DFA *a, unsigned var_index) {
+DFA* dfaUniversalProject(DFA* a, unsigned var_index) {
   int i, *e;
-  DFA *res;
+  DFA* res;
   sslist lnxt;
   unsigned size_estimate = 2 * bdd_size(a->bddm);
 
@@ -210,7 +210,7 @@ DFA *dfaUniversalProject(DFA *a, unsigned var_index) {
   next_state = 0;
 
   for (i = 0; i < a->ns; i++) { /* Allocate singletons, ssets[i] = {i} */
-    int *s = static_cast<int *>(mem_alloc(2 * (sizeof *s)));
+    int* s = static_cast<int*>(mem_alloc(2 * (sizeof *s)));
 
     s[0] = i;
     s[1] = -1;
@@ -230,7 +230,7 @@ DFA *dfaUniversalProject(DFA *a, unsigned var_index) {
   ssets[a->s].permanent = next_state++; /* Should be 0 */
   {
     unsigned root_place;
-    bdd_manager *bddm_res_ =
+    bdd_manager* bddm_res_ =
         bdd_new_manager(size_estimate, size_estimate / 8 + 2);
     bdd_make_cache(bddm_res_, size_estimate, size_estimate / 8 + 2);
     bdd_kill_cache(bddm_res);
@@ -249,7 +249,7 @@ DFA *dfaUniversalProject(DFA *a, unsigned var_index) {
     }
 
     {
-      unsigned *new_roots;
+      unsigned* new_roots;
 
       res = dfaMakeNoBddm(next_state);
       res->bddm = bddm_res_;

@@ -26,7 +26,7 @@ namespace whitemech::lydia::Test {
 TEST_CASE("Duality", "[to_dfa][property_tests][duality]") {
   auto strategy_1 = CompositionalStrategy();
   auto strategy_2 = CompositionalStrategy();
-  for (const auto &[i, formula] : iter::enumerate(FORMULAS)) {
+  for (const auto& [i, formula] : iter::enumerate(FORMULAS)) {
     SECTION(fmt::format("Test duality of formula {} '{}'", i, formula)) {
       auto negated_formula = "!(" + formula + ")";
       adfa_ptr automaton_1 = to_dfa_from_formula_string(formula, strategy_1);
@@ -40,7 +40,7 @@ TEST_CASE("Duality", "[to_dfa][property_tests][duality]") {
 
 TEST_CASE("Simple theorems", "[to_dfa][property_tests][simple_theorems]") {
   auto strategy = CompositionalStrategy();
-  for (const auto &theorem : SIMPLE_THEOREMS) {
+  for (const auto& theorem : SIMPLE_THEOREMS) {
     SECTION("Test theorem " + theorem) {
       adfa_ptr automaton = to_dfa_from_formula_string(theorem, strategy);
       auto true_automaton = std::make_shared<const mona_dfa>(
@@ -58,7 +58,7 @@ TEST_CASE("Simple theorems", "[to_dfa][property_tests][simple_theorems]") {
 TEST_CASE("Advanced theorems", "[to_dfa][property_tests][advanced_theorems]") {
   Logger log("advanced-theorems");
   int i = 0;
-  for (auto &&[i, e] :
+  for (auto&& [i, e] :
        iter::enumerate(iter::product(ADVANCED_THEOREMS, FORMULAS, FORMULAS))) {
     const auto [theorem, formula_1, formula_2] = e;
     const auto [theorem_str, nb_formulas] = theorem;

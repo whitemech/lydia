@@ -24,25 +24,25 @@ prop_ptr AstManager::makeTrue() { return prop_true_; }
 
 prop_ptr AstManager::makeFalse() { return prop_false_; }
 
-symbol_ptr AstManager::makeSymbol(const std::string &name) {
+symbol_ptr AstManager::makeSymbol(const std::string& name) {
   auto tmp = std::make_shared<const Symbol>(name);
   auto result = insert_if_not_available_(tmp);
   return result;
 }
 
-atom_ptr AstManager::makePropAtom(const std::string &name) {
+atom_ptr AstManager::makePropAtom(const std::string& name) {
   auto tmp = std::make_shared<const PropositionalAtom>(*this, name);
   auto result = insert_if_not_available_(tmp);
   return result;
 }
 
-atom_ptr AstManager::makePropAtom(const basic_ptr &ptr) {
+atom_ptr AstManager::makePropAtom(const basic_ptr& ptr) {
   auto tmp = std::make_shared<const PropositionalAtom>(*this, ptr);
   auto result = insert_if_not_available_(tmp);
   return result;
 }
 
-prop_ptr AstManager::makePropAnd(const set_prop_formulas &args) {
+prop_ptr AstManager::makePropAnd(const set_prop_formulas& args) {
   prop_ptr (AstManager::*fun)(bool) = &AstManager::makeBool;
   auto tmp = and_or<const PropositionalFormula, PropositionalAnd,
                     PropositionalTrue, PropositionalFalse, PropositionalNot,
@@ -51,7 +51,7 @@ prop_ptr AstManager::makePropAnd(const set_prop_formulas &args) {
   return result;
 }
 
-prop_ptr AstManager::makePropOr(const set_prop_formulas &args) {
+prop_ptr AstManager::makePropOr(const set_prop_formulas& args) {
   prop_ptr (AstManager::*fun)(bool) = &AstManager::makeBool;
   auto tmp = and_or<const PropositionalFormula, PropositionalOr,
                     PropositionalTrue, PropositionalFalse, PropositionalNot,
@@ -60,7 +60,7 @@ prop_ptr AstManager::makePropOr(const set_prop_formulas &args) {
   return result;
 }
 
-prop_ptr AstManager::makePropNot(const prop_ptr &arg) {
+prop_ptr AstManager::makePropNot(const prop_ptr& arg) {
   auto tmp = std::make_shared<const PropositionalNot>(*this, arg);
   auto result = insert_if_not_available_(tmp);
   return result;

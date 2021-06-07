@@ -23,17 +23,17 @@ namespace whitemech::lydia {
 
 class Strategy {
 public:
-  virtual std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &f) = 0;
+  virtual std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula& f) = 0;
 };
 
 class Translator {
 private:
-  Strategy &strategy;
+  Strategy& strategy;
 
 public:
-  explicit Translator(Strategy &strategy) : strategy{strategy} {}
+  explicit Translator(Strategy& strategy) : strategy{strategy} {}
 
-  std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &f) const {
+  std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula& f) const {
     return strategy.to_dfa(f);
   }
 };
@@ -48,9 +48,9 @@ public:
  * @param formula the LDLf formula.
  * @return the equivalent DFA.
  */
-std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula &formula);
+std::shared_ptr<abstract_dfa> to_dfa(const LDLfFormula& formula);
 
-std::shared_ptr<abstract_dfa> to_dfa_with_strategy(const LDLfFormula &formula,
-                                                   Strategy &s);
+std::shared_ptr<abstract_dfa> to_dfa_with_strategy(const LDLfFormula& formula,
+                                                   Strategy& s);
 
 } // namespace whitemech::lydia

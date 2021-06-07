@@ -41,11 +41,11 @@ public:
    *
    * @return true if the word is accepted, false otherwise.
    */
-  virtual bool accepts(const trace &word) const = 0;
+  virtual bool accepts(const trace& word) const = 0;
 
-  virtual int get_successor(int state, const interpretation &symbol) const = 0;
+  virtual int get_successor(int state, const interpretation& symbol) const = 0;
   virtual int get_successor(int state,
-                            const interpretation_set &symbol) const = 0;
+                            const interpretation_set& symbol) const = 0;
 
   virtual bool is_final(int state) const = 0;
 
@@ -85,7 +85,7 @@ public:
    *    greater or equal than nb_variables, are interpreted as "don't care".
    * @param to the ending DFA state
    */
-  virtual void add_transition(int from, const interpretation_map &symbol,
+  virtual void add_transition(int from, const interpretation_map& symbol,
                               int to) = 0;
 
   /*!
@@ -95,7 +95,7 @@ public:
    * If @dont_care is true (default), the missing variables are considered
    * "don't care" variables. Otherwise, they are considered explicitly false.
    */
-  virtual void add_transition(int from, const interpretation &symbol, int to,
+  virtual void add_transition(int from, const interpretation& symbol, int to,
                               bool dont_care = true) = 0;
 
   /*!
@@ -105,7 +105,7 @@ public:
    * If @dont_care is true (default), the missing variables are considered
    * "don't care" variables. Otherwise, they are considered explicitly false.
    */
-  virtual void add_transition(int from, const interpretation_set &symbol,
+  virtual void add_transition(int from, const interpretation_set& symbol,
                               int to, bool dont_care = true) = 0;
 };
 } // namespace whitemech::lydia

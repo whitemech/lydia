@@ -20,31 +20,31 @@
 
 namespace whitemech::lydia {
 
-regex_ptr AstManager::makePropRegex(const prop_ptr &ptr) {
+regex_ptr AstManager::makePropRegex(const prop_ptr& ptr) {
   auto tmp = std::make_shared<const PropositionalRegExp>(*this, ptr);
   auto result = insert_if_not_available_(tmp);
   return result;
 }
 
-regex_ptr AstManager::makeSeqRegex(const vec_regex &ptr) {
+regex_ptr AstManager::makeSeqRegex(const vec_regex& ptr) {
   auto tmp = flatten_bin_op_vec<const RegExp, SequenceRegExp>(*this, ptr);
   auto result = insert_if_not_available_(tmp);
   return result;
 }
 
-regex_ptr AstManager::makeUnionRegex(const set_regex &ptr) {
+regex_ptr AstManager::makeUnionRegex(const set_regex& ptr) {
   auto tmp = flatten_bin_op_set<const RegExp, UnionRegExp>(*this, ptr);
   auto result = insert_if_not_available_(tmp);
   return result;
 }
 
-regex_ptr AstManager::makeStarRegex(const regex_ptr &ptr) {
+regex_ptr AstManager::makeStarRegex(const regex_ptr& ptr) {
   auto tmp = std::make_shared<const StarRegExp>(*this, ptr);
   auto result = insert_if_not_available_(tmp);
   return result;
 }
 
-regex_ptr AstManager::makeTestRegex(const ldlf_ptr &ptr) {
+regex_ptr AstManager::makeTestRegex(const ldlf_ptr& ptr) {
   auto tmp = std::make_shared<const TestRegExp>(*this, ptr);
   auto result = insert_if_not_available_(tmp);
   return result;

@@ -29,9 +29,9 @@ std::string get_path_guard(int n, trace_descr tp) {
   return std::string(result);
 }
 
-DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices) {
-  DFA *result;
-  DFA *tmp;
+DFA* dfa_concatenate(DFA* a, DFA* b, int n, int* indices) {
+  DFA* result;
+  DFA* tmp;
   paths state_paths, pp;
   std::string statuses;
 
@@ -82,13 +82,13 @@ DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices) {
     statuses +=
         is_current_state_final ? (is_b_initial_state_final ? "+" : "-") : "-";
     dfaAllocExceptions(nb_transitions);
-    for (const auto &p : transitions) {
+    for (const auto& p : transitions) {
       std::tie(next_state, next_guard) = p;
       dfaStoreException(next_state, next_guard.data());
     }
     // if the current state of automaton a is final, add the new transitions.
     if (is_current_state_final) {
-      for (const auto &p : b_initial_state_ougoing_transitions) {
+      for (const auto& p : b_initial_state_ougoing_transitions) {
         std::tie(next_state, next_guard) = p;
         int true_next_state =
             next_state == b_initial_state ? i : next_state + ns2_offset;
@@ -113,7 +113,7 @@ DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices) {
     int nb_transitions = transitions.size();
     statuses += is_current_state_final ? "+" : "-";
     dfaAllocExceptions(nb_transitions);
-    for (const auto &p : transitions) {
+    for (const auto& p : transitions) {
       std::tie(next_state, next_guard) = p;
       dfaStoreException(next_state + ns2_offset, next_guard.data());
     }
@@ -134,9 +134,9 @@ DFA *dfa_concatenate(DFA *a, DFA *b, int n, int *indices) {
   return result;
 }
 
-DFA *dfa_closure(DFA *a, int n, int *indices) {
-  DFA *result;
-  DFA *tmp;
+DFA* dfa_closure(DFA* a, int n, int* indices) {
+  DFA* result;
+  DFA* tmp;
   paths state_paths, pp;
   std::string statuses;
 
@@ -180,13 +180,13 @@ DFA *dfa_closure(DFA *a, int n, int *indices) {
     statuses += is_current_state_final ? "+" : "-";
 
     dfaAllocExceptions(nb_transitions);
-    for (const auto &p : transitions) {
+    for (const auto& p : transitions) {
       std::tie(next_state, next_guard) = p;
       dfaStoreException(next_state, next_guard.data());
     }
     // if the current state of automaton a is final, add the new transitions.
     if (is_current_state_final) {
-      for (const auto &p : initial_state_ougoing_transitions) {
+      for (const auto& p : initial_state_ougoing_transitions) {
         std::tie(next_state, next_guard) = p;
         dfaStoreException(next_state, next_guard.data());
       }
@@ -208,7 +208,7 @@ DFA *dfa_closure(DFA *a, int n, int *indices) {
   return result;
 }
 
-DFA *only_empty() {
+DFA* only_empty() {
   dfaSetup(2, 0, nullptr);
 
   dfaAllocExceptions(0);
@@ -220,14 +220,14 @@ DFA *only_empty() {
   return dfaBuild("+-");
 }
 
-DFA *dfa_accept_empty(DFA *x) {
-  DFA *tmp = only_empty();
-  DFA *result = dfaProduct(x, tmp, dfaOR);
+DFA* dfa_accept_empty(DFA* x) {
+  DFA* tmp = only_empty();
+  DFA* result = dfaProduct(x, tmp, dfaOR);
   dfaFree(tmp);
   return result;
 }
 
-DFA *dfaLDLfTrue() {
+DFA* dfaLDLfTrue() {
   dfaSetup(1, 0, nullptr);
 
   dfaAllocExceptions(0);
@@ -235,7 +235,7 @@ DFA *dfaLDLfTrue() {
   return dfaBuild("+");
 }
 
-DFA *dfaLDLfFalse() {
+DFA* dfaLDLfFalse() {
   dfaSetup(1, 0, nullptr);
 
   dfaAllocExceptions(0);
@@ -243,10 +243,10 @@ DFA *dfaLDLfFalse() {
   return dfaBuild("-");
 }
 
-DFA *dfaLDLfEnd(int var, int *indices) {
-  DFA *tmp_1 = dfaPropositionalTrue();
-  DFA *tmp_2 = dfaLDLfTrue();
-  DFA *d =
+DFA* dfaLDLfEnd(int var, int* indices) {
+  DFA* tmp_1 = dfaPropositionalTrue();
+  DFA* tmp_2 = dfaLDLfTrue();
+  DFA* d =
       dfaLDLfDiamondProp(dfaPropositionalTrue(), dfaLDLfTrue(), var, indices);
   dfaNegation(d);
   dfaFree(tmp_1);
@@ -254,7 +254,7 @@ DFA *dfaLDLfEnd(int var, int *indices) {
   return d;
 }
 
-DFA *dfaNext(int a, bool is_positive) {
+DFA* dfaNext(int a, bool is_positive) {
   int var_index[1];
   var_index[0] = a;
 
@@ -277,12 +277,12 @@ DFA *dfaNext(int a, bool is_positive) {
   return dfaBuild("-+-");
 }
 
-DFA *dfaLDLfDiamondProp(DFA *prop_regex, DFA *body, int var, int *indices) {
-  DFA *diamond = dfa_concatenate(prop_regex, body, var, indices);
+DFA* dfaLDLfDiamondProp(DFA* prop_regex, DFA* body, int var, int* indices) {
+  DFA* diamond = dfa_concatenate(prop_regex, body, var, indices);
   return diamond;
 }
 
-DFA *dfaPropositionalTrue() {
+DFA* dfaPropositionalTrue() {
   dfaSetup(3, 0, nullptr);
 
   /* boolvar */
@@ -300,7 +300,7 @@ DFA *dfaPropositionalTrue() {
   return dfaBuild("-+-");
 }
 
-void print_mona_dfa(DFA *a, const std::string &name, int num) {
+void print_mona_dfa(DFA* a, const std::string& name, int num) {
   std::vector<unsigned> x(num);
   std::iota(std::begin(x), std::end(x), 0);
   std::ofstream out;
@@ -311,12 +311,12 @@ void print_mona_dfa(DFA *a, const std::string &name, int num) {
       std::string("dot -Tsvg '" + name + ".dot' > '" + name + ".svg'").c_str());
 }
 
-void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
-                            std::ostream &o) {
+void dfaPrintGraphvizToFile(DFA* a, int no_free_vars, unsigned* offsets,
+                            std::ostream& o) {
   paths state_paths, pp;
   trace_descr tp;
   int i, j, k, l;
-  char **buffer;
+  char** buffer;
   int *used, *allocated;
 
   o << "digraph MONA_DFA {\n"
@@ -341,9 +341,9 @@ void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
        " init -> "
     << a->s << ";\n";
 
-  buffer = (char **)mem_alloc(sizeof(char *) * a->ns);
-  used = (int *)mem_alloc(sizeof(int) * a->ns);
-  allocated = (int *)mem_alloc(sizeof(int) * a->ns);
+  buffer = (char**)mem_alloc(sizeof(char*) * a->ns);
+  used = (int*)mem_alloc(sizeof(int) * a->ns);
+  allocated = (int*)mem_alloc(sizeof(int) * a->ns);
 
   for (i = 0; i < a->ns; i++) {
     state_paths = pp = make_paths(a->bddm, a->q[i]);
@@ -356,7 +356,7 @@ void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
     while (pp) {
       if (used[pp->to] >= allocated[pp->to]) {
         allocated[pp->to] = allocated[pp->to] * 2 + 2;
-        buffer[pp->to] = (char *)mem_resize(
+        buffer[pp->to] = (char*)mem_resize(
             buffer[pp->to], sizeof(char) * allocated[pp->to] * no_free_vars);
       }
 
@@ -409,8 +409,8 @@ void dfaPrintGraphvizToFile(DFA *a, int no_free_vars, unsigned *offsets,
   o << "}\n";
 }
 
-void dfaPrint(DFA *a, int no_free_vars, std::vector<std::string> free_variables,
-              unsigned *offsets, std::ostream &o) {
+void dfaPrint(DFA* a, int no_free_vars, std::vector<std::string> free_variables,
+              unsigned* offsets, std::ostream& o) {
   paths state_paths, pp;
   trace_descr tp;
   int i, j, any = 0;
@@ -484,7 +484,7 @@ void dfaPrint(DFA *a, int no_free_vars, std::vector<std::string> free_variables,
   }
 }
 
-bool is_sink(DFA *automaton, bool is_positive) {
+bool is_sink(DFA* automaton, bool is_positive) {
   bool has_one_state = automaton->ns == 1;
   bool is_initial_state_final = automaton->f[0] == 1;
   return has_one_state and (is_initial_state_final == is_positive);

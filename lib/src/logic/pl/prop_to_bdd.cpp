@@ -23,39 +23,39 @@
 
 namespace whitemech::lydia {
 
-CUDD::BDD PropToBDDVisitor::apply(const PropositionalFormula &b) {
+CUDD::BDD PropToBDDVisitor::apply(const PropositionalFormula& b) {
   b.accept(*this);
   return result;
 }
 
-void PropToBDDVisitor::visit(const PropositionalTrue &f) {
+void PropToBDDVisitor::visit(const PropositionalTrue& f) {
   result = this->mgr->bddOne();
 }
-void PropToBDDVisitor::visit(const PropositionalFalse &f) {
+void PropToBDDVisitor::visit(const PropositionalFalse& f) {
   result = this->mgr->bddZero();
 }
-void PropToBDDVisitor::visit(const PropositionalAtom &f) {
+void PropToBDDVisitor::visit(const PropositionalAtom& f) {
   auto ptr =
       std::static_pointer_cast<const PropositionalAtom>(f.shared_from_this());
   size_t var_id = atom2id[ptr];
   result = mgr->bddVar(var_id);
 }
 
-void PropToBDDVisitor::visit(const PropositionalAnd &f) {
+void PropToBDDVisitor::visit(const PropositionalAnd& f) {
   CUDD::BDD tmp = this->mgr->bddOne();
-  for (const auto &x : f.get_args()) {
+  for (const auto& x : f.get_args()) {
     tmp &= apply(*x);
   }
   result = tmp;
 }
-void PropToBDDVisitor::visit(const PropositionalOr &f) {
+void PropToBDDVisitor::visit(const PropositionalOr& f) {
   CUDD::BDD tmp = this->mgr->bddZero();
-  for (const auto &x : f.get_args()) {
+  for (const auto& x : f.get_args()) {
     tmp += apply(*x);
   }
   result = tmp;
 }
-void PropToBDDVisitor::visit(const PropositionalNot &f) {
+void PropToBDDVisitor::visit(const PropositionalNot& f) {
   CUDD::BDD tmp = apply(*f.get_arg());
   result = !tmp;
 }

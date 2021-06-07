@@ -32,17 +32,17 @@ public:
       std::map<prop_ptr, prop_ptr, SharedComparator> replacements)
       : replacements{std::move(replacements)} {}
   // callbacks for propositional logic
-  void visit(const PropositionalTrue &) override;
-  void visit(const PropositionalFalse &) override;
-  void visit(const PropositionalAtom &) override;
-  void visit(const PropositionalAnd &) override;
-  void visit(const PropositionalOr &) override;
-  void visit(const PropositionalNot &) override;
+  void visit(const PropositionalTrue&) override;
+  void visit(const PropositionalFalse&) override;
+  void visit(const PropositionalAtom&) override;
+  void visit(const PropositionalAnd&) override;
+  void visit(const PropositionalOr&) override;
+  void visit(const PropositionalNot&) override;
 
-  prop_ptr apply(const PropositionalFormula &b);
+  prop_ptr apply(const PropositionalFormula& b);
 };
 
 prop_ptr replace(std::map<prop_ptr, prop_ptr, SharedComparator> replacements,
-                 const PropositionalFormula &formula);
+                 const PropositionalFormula& formula);
 
 } // namespace whitemech::lydia

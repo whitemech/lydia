@@ -19,26 +19,26 @@
 
 namespace whitemech::lydia {
 
-void OnlyTestVisitor::visit(const PropositionalRegExp &r) { result = false; }
-void OnlyTestVisitor::visit(const TestRegExp &r) { result = true; }
-void OnlyTestVisitor::visit(const UnionRegExp &r) {
+void OnlyTestVisitor::visit(const PropositionalRegExp& r) { result = false; }
+void OnlyTestVisitor::visit(const TestRegExp& r) { result = true; }
+void OnlyTestVisitor::visit(const UnionRegExp& r) {
   result = std::all_of(r.get_container().cbegin(), r.get_container().cend(),
                        [this](regex_ptr p) { return apply(*p); });
 }
-void OnlyTestVisitor::visit(const SequenceRegExp &r) {
+void OnlyTestVisitor::visit(const SequenceRegExp& r) {
   result = std::all_of(r.get_container().cbegin(), r.get_container().cend(),
                        [this](regex_ptr p) { return apply(*p); });
 }
-void OnlyTestVisitor::visit(const StarRegExp &r) {
+void OnlyTestVisitor::visit(const StarRegExp& r) {
   result = apply(*r.get_arg());
 }
 
-bool OnlyTestVisitor::apply(const RegExp &r) {
+bool OnlyTestVisitor::apply(const RegExp& r) {
   r.accept(*this);
   return result;
 }
 
-bool is_test_only(const RegExp &r) {
+bool is_test_only(const RegExp& r) {
   auto v = OnlyTestVisitor();
   return v.apply(r);
 }

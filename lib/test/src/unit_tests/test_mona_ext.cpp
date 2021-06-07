@@ -25,16 +25,16 @@ namespace whitemech::lydia::Test {
 TEST_CASE("Test universal project.", "[mona_ext]") {
 
   auto indices = std::vector<int>({0, 1, 2});
-  DFA *a = dfaNext(0);
-  DFA *not_a = dfaNext(0, false);
-  DFA *b = dfaNext(1);
-  DFA *c = dfaNext(2);
+  DFA* a = dfaNext(0);
+  DFA* not_a = dfaNext(0, false);
+  DFA* b = dfaNext(1);
+  DFA* c = dfaNext(2);
 
-  DFA *ab = dfa_concatenate(a, b, 3, indices.data());
-  DFA *not_a_c = dfa_concatenate(not_a, c, 3, indices.data());
-  DFA *or_ = dfaProduct(ab, not_a_c, dfaOR);
+  DFA* ab = dfa_concatenate(a, b, 3, indices.data());
+  DFA* not_a_c = dfa_concatenate(not_a, c, 3, indices.data());
+  DFA* or_ = dfaProduct(ab, not_a_c, dfaOR);
 
-  DFA *projected = dfaMinimize(dfaUniversalProject(or_, 0));
+  DFA* projected = dfaMinimize(dfaUniversalProject(or_, 0));
   auto result = mona_dfa(projected, indices.size());
   verify(result, {}, false);
   verify(result, {"100"}, false);

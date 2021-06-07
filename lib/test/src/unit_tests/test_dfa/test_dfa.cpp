@@ -109,8 +109,8 @@ TEST_CASE("Test Cudd", "[cudd]") {
   SECTION("Test Print Minterms") {
     auto tmp = ((x | y) & !z);
     std::vector<std::vector<int>> primes;
-    int *cube = nullptr;
-    DdGen *g =
+    int* cube = nullptr;
+    DdGen* g =
         Cudd_FirstPrime(mgr.getManager(), tmp.getNode(), tmp.getNode(), &cube);
     if (g != nullptr) {
       do {

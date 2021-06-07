@@ -30,11 +30,11 @@ struct LTLf_YYSTYPE {
   // Destructor
   ~LTLf_YYSTYPE() = default;
   // Copy constructor and assignment
-  LTLf_YYSTYPE(const LTLf_YYSTYPE &) = default;
-  LTLf_YYSTYPE &operator=(const LTLf_YYSTYPE &) = default;
+  LTLf_YYSTYPE(const LTLf_YYSTYPE&) = default;
+  LTLf_YYSTYPE& operator=(const LTLf_YYSTYPE&) = default;
   // Move constructor and assignment
-  LTLf_YYSTYPE(LTLf_YYSTYPE &&) = default;
-  LTLf_YYSTYPE &operator=(LTLf_YYSTYPE &&) = default;
+  LTLf_YYSTYPE(LTLf_YYSTYPE&&) = default;
+  LTLf_YYSTYPE& operator=(LTLf_YYSTYPE&&) = default;
 };
 
 } // namespace whitemech::lydia::parsers::ltlf

@@ -253,14 +253,14 @@ TEST_CASE("Driver LDLfTemporal", "[parser][ldlf]") {
     std::istringstream a_tt("<false>tt");
     driver.parse(a_tt);
     auto parsedDiamond = driver.result;
-    REQUIRE(*dynamic_cast<const LDLfDiamond &>(*parsedDiamond).get_regex() ==
+    REQUIRE(*dynamic_cast<const LDLfDiamond&>(*parsedDiamond).get_regex() ==
             *ptr_prop_re_false);
   }
   SECTION("test parsing <true>tt") {
     std::istringstream a_tt("<true>tt");
     driver.parse(a_tt);
     auto parsedDiamond = driver.result;
-    REQUIRE(*dynamic_cast<const LDLfDiamond &>(*parsedDiamond).get_regex() ==
+    REQUIRE(*dynamic_cast<const LDLfDiamond&>(*parsedDiamond).get_regex() ==
             *ptr_prop_re_true);
   }
   SECTION("test parsing <a;b;c>tt") {

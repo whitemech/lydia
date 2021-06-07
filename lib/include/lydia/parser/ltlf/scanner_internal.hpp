@@ -26,16 +26,16 @@ class LTLfScanner : public ltlfFlexLexer {
 private:
 public:
   /* yyval ptr */
-  whitemech::lydia::parsers::ltlf::LTLf_YYSTYPE *yylval = nullptr;
+  whitemech::lydia::parsers::ltlf::LTLf_YYSTYPE* yylval = nullptr;
 
-  explicit LTLfScanner(std::istream *in) : ltlfFlexLexer(in){};
+  explicit LTLfScanner(std::istream* in) : ltlfFlexLexer(in){};
   virtual ~LTLfScanner(){};
 
   // get rid of override virtual function warning
   using FlexLexer::yylex;
 
-  virtual int yylex(whitemech::lydia::parsers::ltlf::LTLf_YYSTYPE *lval,
-                    LTLfParser::location_type *location);
+  virtual int yylex(whitemech::lydia::parsers::ltlf::LTLf_YYSTYPE* lval,
+                    LTLfParser::location_type* location);
   // YY_DECL defined in lexer.l
   // Method body created by flex in lexer.yy.cc
 };

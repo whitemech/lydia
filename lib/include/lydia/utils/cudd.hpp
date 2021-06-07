@@ -20,9 +20,9 @@
 
 namespace whitemech::lydia {
 
-std::vector<std::vector<uint8_t>> get_primes(const CUDD::BDD &f,
+std::vector<std::vector<uint8_t>> get_primes(const CUDD::BDD& f,
                                              int nb_variables);
-std::vector<std::vector<uint8_t>> get_cubes(const CUDD::BDD &f,
+std::vector<std::vector<uint8_t>> get_cubes(const CUDD::BDD& f,
                                             int nb_variables);
 
 } // namespace whitemech::lydia

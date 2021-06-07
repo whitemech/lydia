@@ -24,7 +24,7 @@
 namespace whitemech::lydia {
 
 template <typename T, typename U = std::less<T>>
-std::vector<std::set<T, U>> powerset(std::set<T, U> &s) {
+std::vector<std::set<T, U>> powerset(std::set<T, U>& s) {
   /*TODO this method only works for a set of elements
    * whose size is lower than 64. Handle those cases.
    */
@@ -63,7 +63,7 @@ unsigned inline bit_length(int x) {
 /*
  * From a vector of bits (least to most significant) to the integer.
  */
-int inline bin2state(const std::vector<int> &v) {
+int inline bin2state(const std::vector<int>& v) {
   const int size = v.size();
   int result = v[v.size() - 1];
   for (int i = size - 2; i >= 0; --i) {
@@ -76,7 +76,7 @@ int inline bin2state(const std::vector<int> &v) {
 /*
  * From a vector of bits (least to most significant) to the integer.
  */
-int inline bin2state(const std::string &s) {
+int inline bin2state(const std::string& s) {
   int size = s.size();
   int result = s[size - 1] - '0';
   for (int i = size - 2; i >= 0; --i) {
@@ -90,7 +90,7 @@ std::vector<int> inline state2binvec(int n, int nb_fill_bits) {
   auto bin_string = state2bin(n, nb_fill_bits, true);
   std::vector<int> result(bin_string.size(), 0);
   int i = 0;
-  for (const char &c : bin_string) {
+  for (const char& c : bin_string) {
     result[i] = c - '0';
     ++i;
   }
@@ -98,8 +98,8 @@ std::vector<int> inline state2binvec(int n, int nb_fill_bits) {
 }
 
 template <typename T, typename U>
-inline std::vector<T> set_union(const std::vector<T> &a,
-                                const std::vector<U> &b) {
+inline std::vector<T> set_union(const std::vector<T>& a,
+                                const std::vector<U>& b) {
   std::vector<uint32_t> a_union_b;
   std::set_union(a.begin(), a.end(), b.begin(), b.end(),
                  std::inserter(a_union_b, a_union_b.begin()));

@@ -20,7 +20,7 @@
 
 namespace whitemech::lydia {
 
-void ReplaceVisitor::visit(const PropositionalAtom &f) {
+void ReplaceVisitor::visit(const PropositionalAtom& f) {
   basic_ptr basic = f.shared_from_this();
   prop_ptr prop = std::static_pointer_cast<const PropositionalFormula>(basic);
   if (replacements.find(prop) != replacements.end()) {
@@ -30,40 +30,40 @@ void ReplaceVisitor::visit(const PropositionalAtom &f) {
   }
 }
 
-void ReplaceVisitor::visit(const PropositionalAnd &f) {
+void ReplaceVisitor::visit(const PropositionalAnd& f) {
   set_prop_formulas new_args;
-  for (const auto &subformula : f.get_container()) {
+  for (const auto& subformula : f.get_container()) {
     new_args.insert(apply(*subformula));
   }
   result = f.ctx().makePropAnd(new_args);
 }
 
-void ReplaceVisitor::visit(const PropositionalOr &f) {
+void ReplaceVisitor::visit(const PropositionalOr& f) {
   set_prop_formulas new_args;
-  for (const auto &subformula : f.get_container()) {
+  for (const auto& subformula : f.get_container()) {
     new_args.insert(apply(*subformula));
   }
   result = f.ctx().makePropOr(new_args);
 }
 
-void ReplaceVisitor::visit(const PropositionalNot &f) {
+void ReplaceVisitor::visit(const PropositionalNot& f) {
   result = apply(*f.get_arg())->logical_not();
 }
 
-prop_ptr ReplaceVisitor::apply(const PropositionalFormula &b) {
+prop_ptr ReplaceVisitor::apply(const PropositionalFormula& b) {
   b.accept(*this);
   return result;
 }
 
-void ReplaceVisitor::visit(const PropositionalTrue &f) {
+void ReplaceVisitor::visit(const PropositionalTrue& f) {
   result = f.ctx().makeTrue();
 }
-void ReplaceVisitor::visit(const PropositionalFalse &f) {
+void ReplaceVisitor::visit(const PropositionalFalse& f) {
   result = f.ctx().makeFalse();
 }
 
 prop_ptr replace(std::map<prop_ptr, prop_ptr, SharedComparator> replacements,
-                 const PropositionalFormula &formula) {
+                 const PropositionalFormula& formula) {
   ReplaceVisitor visitor(std::move(replacements));
   return visitor.apply(formula);
 }
