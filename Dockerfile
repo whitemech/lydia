@@ -1,5 +1,5 @@
 FROM ubuntu:20.04
-LABEL version="0.1.0"
+LABEL version="0.1.1"
 LABEL authors="Marco Favorito <favorito@diag.uniroma1.it>"
 LABEL contributors="Francesco Fuggitti <fuggitti@diag.uniroma1.it>"
 LABEL description="A Docker image to build the Lydia project."
