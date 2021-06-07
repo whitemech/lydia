@@ -76,6 +76,9 @@ public:
   ldlf_ptr add_LTLfImplication(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
   ldlf_ptr add_LTLfEquivalence(ldlf_ptr &lhs, ldlf_ptr &rhs) const;
   ldlf_ptr add_LTLfLast() const;
+  ldlf_ptr add_LTLfEnd() const;
+  ldlf_ptr add_LTLfPropTrue() const;
+  ldlf_ptr add_LTLfPropFalse() const;
 
   std::ostream &print(std::ostream &stream) const;
 };

@@ -169,6 +169,18 @@ ldlf_ptr LTLfDriver::add_LTLfLast() const {
                                   context->makeLdlfEnd());
 }
 
+ldlf_ptr LTLfDriver::add_LTLfEnd() const { return context->makeLdlfEnd(); }
+
+ldlf_ptr LTLfDriver::add_LTLfPropTrue() const {
+  return context->makeLdlfDiamond(context->makePropRegex(context->makeTrue()),
+                                  context->makeLdlfTrue());
+}
+
+ldlf_ptr LTLfDriver::add_LTLfPropFalse() const {
+  return context->makeLdlfDiamond(context->makePropRegex(context->makeFalse()),
+                                  context->makeLdlfTrue());
+}
+
 std::ostream &LTLfDriver::print(std::ostream &stream) const {
   stream << this->result->str() << "\n";
   return (stream);

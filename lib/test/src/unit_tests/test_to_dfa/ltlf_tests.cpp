@@ -24,7 +24,7 @@
 namespace whitemech::lydia::Test {
 
 TEST_CASE("Translate X(a)", "[translate][ltlf][basic]") {
-  std::string formula_name = "X(a)";
+  std::string formula_name = "X[!](a)";
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
   auto strategy = strategy_maker(mgr);
