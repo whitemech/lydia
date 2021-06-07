@@ -64,7 +64,7 @@ RUN wget https://github.com/whitemech/cudd/releases/download/v${CUDD_VERSION}/cu
     tar -xf cudd_${CUDD_VERSION}_linux-amd64.tar.gz &&\
     cd cudd_${CUDD_VERSION}_linux-amd64 &&\
     cp -P lib/* /usr/local/lib/ &&\
-    cp -Pr include/cudd/* /usr/local/include/ &&\
+    cp -Pr include/* /usr/local/include/ &&\
     rm -rf cudd_${CUDD_VERSION}_linux-amd64*
 
 # Install MONA
