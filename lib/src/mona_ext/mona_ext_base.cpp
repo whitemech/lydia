@@ -90,8 +90,7 @@ DFA* dfa_concatenate(DFA* a, DFA* b, int n, int* indices) {
     if (is_current_state_final) {
       for (const auto& p : b_initial_state_ougoing_transitions) {
         std::tie(next_state, next_guard) = p;
-        int true_next_state =
-            next_state == b_initial_state ? i : next_state + ns2_offset;
+        int true_next_state = next_state + ns2_offset;
         dfaStoreException(true_next_state, next_guard.data());
       }
     }
