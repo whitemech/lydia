@@ -1,5 +1,10 @@
 # History
 
+## 0.1.2 (2021-06-20)
+
+*   Fix bug in the computation of the concatenation of two DFAs 
+    ([#111](https://github.com/whitemech/lydia/pull/111)). 
+
 ## 0.1.1 (2021-06-07)
 
 *   Made the parser compliant with

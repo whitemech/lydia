@@ -1,5 +1,5 @@
 FROM ubuntu:20.04
-LABEL version="0.1.1"
+LABEL version="0.1.2"
 LABEL authors="Marco Favorito <favorito@diag.uniroma1.it>"
 LABEL contributors="Francesco Fuggitti <fuggitti@diag.uniroma1.it>"
 LABEL description="A Docker image to build the Lydia project."
@@ -89,7 +89,7 @@ RUN git clone https://github.com/whitemech/Syft.git &&\
 
 WORKDIR /build/lydia
 
-ARG GIT_REF=master
+ARG GIT_REF=main
 
 # Clone and build Lydia
 RUN git clone --recursive https://github.com/whitemech/lydia.git /build/lydia
