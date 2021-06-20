@@ -89,7 +89,7 @@ RUN git clone https://github.com/whitemech/Syft.git &&\
 
 WORKDIR /build/lydia
 
-ARG GIT_REF=master
+ARG GIT_REF=main
 
 # Clone and build Lydia
 RUN git clone --recursive https://github.com/whitemech/lydia.git /build/lydia
