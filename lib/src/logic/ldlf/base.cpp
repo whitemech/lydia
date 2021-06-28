@@ -18,6 +18,7 @@
 #include <cassert>
 #include <lydia/logic/ldlf/base.hpp>
 #include <lydia/utils/compare.hpp>
+#include <stdexcept>
 #include <utility>
 
 namespace whitemech::lydia {
