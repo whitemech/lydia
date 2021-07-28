@@ -145,7 +145,7 @@ ldlf_ptr LTLfDriver::add_LTLfRelease(ldlf_ptr& lhs, ldlf_ptr& rhs) const {
   auto end = context->makeLdlfEnd();
   auto formula_or_end = context->makeLdlfOr({rhs, end});
   auto true_regex = context->makePropRegex(context->makeTrue());
-  auto formula_test = context->makeTestRegex(lhs);
+  auto formula_test = (context->makeTestRegex(context->makeLdlfNot(lhs)));
   auto seq_star =
       context->makeStarRegex(context->makeSeqRegex({formula_test, true_regex}));
   return context->makeLdlfBox(seq_star, formula_or_end);
