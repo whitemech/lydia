@@ -63,10 +63,10 @@ TEST_CASE("Translate a R b", "[translate][ltlf][basic]") {
   REQUIRE(verify(*automaton, {"01"}, false));
   REQUIRE(verify(*automaton, {"10"}, true));
   REQUIRE(verify(*automaton, {"11"}, true));
-  REQUIRE(verify(*automaton, {"11", "00"}, true));
-  REQUIRE(verify(*automaton, {"11", "01"}, true));
-  REQUIRE(verify(*automaton, {"11", "10"}, true));
-  REQUIRE(verify(*automaton, {"11", "11"}, true));
+  REQUIRE(verify(*automaton, {"10", "00"}, false));
+  REQUIRE(verify(*automaton, {"10", "01"}, false));
+  REQUIRE(verify(*automaton, {"10", "10"}, true));
+  REQUIRE(verify(*automaton, {"10", "11"}, true));
   REQUIRE(verify(*automaton, {"00", "00"}, false));
   REQUIRE(verify(*automaton, {"00", "01"}, false));
   REQUIRE(verify(*automaton, {"00", "10"}, false));
