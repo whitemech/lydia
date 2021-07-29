@@ -50,4 +50,27 @@ TEST_CASE("Translate a U b", "[translate][ltlf][basic]") {
   REQUIRE(verify(*automaton, {"01", "10"}, true));
 }
 
+TEST_CASE("Translate a R b", "[translate][ltlf][basic]") {
+  std::string formula_name = "a R b";
+  auto strategy_maker = GENERATE(strategies());
+  auto mgr = CUDD::Cudd();
+  auto strategy = strategy_maker(mgr);
+  auto automaton = to_dfa_from_formula_string<parsers::ltlf::LTLfDriver>(
+      formula_name, *strategy);
+  //  print_dfa(*automaton, formula_name);
+  REQUIRE(verify(*automaton, {}, true));
+  REQUIRE(verify(*automaton, {"00"}, false));
+  REQUIRE(verify(*automaton, {"01"}, false));
+  REQUIRE(verify(*automaton, {"10"}, true));
+  REQUIRE(verify(*automaton, {"11"}, true));
+  REQUIRE(verify(*automaton, {"10", "00"}, false));
+  REQUIRE(verify(*automaton, {"10", "01"}, false));
+  REQUIRE(verify(*automaton, {"10", "10"}, true));
+  REQUIRE(verify(*automaton, {"10", "11"}, true));
+  REQUIRE(verify(*automaton, {"00", "00"}, false));
+  REQUIRE(verify(*automaton, {"00", "01"}, false));
+  REQUIRE(verify(*automaton, {"00", "10"}, false));
+  REQUIRE(verify(*automaton, {"00", "11"}, false));
+}
+
 } // namespace whitemech::lydia::Test
