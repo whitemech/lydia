@@ -1,5 +1,11 @@
 # History
 
+## 0.1.3 (2021-08-14)
+
+*    Fix building issue: ([#114](https://github.com/whitemech/lydia/issues/114))
+*    Fix translation of Release LTLf-to-LDLf ([https://github.com/whitemech/lydia/commit/2070ec3608c68b7c7099c6eca89f4fde11ca0c95](https://github.com/whitemech/lydia/commit/2070ec3608c68b7c7099c6eca89f4fde11ca0c95))
+*    Update Syft+ dependency version to v0.1.1 ([#119](https://github.com/whitemech/lydia/pull/119))
+
 ## 0.1.2 (2021-06-20)
 
 *   Fix bug in the computation of the concatenation of two DFAs 
