@@ -23,7 +23,7 @@ echo "MONA installed."
 echo "Installing Syft..."
 git clone https://github.com/whitemech/Syft.git
 cd Syft
-git checkout syft+
+git checkout v0.1.1
 /bin/rm -rf build
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..

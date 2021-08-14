@@ -171,7 +171,7 @@ Install it with:
 ```shell script
 git clone https://github.com/whitemech/Syft.git
 cd Syft
-git checkout syft+
+git checkout v0.1.1
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j
