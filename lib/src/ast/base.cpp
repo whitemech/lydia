@@ -27,6 +27,9 @@ void AstManager::init() {
   prop_false_ = std::make_shared<const PropositionalFalse>(*this);
   ltlf_true_ = std::make_shared<const LTLfTrue>(*this);
   ltlf_false_ = std::make_shared<const LTLfFalse>(*this);
+  ltlf_last_ = std::make_shared<const LTLfWeakNext>(*this, ltlf_false_);
+  ltlf_end_ = std::make_shared<const LTLfAlways>(*this, ltlf_false_);
+  ltlf_not_end_ = std::make_shared<const LTLfEventually>(*this, ltlf_true_);
   ldlf_true_ = std::make_shared<const LDLfTrue>(*this);
   ldlf_false_ = std::make_shared<const LDLfFalse>(*this);
   this->table.insert(prop_true_);

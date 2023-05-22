@@ -48,7 +48,7 @@ public:
 
   virtual ~Driver();
 
-  ldlf_ptr get_result() override { return result; }
+  ast_ptr get_result() override { return result; }
 
   /**
    * parse - parse from a file

@@ -22,6 +22,9 @@ namespace whitemech::lydia {
 
 ltlf_ptr AstManager::makeLtlfTrue() { return ltlf_true_; }
 ltlf_ptr AstManager::makeLtlfFalse() { return ltlf_false_; }
+ltlf_ptr AstManager::makeLtlfLast() { return ltlf_last_; }
+ltlf_ptr AstManager::makeLtlfEnd() { return ltlf_end_; }
+ltlf_ptr AstManager::makeLtlfNotEnd() { return ltlf_not_end_; }
 ltlf_ptr AstManager::makeLtlfBool(bool value) {
   return value ? ltlf_true_ : ltlf_false_;
 }

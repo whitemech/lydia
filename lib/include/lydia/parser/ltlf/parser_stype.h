@@ -22,7 +22,7 @@
 namespace whitemech::lydia::parsers::ltlf {
 
 struct LTLf_YYSTYPE {
-  ldlf_ptr formula;
+  ltlf_ptr formula;
   std::string symbol_name;
 
   // Constructor

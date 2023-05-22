@@ -42,6 +42,9 @@ private:
   prop_ptr prop_false_;
   ltlf_ptr ltlf_true_;
   ltlf_ptr ltlf_false_;
+  ltlf_ptr ltlf_last_;
+  ltlf_ptr ltlf_end_;
+  ltlf_ptr ltlf_not_end_;
   ldlf_ptr ldlf_true_;
   ldlf_ptr ldlf_false_;
   std::unordered_set<basic_ptr, std::hash<basic_ptr>, ast_eq_proc> table;
@@ -75,6 +78,9 @@ public:
 
   ltlf_ptr makeLtlfTrue();
   ltlf_ptr makeLtlfFalse();
+  ltlf_ptr makeLtlfLast();
+  ltlf_ptr makeLtlfEnd();
+  ltlf_ptr makeLtlfNotEnd();
   ltlf_ptr makeLtlfBool(bool x);
   ltlf_ptr makeLtlfAtom(const std::string& name);
   ltlf_ptr makeLtlfAnd(const set_ltlf_formulas& args);

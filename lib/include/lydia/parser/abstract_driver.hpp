@@ -24,6 +24,6 @@ public:
   AbstractDriver(std::shared_ptr<AstManager> c) : context{std::move(c)} {}
   virtual void parse(const char* const filename) = 0;
   virtual void parse(std::istream& iss) = 0;
-  virtual ldlf_ptr get_result() = 0;
+  virtual ast_ptr get_result() = 0;
 };
 } // namespace whitemech::lydia

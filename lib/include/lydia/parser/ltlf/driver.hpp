@@ -22,7 +22,7 @@
 #include <utility>
 
 #include <lydia/ast/base.hpp>
-#include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/ltlf/base.hpp>
 #include <lydia/logic/symbol.hpp>
 
 #include "lydia/parser/ltlf/parser.tab.hh"
@@ -39,7 +39,7 @@ private:
   LTLfScanner* scanner = nullptr;
 
 public:
-  ldlf_ptr result;
+  ltlf_ptr result;
 
   LTLfDriver() : AbstractDriver() {}
 
@@ -47,7 +47,7 @@ public:
 
   virtual ~LTLfDriver();
 
-  ldlf_ptr get_result() override { return result; }
+  ast_ptr get_result() override { return result; }
 
   /**
    * parse - parse from a file
@@ -61,24 +61,24 @@ public:
    */
   void parse(std::istream& iss);
 
-  ldlf_ptr add_LTLfTrue() const;
-  ldlf_ptr add_LTLfFalse() const;
-  ldlf_ptr add_LTLfAtom(std::string s) const;
-  ldlf_ptr add_LTLfAnd(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
-  ldlf_ptr add_LTLfOr(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
-  ldlf_ptr add_LTLfNot(ldlf_ptr& formula) const;
-  ldlf_ptr add_LTLfNext(ldlf_ptr& formula) const;
-  ldlf_ptr add_LTLfWeakNext(ldlf_ptr& formula) const;
-  ldlf_ptr add_LTLfEventually(ldlf_ptr& formula) const;
-  ldlf_ptr add_LTLfAlways(ldlf_ptr& formula) const;
-  ldlf_ptr add_LTLfUntil(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
-  ldlf_ptr add_LTLfRelease(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
-  ldlf_ptr add_LTLfImplication(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
-  ldlf_ptr add_LTLfEquivalence(ldlf_ptr& lhs, ldlf_ptr& rhs) const;
-  ldlf_ptr add_LTLfLast() const;
-  ldlf_ptr add_LTLfEnd() const;
-  ldlf_ptr add_LTLfPropTrue() const;
-  ldlf_ptr add_LTLfPropFalse() const;
+  ltlf_ptr add_LTLfTrue() const;
+  ltlf_ptr add_LTLfFalse() const;
+  ltlf_ptr add_LTLfAtom(std::string s) const;
+  ltlf_ptr add_LTLfAnd(ltlf_ptr& lhs, ltlf_ptr& rhs) const;
+  ltlf_ptr add_LTLfOr(ltlf_ptr& lhs, ltlf_ptr& rhs) const;
+  ltlf_ptr add_LTLfNot(ltlf_ptr& formula) const;
+  ltlf_ptr add_LTLfNext(ltlf_ptr& formula) const;
+  ltlf_ptr add_LTLfWeakNext(ltlf_ptr& formula) const;
+  ltlf_ptr add_LTLfEventually(ltlf_ptr& formula) const;
+  ltlf_ptr add_LTLfAlways(ltlf_ptr& formula) const;
+  ltlf_ptr add_LTLfUntil(ltlf_ptr& lhs, ltlf_ptr& rhs) const;
+  ltlf_ptr add_LTLfRelease(ltlf_ptr& lhs, ltlf_ptr& rhs) const;
+  ltlf_ptr add_LTLfImplication(ltlf_ptr& lhs, ltlf_ptr& rhs) const;
+  ltlf_ptr add_LTLfEquivalence(ltlf_ptr& lhs, ltlf_ptr& rhs) const;
+  ltlf_ptr add_LTLfLast() const;
+  ltlf_ptr add_LTLfEnd() const;
+  ltlf_ptr add_LTLfPropTrue() const;
+  ltlf_ptr add_LTLfPropFalse() const;
 
   std::ostream& print(std::ostream& stream) const;
 };
