@@ -28,6 +28,7 @@ namespace whitemech::lydia {
 
 class Basic;
 class Symbol;
+class Ast;
 class LTLfFormula;
 class LTLfTrue;
 class LTLfFalse;
@@ -98,9 +99,11 @@ typedef std::tuple<const DFAState&, const set_atoms_ptr&, const DFAState&>
     tuple_dfa_transition;
 typedef std::vector<std::shared_ptr<const Basic>> vec_basic;
 typedef std::set<std::shared_ptr<const Basic>, SharedComparator> set_basic;
+typedef std::shared_ptr<const Ast> ast_ptr;
 typedef std::shared_ptr<const LDLfFormula> ldlf_ptr;
 typedef std::shared_ptr<const LTLfFormula> ltlf_ptr;
 typedef std::vector<std::shared_ptr<const LTLfFormula>> vec_ltlf_formulas;
+typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_ldlf_formulas;
 typedef std::set<std::shared_ptr<const LTLfFormula>, SharedComparator>
     set_ltlf_formulas;
 typedef std::vector<std::shared_ptr<const LDLfFormula>> vec_formulas;

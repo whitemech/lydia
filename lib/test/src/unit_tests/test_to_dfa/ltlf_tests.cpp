@@ -19,7 +19,6 @@
 #include "test/src/utils/to_dfa.hpp"
 #include <iostream>
 #include <lydia/logic/nnf.hpp>
-#include <lydia/parser/ltlf/driver.hpp>
 
 namespace whitemech::lydia::Test {
 
@@ -28,8 +27,7 @@ TEST_CASE("Translate X(a)", "[translate][ltlf][basic]") {
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
   auto strategy = strategy_maker(mgr);
-  auto automaton = to_dfa_from_formula_string<parsers::ltlf::LTLfDriver>(
-      formula_name, *strategy);
+  auto automaton = ltlf_to_dfa_from_formula_string(formula_name, *strategy);
   //  print_dfa(*automaton, formula_name);
   REQUIRE(verify(*automaton, {"0"}, false));
   REQUIRE(verify(*automaton, {"0"}, false));
@@ -41,8 +39,7 @@ TEST_CASE("Translate a U b", "[translate][ltlf][basic]") {
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
   auto strategy = strategy_maker(mgr);
-  auto automaton = to_dfa_from_formula_string<parsers::ltlf::LTLfDriver>(
-      formula_name, *strategy);
+  auto automaton = ltlf_to_dfa_from_formula_string(formula_name, *strategy);
   //  print_dfa(*automaton, formula_name);
   REQUIRE(verify(*automaton, {"00"}, false));
   REQUIRE(verify(*automaton, {"10"}, true));
@@ -55,8 +52,7 @@ TEST_CASE("Translate a R b", "[translate][ltlf][basic]") {
   auto strategy_maker = GENERATE(strategies());
   auto mgr = CUDD::Cudd();
   auto strategy = strategy_maker(mgr);
-  auto automaton = to_dfa_from_formula_string<parsers::ltlf::LTLfDriver>(
-      formula_name, *strategy);
+  auto automaton = ltlf_to_dfa_from_formula_string(formula_name, *strategy);
   //  print_dfa(*automaton, formula_name);
   REQUIRE(verify(*automaton, {}, true));
   REQUIRE(verify(*automaton, {"00"}, false));

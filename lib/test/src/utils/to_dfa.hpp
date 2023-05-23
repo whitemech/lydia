@@ -28,7 +28,9 @@
 #include <fstream>
 #include <lydia/dfa/dfa.hpp>
 #include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/to_ldlf.hpp>
 #include <lydia/parser/ldlf/driver.hpp>
+#include <lydia/parser/ltlf/driver.hpp>
 #include <lydia/to_dfa/core.hpp>
 #include <lydia/to_dfa/strategies/bdd/base.hpp>
 #include <lydia/to_dfa/strategies/compositional/base.hpp>
@@ -132,13 +134,23 @@ from_trace_set(std::vector<interpretation_set> vector, int prop) {
   return result;
 }
 
-template <typename Parser = parsers::ldlf::Driver>
 static adfa_ptr to_dfa_from_formula_string(const std::string& f, Strategy& s) {
-  auto driver = Parser();
+  auto driver = parsers::ldlf::Driver();
   std::stringstream ldlf_formula_stream(f);
   driver.parse(ldlf_formula_stream);
   const auto& formula = *driver.result;
   auto result = to_dfa_with_strategy(formula, s);
+  return result;
+}
+
+static adfa_ptr ltlf_to_dfa_from_formula_string(const std::string& f,
+                                                Strategy& s) {
+  auto driver = parsers::ltlf::LTLfDriver();
+  std::stringstream ldlf_formula_stream(f);
+  driver.parse(ldlf_formula_stream);
+  const auto& formula = *driver.result;
+  const auto& ldlf_formula = to_ldlf(formula);
+  auto result = to_dfa_with_strategy(*ldlf_formula, s);
   return result;
 }
 

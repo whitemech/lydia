@@ -181,6 +181,8 @@ public:
   int compare_(const Basic& o) const override;
   const set_ltlf_formulas& get_container() const;
   ltlf_ptr logical_not() const override;
+  ltlf_ptr tail() const { return arg_2_; };
+  ltlf_ptr head() const { return arg_1_; };
 };
 
 class LTLfRelease : public LTLfFormula {
@@ -201,6 +203,8 @@ public:
   int compare_(const Basic& o) const override;
   const set_ltlf_formulas& get_container() const;
   ltlf_ptr logical_not() const override;
+  ltlf_ptr tail() const { return arg_2_; };
+  ltlf_ptr head() const { return arg_1_; };
 };
 
 class LTLfEventually : public LTLfFormula {
