@@ -29,10 +29,12 @@ if (LYDIA_ENABLE_TESTS)
 endif()
 # -------------------------------------------------------------------------
 # google/benchmark
-set (GOOGLE_BENCHMARK_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/google/benchmark")
-set (GOOGLE_BENCHMARK_INCLUDE_PATH "${GOOGLE_BENCHMARK_MODULE_PATH}/include")
-set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
-add_subdirectory(${GOOGLE_BENCHMARK_MODULE_PATH})
+if (LYDIA_ENABLE_BENCHMARK)
+  set (GOOGLE_BENCHMARK_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/google/benchmark")
+  set (GOOGLE_BENCHMARK_INCLUDE_PATH "${GOOGLE_BENCHMARK_MODULE_PATH}/include")
+  set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
+  add_subdirectory(${GOOGLE_BENCHMARK_MODULE_PATH})
+endif()
 # -------------------------------------------------------------------------
 # spdlog
 set (SPDLOG_MODULE_PATH "${THIRD_PARTY_MODULE_PATH}/spdlog")
