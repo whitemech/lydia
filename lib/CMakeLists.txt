@@ -65,5 +65,9 @@ set (LIBRARY_INCLUDE_PATH  ${LIBRARY_INCLUDE_PATH} PARENT_SCOPE)
 set (LIB_NAME ${LIB_NAME} PARENT_SCOPE)
 
 #test
-enable_testing ()
-add_subdirectory (test)
+if (LYDIA_ENABLE_TESTS)
+  add_subdirectory (test)
+else()
+  message("-- Tests have been disabled because LYDIA_ENABLE_TESTS was set to false.")
+endif()
+

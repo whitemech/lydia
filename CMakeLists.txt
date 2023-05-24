@@ -92,6 +92,10 @@ set (CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)
 if (NOT DEFINED WITH_SYFT)
     set(WITH_SYFT ON)
 endif()
+# by default, tests are enabled
+if (NOT DEFINED LYDIA_ENABLE_TESTS)
+    set(LYDIA_ENABLE_TESTS ON)
+endif()
 
 set (THREADS_PREFER_PTHREAD_FLAG ON)
 find_package (Threads REQUIRED)
@@ -110,4 +114,7 @@ add_subdirectory (lib)
 add_subdirectory (app)
 add_subdirectory (benchmark)
 
-enable_testing ()
+if (NOT LYDIA_ENABLE_TESTS)
+    enable_testing ()
+endif()
+
