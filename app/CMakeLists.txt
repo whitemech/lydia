@@ -15,4 +15,8 @@
 # along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-add_subdirectory(lydia)
+if (WITH_SYFT)
+  add_subdirectory(lydia)
+else()
+  message("-- lydia-bin target requires Syft. This has been disabled by the manual configuration WITH_SYFT=OFF.")
+endif()

@@ -42,3 +42,6 @@ set_target_properties(${APP_NAME} PROPERTIES OUTPUT_NAME lydia)
 #test
 enable_testing ()
 add_subdirectory (test)
+
+install(TARGETS lydia-bin
+    DESTINATION ${CMAKE_INSTALL_BINDIR})

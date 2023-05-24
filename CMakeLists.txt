@@ -88,14 +88,22 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 set (CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)
 
+# by default, Syft is enabled
+if (NOT DEFINED WITH_SYFT)
+    set(WITH_SYFT ON)
+endif()
+
 set (THREADS_PREFER_PTHREAD_FLAG ON)
 find_package (Threads REQUIRED)
 find_package(CUDD REQUIRED)
 find_package(MONA REQUIRED)
-find_package(Syft REQUIRED)
 find_package(Graphviz REQUIRED)
 find_package(BISON 3.0 REQUIRED)
 find_package(FLEX 2.6 REQUIRED)
+
+if (WITH_SYFT)
+    find_package(Syft REQUIRED)
+endif()
 
 add_subdirectory (third_party EXCLUDE_FROM_ALL)
 add_subdirectory (lib)
@@ -103,6 +111,3 @@ add_subdirectory (app)
 add_subdirectory (benchmark)
 
 enable_testing ()
-
-install(TARGETS lydia-bin
-        DESTINATION ${CMAKE_INSTALL_BINDIR})
