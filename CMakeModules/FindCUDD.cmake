@@ -51,7 +51,12 @@ if(CUDD_ROOT)
 endif()
 
 find_path(CUDD_INCLUDE_DIRS NAMES cudd.h cuddObj.hh HINTS ${CUDD_INCLUDE_PATH})
-find_library(CUDD_LIBRARIES NAMES cudd CUDDVC-3.0.0 HINTS ${CUDD_LIBRARY_PATH})
+
+if (CUDD_USE_STATIC_LIBS)
+	find_library(CUDD_LIBRARIES NAMES libcudd.a CUDDVC-3.0.0 HINTS ${CUDD_LIBRARY_PATH})
+else()
+	find_library(CUDD_LIBRARIES NAMES cudd CUDDVC-3.0.0 HINTS ${CUDD_LIBRARY_PATH})
+endif()
 
 include(FindPackageHandleStandardArgs)
 
