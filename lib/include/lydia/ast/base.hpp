@@ -31,8 +31,12 @@ class Ast;
 // This is the internal comparison functor for hash-consing AST nodes.
 struct ast_eq_proc {
   bool operator()(basic_ptr const& b1, basic_ptr const& b2) const {
-    return b1->hash() == b2->hash() && b1->compare(*b2) == 0;
+    return b1 == b2 || b1->compare(*b2) == 0;
   }
+};
+
+struct compute_hash {
+  bool operator()(basic_ptr const& b1) const { return b1->hash(); }
 };
 
 class AstManager {
@@ -47,7 +51,7 @@ private:
   ltlf_ptr ltlf_not_end_;
   ldlf_ptr ldlf_true_;
   ldlf_ptr ldlf_false_;
-  std::unordered_set<basic_ptr, std::hash<basic_ptr>, ast_eq_proc> table;
+  std::unordered_set<basic_ptr, compute_hash, ast_eq_proc> table;
   void init();
 
   template <typename T, typename = typename std::enable_if<
@@ -64,6 +68,8 @@ private:
 
 public:
   AstManager() { init(); }
+
+  size_t table_size() { return table.size(); };
 
   symbol_ptr makeSymbol(const std::string& name);
 
@@ -83,6 +89,7 @@ public:
   ltlf_ptr makeLtlfNotEnd();
   ltlf_ptr makeLtlfBool(bool x);
   ltlf_ptr makeLtlfAtom(const std::string& name);
+  ltlf_ptr makeLtlfAtom(const symbol_ptr& symbol);
   ltlf_ptr makeLtlfAnd(const set_ltlf_formulas& args);
   ltlf_ptr makeLtlfOr(const set_ltlf_formulas& args);
   ltlf_ptr makeLtlfNot(const ltlf_ptr& arg);

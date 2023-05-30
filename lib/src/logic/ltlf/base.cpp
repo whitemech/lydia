@@ -59,7 +59,11 @@ LTLfAtom::LTLfAtom(AstManager& c, const std::string& s)
 LTLfAtom::LTLfAtom(AstManager& c, const symbol_ptr& p)
     : LTLfAtom(c, p->str()){};
 
-hash_t LTLfAtom::compute_hash_() const { return this->symbol->compute_hash_(); }
+hash_t LTLfAtom::compute_hash_() const {
+  hash_t seed = type_code_id;
+  hash_combine<Basic>(seed, *this->symbol);
+  return seed;
+}
 
 int LTLfAtom::compare_(const Basic& rhs) const {
   assert(is_a<LTLfAtom>(rhs));

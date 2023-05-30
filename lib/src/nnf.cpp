@@ -15,13 +15,83 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <lydia/logic/ltlf/duality.hpp>
 #include <lydia/logic/nnf.hpp>
 
 namespace whitemech::lydia {
 
+void NNFTransformer::visit(const LTLfTrue& x) {
+  ltlf_result = x.ctx().makeLtlfTrue();
+}
+
+void NNFTransformer::visit(const LTLfFalse& x) {
+  ltlf_result = x.ctx().makeLtlfFalse();
+}
+
+void NNFTransformer::visit(const LTLfAtom& x) {
+  ltlf_result = x.ctx().makeLtlfAtom(x.symbol);
+}
+
+void NNFTransformer::visit(const LTLfAnd& x) {
+  auto container = x.get_container();
+  set_ltlf_formulas new_container;
+  for (auto& a : container) {
+    new_container.insert(apply(*a));
+  }
+  ltlf_result = x.ctx().makeLtlfAnd(new_container);
+}
+
+void NNFTransformer::visit(const LTLfOr& x) {
+  auto container = x.get_container();
+  set_ltlf_formulas new_container;
+  for (auto& a : container) {
+    new_container.insert(apply(*a));
+  }
+  ltlf_result = x.ctx().makeLtlfOr(new_container);
+}
+
+void NNFTransformer::visit(const LTLfNot& x) {
+  if (is_a<const LTLfAtom>(*x.get_arg())) {
+    ltlf_result = x.ctx().makeLtlfNot(x.get_arg());
+  } else {
+    ltlf_result = apply_negation(*x.get_arg());
+  }
+}
+
+void NNFTransformer::visit(const LTLfNext& x) {
+  ltlf_result = x.ctx().makeLtlfNext(apply(*x.get_arg()));
+}
+
+void NNFTransformer::visit(const LTLfWeakNext& x) {
+  ltlf_result = x.ctx().makeLtlfWeakNext(apply(*x.get_arg()));
+}
+
+void NNFTransformer::visit(const LTLfUntil& x) {
+  auto arg1 = apply(*x.get_args()[0]);
+  auto arg2 = apply(*x.get_args()[1]);
+  ltlf_result = x.ctx().makeLtlfUntil(arg1, arg2);
+}
+
+void NNFTransformer::visit(const LTLfRelease& x) {
+  auto arg1 = apply(*x.get_args()[0]);
+  auto arg2 = apply(*x.get_args()[1]);
+  ltlf_result = x.ctx().makeLtlfRelease(arg1, arg2);
+}
+
+void NNFTransformer::visit(const LTLfEventually& x) {
+  auto arg = apply(*x.get_arg());
+  ltlf_result = x.ctx().makeLtlfEventually(arg);
+}
+
+void NNFTransformer::visit(const LTLfAlways& x) {
+  auto arg = apply(*x.get_arg());
+  ltlf_result = x.ctx().makeLtlfAlways(arg);
+}
+
 void NNFTransformer::visit(const LDLfTrue& x) {
   result = x.ctx().makeLdlfTrue();
 }
+
 void NNFTransformer::visit(const LDLfFalse& x) {
   result = x.ctx().makeLdlfFalse();
 }
@@ -114,6 +184,11 @@ void NNFTransformer::visit(const PropositionalNot& f) {
     prop_result = apply(*f.get_arg()->logical_not());
 }
 
+ltlf_ptr NNFTransformer::apply(const LTLfFormula& b) {
+  b.accept(*this);
+  return ltlf_result;
+}
+
 ldlf_ptr NNFTransformer::apply(const LDLfFormula& b) {
   b.accept(*this);
   return result;
@@ -130,6 +205,11 @@ prop_ptr NNFTransformer::apply(const PropositionalFormula& b) {
 }
 
 std::shared_ptr<const LDLfFormula> to_nnf(const LDLfFormula& x) {
+  NNFTransformer nnfTransformer;
+  return nnfTransformer.apply(x);
+}
+
+std::shared_ptr<const LTLfFormula> to_nnf(const LTLfFormula& x) {
   NNFTransformer nnfTransformer;
   return nnfTransformer.apply(x);
 }

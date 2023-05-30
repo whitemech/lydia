@@ -17,6 +17,7 @@
  */
 
 #include <lydia/logic/ldlf/base.hpp>
+#include <lydia/logic/ltlf/base.hpp>
 #include <lydia/logic/pl/base.hpp>
 #include <lydia/visitor.hpp>
 
@@ -26,11 +27,26 @@ class NNFTransformer : public Visitor {
 private:
 protected:
   // TODO split into several transformers?
+  ltlf_ptr ltlf_result;
   ldlf_ptr result;
   regex_ptr regex_result;
   prop_ptr prop_result;
 
 public:
+  // callbacks for LTLf
+  void visit(const LTLfTrue&) override;
+  void visit(const LTLfFalse&) override;
+  void visit(const LTLfAtom&) override;
+  void visit(const LTLfAnd&) override;
+  void visit(const LTLfOr&) override;
+  void visit(const LTLfNot&) override;
+  void visit(const LTLfNext&) override;
+  void visit(const LTLfWeakNext&) override;
+  void visit(const LTLfUntil&) override;
+  void visit(const LTLfRelease&) override;
+  void visit(const LTLfEventually&) override;
+  void visit(const LTLfAlways&) override;
+
   // callbacks for LDLf
   void visit(const Symbol&) override{};
   void visit(const LDLfTrue&) override;
@@ -61,10 +77,12 @@ public:
   void visit(const LDLfT&) override;
 
   ldlf_ptr apply(const LDLfFormula& b);
+  ltlf_ptr apply(const LTLfFormula& b);
   regex_ptr apply(const RegExp& b);
   prop_ptr apply(const PropositionalFormula& b);
 };
 
 std::shared_ptr<const LDLfFormula> to_nnf(const LDLfFormula&);
+std::shared_ptr<const LTLfFormula> to_nnf(const LTLfFormula&);
 
 } // namespace whitemech::lydia
