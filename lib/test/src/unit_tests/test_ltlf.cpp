@@ -25,10 +25,16 @@ TEST_CASE("LTLf Boolean atoms", "[logic][ltlf]") {
   Logger log("test_logic");
 
   auto context = AstManager{};
+
+  auto expected = context.table_size();
+
   auto boolTrue = context.makeLtlfTrue();
   auto boolFalse = context.makeLtlfFalse();
   auto newBoolTrue = context.makeLtlfTrue();
   auto newBoolFalse = context.makeLtlfFalse();
+
+  auto actual = context.table_size();
+  REQUIRE(expected == actual);
 
   SECTION("tt == tt") { REQUIRE(*boolTrue == *boolTrue); }
   SECTION("ff == ff") { REQUIRE(*boolFalse == *boolFalse); }
@@ -59,12 +65,44 @@ TEST_CASE("LTLf Boolean atoms", "[logic][ltlf]") {
   }
 }
 
+TEST_CASE("symbols", "[logic][ltlf]") {
+  auto context = AstManager{};
+  auto a1 = context.makeSymbol("a");
+  auto a2 = context.makeSymbol("a");
+
+  SECTION("a1 == a2") { REQUIRE(a1 == a2); }
+  SECTION("a1.hash() == a2.hash()") { REQUIRE(a1->hash() == a2->hash()); }
+  SECTION("test compare") {
+    REQUIRE(a1->compare(*a2) == 0);
+    REQUIRE(*a1 == *a2);
+  }
+}
+
+TEST_CASE("LTLf atoms", "[logic][ltlf]") {
+  auto context = AstManager{};
+  auto a1 = context.makeLtlfAtom("a");
+  auto a2 = context.makeLtlfAtom("a");
+
+  SECTION("a1 == a2") { REQUIRE(a1 == a2); }
+  SECTION("a1.hash() == a2.hash()") { REQUIRE(a1->hash() == a2->hash()); }
+  SECTION("test compare") {
+    REQUIRE(a1->compare(*a2) == 0);
+    REQUIRE(*a1 == *a2);
+  }
+}
+
 TEST_CASE("LTLfNot", "[logic][ltlf]") {
   auto context = AstManager{};
+
+  auto initial_size = context.table_size();
+
   auto ptr_true = context.makeLtlfTrue();
   auto not_true = context.makeLtlfNot(ptr_true);
   auto ptr_false = context.makeLtlfFalse();
   auto not_false = context.makeLtlfNot(ptr_false);
+
+  auto new_size = context.table_size();
+  REQUIRE(initial_size + 2 == new_size);
 
   SECTION("test equality on same objects") {
     REQUIRE(not_true->is_equal(*not_true));

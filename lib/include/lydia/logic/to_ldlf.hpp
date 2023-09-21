@@ -1,3 +1,4 @@
+#pragma once
 /*
  * This file is part of Lydia.
  *
@@ -15,29 +16,36 @@
  * along with Lydia.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <lydia/ast/base.hpp>
 #include <lydia/logic/ldlf/base.hpp>
 #include <lydia/logic/ltlf/base.hpp>
 #include <lydia/logic/pl/base.hpp>
+#include <lydia/visitor.hpp>
 
 namespace whitemech::lydia {
 
-void AstManager::init() {
-  prop_true_ = std::make_shared<const PropositionalTrue>(*this);
-  prop_false_ = std::make_shared<const PropositionalFalse>(*this);
-  ltlf_true_ = std::make_shared<const LTLfTrue>(*this);
-  ltlf_false_ = std::make_shared<const LTLfFalse>(*this);
-  ltlf_last_ = std::make_shared<const LTLfWeakNext>(*this, ltlf_false_);
-  ltlf_end_ = std::make_shared<const LTLfAlways>(*this, ltlf_false_);
-  ltlf_not_end_ = std::make_shared<const LTLfEventually>(*this, ltlf_true_);
-  ldlf_true_ = std::make_shared<const LDLfTrue>(*this);
-  ldlf_false_ = std::make_shared<const LDLfFalse>(*this);
-  this->table.insert(prop_true_);
-  this->table.insert(prop_false_);
-  this->table.insert(ltlf_true_);
-  this->table.insert(ltlf_false_);
-  this->table.insert(ldlf_true_);
-  this->table.insert(ldlf_false_);
-}
+class LTLfToLDLfTransformer : public Visitor {
+private:
+protected:
+  ldlf_ptr result;
+
+public:
+  // callbacks for LDLf
+  virtual void visit(const LTLfTrue&) override;
+  virtual void visit(const LTLfFalse&) override;
+  virtual void visit(const LTLfAtom&) override;
+  virtual void visit(const LTLfAnd&) override;
+  virtual void visit(const LTLfOr&) override;
+  virtual void visit(const LTLfNot&) override;
+  virtual void visit(const LTLfNext&) override;
+  virtual void visit(const LTLfWeakNext&) override;
+  virtual void visit(const LTLfUntil&) override;
+  virtual void visit(const LTLfRelease&) override;
+  virtual void visit(const LTLfEventually&) override;
+  virtual void visit(const LTLfAlways&) override;
+
+  ldlf_ptr apply(const LTLfFormula& b);
+};
+
+ldlf_ptr to_ldlf(const LTLfFormula& x);
 
 } // namespace whitemech::lydia

@@ -156,6 +156,9 @@ Otherwise, download the source code and build the library:
 ```
 git clone https://github.com/whitemech/MONA.git && cd MONA
 ./configure && make && sudo make install
+# copy headers manually
+sudo mkdir -p /usr/local/include/mona
+sudo cp Mem/mem.h Mem/gnuc.h Mem/dlmalloc.h BDD/bdd_external.h BDD/bdd_dump.h BDD/bdd_internal.h BDD/bdd.h BDD/hash.h DFA/dfa.h GTA/gta.h config.h /usr/local/include/mona
 ```
 
 #### Syft+

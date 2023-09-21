@@ -78,5 +78,8 @@ ldlf_ptr AstManager::makeLdlfQ(const ldlf_ptr& arg) {
 ldlf_ptr AstManager::makeLdlfEnd() {
   return makeLdlfBox(makePropRegex(makeTrue()), makeLdlfFalse());
 }
+ldlf_ptr AstManager::makeLdlfNotEnd() {
+  return makeLdlfDiamond(makePropRegex(makeTrue()), makeLdlfTrue());
+}
 
 } // namespace whitemech::lydia

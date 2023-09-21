@@ -21,6 +21,166 @@
 
 namespace whitemech::lydia::Test {
 
+TEST_CASE("Test NNF of tt") {
+  auto context = AstManager{};
+  auto f = context.makeLtlfTrue();
+  auto actual_formula = to_nnf(*f);
+  REQUIRE(f == actual_formula);
+}
+
+TEST_CASE("Test NNF of ff") {
+  auto context = AstManager{};
+  auto f = context.makeLtlfFalse();
+  auto actual_formula = to_nnf(*f);
+  REQUIRE(f == actual_formula);
+}
+
+TEST_CASE("Test NNF of !tt") {
+  auto context = AstManager{};
+  auto f = context.makeLtlfNot(context.makeLtlfTrue());
+  auto actual_formula = to_nnf(*f);
+  auto expected_formula = context.makeLtlfFalse();
+  REQUIRE(expected_formula == actual_formula);
+}
+
+TEST_CASE("Test NNF of !ff") {
+  auto context = AstManager{};
+  auto f = context.makeLtlfNot(context.makeLtlfFalse());
+  auto actual_formula = to_nnf(*f);
+  auto expected_formula = context.makeLtlfTrue();
+  REQUIRE(expected_formula == actual_formula);
+}
+
+TEST_CASE("Test NNF of atomic") {
+  auto context = AstManager{};
+  auto a = context.makeLtlfAtom("a");
+  auto actual_formula = to_nnf(*a);
+  REQUIRE(a == actual_formula);
+}
+
+TEST_CASE("Test NNF of negated atomic") {
+  auto context = AstManager{};
+  auto a = context.makeLtlfAtom("a");
+  auto not_a = context.makeLtlfNot(a);
+  auto actual_formula = to_nnf(*not_a);
+  REQUIRE(not_a == actual_formula);
+}
+
+TEST_CASE("Test NNF of doubly negated atomic") {
+  auto context = AstManager{};
+  auto a = context.makeLtlfAtom("!!a");
+  auto not_not_a = context.makeLtlfNot(context.makeLtlfNot(a));
+  auto actual_formula = to_nnf(*not_not_a);
+  REQUIRE(a == actual_formula);
+}
+
+TEST_CASE("Test NNF of logical negation of atomic") {
+  // ~a = !a | end
+  auto context = AstManager{};
+  auto a = context.makeLtlfAtom("a");
+  auto not_a = context.makeLtlfNot(a);
+  auto logical_not_a = context.makeLtlfNot(a);
+  auto actual_formula = to_nnf(*logical_not_a);
+  REQUIRE(logical_not_a == actual_formula);
+}
+
+TEST_CASE("Test NNF of next") {
+  // ~X[!]a = X(!a | end)
+  auto context = AstManager{};
+  auto a = context.makeLtlfAtom("a");
+  auto not_a = context.makeLtlfNot(a);
+  auto end = context.makeLtlfEnd();
+  auto not_a_or_end = context.makeLtlfOr(set_ltlf_formulas{not_a, end});
+  auto next_a = context.makeLtlfNext(a);
+  auto not_next_a = context.makeLtlfNot(next_a);
+  auto weak_next_not_a = context.makeLtlfWeakNext(not_a_or_end);
+  auto actual = to_nnf(*not_next_a);
+  const auto& expected = weak_next_not_a;
+  REQUIRE(actual == expected);
+}
+
+TEST_CASE("Test NNF of weak next") {
+  // ~X a = X[!](!a | end)
+  auto context = AstManager{};
+  auto a = context.makeLtlfAtom("a");
+  auto not_a = context.makeLtlfNot(a);
+  auto end = context.makeLtlfEnd();
+  auto weak_next_a = context.makeLtlfWeakNext(a);
+  auto not_a_or_end = context.makeLtlfOr(set_ltlf_formulas{not_a, end});
+  auto next_not_a = context.makeLtlfNext(not_a_or_end);
+  auto not_weak_next_a = context.makeLtlfNot(weak_next_a);
+  auto actual = to_nnf(*not_weak_next_a);
+  const auto& expected = next_not_a;
+  REQUIRE(actual == expected);
+}
+
+TEST_CASE("Test NNF of until") {
+  // ~(a U b) = ((!a | end) R (!b | end))
+  auto context = AstManager{};
+  auto a = context.makeLtlfAtom("a");
+  auto b = context.makeLtlfAtom("b");
+  auto not_a = context.makeLtlfNot(a);
+  auto not_b = context.makeLtlfNot(b);
+  auto end = context.makeLtlfEnd();
+  auto not_a_or_end = context.makeLtlfOr(set_ltlf_formulas{not_a, end});
+  auto not_b_or_end = context.makeLtlfOr(set_ltlf_formulas{not_b, end});
+  auto a_until_b = context.makeLtlfUntil(a, b);
+  auto not_a_until_b = context.makeLtlfNot(a_until_b);
+  auto not_a_release_not_b =
+      context.makeLtlfRelease(not_a_or_end, not_b_or_end);
+  auto actual = to_nnf(*not_a_until_b);
+  const auto& expected = not_a_release_not_b;
+  REQUIRE(actual == expected);
+}
+
+TEST_CASE("Test NNF of release") {
+  // ~(a R b) = ((!a | end) U (!b | end))
+  auto context = AstManager{};
+  auto a = context.makeLtlfAtom("a");
+  auto b = context.makeLtlfAtom("b");
+  auto not_a = context.makeLtlfNot(a);
+  auto not_b = context.makeLtlfNot(b);
+  auto end = context.makeLtlfEnd();
+  auto not_a_or_end = context.makeLtlfOr(set_ltlf_formulas{not_a, end});
+  auto not_b_or_end = context.makeLtlfOr(set_ltlf_formulas{not_b, end});
+  auto a_release_b = context.makeLtlfRelease(a, b);
+  auto not_a_release_b = context.makeLtlfNot(a_release_b);
+  auto not_a_until_not_b = context.makeLtlfUntil(not_a_or_end, not_b_or_end);
+  auto actual = to_nnf(*not_a_release_b);
+  const auto& expected = not_a_until_not_b;
+  REQUIRE(actual == expected);
+}
+
+TEST_CASE("Test NNF of eventually") {
+  // ~Fa = G(!a | end)
+  auto context = AstManager{};
+  auto a = context.makeLtlfAtom("a");
+  auto not_a = context.makeLtlfNot(a);
+  auto end = context.makeLtlfEnd();
+  auto not_a_or_end = context.makeLtlfOr(set_ltlf_formulas{not_a, end});
+  auto eventually_a = context.makeLtlfEventually(a);
+  auto not_eventually_a = context.makeLtlfNot(eventually_a);
+  auto always_not_a = context.makeLtlfAlways(not_a_or_end);
+  auto actual = to_nnf(*not_eventually_a);
+  const auto& expected = always_not_a;
+  REQUIRE(actual == expected);
+}
+
+TEST_CASE("Test NNF of always") {
+  // ~Ga = F(!a | end)
+  auto context = AstManager{};
+  auto a = context.makeLtlfAtom("a");
+  auto not_a = context.makeLtlfNot(a);
+  auto end = context.makeLtlfEnd();
+  auto not_a_or_end = context.makeLtlfOr(set_ltlf_formulas{not_a, end});
+  auto always_a = context.makeLtlfAlways(a);
+  auto not_always_a = context.makeLtlfNot(always_a);
+  auto eventually_not_a = context.makeLtlfEventually(not_a_or_end);
+  auto actual = to_nnf(*not_always_a);
+  const auto& expected = eventually_not_a;
+  REQUIRE(actual == expected);
+}
+
 TEST_CASE("Negative normal form", "[nnf]") {
   auto context = AstManager{};
   SECTION("tt") {

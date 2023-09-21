@@ -101,6 +101,27 @@ if (NOT DEFINED LYDIA_ENABLE_BENCHMARK)
     set(LYDIA_ENABLE_BENCHMARK ON)
 endif()
 
+# by default, dynamic linking is configured
+# handle CUDD configuration for static/dynamic linking
+if (NOT DEFINED CUDD_USE_STATIC_LIBS)
+    set(CUDD_USE_STATIC_LIBS OFF)
+endif()
+if (CUDD_USE_STATIC_LIBS)
+    message("-- CUDD configured to be linked statically")
+else()
+    message("-- CUDD configured to be linked dynamically")
+endif()
+
+# handle MONA configuration for static/dynamic linking
+if (NOT DEFINED MONA_USE_STATIC_LIBS)
+    set(MONA_USE_STATIC_LIBS OFF)
+endif()
+if (MONA_USE_STATIC_LIBS)
+    message("-- MONA configured to be linked statically")
+else()
+    message("-- MONA configured to be linked dynamically")
+endif()
+
 set (THREADS_PREFER_PTHREAD_FLAG ON)
 find_package (Threads REQUIRED)
 find_package(CUDD REQUIRED)

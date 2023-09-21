@@ -22,13 +22,22 @@ namespace whitemech::lydia {
 
 ltlf_ptr AstManager::makeLtlfTrue() { return ltlf_true_; }
 ltlf_ptr AstManager::makeLtlfFalse() { return ltlf_false_; }
+ltlf_ptr AstManager::makeLtlfLast() { return ltlf_last_; }
+ltlf_ptr AstManager::makeLtlfEnd() { return ltlf_end_; }
+ltlf_ptr AstManager::makeLtlfNotEnd() { return ltlf_not_end_; }
 ltlf_ptr AstManager::makeLtlfBool(bool value) {
   return value ? ltlf_true_ : ltlf_false_;
 }
 ltlf_ptr AstManager::makeLtlfAtom(const std::string& name) {
-  auto tmp = std::make_shared<const LTLfAtom>(*this, name);
+  auto symbol_tmp = makeSymbol(name);
+  auto tmp = std::make_shared<const LTLfAtom>(*this, symbol_tmp);
   auto result = insert_if_not_available_(tmp);
   return result;
+}
+ltlf_ptr AstManager::makeLtlfAtom(const symbol_ptr& symbol) {
+  auto atom = std::make_shared<const LTLfAtom>(*this, symbol);
+  auto actual_atom = insert_if_not_available_(atom);
+  return actual_atom;
 }
 
 ltlf_ptr AstManager::makeLtlfAnd(const set_ltlf_formulas& args) {
