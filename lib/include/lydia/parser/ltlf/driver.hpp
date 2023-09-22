@@ -31,7 +31,7 @@
 
 namespace whitemech::lydia::parsers::ltlf {
 
-class LTLfDriver : public AbstractDriver<LTLfFormula> {
+class LTLfDriver : public AbstractDriver {
 private:
   void parse_helper(std::istream& stream);
 
@@ -47,7 +47,7 @@ public:
 
   virtual ~LTLfDriver();
 
-  ltlf_ptr get_result() override { return result; }
+  ast_ptr get_result() override { return result; }
 
   /**
    * parse - parse from a file

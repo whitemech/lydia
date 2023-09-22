@@ -16,6 +16,7 @@
  */
 
 #include "CLI/CLI.hpp"
+#include "lydia/logic/to_ldlf.hpp"
 #include <iostream>
 #include <istream>
 #include <lydia/dfa/mona_dfa.hpp>
@@ -128,19 +129,27 @@ int main(int argc, char** argv) {
   }
 
   auto parsed_formula = driver->get_result();
+  whitemech::lydia::ldlf_ptr ldlf_parsed_formula;
+  if (logic == Logic::ltlf){
+    // to LDLf:
+    logger.info("Transforming LTLf to LDLf...");
+    auto ltl_formula = std::static_pointer_cast<const whitemech::lydia::LTLfFormula>(parsed_formula);
+    ldlf_parsed_formula = whitemech::lydia::to_ldlf(*ltl_formula);
+  }
+
   if (no_empty) {
     logger.info("Apply no-empty semantics.");
     auto context = driver->context;
     auto end = context->makeLdlfEnd();
     auto not_end = context->makeLdlfNot(end);
-    parsed_formula = context->makeLdlfAnd({parsed_formula, not_end});
+    ldlf_parsed_formula = context->makeLdlfAnd({ldlf_parsed_formula, not_end});
   }
 
   auto t_start = std::chrono::high_resolution_clock::now();
 
   logger.info("Transforming to DFA...");
   auto t_dfa_start = std::chrono::high_resolution_clock::now();
-  auto my_dfa = translator.to_dfa(*parsed_formula);
+  auto my_dfa = translator.to_dfa(*ldlf_parsed_formula);
   // TODO make 'dfa' abstraction stronger
   auto my_mona_dfa =
       std::dynamic_pointer_cast<whitemech::lydia::mona_dfa>(my_dfa);
